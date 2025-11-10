@@ -47,7 +47,7 @@ jobs:
       # Run Jest tests for configuration validation
       - name: Run configuration tests
         run: pnpm test
-      # Nx affected commands - will be enabled when workspace packages are added
+      # TODO: Nx affected commands - will be enabled when workspace packages are added. add all test here when project will have more packages.
       - name: Check formatting (affected)
         continue-on-error: true
         run: pnpm exec nx affected -t format:check || echo "⚠️ No Nx projects found yet"
