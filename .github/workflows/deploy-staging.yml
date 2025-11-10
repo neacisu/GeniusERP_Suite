@@ -1,0 +1,57 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker-deploy-staging:
+    name: Docker Build & Push (Staging)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # necesar pentru a putea compara cu origin/master
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push Docker images for affected apps
+        env:
+          DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}
+        run: |
+          pnpm exec nx affected -t docker-build --base=origin/master --head=HEAD -- --push --tag-with-ref --tag-suffix=staging

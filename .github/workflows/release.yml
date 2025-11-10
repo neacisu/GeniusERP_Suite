@@ -1,0 +1,63 @@
+name: Release Packages
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting (affected)
+        run: pnpm exec nx affected -t format:check
+
+      - name: Lint affected projects
+        run: pnpm exec nx affected -t lint
+
+      - name: Test affected projects
+        run: pnpm exec nx affected -t test
+
+      - name: Build affected projects
+        run: pnpm exec nx affected -t build
+
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Release Pull Request or Publish
+        uses: changesets/action@v1
+        with:
+          version: pnpm exec changeset version
+          publish: pnpm -r publish --access public --no-git-checks
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
