@@ -2,6 +2,12 @@
 
 GeniusSuite este o suită modulară de aplicații enterprise, construită pe stack modern: **React 19 LTS**, **Node.js 24 LTS**, **TypeScript latest**, **Fastify v5.6.1**, **Drizzle ORM**, **PostgreSQL 18**, **NX monorepo**, **Docker Compose** (model hibrid). Este vândută fie ca suită completă **GeniusERP.app**, fie ca aplicații stand-alone: **archify.app**, **cerniq.app**, **flowxify.app**, **i-wms.app**, **mercantiq.app**, **numeriqo.app**, **triggerra.app**, **vettify.app**.
 
+## Stack Principal
+
+* **Monorepo:** Nx + pnpm workspaces
+* **Language:** TypeScript (strict)
+* **Tooling:** ESLint, Prettier, Husky, lint-staged, commitlint
+
 ## Module Principale
 
 ### Control Plane (CP)
@@ -56,29 +62,21 @@ GeniusSuite este o suită modulară de aplicații enterprise, construită pe sta
 - Docker & Docker Compose
 - PostgreSQL 18 (sau via Docker)
 
-### Bootstrap
+### Initialization
 ```bash
-# Clone repo
-git clone https://github.com/neacisu/GeniusERP_Suite.git
-cd GeniusSuite
-
-# Instalează dependențe
 pnpm install
+```
 
-# Bootstrap monorepo
-pnpm run bootstrap
+### Common Commands
+```bash
+# Run linting on all projects
+pnpm lint
 
-# Generează .env files
-pnpm run env:generate
+# Check formatting (without modifying files)
+pnpm format:check
 
-# Creează baze de date
-pnpm run db:create --app all
-
-# Migrații DB
-pnpm run db:migrate --app all
-
-# Seed date inițiale
-pnpm run db:seed --app all
+# Apply formatting to the entire monorepo
+pnpm format:write
 ```
 
 ### Pornire Suită
