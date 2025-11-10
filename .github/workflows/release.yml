@@ -57,7 +57,8 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm exec changeset version
-          publish: pnpm -r publish --access public --no-git-checks
+          # publish: pnpm -r publish --access public --no-git-checks
+          # Publishing disabled - this is a private monorepo, not a public npm registry
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}  # Not needed for private monorepo
