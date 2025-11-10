@@ -64,8 +64,8 @@ jobs:
         if: steps.check-pr.outputs.pr_exists == 'false' && steps.check-commits.outputs.has_new_commits == 'true'
         run: |
           # Generează lista de commit-uri pentru PR body
-          COMMITS=$(git log staging..dev --pretty=format:"- %s (%h)" --no-merges | head -20)
-          
+          COMMITS=$(git log staging..dev --pretty=format:"- %%s (%%h)" --no-merges | head -20)
+
           # Dacă sunt mai mult de 20 commit-uri, adaugă note
           TOTAL_COMMITS=$(git rev-list --count staging..dev --no-merges)
           if [ "$TOTAL_COMMITS" -gt 20 ]; then
@@ -75,7 +75,7 @@ jobs:
           fi
 
           # Creează PR body
-          cat << 'EOF' > pr_body.md
+          cat > pr_body.md << 'EOF'
           ## 🚀 Promovare automată dev → staging
 
           Acest PR a fost creat automat după ce CI Validation a trecut cu succes pe branch-ul `dev`.
@@ -93,8 +93,8 @@ jobs:
           EOF
 
           echo "$COMMITS" >> pr_body.md
-          
-          cat << 'EOF' >> pr_body.md
+
+          cat >> pr_body.md << 'EOF'
 
           ### 🎯 Next Steps
 
