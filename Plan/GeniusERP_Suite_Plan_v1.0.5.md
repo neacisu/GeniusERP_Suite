@@ -4616,7 +4616,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-F0.1.12 
+#### F0.1.12
+
+```JSON
  {
     "F0.1.12": {
       "denumire_task": "Rulare 'nx init' pentru a Adopta Workspace-ul",
@@ -4639,40 +4641,61 @@ F0.1.12
       "componenta_de_CI_DI": "Crearea 'nx.json' este fundamentală. CI va folosi 'nx' pentru a rula task-uri afectate (affected tasks)."
     }
   },
-F0.1.13
+```
+
+#### F0.1.13
+
+```JSON
   {
-    "F0.1.13": {
-      "denumire_task": "Configurare 'nx.json' (Partea 1 - Target Defaults)",
-      "descriere_scurta_task": "Editarea 'nx.json' pentru a stabili 'targetDefaults' pentru operațiuni cacheabile.",
-      "descriere_lunga_si_detaliata_task": "Modificăm 'nx.json' pentru a defini 'targetDefaults'. Aceasta este o practică recomandată Nx [2] pentru a seta implicit ce task-uri (cum ar fi 'build', 'lint', 'test') sunt cacheabile, fără a trebui să o specificăm în fiecare proiect. De asemenea, definim 'outputs' implicite, cum ar fi 'dist' sau 'coverage'.[2]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.12: 'nx.json' a fost creat de 'nx init'.",
-      "contextul_general_al_aplicatiei": "Definirea strategiilor de caching la rădăcină este cheia pentru un monorepo rapid.[18, 22]",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
-      "restrictii_anti_halucinatie":",
-        "  },",
-        "  \"lint\": {",
-        "    \"cache\": true",
-        "  },",
-        "  \"test\": {",
-        "    \"cache\": true,",
-        "    \"outputs\":",
-        "  }",
-        "}"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga încă proiecte ('projects: {}'). Nx le va descoperi automat (Inferred Tasks).[2]",
-      "validare": "Conținutul 'nx.json' include cheia 'targetDefaults' cu configurațiile specificate.",
-      "outcome": "'nx.json' este configurat cu valori implicite pentru caching-ul task-urilor comune.",
-      "componenta_de_CI_DI": "Această configurație activează Nx Remote Cache (Nx Cloud sau similar), reducând drastic timpii de CI.[22]"
-    }
-  },
-F0.1.14
+  "F0.1.13": {
+    "denumire_task": "Configurare 'nx.json' (Partea 1 - Target Defaults)",
+    "descriere_scurta_task": "Editarea 'nx.json' pentru a stabili 'targetDefaults' pentru operațiuni cacheabile.",
+    "descriere_lunga_si_detaliata_task": "Modificăm 'nx.json' pentru a defini 'targetDefaults'. Aceasta este o practică recomandată Nx [2] pentru a seta implicit ce task-uri (cum ar fi 'build', 'lint', 'test') sunt cacheabile, fără a trebui să o specificăm în fiecare proiect. De asemenea, definim 'outputs' implicite, cum ar fi 'dist' sau 'coverage'.[2]",
+    "directorul_directoarele": "",
+    "contextul_taskurilor_anterioare": "F0.1.12: 'nx.json' a fost creat de 'nx init'.",
+    "contextul_general_al_aplicatiei": "Definirea strategiilor de caching la rădăcină este cheia pentru un monorepo rapid.[18, 22]",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
+    "restrictii_anti_halucinatie": [
+      "Editează DOAR fișierul existent '/var/www/GeniusSuite/nx.json'. Nu crea alte fișiere.",
+      "Nu șterge și nu modifica alte chei de top ('extends', 'tasksRunnerOptions', etc.) dacă există deja.",
+      "Adaugă la nivel rădăcină cheia 'targetDefaults' dacă nu există.",
+      "Conținutul minim acceptat pentru 'targetDefaults' este:",
+      "{",
+      "  \"targetDefaults\": {",
+      "    \"build\": {",
+      "      \"cache\": true,",
+      "      \"outputs\": [\"{projectRoot}/dist\"]",
+      "    },",
+      "    \"lint\": {",
+      "      \"cache\": true",
+      "    },",
+      "    \"test\": {",
+      "      \"cache\": true,",
+      "      \"outputs\": [\"{projectRoot}/coverage\"]",
+      "    }",
+      "  }",
+      "}",
+      "Nu adăuga alte target-uri acum (de ex. 'docker-build'). Acestea vor fi tratate în fazele ulterioare.",
+      "Nu adăuga câmpul 'projects' în 'nx.json'. Acesta trebuie să rămână gol sau absent; Nx va folosi Inferred Tasks."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga încă proiecte ('projects: {}'). Nx le va descoperi automat (Inferred Tasks).[2]",
+    "validare": "Conținutul 'nx.json' include cheia 'targetDefaults' cu configurațiile specificate.",
+    "outcome": "'nx.json' este configurat cu valori implicite pentru caching-ul task-urilor comune.",
+    "componenta_de_CI_DI": "Această configurație activează Nx Remote Cache (Nx Cloud sau similar), reducând drastic timpii de CI.[22]"
+  }
+}
+```
+
+#### F0.1.14
+
+```JSON
   {
     "F0.1.14": {
       "denumire_task": "Configurare 'nx.json' (Partea 2 - Package Manager)",
       "descriere_scurta_task": "Asigurarea că 'nx.json' este setat explicit să folosească 'pnpm'.",
       "descriere_lunga_si_detaliata_task": "Deși 'nx init' ar fi trebuit să detecteze 'pnpm' [15, 21], vom verifica și vom seta explicit 'packageManager: \"pnpm\"' în 'nx.json'. Acest lucru asigură că Nx nu va încerca niciodată să folosească 'npm' sau 'yarn' pentru operațiunile de instalare.[3]",
-      "directorul_directoarele":,
+      "directorul_directoarele":[/
+      ],
       "contextul_taskurilor_anterioare": "F0.1.13: 'nx.json' a fost configurat cu 'targetDefaults'.",
       "contextul_general_al_aplicatiei": "Consolidarea 'pnpm' ca unic manager de pachete în monorepo.",
       "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
@@ -4686,24 +4709,40 @@ F0.1.14
       "componenta_de_CI_DI": "Previne erorile de CI în care agentul ar putea încerca să folosească 'npm install' din greșeală."
     }
   },
-F0.1.15
+```
+
+#### F0.1.15
+
+```JSON
   {
-    "F0.1.15": {
-      "denumire_task": "Instalare Dependențe TypeScript de Bază",
-      "descriere_scurta_task": "Instalarea 'typescript' la rădăcina workspace-ului.",
-      "descriere_lunga_si_detaliata_task": "Instalăm pachetul fundamental 'typescript' la nivelul rădăcinii monorepo-ului, folosind 'pnpm add'. Acesta va fi folosit de toate proiectele, de ESLint și de 'nx' însuși. Stiva  specifică 'latest' TS.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.11: 'nx' este instalat.",
-      "contextul_general_al_aplicatiei": "Stabilirea fundației TypeScript  pentru întregul monorepo.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala 'ts-node' sau '@types/node' încă. Le vom instala separat pentru a fi atomici.",
-      "validare": "Verifică 'package.json' pentru a vedea 'typescript' în 'devDependencies'.",
-      "outcome": "TypeScript este instalat.",
-      "componenta_de_CI_DI": "Acest pachet va fi necesar pentru toți pașii de 'build' și 'lint' din CI."
-    }
-  },
-F0.1.16
+  "F0.1.15": {
+    "denumire_task": "Instalare Dependențe TypeScript de Bază",
+    "descriere_scurta_task": "Instalarea 'typescript' la rădăcina workspace-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm pachetul fundamental 'typescript' la nivelul rădăcinii monorepo-ului, folosind 'pnpm add'. Acesta va fi folosit de toate proiectele, de ESLint și de 'nx' însuși. Stiva specifică 'latest' TS.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.11: 'nx' este instalat.",
+    "contextul_general_al_aplicatiei": "Stabilirea fundației TypeScript pentru întregul monorepo.",
+    "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
+    "restrictii_anti_halucinatie": [
+      "Execută comanda DOAR din directorul '/var/www/GeniusSuite/'.",
+      "Folosește exclusiv 'pnpm', nu 'npm' sau 'yarn'. Comanda recomandată: 'pnpm add -D typescript@latest'.",
+      "Adaugă pachetul 'typescript' în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala alte pachete în acest task (de ex. 'ts-node', '@types/node', alte plugin-uri).",
+      "Nu modifica alte câmpuri din 'package.json' în afară de adăugarea/actualizarea intrării 'typescript'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu instala 'ts-node' sau '@types/node' încă. Le vom instala separat pentru a fi atomici.",
+    "validare": "Verifică 'package.json' pentru a vedea 'typescript' în 'devDependencies'.",
+    "outcome": "TypeScript este instalat.",
+    "componenta_de_CI_DI": "Acest pachet va fi necesar pentru toți pașii de 'build' și 'lint' din CI."
+  }
+},
+```
+
+#### F0.1.16
+
+```JSON
   {
     "F0.1.16": {
       "denumire_task": "Instalare Dependențe 'ts-node' și Tipuri Node",
@@ -4713,196 +4752,295 @@ F0.1.16
       "contextul_taskurilor_anterioare": "F0.1.15: 'typescript' este instalat.",
       "contextul_general_al_aplicatiei": "Asigurarea suportului pentru rularea script-urilor TypeScript și a tipurilor corecte pentru mediul Node.js 24 LTS.",
       "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
+      "restrictii_anti_halucinatie": [
+        "Execută comanda DOAR din directorul '/var/www/GeniusSuite/'.",
+        "Folosește exclusiv 'pnpm', nu 'npm' sau 'yarn'. Recomandat: 'pnpm add -D ts-node @types/node'.",
+        "Adaugă 'ts-node' și '@types/node' în 'devDependencies', nu în 'dependencies'.",
+        "Nu instala alte pachete în acest task.",
+        "Nu modifica alte câmpuri din 'package.json' în afară de intrările pentru 'ts-node' și '@types/node'."
+      ],
       "restrictii_de_iesire_din_contex": "N/A",
       "validare": "Verifică 'package.json' pentru 'ts-node' și '@types/node' în 'devDependencies'.",
       "outcome": "Dependențele de suport TypeScript sunt instalate.",
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.17
+```
+
+#### F0.1.17
+
+```JSON
   {
-    "F0.1.17": {
-      "denumire_task": "Creare 'tsconfig.base.json' la Rădăcină",
-      "descriere_scurta_task": "Crearea fișierului de configurare TypeScript de bază, 'tsconfig.base.json'.",
-      "descriere_lunga_si_detaliata_task": "Acesta este fișierul de configurare TypeScript central.[2, 4, 9] Toate celelalte fișiere 'tsconfig.json' din monorepo (din aplicații și biblioteci) vor extinde acest fișier de bază. Vom seta opțiunile 'compilerOptions' stricte, conform cerințelor.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.15: TypeScript este instalat.",
-      "contextul_general_al_aplicatiei": "Impunerea unui standard TypeScript strict și centralizat pentru toate proiectele din GeniusSuite.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/tsconfig.base.json'.",
-      "restrictii_anti_halucinatie":",
-        "Conținutul inițial trebuie să fie un JSON valid: \n{\n  \"compilerOptions\": {},\n  \"exclude\": [\"node_modules\", \"tmp\"]\n}"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu popula încă 'compilerOptions' sau 'paths'. Acestea vor fi făcute în task-urile următoare.",
-      "validare": "Verifică existența fișierului '/var/www/GeniusSuite/tsconfig.base.json'.",
-      "outcome": "Fișierul 'tsconfig.base.json' este creat.",
-      "componenta_de_CI_DI": "CI va folosi acest fișier ca bază pentru 'typecheck' și 'build'."
-    }
-  },
-F0.1.18
+  "F0.1.17": {
+    "denumire_task": "Creare 'tsconfig.base.json' la Rădăcină",
+    "descriere_scurta_task": "Crearea fișierului de configurare TypeScript de bază, 'tsconfig.base.json'.",
+    "descriere_lunga_si_detaliata_task": "Acesta este fișierul de configurare TypeScript central. Toate celelalte fișiere 'tsconfig.json' din monorepo (din aplicații și biblioteci) vor extinde acest fișier de bază. În acest task creăm doar fișierul și un skeleton minim; opțiunile stricte 'compilerOptions' vor fi configurate în taskurile următoare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.15: TypeScript este instalat.",
+    "contextul_general_al_aplicatiei": "Impunerea unui standard TypeScript strict și centralizat pentru toate proiectele din GeniusSuite.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/tsconfig.base.json'.",
+    "restrictii_anti_halucinatie": [
+      "Creează DOAR fișierul '/var/www/GeniusSuite/tsconfig.base.json'. Nu modifica alte fișiere de configurare TypeScript în acest task.",
+      "Conținutul inițial trebuie să fie un JSON valid, cu structură minimă:\n{\n  \"compilerOptions\": {},\n  \"exclude\": [\"node_modules\", \"tmp\"]\n}",
+      "Nu adăuga încă opțiuni în 'compilerOptions' (strict, module, target, jsx etc.).",
+      "Nu adăuga încă 'paths', 'references' sau alte câmpuri avansate. Acestea vor fi tratate în taskurile următoare (ex. F0.1.18+)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu popula încă 'compilerOptions' sau 'paths'. Acestea vor fi făcute în task-urile următoare.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/tsconfig.base.json' și că JSON-ul este valid cu cheile 'compilerOptions' goale și 'exclude' setat la ['node_modules', 'tmp'].",
+    "outcome": "Fișierul 'tsconfig.base.json' este creat cu un skeleton minim, gata să fie extins de taskurile ulterioare.",
+    "componenta_de_CI_DI": "CI va folosi acest fișier ca bază pentru 'typecheck' și 'build' după ce opțiunile vor fi completate în taskurile următoare."
+  }
+},
+```
+
+#### F0.1.18
+
+```JSON
   {
-    "F0.1.18": {
-      "denumire_task": "Configurare 'compilerOptions' Stricte în 'tsconfig.base.json'",
-      "descriere_scurta_task": "Setarea regulilor stricte de compilare TypeScript în 'tsconfig.base.json'.",
-      "descriere_lunga_si_detaliata_task": "Configurăm 'compilerOptions' în 'tsconfig.base.json' pentru a impune standarde de cod stricte, conform cerințelor  (Convenții generale: \"Strict TS\"). Aceasta include 'strict: true', 'noUncheckedIndexedAccess', 'exactOptionalPropertyTypes', și opțiuni moderne pentru compatibilitatea cu Node 24 (ESNext) și React 19 (JSX).",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.17: 'tsconfig.base.json' a fost creat.",
-      "contextul_general_al_aplicatiei": "Standardizarea calității codului și prevenirea erorilor comune în întregul monorepo.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '/var/www/GeniusSuite/tsconfig.base.json'.",
-      "restrictii_anti_halucinatie": [1],",
-        "  \"skipLibCheck\": true,",
-        "  \"allowJs\": true,",
-        "  \"esModuleInterop\": true,",
-        "  \"allowSyntheticDefaultImports\": true,",
-        "  \"forceConsistentCasingInFileNames\": true,",
-        "  \"isolatedModules\": true,",
-        "  \"noEmit\": true,",
-        "  \"jsx\": \"react-jsx\",",
-        "",
-        "  \"strict\": true,",
-        "  \"noUncheckedIndexedAccess\": true,",
-        "  \"exactOptionalPropertyTypes\": true,",
-        "  \"noImplicitAny\": true,",
-        "  \"strictNullChecks\": true,",
-        "  \"strictFunctionTypes\": true,",
-        "  \"strictBindCallApply\": true,",
-        "  \"strictPropertyInitialization\": true,",
-        "  \"noImplicitThis\": true,",
-        "  \"alwaysStrict\": true,",
-        "  \"noUnusedLocals\": true,",
-        "  \"noUnusedParameters\": true,",
-        "  \"noImplicitReturns\": true,",
-        "  \"noFallthroughCasesInSwitch\": true,",
-        "",
-        "  \"resolveJsonModule\": true,",
-        "  \"composite\": false,",
-        "  \"declaration\": true,",
-        "  \"sourceMap\": true,",
-        "  \"baseUrl\": \".\",",
-        "  \"incremental\": true",
-        "}"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga încă 'paths'. Acesta este un task separat și critic.",
-      "validare": "'tsconfig.base.json' conține 'compilerOptions' cu 'strict: true' și celelalte setări.",
-      "outcome": "Configurația de bază TypeScript este stabilită la un standard înalt de calitate.",
-      "componenta_de_CI_DI": "Toate job-urile 'typecheck' vor moșteni aceste reguli stricte."
-    }
-  },
-F0.1.19
+  "F0.1.18": {
+    "denumire_task": "Configurare 'compilerOptions' Stricte în 'tsconfig.base.json'",
+    "descriere_scurta_task": "Setarea regulilor stricte de compilare TypeScript în 'tsconfig.base.json'.",
+    "descriere_lunga_si_detaliata_task": "Configurăm 'compilerOptions' în 'tsconfig.base.json' pentru a impune standarde de cod stricte, conform cerințelor (Convenții generale: \"Strict TS\"). Aceasta include 'strict: true', 'noUncheckedIndexedAccess', 'exactOptionalPropertyTypes' și alte opțiuni moderne pentru compatibilitatea cu Node 24 (ESNext) și React 19 (JSX). Configurația permite emiterea fișierelor de build ('declaration: true', 'sourceMap: true'), esențiale pentru biblioteci și servicii backend.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.17: 'tsconfig.base.json' a fost creat.",
+    "contextul_general_al_aplicatiei": "Standardizarea calității codului și prevenirea erorilor comune în întregul monorepo.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/tsconfig.base.json' și editează secțiunea 'compilerOptions'. Nu crea alte fișiere TS config.",
+    "restrictii_anti_halucinatie": [
+      "Modifică DOAR fișierul '/var/www/GeniusSuite/tsconfig.base.json'. Nu crea și nu modifica alte fișiere de configurare TypeScript.",
+      "Nu șterge câmpul 'exclude' definit la F0.1.17 (trebuie să rămână cel puțin ['node_modules', 'tmp']).",
+      "Asigură-te că în 'compilerOptions' sunt setate cel puțin următoarele chei și valori (poți păstra și alte chei deja existente, dacă nu contrazic aceste valori):",
+      "{",
+      "  \"compilerOptions\": {",
+      "    \"target\": \"ESNext\",",
+      "    \"module\": \"ESNext\",",
+      "    \"moduleResolution\": \"bundler\",",
+      "    \"skipLibCheck\": true,",
+      "    \"allowJs\": true,",
+      "    \"esModuleInterop\": true,",
+      "    \"allowSyntheticDefaultImports\": true,",
+      "    \"forceConsistentCasingInFileNames\": true,",
+      "    \"isolatedModules\": true,",
+      "    \"jsx\": \"react-jsx\",",
+      "    \"strict\": true,",
+      "    \"noUncheckedIndexedAccess\": true,",
+      "    \"exactOptionalPropertyTypes\": true,",
+      "    \"noImplicitAny\": true,",
+      "    \"strictNullChecks\": true,",
+      "    \"strictFunctionTypes\": true,",
+      "    \"strictBindCallApply\": true,",
+      "    \"strictPropertyInitialization\": true,",
+      "    \"noImplicitThis\": true,",
+      "    \"alwaysStrict\": true,",
+      "    \"noUnusedLocals\": true,",
+      "    \"noUnusedParameters\": true,",
+      "    \"noImplicitReturns\": true,",
+      "    \"noFallthroughCasesInSwitch\": true,",
+      "    \"resolveJsonModule\": true,",
+      "    \"composite\": false,",
+      "    \"declaration\": true,",
+      "    \"sourceMap\": true,",
+      "    \"baseUrl\": \".\",",
+      "    \"incremental\": true",
+      "  }",
+      "}",
+      "Nu adăuga opțiunea 'noEmit' în acest task.",
+      "Nu adăuga încă 'paths' în 'compilerOptions'; acestea vor fi configurate explicit în task-ul F0.1.19.",
+      "Nu adăuga aici 'references' sau alte câmpuri de project references."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul configurării 'compilerOptions' din 'tsconfig.base.json'. Nu modifica 'nx.json', '.eslintrc.*', config-uri Vite sau alte fișiere.",
+    "validare": "'tsconfig.base.json' conține un obiect 'compilerOptions' cu 'strict: true', 'noUncheckedIndexedAccess', 'exactOptionalPropertyTypes', 'declaration: true', 'sourceMap: true' și NU conține 'noEmit: true'. Fișierul este JSON valid.",
+    "outcome": "Configurația de bază TypeScript este strictă, modernă și capabilă să emită fișiere de build (.js, .d.ts) pentru biblioteci și servicii backend.",
+    "componenta_de_CI_DI": "Toate job-urile 'typecheck' și 'build' din CI vor moșteni aceste reguli stricte și vor avea o bază comună coerentă."
+  }
+},
+```
+
+#### F0.1.19
+
+```JSON
   {
-    "F0.1.19": {
-      "denumire_task": "Configurare 'paths' (Alias-uri) în 'tsconfig.base.json' (Critic)",
-      "descriere_scurta_task": "Definirea alias-urilor de import TypeScript în 'paths' pentru toate bibliotecile din 'shared/'.",
-      "descriere_lunga_si_detaliata_task": "Acesta este un pas vital pentru arhitectura monorepo-ului.[4, 9] Definind 'paths', permitem importuri curate (de ex. '@genius-suite/ui-design-system') în loc de căi relative (de ex. '../../shared/ui-design-system'). Mapăm *fiecare* pachet definit în , Capitolul 2, în directorul 'shared/'. Vom folosi convenția 'workspace:' de la pnpm în 'package.json'-urile viitoare [16], dar alias-urile TS sunt necesare pentru IDE și type-checking.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.18: 'compilerOptions' sunt setate. 'baseUrl' este \".\".",
-      "contextul_general_al_aplicatiei": "Crearea 'lipiciului' (glue) între bibliotecile partajate  și viitoarele aplicații consumatoare (cp/, vettify.app/, etc.).",
-      "contextualizarea_directoarelor_si_cailor": "Modifică 'compilerOptions.paths' în '/var/www/GeniusSuite/tsconfig.base.json'.",
-      "restrictii_anti_halucinatie":'.",
-        "Căile trebuie să pointeze către sursa TypeScript (de ex. 'index.ts' sau 'src/index.ts'). Vom folosi 'index.ts' ca în [1] (Capitolul 2).",
-        "Adaugă următoarele 'paths' [1]:",
-        "\"paths\": {",
-        "  \"@genius-suite/ui-design-system\": [\"shared/ui-design-system/index.ts\"],",
-        "  \"@genius-suite/feature-flags\": [\"shared/feature-flags/index.ts\"],",
-        "  \"@genius-suite/auth-client\": [\"shared/auth-client/index.ts\"],",
-        "  \"@genius-suite/types\": [\"shared/types/index.ts\"],",
-        "  \"@genius-suite/common\": [\"shared/common/index.ts\"],",
-        "  \"@genius-suite/integrations\": [\"shared/integrations/index.ts\"],",
-        "  \"@genius-suite/observability\": [\"shared/observability/index.ts\"]",
-        "}",
-        "Dacă fișierul principal de export este 'src/index.ts', ajustează calea (de ex. 'shared/ui-design-system/src/index.ts')."
-      ],
-      "restrictii_de_iesire_din_contex": "Nu rula 'nx sync' sau alte comenzi. Doar scrie configurația.",
-      "validare": "'tsconfig.base.json' conține 'compilerOptions.paths' cu toate cele 7 alias-uri definite corect.",
-      "outcome": "Alias-urile de import pentru bibliotecile partajate sunt configurate, permițând importuri de pachete curate.",
-      "componenta_de_CI_DI": "CI va trebui să respecte aceste mapări de căi în timpul 'build'-urilor."
-    }
-  },
-F0.1.20
+  "F0.1.19": {
+    "denumire_task": "Configurare 'paths' (Alias-uri) în 'tsconfig.base.json' (Critic)",
+    "descriere_scurta_task": "Definirea alias-urilor de import TypeScript în 'paths' pentru toate bibliotecile din 'shared/'.",
+    "descriere_lunga_si_detaliata_task": "Acesta este un pas vital pentru arhitectura monorepo-ului. Definind 'compilerOptions.paths' în tsconfig.base.json, permitem importuri curate (de ex. '@genius-suite/ui-design-system') în loc de căi relative lungi (de ex. '../../shared/ui-design-system'). Mapăm fiecare pachet definit în directorul 'shared/' (ui-design-system, feature-flags, auth-client, types, common, integrations, observability), respectând structurile reale din Capitolul 2. În package.json-urile viitoare vom folosi 'workspace:' de la pnpm, dar alias-urile TypeScript sunt necesare pentru IDE și type-checking.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.18: 'compilerOptions' sunt setate, inclusiv 'baseUrl': '.'.",
+    "contextul_general_al_aplicatiei": "Crearea 'lipiciului' (glue) între bibliotecile partajate din 'shared/' și viitoarele aplicații consumatoare (cp/, vettify.app/, etc.).",
+    "contextualizarea_directoarelor_si_cailor": "Modifică proprietatea 'compilerOptions.paths' în fișierul '/var/www/GeniusSuite/tsconfig.base.json'. Nu edita alte fișiere.",
+    "restrictii_anti_halucinatie": [
+      "Modifică exclusiv fișierul '/var/www/GeniusSuite/tsconfig.base.json'. Nu crea și nu modifica alte fișiere de configurare TypeScript.",
+      "Nu șterge sau modifica alte proprietăți din 'compilerOptions' (de ex. 'strict', 'baseUrl', 'declaration'). Adaugă sau actualizează DOAR 'paths'.",
+      "Configurează 'compilerOptions.paths' astfel încât să includă cel puțin următoarele intrări, respectând structurile reale din 'shared/':",
+      "\"@genius-suite/ui-design-system\": [\"shared/ui-design-system/index.ts\"],",
+      "\"@genius-suite/feature-flags\": [\"shared/feature-flags/src/index.ts\"],",
+      "\"@genius-suite/auth-client\": [\"shared/auth-client/src/index.ts\"],",
+      "\"@genius-suite/types\": [\"shared/types/index.ts\"],",
+      "\"@genius-suite/common\": [\"shared/common/index.ts\"],",
+      "\"@genius-suite/integrations\": [\"shared/integrations/index.ts\"],",
+      "\"@genius-suite/observability\": [\"shared/observability/index.ts\"].",
+      "Pentru 'feature-flags' și 'auth-client' folosește explicit 'src/index.ts' ca entrypoint, deoarece codul sursă este sub 'src/'.",
+      "Pentru 'integrations' și 'observability', presupune existența unui 'index.ts' la rădăcina pachetului (barrel export) care va fi creat în task-uri ulterioare; nu modifica acum structura 'shared/integrations/' sau 'shared/observability/'.",
+      "Nu adăuga alias-uri suplimentare în acest task. Acoperă doar cele 7 pachete din 'shared/'.",
+      "Nu modifica valoarea 'baseUrl'; aceasta trebuie să rămână '.'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu rula 'nx sync', 'nx graph', 'nx run' sau alte comenzi. Acest task se ocupă strict de editarea fișierului tsconfig.base.json.",
+    "validare": "'tsconfig.base.json' conține 'compilerOptions.paths' cu toate cele 7 alias-uri definite conform structurilor reale (inclusiv 'src/index.ts' pentru feature-flags și auth-client), iar fișierul este JSON valid.",
+    "outcome": "Alias-urile de import pentru bibliotecile partajate sunt configurate centralizat, permițând importuri de forma '@genius-suite/<pachet>' în tot monorepo-ul, în acord cu structurile din Capitolul 2.",
+    "componenta_de_CI_DI": "Job-urile de CI care rulează 'typecheck' și 'build' vor folosi aceste mapări de căi, asigurând rezolvarea corectă a importurilor către 'shared/*'."
+  }
+},
+```
+
+#### F0.1.20
+
+```JSON
   {
-    "F0.1.20": {
-      "denumire_task": "Instalare Prettier",
-      "descriere_scurta_task": "Instalarea 'prettier' ca dependență de dezvoltare la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'prettier' [8, 23], instrumentul standard pentru formatarea codului. Acesta va fi folosit pentru a impune un stil de cod consistent în întregul monorepo.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.11: Dependențele de bază sunt instalate.",
-      "contextul_general_al_aplicatiei": "Standardizarea stilului de cod  este crucială pentru mentenabilitatea monorepo-ului.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala plugin-uri 'prettier' sau 'eslint' încă.",
-      "validare": "Verifică 'package.json' pentru a vedea 'prettier' în 'devDependencies'.",
-      "outcome": "'prettier' este instalat.",
-      "componenta_de_CI_DI": "CI va rula 'prettier --check' (sau 'nx format:check') pentru a valida formatarea."
-    }
-  },
-F0.1.21
+  "F0.1.20": {
+    "denumire_task": "Instalare Prettier",
+    "descriere_scurta_task": "Instalarea 'prettier' ca dependență de dezvoltare la rădăcină.",
+    "descriere_lunga_si_detaliata_task": "Instalăm 'prettier' [8, 23], instrumentul standard pentru formatarea codului. Acesta va fi folosit pentru a impune un stil de cod consistent în întregul monorepo. Pachetul se instalează ca dependență de dezvoltare la rădăcină, astfel încât toate proiectele (apps și shared libs) să poată folosi aceeași versiune de Prettier.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.11: Dependențele de bază sunt instalate (pnpm + nx + stack de bază).",
+    "contextul_general_al_aplicatiei": "Standardizarea stilului de cod este crucială pentru mentenabilitatea monorepo-ului. Prettier va fi ulterior integrat în ESLint și în pipeline-ul de CI pentru a asigura o formatare automată și consistentă.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica fișierul '/var/www/GeniusSuite/package.json' și va actualiza 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută O SINGURĂ comandă de instalare: `pnpm add -D prettier` în directorul '/var/www/GeniusSuite/'.",
+      "Nu instala Prettier global (NU folosi `-g`) și nu folosi alt manager de pachete (NU `npm`, NU `yarn`).",
+      "Nu instala încă alte pachete legate de Prettier (cum ar fi 'eslint-config-prettier', 'eslint-plugin-prettier' etc.). Acestea au task-uri dedicate ulterior (F0.1.30–F0.1.31).",
+      "Nu crea și nu modifica fișiere de configurare Prettier ('./.prettierrc', './.prettierignore') în acest task; acestea sunt acoperite explicit în F0.1.21 și F0.1.22.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies.prettier'.",
+      "Dacă 'prettier' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu te atinge de configurările ESLint sau Nx în acest task. Nu crea scripturi noi în 'package.json'. Doar instalează dependența 'prettier' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.prettier' cu o versiune validă. Opțional, rulează 'pnpm prettier --version' din '/var/www/GeniusSuite/' pentru a verifica instalarea.",
+    "outcome": "'prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului.",
+    "componenta_de_CI_DI": "Această dependență va fi folosită ulterior în pipeline-urile de CI pentru a rula 'prettier --check' sau 'nx format:check' asupra codului, asigurând formatare consistentă înainte de merge."
+  }
+},
+```
+
+#### F0.1.21
+
+```JSON
   {
-    "F0.1.21": {
-      "denumire_task": "Creare Fișier Configurare '.prettierrc'",
-      "descriere_scurta_task": "Crearea fișierului de configurare '.prettierrc' cu regulile de formatare.",
-      "descriere_lunga_si_detaliata_task": "Creăm fișierul '.prettierrc' la rădăcină.[10] Acesta va conține regulile specifice de formatare (de ex. 'singleQuote', 'tabWidth') pe care le vom impune în tot codul (TS, JS, JSON, CSS, MD).",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.20: 'prettier' este instalat.",
-      "contextul_general_al_aplicatiei": "Definirea standardului de formatare a codului.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.prettierrc'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu crea '.prettierignore' încă. Acesta este un task separat.",
-      "validare": "Verifică existența și conținutul JSON valid al fișierului '/var/www/GeniusSuite/.prettierrc'.",
-      "outcome": "Regulile de formatare Prettier sunt definite centralizat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.22
+  "F0.1.21": {
+    "denumire_task": "Creare Fișier Configurare '.prettierrc'",
+    "descriere_scurta_task": "Crearea fișierului de configurare '.prettierrc' cu regulile de formatare.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul '.prettierrc' la rădăcină. Acesta va conține regulile specifice de formatare (de ex. 'singleQuote', 'tabWidth') pe care le vom impune în tot codul (TS, JS, JSX, JSON, CSS, MD). Configurația este centralizată la nivel de monorepo, astfel încât toate aplicațiile și bibliotecile să folosească același standard de stil.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.20: 'prettier' este instalat.",
+    "contextul_general_al_aplicatiei": "Definirea standardului unitar de formatare a codului pentru întregul monorepo GeniusSuite.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.prettierrc' la rădăcina monorepo-ului. Acest fișier va fi folosit de comenzi precum 'pnpm prettier', 'nx format:write' și de integrarea cu ESLint.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu crea sau modifica fișiere în alte directoare.",
+      "Creează (sau suprascrie) fișierul '/var/www/GeniusSuite/.prettierrc' cu conținut JSON VALID.",
+      "Conținutul fișierului '.prettierrc' trebuie să fie EXACT următorul (inclusiv cheile și valorile):",
+      "{",
+      "  \"singleQuote\": true,",
+      "  \"semi\": true,",
+      "  \"tabWidth\": 2,",
+      "  \"useTabs\": false,",
+      "  \"trailingComma\": \"all\",",
+      "  \"printWidth\": 100,",
+      "  \"arrowParens\": \"always\",",
+      "  \"bracketSpacing\": true,",
+      "  \"bracketSameLine\": false,",
+      "  \"endOfLine\": \"lf\",",
+      "  \"proseWrap\": \"preserve\"",
+      "}",
+      "Nu adăuga alte chei sau comentarii în '.prettierrc' în acest task.",
+      "Nu crea alte fișiere de configurare Prettier (de ex. 'prettier.config.js', '.prettierrc.js', '.prettierrc.cjs').",
+      "Nu modifica 'package.json', '.eslintrc.json' sau alte fișiere de configurare în acest task.",
+      "Asigură-te că fișierul este JSON valid (fără virgule la final de linie și fără comentarii)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu crea '.prettierignore' încă. Acesta este un task separat (F0.1.22). Nu definești aici integrarea cu ESLint sau Nx.",
+    "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.prettierrc' există, este JSON valid și conține exact cheile specificate ('singleQuote', 'semi', 'tabWidth', 'useTabs', 'trailingComma', 'printWidth', 'arrowParens', 'bracketSpacing', 'bracketSameLine', 'endOfLine', 'proseWrap').",
+    "outcome": "Regulile de formatare Prettier sunt definite centralizat, permițând formatare consistentă a codului în întregul monorepo.",
+    "componenta_de_CI_DI": "Configurația va fi folosită implicit de pașii de CI care rulează 'prettier --check' sau 'nx format:check', asigurând că toate schimbările respectă același stil de cod."
+  }
+},
+```
+
+#### F0.1.22
+
+```JSON
   {
-    "F0.1.22": {
-      "denumire_task": "Creare Fișier '.prettierignore'",
-      "descriere_scurta_task": "Crearea fișierului '.prettierignore' pentru a exclude fișierele de la formatare.",
-      "descriere_lunga_si_detaliata_task": "Similar cu '.gitignore', '.prettierignore' [23] spune lui Prettier ce fișiere și directoare să ignore. Acest lucru este important pentru a preveni formatarea fișierelor generate, a artefactelor de build sau a cache-urilor.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.21: '.prettierrc' este creat. F0.1.10: '.gitignore' există.",
-      "contextul_general_al_aplicatiei": "Optimizarea execuției 'prettier' și prevenirea formatării fișierelor sensibile.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.prettierignore'.",
-      "restrictii_anti_halucinatie": [
-        "Conținutul fișierului '.prettierignore' trebuie să includă conținutul din '.gitignore' și 'pnpm-lock.yaml'.",
-        "# Copiază conținutul din.gitignore",
-        "node_modules",
-        ".pnpm-store",
-        "dist",
-        "build",
-        "coverage",
-        ".nx/cache",
-        "*.log",
-        "",
-        "# Fișiere specifice",
-        "package-lock.json",
-        "pnpm-lock.yaml",
-        "",
-        "# Fișiere generate (viitor)",
-        "shared/ui-design-system/icons/react/generated/"
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.prettierignore'.",
-      "outcome": "Prettier este configurat să ignore fișierele și directoarele care nu necesită formatare.",
-      "componenta_de_CI_DI": "Accelerează pasul 'format:check' din CI prin excluderea căilor irelevante."
-    }
-  },
-F0.1.23
+  "F0.1.22": {
+    "denumire_task": "Creare Fișier '.prettierignore'",
+    "descriere_scurta_task": "Crearea fișierului '.prettierignore' pentru a exclude fișierele de la formatare.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul '.prettierignore' la rădăcina monorepo-ului pentru a controla ce fișiere și directoare sunt excluse din formatarea Prettier. Prettier folosește deja regulile din '.gitignore', deci '.prettierignore' trebuie să conțină doar excepțiile specifice (ex. lockfile-uri ale altor package manageri și directoare cu cod generat) care NU ar trebui formatate, chiar dacă sunt urmărite de Git.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.21: '.prettierrc' este creat. F0.1.10: '.gitignore' există.",
+    "contextul_general_al_aplicatiei": "Optimizarea execuției 'prettier' și prevenirea formatării fișierelor generate sau irelevante, păstrând în același timp mentenabilitatea (fără duplicarea regulilor din '.gitignore').",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.prettierignore' la rădăcina monorepo-ului. Acest fișier va fi luat în considerare de Prettier împreună cu '.gitignore'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu crea fișiere suplimentare în alte directoare.",
+      "Creează (sau suprascrie) fișierul '/var/www/GeniusSuite/.prettierignore'.",
+      "NU copia integral conținutul din '.gitignore' în '.prettierignore'. Prettier citește deja '.gitignore' implicit; aici adăugăm doar excepțiile specifice.",
+      "Conținutul fișierului '.prettierignore' trebuie să fie EXACT următorul (inclusiv comentariile):",
+      "# Lockfile-uri ale altor package manageri (nu folosim npm/yarn în acest monorepo)",
+      "package-lock.json",
+      "yarn.lock",
+      "",
+      "# Cod generat care NU trebuie formatat (chiar dacă este urmărit de Git)",
+      "shared/ui-design-system/icons/react/generated/",
+      "",
+      "# Intenționat NU ignorăm 'pnpm-lock.yaml' pentru a permite formatarea lui de către Prettier,",
+      "# astfel încât dif-urile să fie consistente în echipă.",
+      "NU adăuga alte pattern-uri în acest task. Pentru noi directoare generate se vor crea taskuri separate.",
+      "Nu modifica '.gitignore' în cadrul acestui task."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării și populării fișierului '.prettierignore'. Nu modifica 'package.json', '.prettierrc', '.eslintrc.*' sau alte configurări.",
+    "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.prettierignore' există și conține exact liniile specificate, în ordinea indicată. Rulează opțional 'pnpm prettier --list-different .' pe un subset de fișiere pentru a confirma că directorul 'shared/ui-design-system/icons/react/generated/' este ignorat.",
+    "outcome": "Prettier este configurat să ignore doar fișierele și directoarele care nu necesită formatare (lockfile-uri ale altor package manageri și cod generat), fără duplicarea regulilor din '.gitignore', păstrând mentenabilitatea ridicată.",
+    "componenta_de_CI_DI": "Accelerează pasul 'format:check' din CI prin excluderea căilor irelevante și evită interferența cu 'pnpm-lock.yaml', care rămâne formatat consistent de Prettier și pnpm."
+  }
+},
+```
+
+#### F0.1.23
+
+```JSON
   {
-    "F0.1.23": {
-      "denumire_task": "Instalare ESLint Core",
-      "descriere_scurta_task": "Instalarea pachetului 'eslint'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm pachetul de bază pentru linting, 'eslint'.[5] Acesta este motorul care va rula regulile de linting.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.15: TypeScript este instalat.",
-      "contextul_general_al_aplicatiei": "Stabilirea fundației pentru impunerea regulilor de calitate a codului (linting).",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala încă plugin-uri TS sau Nx.",
-      "validare": "Verifică 'package.json' pentru 'eslint' în 'devDependencies'.",
-      "outcome": "Motorul ESLint este instalat.",
-      "componenta_de_CI_DI": "Acest pachet este necesar pentru pasul 'lint' din CI."
-    }
-  },
+  "F0.1.23": {
+    "denumire_task": "Instalare ESLint Core",
+    "descriere_scurta_task": "Instalarea pachetului 'eslint' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm pachetul de bază pentru linting, 'eslint'. Acesta este motorul care va rula regulile de linting în întregul monorepo (pentru TypeScript, JavaScript, React etc.). Pachetul se instalează ca dependență de dezvoltare la rădăcină, astfel încât toate proiectele să folosească aceeași versiune de ESLint. Configurația efectivă (plugins, rules, Nx integration) va fi făcută în taskurile următoare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.15: TypeScript este instalat. F0.1.11: pnpm și Nx sunt configurate la rădăcină.",
+    "contextul_general_al_aplicatiei": "Stabilirea fundației pentru impunerea regulilor de calitate a codului (linting) în toate aplicațiile și bibliotecile monorepo-ului.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Comanda va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D eslint` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala ESLint global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Adaugă 'eslint' doar în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala încă plugin-uri sau configurări suplimentare ESLint (de ex. '@typescript-eslint/*', 'eslint-plugin-react', '@nx/eslint-plugin'); acestea vor fi tratate în taskurile următoare.",
+      "Nu crea în acest task fișiere de configurare ESLint ('.eslintrc.json', '.eslintrc.cjs', etc.). Acestea sunt acoperite separat (F0.1.29+).",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies.eslint'.",
+      "Dacă 'eslint' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu instala încă plugin-uri TS, React sau Nx, și nu configurezi reguli ESLint în acest task. Doar adaugi dependența de bază 'eslint' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.eslint' cu o versiune validă. Opțional, rulează 'pnpm eslint --version' din '/var/www/GeniusSuite/' pentru a verifica instalarea.",
+    "outcome": "Motorul ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului.",
+    "componenta_de_CI_DI": "Acest pachet este necesar pentru pașii de 'lint' din CI (de ex. joburi care vor rula 'nx lint' sau comenzi ESLint directe asupra proiectelor)."
+  }
+},
+```
+
 F0.1.24
   {
     "F0.1.24": {
