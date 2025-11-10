@@ -237,4 +237,4 @@ Proprietate privată – contactați echipa pentru licențiere.
 
 - Docs: `https://docs.geniuserp.app`
 - Status: `https://status.geniuserp.app`
-- Contact: admin@geniuserp.app
+- Contact: admin@geniuserp.app# Test auto-PR functionality
