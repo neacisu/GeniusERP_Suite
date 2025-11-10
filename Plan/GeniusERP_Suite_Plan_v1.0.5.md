@@ -5041,318 +5041,516 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-F0.1.24
+#### F0.1.24
+
+```JSON
   {
-    "F0.1.24": {
-      "denumire_task": "Instalare Dependențe ESLint (TypeScript Parser)",
-      "descriere_scurta_task": "Instalarea '@typescript-eslint/parser'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm parser-ul care permite ESLint să înțeleagă sintaxa TypeScript.[6] Fără acesta, ESLint ar trata codul TS ca JavaScript invalid.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat.",
-      "contextul_general_al_aplicatiei": "Extinderea ESLint pentru a suporta TypeScript.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică 'package.json' pentru '@typescript-eslint/parser'.",
-      "outcome": "Parser-ul TypeScript pentru ESLint este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.25
+  "F0.1.24": {
+    "denumire_task": "Instalare Dependențe ESLint (TypeScript Parser)",
+    "descriere_scurta_task": "Instalarea '@typescript-eslint/parser' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm parser-ul '@typescript-eslint/parser', care permite ESLint să înțeleagă sintaxa TypeScript. Fără acest pachet, ESLint ar interpreta fișierele .ts și .tsx ca JavaScript invalid. Acest parser va fi ulterior referit în configurația ESLint (de ex. în .eslintrc.json) prin câmpul 'parser'. Pachetul se instalează ca dependență de dezvoltare la rădăcina monorepo-ului, astfel încât toate proiectele să folosească aceeași versiune.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat. F0.1.15: TypeScript este instalat.",
+    "contextul_general_al_aplicatiei": "Extinderea ESLint pentru a suporta analiză statică pe cod TypeScript, aliniat cu configurarea centrală din 'tsconfig.base.json'.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Comanda va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D @typescript-eslint/parser` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că '@typescript-eslint/parser' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala în acest task alte pachete din ecosistemul '@typescript-eslint' (ex. '@typescript-eslint/eslint-plugin'); acestea vor fi instalate în taskuri separate.",
+      "Nu crea și nu modifica fișiere de configurare ESLint ('.eslintrc.*') în acest task; doar instalezi dependența.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies.@typescript-eslint/parser'.",
+      "Dacă '@typescript-eslint/parser' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu instala încă plugin-ul '@typescript-eslint/eslint-plugin', preseturi sau configuri Nx/React pentru ESLint. Nu configurezi câmpul 'parser' în '.eslintrc.*' în acest task.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@typescript-eslint/parser\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @typescript-eslint/parser' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "Parser-ul TypeScript pentru ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi folosit în configurația ESLint.",
+    "componenta_de_CI_DI": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când ESLint este configurat să ruleze pe fișiere TypeScript."
+  }
+},
+```
+
+#### F0.1.25
+
+```JSON
   {
-    "F0.1.25": {
-      "denumire_task": "Instalare Dependențe ESLint (TypeScript Plugin)",
-      "descriere_scurta_task": "Instalarea '@typescript-eslint/eslint-plugin'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm setul de reguli specifice TypeScript pentru ESLint [6], cum ar fi 'no-unused-vars' conștient de tipuri, reguli pentru 'await', etc.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat.",
-      "contextul_general_al_aplicatiei": "Extinderea ESLint pentru a suporta reguli specifice TypeScript.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică 'package.json' pentru '@typescript-eslint/eslint-plugin'.",
-      "outcome": "Plugin-ul TypeScript pentru ESLint este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.26
+  "F0.1.25": {
+    "denumire_task": "Instalare Dependențe ESLint (TypeScript Plugin)",
+    "descriere_scurta_task": "Instalarea '@typescript-eslint/eslint-plugin' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm plugin-ul '@typescript-eslint/eslint-plugin', care furnizează setul de reguli specifice TypeScript pentru ESLint (ex: reguli conștiente de tipuri pentru variabile nefolosite, 'no-floating-promises', reguli pentru 'await', etc.). Acest plugin, împreună cu '@typescript-eslint/parser', permite definirea unui set complet de reguli de linting pentru codul TypeScript din întregul monorepo. Pachetul se instalează ca dependență de dezvoltare la rădăcina monorepo-ului, urmând ca activarea efectivă a regulilor să se facă în fișierele de configurare ESLint în task-uri ulterioare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat. F0.1.24: '@typescript-eslint/parser' este instalat. F0.1.15: TypeScript este instalat.",
+    "contextul_general_al_aplicatiei": "Extinderea ESLint pentru a suporta reguli specifice TypeScript, aliniate cu configurarea strictă definită în 'tsconfig.base.json'.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D @typescript-eslint/eslint-plugin` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că '@typescript-eslint/eslint-plugin' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala în acest task alte plugin-uri ESLint (ex. 'eslint-plugin-react', '@nx/eslint-plugin', 'eslint-plugin-import'); acestea vor fi gestionate în task-uri separate.",
+      "Nu crea și nu modifica fișiere de configurare ESLint ('.eslintrc.json', '.eslintrc.cjs', etc.) în acest task; doar instalezi dependența.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"@typescript-eslint/eslint-plugin\"]'.",
+      "Dacă '@typescript-eslint/eslint-plugin' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configurezi încă 'plugins' sau 'rules' în '.eslintrc.*'. Acest task se ocupă exclusiv de instalarea dependenței '@typescript-eslint/eslint-plugin' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@typescript-eslint/eslint-plugin\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @typescript-eslint/eslint-plugin' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "Plugin-ul TypeScript pentru ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie referit în configurația ESLint.",
+    "componenta_de_CI_DI": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când configurația ESLint va activa regulile '@typescript-eslint'."
+  }
+},
+```
+
+#### F0.1.26
+
+```JSON
   {
-    "F0.1.26": {
-      "denumire_task": "Instalare Dependențe ESLint (Plugin-ul Nx)",
-      "descriere_scurta_task": "Instalarea '@nx/eslint-plugin'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm plugin-ul ESLint specific pentru Nx, '@nx/eslint-plugin'.[5] Acest plugin oferă reguli specifice pentru monorepo-uri Nx, cum ar fi impunerea granițelor dintre module (module boundaries) și detectarea corectă a proiectelor.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat. F0.1.11: 'nx' este instalat.",
-      "contextul_general_al_aplicatiei": "Integrarea strânsă a ESLint cu capabilitățile Nx.[5]",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":"
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică 'package.json' pentru '@nx/eslint-plugin' în 'devDependencies'.",
-      "outcome": "Plugin-ul ESLint specific Nx este instalat.",
-      "componenta_de_CI_DI": "Regulile acestui plugin (de ex. module boundaries) sunt una dintre cele mai importante validări din CI."
-    }
-  },
-F0.1.27
+  "F0.1.26": {
+    "denumire_task": "Instalare Dependențe ESLint (Plugin-ul Nx)",
+    "descriere_scurta_task": "Instalarea '@nx/eslint-plugin' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm plugin-ul ESLint specific pentru Nx, '@nx/eslint-plugin'. Acest plugin oferă reguli dedicate monorepo-urilor Nx, cum ar fi impunerea granițelor dintre module (module boundaries), verificarea corectă a dependențelor între proiecte și integrarea cu graful Nx. Pachetul se instalează ca dependență de dezvoltare la rădăcina monorepo-ului și va fi referit ulterior în configurația ESLint (ex. în .eslintrc.json) pentru a activa regulile Nx.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.23: 'eslint' este instalat. F0.1.11: 'nx' este instalat și configurat la rădăcină.",
+    "contextul_general_al_aplicatiei": "Integrarea strânsă a ESLint cu capabilitățile Nx, pentru a asigura respectarea granițelor dintre module și o arhitectură de monorepo sănătoasă.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D @nx/eslint-plugin` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că '@nx/eslint-plugin' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala în acest task alte pachete Nx sau ESLint suplimentare (ex. '@nx/eslint-plugin-react', preseturi custom); acestea vor fi tratate separat dacă este nevoie.",
+      "Nu crea și nu modifica fișiere de configurare ESLint ('.eslintrc.json', '.eslintrc.cjs', etc.) în acest task; doar instalezi dependența.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"@nx/eslint-plugin\"]'.",
+      "Dacă '@nx/eslint-plugin' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configurezi încă 'plugins', 'extends' sau reguli Nx ('@nx/enforce-module-boundaries') în '.eslintrc.*'. Acest task se ocupă exclusiv de instalarea dependenței '@nx/eslint-plugin' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@nx/eslint-plugin\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @nx/eslint-plugin' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "Plugin-ul ESLint specific Nx este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie folosit în configurațiile ESLint pentru a aplica reguli de module boundaries și bune practici Nx.",
+    "componenta_de_CI_DI": "Joburile de 'lint' din CI vor folosi '@nx/eslint-plugin' pentru a aplica reguli critice (ex. enforce-module-boundaries) și pentru a preveni dependențele incorecte între proiecte în monorepo."
+  }
+},
+```
+
+#### F0.1.27
+
+```JSON
   {
-    "F0.1.27": {
-      "denumire_task": "Creare Fișier Rădăcină '.eslintrc.json'",
-      "descriere_scurta_task": "Crearea fișierului de configurare central '.eslintrc.json' la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Creăm fișierul '.eslintrc.json' la rădăcină.[5, 24] Acesta va fi fișierul de bază pe care toate proiectele din monorepo îl vor extinde. Setăm 'root: true' pentru a opri ESLint să caute configurații în directoarele părinte.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.23 - F0.1.26: Pachetele ESLint sunt instalate.",
-      "contextul_general_al_aplicatiei": "Centralizarea configurației de linting.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.eslintrc.json'.",
-      "restrictii_anti_halucinatie":,",
-        "  \"plugins\":,",
-        "  \"overrides\":",
-        "}",
-        "Folosind 'ignorePatterns': ['**/*'] este o practică modernă Nx [7] pentru a forța configurația să se bazeze pe 'overrides' specifice, în loc de a lint-ui totul implicit."
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga reguli sau 'extends' încă.",
-      "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.eslintrc.json'.",
-      "outcome": "Fișierul '.eslintrc.json' de bază este creat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.28
+  "F0.1.27": {
+    "denumire_task": "Creare Fișier Rădăcină '.eslintrc.json'",
+    "descriere_scurta_task": "Crearea fișierului de configurare central '.eslintrc.json' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul '.eslintrc.json' la rădăcină. Acesta va fi fișierul de bază pe care toate proiectele din monorepo îl vor extinde. Setăm 'root: true' pentru a opri ESLint să caute configurații în directoarele părinte și folosim 'ignorePatterns': ['**/*'] conform recomandărilor Nx, astfel încât lintarea să fie controlată ulterior exclusiv prin secțiunea 'overrides'. În acest task definim doar skeleton-ul central, fără reguli sau 'extends'.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.23 - F0.1.26: Pachetele ESLint (eslint, @typescript-eslint/parser, @typescript-eslint/eslint-plugin, @nx/eslint-plugin) sunt instalate.",
+    "contextul_general_al_aplicatiei": "Centralizarea configurației de linting la nivel de monorepo, astfel încât toate aplicațiile și bibliotecile să extindă aceeași bază ESLint.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.eslintrc.json' la rădăcina monorepo-ului. Acest fișier va fi punctul de intrare pentru configurațiile ESLint ale tuturor proiectelor.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu crea fișiere de configurare ESLint în alte locații în acest task.",
+      "Creează (sau suprascrie) fișierul '/var/www/GeniusSuite/.eslintrc.json' cu conținut JSON VALID.",
+      "Structura minimă a fișierului trebuie să fie EXACT următoarea (poți doar rearanja spațiile / indentarea, nu și cheile):",
+      "{",
+      "  \"root\": true,",
+      "  \"ignorePatterns\": [\"**/*\"],",
+      "  \"plugins\": [\"@nx\"],",
+      "  \"overrides\": []",
+      "}",
+      "Nu adăuga câmpurile 'extends', 'rules', 'parser', 'parserOptions', 'env' sau alte chei suplimentare în acest task.",
+      "Nu adăuga alte plugin-uri în afară de '@nx'.",
+      "Nu crea alte fișiere '.eslintrc.*' (de ex. '.eslintrc.js', '.eslintrc.cjs') în acest task.",
+      "Asigură-te că fișierul este JSON valid (fără comentarii și fără virgule la final de listă/obiect)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga încă reguli ESLint ('rules') sau 'extends'. Acestea vor fi configurate în task-uri separate, folosind secțiunea 'overrides'.",
+    "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.eslintrc.json' există, este JSON valid și conține cheile 'root', 'ignorePatterns', 'plugins' și 'overrides' exact ca în skeleton-ul definit.",
+    "outcome": "Fișierul '.eslintrc.json' de bază este creat la rădăcina monorepo-ului, cu 'root: true' și 'ignorePatterns: [\"**/*\"]', pregătit pentru a fi extins prin 'overrides' specifice proiectelor.",
+    "componenta_de_CI_DI": "Acest fișier va fi folosit ca bază pentru toate rulările ESLint din CI (ex. 'nx lint'), asigurând un punct unic de configurare pentru întregul monorepo."
+  }
+},
+```
+
+#### F0.1.28
+
+```JSON
   {
-    "F0.1.28": {
-      "denumire_task": "Configurare 'nx.json' (Partea 3 - Plugin ESLint)",
-      "descriere_scurta_task": "Adăugarea plugin-ului ESLint în 'nx.json'.",
-      "descriere_lunga_si_detaliata_task": "Acum că ESLint este instalat, putem activa plugin-ul Nx pentru ESLint în 'nx.json'. Acest lucru permite Nx să infera automat task-uri 'lint' pentru proiectele care au fișiere '.eslintrc.json'.[5]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.26: Plugin-ul '@nx/eslint-plugin' este instalat. F0.1.14: 'nx.json' există.",
-      "contextul_general_al_aplicatiei": "Integrarea 'Inferred Tasks' (Project Crystal) [5] de la Nx pentru ESLint.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
-      "restrictii_anti_halucinatie":"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga alte plugin-uri în acest task.",
-      "validare": "Verifică 'nx.json' pentru a vedea 'plugins' configurat corect pentru ESLint.",
-      "outcome": "Nx este acum configurat să descopere și să ruleze task-uri de linting.",
-      "componenta_de_CI_DI": "Acest pas permite CI să ruleze 'nx affected:lint' în loc să ghicească ce proiecte trebuie lint-uite."
-    }
-  },
-F0.1.29
+  "F0.1.28": {
+    "denumire_task": "Configurare 'nx.json' (Partea 3 - Plugin ESLint)",
+    "descriere_scurta_task": "Adăugarea plugin-ului '@nx/eslint/plugin' în 'nx.json' pentru a permite Nx să infereze task-uri 'lint'.",
+    "descriere_lunga_si_detaliata_task": "Acum că pachetele ESLint sunt instalate (inclusiv '@nx/eslint-plugin'), activăm plugin-ul '@nx/eslint/plugin' în 'nx.json'. Acest plugin permite lui Nx să infereze automat task-uri 'lint' pentru proiectele care au fișiere de configurare ESLint (ex: '.eslintrc.json') și fișiere de lint-uit. Configurația este adăugată în câmpul 'plugins' din 'nx.json' și setează în mod explicit numele țintei inferate la 'lint', astfel încât comenzi precum 'nx lint <project>' și 'nx affected:lint' să funcționeze corect.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.26: Plugin-ul '@nx/eslint-plugin' (ESLint plugin) este instalat. F0.1.14: 'nx.json' există și este configurat de bază. F0.1.27: '.eslintrc.json' root este creat.",
+    "contextul_general_al_aplicatiei": "Integrarea 'Inferred Tasks' (Project Crystal) pentru ESLint, astfel încât Nx să descopere automat task-uri 'lint' în funcție de configurațiile ESLint existente.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul '/var/www/GeniusSuite/nx.json'. Modifică doar secțiunea de la rădăcină care conține câmpul 'plugins'. Dacă 'plugins' nu există încă, creează-l.",
+    "restrictii_anti_halucinatie": [
+      "Modifică EXCLUSIV fișierul '/var/www/GeniusSuite/nx.json' în acest task. Nu crea sau modifica alte fișiere de configurare Nx.",
+      "Dacă la rădăcina fișierului nu există câmpul 'plugins', adaugă-l ca un array gol: \"plugins\": [].",
+      "În array-ul 'plugins', adaugă un obiect cu următoarea structură (fără a șterge alte plugin-uri deja existente):",
+      "{",
+      "  \"plugin\": \"@nx/eslint/plugin\",",
+      "  \"options\": {",
+      "    \"targetName\": \"lint\"",
+      "  }",
+      "}",
+      "Dacă există deja un obiect cu \"plugin\": \"@nx/eslint/plugin\", actualizează DOAR câmpul 'options.targetName' la valoarea \"lint\" și nu modifica alte opțiuni.",
+      "Nu elimina sau suprascrie alți plugin-i existenți din 'plugins' (ex: '@nx/next/plugin', '@nx/vite/plugin', etc.), dacă apar ulterior în plan.",
+      "Nu modifica alte chei din 'nx.json' (de ex. 'targetDefaults', 'tasksRunnerOptions', 'defaultBase', 'namedInputs') în acest task.",
+      "Păstrează fișierul 'nx.json' ca JSON valid (fără comentarii și fără virgule în plus)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga alte plugin-uri Nx (ex: '@nx/next/plugin') în acest task. Nu definești aici ținte explicite 'lint' în proiecte individuale; doar activezi plugin-ul de inferență.",
+    "validare": "Verifică faptul că 'nx.json' conține un array 'plugins' în care există un obiect cu 'plugin': '@nx/eslint/plugin' și 'options.targetName' setat la 'lint'. Confirmă că JSON-ul este valid și că nu au fost modificate alte secțiuni în afară de 'plugins'.",
+    "outcome": "Nx este configurat să descopere și să ruleze automat task-uri de linting ('lint') pentru proiectele care dețin o configurare ESLint, prin intermediul plugin-ului '@nx/eslint/plugin'.",
+    "componenta_de_CI_DI": "Acest pas permite pipeline-urilor de CI să ruleze 'nx affected:lint' sau 'nx lint <project>' bazându-se pe task-urile inferate de plugin-ul '@nx/eslint/plugin', fără a configura manual 'lint' în fiecare proiect."
+  }
+},
+```
+
+#### F0.1.29
+
+```JSON
   {
-    "F0.1.29": {
-      "denumire_task": "Configurare '.eslintrc.json' (Integrare Nx și TS)",
-      "descriere_scurta_task": "Configurarea 'plugins', 'parser' și 'extends' în '.eslintrc.json' de la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Configurăm fișierul '.eslintrc.json' de la rădăcină pentru a folosi parser-ul TypeScript, plugin-ul Nx și seturile de reguli recomandate. Acest 'override' se va aplica tuturor fișierelor.ts și.tsx din monorepo.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.27: '.eslintrc.json' există. F0.1.23-F0.1.26: Plugin-urile sunt instalate.",
-      "contextul_general_al_aplicatiei": "Activarea linting-ului bazat pe TypeScript și Nx.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '/var/www/GeniusSuite/.eslintrc.json'.",
-      "restrictii_anti_halucinatie": [
-        "Modifică fișierul '.eslintrc.json' pentru a arăta astfel:",
-        "{",
-        "  \"root\": true,",
-        "  \"ignorePatterns\": [\"**/*\"],",
-        "  \"plugins\": [\"@nx\"],",
-        "  \"overrides\": [",
-        "    {",
-        "      \"files\": [\"*.ts\", \"*.tsx\", \"*.js\", \"*.jsx\"],",
-        "      \"extends\": [",
-        "        \"plugin:@nx/typescript\",",
-        "        \"plugin:@typescript-eslint/recommended\"",
-        "      ],",
-        "      \"parser\": \"@typescript-eslint/parser\",",
-        "      \"parserOptions\": {",
-        "        \"ecmaVersion\": \"latest\",",
-        "        \"sourceType\": \"module\"",
-        "      },",
-        "      \"rules\": {",
-        "        \"@nx/enforce-module-boundaries\":,",
-        "            \"depConstraints\": }",
-        "            ]",
-        "          }",
-        "        ]",
-        "      }",
-        "    }",
-        "  ]",
-        "}",
-        "Este *critic* să *nu* adaugi 'parserOptions.project' aici.[6] Acest lucru se va face la nivel de proiect."
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga încă reguli Prettier.",
-      "validare": "Verifică conținutul '.eslintrc.json' pentru a corespunde structurii.",
-      "outcome": "ESLint este configurat pentru a înțelege TypeScript și a aplica regulile de bază Nx.",
-      "componenta_de_CI_DI": "Activează regula 'enforce-module-boundaries' care va fi verificată în CI."
-    }
-  },
-F0.1.30
+  "F0.1.29": {
+    "denumire_task": "Configurare '.eslintrc.json' (Integrare Nx și TS)",
+    "descriere_scurta_task": "Configurarea 'plugins', 'parser', 'extends' și regulii '@nx/enforce-module-boundaries' în '.eslintrc.json' de la rădăcină.",
+    "descriere_lunga_si_detaliata_task": "Configurăm fișierul '.eslintrc.json' de la rădăcina monorepo-ului pentru a folosi parser-ul TypeScript, plugin-ul Nx și seturile de reguli recomandate. Folosim pattern-ul modern Nx: 'ignorePatterns': ['**/*'] la rădăcină și definim un 'override' care se aplică tuturor fișierelor *.ts, *.tsx, *.js și *.jsx. În acest override activăm 'plugin:@nx/typescript' și 'plugin:@typescript-eslint/recommended', folosim '@typescript-eslint/parser' și activăm regula '@nx/enforce-module-boundaries' la nivel de bază (fără încă depConstraints specifice; acestea vor fi adăugate când taxonomiile de tags sunt definite). Este critic să NU setăm 'parserOptions.project' la rădăcină; această setare se va face la nivel de proiect.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.27: '.eslintrc.json' există (skeleton cu root, ignorePatterns, plugins, overrides). F0.1.23-F0.1.26: Pachetele ESLint (eslint, @typescript-eslint/parser, @typescript-eslint/eslint-plugin, @nx/eslint-plugin) sunt instalate.",
+    "contextul_general_al_aplicatiei": "Activarea linting-ului bazat pe TypeScript și Nx, la nivel central, pentru toate proiectele din monorepo.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.eslintrc.json'. Suprascrie skeleton-ul creat la F0.1.27 cu configurația completă de mai jos, păstrând 'root: true' și pattern-ul 'ignorePatterns': ['**/*'].",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în fișierul '/var/www/GeniusSuite/.eslintrc.json'. Nu crea alte fișiere '.eslintrc.*' și nu modifica alte fișiere de configurare în acest task.",
+      "Fișierul '.eslintrc.json' trebuie să fie JSON VALID, fără comentarii și fără virgule în plus.",
+      "Înlocuiește conținutul existent al '.eslintrc.json' cu următoarea structură minimală completă:",
+      "{",
+      "  \"root\": true,",
+      "  \"ignorePatterns\": [\"**/*\"],",
+      "  \"plugins\": [\"@nx\"],",
+      "  \"overrides\": [",
+      "    {",
+      "      \"files\": [\"*.ts\", \"*.tsx\", \"*.js\", \"*.jsx\"],",
+      "      \"extends\": [",
+      "        \"plugin:@nx/typescript\",",
+      "        \"plugin:@typescript-eslint/recommended\"",
+      "      ],",
+      "      \"parser\": \"@typescript-eslint/parser\",",
+      "      \"parserOptions\": {",
+      "        \"ecmaVersion\": \"latest\",",
+      "        \"sourceType\": \"module\"",
+      "      },",
+      "      \"rules\": {",
+      "        \"@nx/enforce-module-boundaries\": [",
+      "          \"error\",",
+      "          {",
+      "            \"enforceBuildableLibDependency\": true,",
+      "            \"allow\": [],",
+      "            \"depConstraints\": []",
+      "          }",
+      "        ]",
+      "      }",
+      "    }",
+      "  ]",
+      "}",
+      "Nu adăuga câmpul 'parserOptions.project' în acest fișier. Această setare se va face în configurațiile ESLint specifice fiecărui proiect.",
+      "Nu adăuga încă reguli legate de Prettier (de ex. 'prettier/prettier') sau configurări de plugin Prettier.",
+      "Nu adăuga alte plugin-uri în secțiunea 'plugins' și nu adăuga alte 'overrides' în acest task.",
+      "Nu modifica aici configurația Nx din 'nx.json'; acest task lucrează DOAR pe '.eslintrc.json'."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul configurării '.eslintrc.json' root pentru TypeScript + Nx. Nu configurezi integrarea cu Prettier în acest task și nu adaugi reguli sau overrides suplimentare.",
+    "validare": "Verifică faptul că '/var/www/GeniusSuite/.eslintrc.json' există, este JSON valid și conține cheile 'root', 'ignorePatterns', 'plugins' și 'overrides' exact ca în structura indicată. Confirmă că 'parser' este '@typescript-eslint/parser', că 'extends' include 'plugin:@nx/typescript' și 'plugin:@typescript-eslint/recommended' și că regula '@nx/enforce-module-boundaries' este definită cu nivel 'error' și obiect de opțiuni cu 'enforceBuildableLibDependency', 'allow' și 'depConstraints'.",
+    "outcome": "ESLint este configurat la rădăcină pentru a înțelege TypeScript, a folosi regulile de bază Nx și a aplica regula '@nx/enforce-module-boundaries' în tot monorepo-ul.",
+    "componenta_de_CI_DI": "Această configurație permite job-urilor de 'lint' din CI (ex. 'nx affected:lint') să aplice reguli stricte Nx și TypeScript la nivelul întregului monorepo, inclusiv verificarea granițelor dintre module."
+  }
+},
+```
+
+#### F0.1.30
+
+```JSON
   {
-    "F0.1.30": {
-      "denumire_task": "Instalare Dependențe ESLint (Integrare Prettier Config)",
-      "descriere_scurta_task": "Instalarea 'eslint-config-prettier'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'eslint-config-prettier'.[11] Acest pachet este crucial: dezactivează toate regulile ESLint care sunt în conflict cu regulile de formatare Prettier.[6] Fără acesta, am avea erori contradictorii.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.20: Prettier este instalat. F0.1.23: ESLint este instalat.",
-      "contextul_general_al_aplicatiei": "Reconcilierea conflictelor dintre linter și formatter.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala 'eslint-plugin-prettier' încă.",
-      "validare": "Verifică 'package.json' pentru 'eslint-config-prettier'.",
-      "outcome": "Pachetul de configurare pentru dezactivarea conflictelor ESLint este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.31
+  "F0.1.30": {
+    "denumire_task": "Instalare Dependențe ESLint (Integrare Prettier Config)",
+    "descriere_scurta_task": "Instalarea 'eslint-config-prettier' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm pachetul 'eslint-config-prettier'. Acest pachet dezactivează regulile ESLint care intră în conflict cu regulile de formatare ale Prettier, astfel încât formatatorul (Prettier) să fie sursa de adevăr pentru stil, iar ESLint să se concentreze pe probleme de calitate a codului (bugs, best practices). Fără acest pachet, am putea avea conflicte între regulile ESLint și formatarea aplicată de Prettier.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.20: Prettier este instalat. F0.1.23: ESLint este instalat. F0.1.29: '.eslintrc.json' de bază este configurat pentru TypeScript + Nx.",
+    "contextul_general_al_aplicatiei": "Reconcilierea conflictelor dintre linter (ESLint) și formatter (Prettier), astfel încât să nu existe reguli ESLint care contrazic formatarea aplicată automat.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D eslint-config-prettier` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că 'eslint-config-prettier' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala încă 'eslint-plugin-prettier' sau alte plugin-uri legate de Prettier în acest task; acestea vor fi tratate separat.",
+      "Nu modifica în acest task fișierul '.eslintrc.json' sau alte fișiere de configurare. Acest task se ocupă strict de instalarea dependenței.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"eslint-config-prettier\"]'.",
+      "Dacă 'eslint-config-prettier' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu instala 'eslint-plugin-prettier' și nu configurezi încă integrarea Prettier în '.eslintrc.json'. Acest lucru va fi făcut într-un task ulterior.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"eslint-config-prettier\"]' cu o versiune validă. Opțional, rulează 'pnpm ls eslint-config-prettier' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "Pachetul 'eslint-config-prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie folosit în configurația ESLint pentru a dezactiva regulile în conflict cu Prettier.",
+    "componenta_de_CI_DI": "Permite configurarea ulterioară a ESLint astfel încât verificările de stil din CI (lint + format) să nu se contrazică între ele, reducând zgomotul și conflictele în PR-uri."
+  }
+},
+```
+
+#### F0.1.31
+
+```JSON
   {
-    "F0.1.31": {
-      "denumire_task": "Instalare Dependențe ESLint (Integrare Prettier Plugin)",
-      "descriere_scurta_task": "Instalarea 'eslint-plugin-prettier'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'eslint-plugin-prettier'.[11, 25] Acest pachet face ceva diferit: rulează Prettier ca o regulă ESLint și raportează diferențele de formatare ca probleme ESLint. Acest lucru ne permite să vedem erorile de formatare direct în linter.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.20: Prettier este instalat. F0.1.23: ESLint este instalat.",
-      "contextul_general_al_aplicatiei": "Integrarea Prettier în fluxul de lucru ESLint.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică 'package.json' pentru 'eslint-plugin-prettier'.",
-      "outcome": "Pachetul de plugin pentru rularea Prettier ca regulă ESLint este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.32
+  "F0.1.31": {
+    "denumire_task": "Instalare Dependențe ESLint (Integrare Prettier Plugin)",
+    "descriere_scurta_task": "Instalarea 'eslint-plugin-prettier' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm 'eslint-plugin-prettier'. Acest pachet rulează Prettier ca o regulă ESLint și raportează diferențele de formatare ca probleme ESLint. Astfel, putem vedea erorile de formatare direct în output-ul ESLint și putem folosi 'eslint --fix' pentru a aplica automat formatarea Prettier în timpul dezvoltării.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.20: Prettier este instalat. F0.1.23: ESLint este instalat. F0.1.30: 'eslint-config-prettier' este instalat.",
+    "contextul_general_al_aplicatiei": "Integrarea Prettier în fluxul de lucru ESLint, astfel încât linter-ul să poată raporta și enforce-ui formatarea codului.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Comanda va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută o singură comandă de instalare: `pnpm add -D eslint-plugin-prettier` din directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că 'eslint-plugin-prettier' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "NU modifica în acest task fișierul '.eslintrc.json' sau alte fișiere de configurare. Integrarea efectivă ('plugins', 'extends', regula 'prettier/prettier') va fi făcută într-un task ulterior.",
+      "Nu instala alte pachete în aceeași comandă. Acest task se ocupă exclusiv de 'eslint-plugin-prettier'.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"eslint-plugin-prettier\"]'.",
+      "Dacă 'eslint-plugin-prettier' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configurezi încă integrarea Prettier în ESLint (nu adăuga 'prettier' în 'extends' sau 'prettier/prettier' în 'rules'). Acest task se ocupă strict de instalarea dependenței.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"eslint-plugin-prettier\"]' cu o versiune validă. Opțional, rulează 'pnpm ls eslint-plugin-prettier' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "Pachetul 'eslint-plugin-prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este pregătit pentru a fi folosit în configurația ESLint.",
+    "componenta_de_CI_DI": "Permite, în task-uri ulterioare, configurarea CI astfel încât verificările ESLint să raporteze și erorile de formatare Prettier, asigurând un stil de cod consistent în toate PR-urile."
+  }
+},
+```
+
+#### F0.1.32
+
+```JSON
   {
-    "F0.1.32": {
-      "denumire_task": "Configurare '.eslintrc.json' (Integrare Prettier)",
-      "descriere_scurta_task": "Adăugarea 'prettier' la 'extends' și 'plugins' în '.eslintrc.json'.",
-      "descriere_lunga_si_detaliata_task": "Finalizăm integrarea ESLint-Prettier. Adăugăm 'plugin:prettier/recommended' la 'extends'. Acest lucru activează 'eslint-plugin-prettier' și 'eslint-config-prettier' simultan. Este crucial ca 'prettier' (sau 'plugin:prettier/recommended') să fie *ultima* intrare în array-ul 'extends' pentru a suprascrie corect regulile anterioare.[11]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.29: '.eslintrc.json' este configurat. F0.1.30, F0.1.31: Pachetele Prettier ESLint sunt instalate.",
-      "contextul_general_al_aplicatiei": "O singură sursă de adevăr pentru problemele de cod (ESLint) care include și formatarea.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '/var/www/GeniusSuite/.eslintrc.json'.",
-      "restrictii_anti_halucinatie": [
-        "Modifică secțiunea 'overrides' pentru 'files: [\"*.ts\", \"*.tsx\", \"*.js\", \"*.jsx\"]'.",
-        "Adaugă 'plugin:prettier/recommended' ca *ultima* intrare în array-ul 'extends'.",
-        "Fragmentul 'extends' ar trebui să arate acum astfel:",
-        "\"extends\": [",
-        "  \"plugin:@nx/typescript\",",
-        "  \"plugin:@typescript-eslint/recommended\",",
-        "  \"plugin:prettier/recommended\"",
-        "]",
-        "Adaugă 'prettier' la array-ul 'plugins' de la rădăcină (deși 'recommended' o face implicit, este o bună practică).",
-        "\"plugins\": [\"@nx\", \"prettier\"],",
-        "Adaugă regula 'prettier/prettier': 'error' în 'rules' (din nou, 'recommended' o face, dar explicităm):",
-        "\"rules\": {",
-        "  \"prettier/prettier\": \"error\",",
-        "  \"@nx/enforce-module-boundaries\": [... ]",
-        "}"
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică că 'plugin:prettier/recommended' este ultima intrare în 'extends' în 'overrides'.",
-      "outcome": "ESLint și Prettier sunt complet integrate. 'eslint --fix' va rula acum și Prettier.",
-      "componenta_de_CI_DI": "Pasul 'lint' din CI va eșua acum și pe erori de formatare, nu doar de sintaxă."
-    }
-  },
-F0.1.33
+  "F0.1.32": {
+    "denumire_task": "Configurare '.eslintrc.json' (Integrare Prettier)",
+    "descriere_scurta_task": "Adăugarea integrării Prettier în configurația ESLint de la rădăcină (extends, plugins și reguli).",
+    "descriere_lunga_si_detaliata_task": "Finalizăm integrarea ESLint–Prettier în monorepo. Actualizăm fișierul '.eslintrc.json' de la rădăcină pentru a adăuga 'plugin:prettier/recommended' ca ultim element în array-ul 'extends' pentru override-ul care se aplică fișierelor '*.ts', '*.tsx', '*.js', '*.jsx'. Acest preset activează atât 'eslint-config-prettier' (care dezactivează regulile ESLint ce se bat cap în cap cu formatarea) cât și 'eslint-plugin-prettier' (care rulează Prettier ca regulă ESLint). În plus, adăugăm 'prettier' în lista de 'plugins' de la rădăcină și includem explicit regula 'prettier/prettier': 'error' în secțiunea 'rules', alături de '@nx/enforce-module-boundaries'. Astfel, 'eslint --fix' (sau 'nx lint --fix') va rula și Prettier, iar erorile de formatare vor apărea ca erori ESLint.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.29: '.eslintrc.json' este configurat pentru TypeScript + Nx, cu regula '@nx/enforce-module-boundaries'. F0.1.30: 'eslint-config-prettier' este instalat. F0.1.31: 'eslint-plugin-prettier' este instalat.",
+    "contextul_general_al_aplicatiei": "O singură sursă de adevăr pentru problemele de cod (ESLint) care include și formatarea Prettier, astfel încât dezvoltatorii să poată rula un singur tool pentru lint + format.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.eslintrc.json'. Pleacă de la configurația definită în F0.1.29 și aplică DOAR modificările necesare pentru integrarea Prettier (plugins, extends, rules).",
+    "restrictii_anti_halucinatie": [
+      "Lucrează exclusiv în fișierul '/var/www/GeniusSuite/.eslintrc.json'. Nu crea alte fișiere '.eslintrc.*' și nu modifica alte fișiere de configurare.",
+      "Păstrează cheile existente 'root', 'ignorePatterns', 'plugins', 'overrides' și configurația regulii '@nx/enforce-module-boundaries' definite în F0.1.29. Nu le elimina.",
+      "Actualizează secțiunea 'plugins' de la rădăcină astfel încât să conțină atât '@nx', cât și 'prettier':",
+      "\"plugins\": [\"@nx\", \"prettier\"],",
+      "Identifică override-ul unic care se aplică fișierelor ['*.ts', '*.tsx', '*.js', '*.jsx']. Lucrează doar în acest obiect din array-ul 'overrides'.",
+      "În override-ul găsit, extinde array-ul 'extends' pentru a adăuga presetul Prettier ca ULTIM element, fără a șterge intrările existente:",
+      "\"extends\": [",
+      "  \"plugin:@nx/typescript\",",
+      "  \"plugin:@typescript-eslint/recommended\",",
+      "  \"plugin:prettier/recommended\"",
+      "]",
+      "În secțiunea 'rules' a aceluiași override, păstrează configurația existentă pentru '@nx/enforce-module-boundaries' și adaugă regula 'prettier/prettier': 'error' alături de ea. Structura minimă trebuie să arate astfel:",
+      "\"rules\": {",
+      "  \"prettier/prettier\": \"error\",",
+      "  \"@nx/enforce-module-boundaries\": [",
+      "    \"error\",",
+      "    {",
+      "      \"enforceBuildableLibDependency\": true,",
+      "      \"allow\": [],",
+      "      \"depConstraints\": []",
+      "    }",
+      "  ]",
+      "}",
+      "Nu adăuga câmpul 'parserOptions.project' în acest fișier. Această setare se configurează la nivel de proiect individual, nu la rădăcină.",
+      "Nu adăuga alte reguli sau plugin-uri suplimentare în acest task. Nu modifica 'files', 'parser' sau 'parserOptions' în override.",
+      "Asigură-te că fișierul '.eslintrc.json' rămâne JSON valid (fără comentarii și fără virgule la final de listă/obiect)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica 'nx.json', '.prettierrc' sau '.prettierignore' în acest task. Nu introduci alte 'overrides' și nu redefiniți reguli care nu au legătură cu Prettier.",
+    "validare": "Verifică faptul că '.eslintrc.json' conține acum 'plugins': [\"@nx\", \"prettier\"] la rădăcină, că pentru override-ul cu 'files': [\"*.ts\", \"*.tsx\", \"*.js\", \"*.jsx\"] array-ul 'extends' se termină cu '\"plugin:prettier/recommended\"', iar în 'rules' există atât 'prettier/prettier': 'error', cât și '@nx/enforce-module-boundaries' configurat corect. Rulează opțional 'pnpm eslint . --ext .ts,.tsx,.js,.jsx' pentru a verifica că fișierul de configurare este acceptat.",
+    "outcome": "ESLint și Prettier sunt complet integrate: plugin-ul și config-ul Prettier sunt active, iar regulile de formatare sunt raportate ca erori ESLint.",
+    "componenta_de_CI_DI": "Pasul de 'lint' din CI (ex. 'nx affected:lint') va eșua acum atât pe erori de calitate a codului (inclusiv '@nx/enforce-module-boundaries'), cât și pe erori de formatare Prettier, asigurând un stil de cod coerent în toate PR-urile."
+  }
+},
+```
+
+#### F0.1.33
+
+```JSON
   {
-    "F0.1.33": {
-      "denumire_task": "Creare Fișier '.eslintignore'",
-      "descriere_scurta_task": "Crearea fișierului '.eslintignore' pentru a exclude fișierele de la linting.",
-      "descriere_lunga_si_detaliata_task": "Similar cu '.prettierignore', '.eslintignore' [26] spune lui ESLint ce fișiere și directoare să ignore. Acest lucru este important pentru a preveni linting-ul fișierelor generate, a artefactelor de build sau a cache-urilor. Deși 'ignorePatterns' din '.eslintrc.json' este modern, un '.eslintignore' este încă o practică bună pentru compatibilitatea cu uneltele.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.32: ESLint este complet configurat.",
-      "contextul_general_al_aplicatiei": "Optimizarea execuției 'eslint' și prevenirea erorilor din fișierele non-sursă.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.eslintignore'.",
-      "restrictii_anti_halucinatie": [
-        "Conținutul fișierului '.eslintignore' trebuie să fie similar cu '.prettierignore':",
-        "node_modules",
-        "dist",
-        "build",
-        "coverage",
-        ".nx/cache",
-        "pnpm-lock.yaml",
-        "*.md",
-        "*.json",
-        "!.eslintrc.json"
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.eslintignore'.",
-      "outcome": "ESLint este configurat să ignore fișierele și directoarele care nu necesită linting.",
-      "componenta_de_CI_DI": "Accelerează pasul 'lint' din CI."
-    }
-  },
-F0.1.34
+  "F0.1.33": {
+    "denumire_task": "Creare Fișier '.eslintignore'",
+    "descriere_scurta_task": "Crearea fișierului '.eslintignore' pentru a exclude explicit anumite fișiere generate de la linting.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul '.eslintignore' la rădăcina monorepo-ului pentru a exclude explicit doar cazurile speciale de cod generat care nu ar trebui analizat de ESLint. Strategia principală de filtrare a fișierelor este deja implementată în '.eslintrc.json' prin 'ignorePatterns': ['**/*'] combinat cu 'overrides' pentru fișierele sursă ('*.ts', '*.tsx', '*.js', '*.jsx'). '.eslintignore' NU trebuie să dubleze regulile din '.gitignore' și nici să repete directoare de build sau cache. În schimb, îl folosim doar pentru directoare de cod generat care conțin fișiere TypeScript/JS ce ar coincide cu patternurile din 'overrides' (de ex. icoane React generate). Astfel, menținem o singură sursă de adevăr pentru ignore-uri generale ('.gitignore' + 'ignorePatterns') și folosim '.eslintignore' doar pentru excepții foarte specifice.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.27: '.eslintrc.json' a fost creat cu 'ignorePatterns': ['**/*']. F0.1.29–F0.1.32: Configurația ESLint (Nx + TS + Prettier) este completă.",
+    "contextul_general_al_aplicatiei": "Optimizarea execuției 'eslint' și prevenirea erorilor sau avertismentelor pe fișiere de cod generat care nu ar trebui să fie întreținute manual.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.eslintignore' la rădăcina monorepo-ului. Acest fișier va fi luat în considerare atunci când unelte externe sau rulări directe 'eslint' caută pattern-urile de ignorare.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu crea '.eslintignore' în alte directoare.",
+      "Creează (sau suprascrie) fișierul '/var/www/GeniusSuite/.eslintignore'.",
+      "Nu copia și nu dubla conținutul din '.gitignore' aici (de ex. 'node_modules', 'dist', 'build', 'coverage', '.nx/cache'). Acestea sunt deja ignorate prin combinația '.gitignore' + 'ignorePatterns' din '.eslintrc.json'.",
+      "Nu adăuga pattern-uri pentru '*.md', '*.json' sau 'pnpm-lock.yaml'. Aceste fișiere nu sunt vizate de override-ul ESLint pentru '*.ts', '*.tsx', '*.js', '*.jsx'.",
+      "Conținutul inițial al fișierului '.eslintignore' trebuie să fie minimalist și să conțină DOAR excluderi pentru cod generat care nu trebuie lint-uit. Scrie exact următoarele linii:",
+      "# Cod generat care NU trebuie lint-uit",
+      "shared/ui-design-system/icons/react/generated/",
+      "",
+      "Nu adăuga alte pattern-uri în acest task. Pentru noi directoare de cod generat se vor crea taskuri separate.",
+      "Nu modifica '.eslintrc.json' în acest task."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu extinde acest fișier cu reguli generale de tip '.gitignore'. Rămâi strict la excluderi specifice de cod generat.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.eslintignore' și că acesta conține exact comentariul și calea 'shared/ui-design-system/icons/react/generated/' pe linii separate, fără pattern-uri suplimentare.",
+    "outcome": "ESLint este configurat să ignore explicit doar codul generat sensibil (ex. icoane React generate), fără a duplica regulile generale de ignorare deja acoperite de '.gitignore' și 'ignorePatterns'.",
+    "componenta_de_CI_DI": "Reduce zgomotul în joburile de 'lint' din CI prin excluderea codului generat din analiza ESLint, menținând în același timp o configurație ușor de întreținut (fără dublarea regulilor de ignore)."
+  }
+},
+```
+
+#### F0.1.34
+
+```JSON
   {
-    "F0.1.34": {
-      "denumire_task": "Instalare 'husky'",
-      "descriere_scurta_task": "Instalarea 'husky' pentru gestionarea cârligelor Git (git hooks).",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'husky' [27], un instrument care facilitează gestionarea și rularea script-urilor la diferite evenimente Git (de ex. 'pre-commit', 'commit-msg'). Vom folosi 'pnpm' pentru a-l instala.[14, 27]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.1 - F0.1.33: Fundația de tooling (pnpm, nx, eslint, prettier) este gata.",
-      "contextul_general_al_aplicatiei": "Impunerea standardelor de cod (lint, format, commit message) *înainte* ca codul să ajungă pe serverul de CI.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu rula încă 'husky init'.",
-      "validare": "Verifică 'package.json' pentru 'husky' în 'devDependencies'.",
-      "outcome": "'husky' este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.35
+  "F0.1.34": {
+    "denumire_task": "Instalare 'husky'",
+    "descriere_scurta_task": "Instalarea 'husky' ca dependență de dezvoltare pentru gestionarea cârligelor Git.",
+    "descriere_lunga_si_detaliata_task": "Instalăm pachetul 'husky', un utilitar care facilitează definirea și rularea de scripturi la evenimente Git (de ex. 'pre-commit', 'commit-msg'). Îl instalăm ca dependență de dezvoltare la rădăcina monorepo-ului, folosind pnpm. În acest task ne ocupăm strict de instalare; inițializarea structurii de hook-uri (prin 'husky init' și crearea directorului .husky/) va fi făcută în task-uri ulterioare, pentru a putea atașa corect verificările de lint, format și commit message.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.1 - F0.1.33: Fundația de tooling (pnpm, Nx, TypeScript, ESLint, Prettier, ignore-uri) este configurată la rădăcina monorepo-ului.",
+    "contextul_general_al_aplicatiei": "Impunerea standardelor de calitate (lint, format, reguli de commit) înainte ca modificările să ajungă în CI sau pe branch-urile principale, prin folosirea de hooks Git gestionate de Husky.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica fișierele '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută O SINGURĂ comandă de instalare: `pnpm add -D husky` în directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că 'husky' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu rula în acest task niciuna dintre comenzile de inițializare Husky (NU rula `npx husky install`, `pnpm husky install` sau `husky init`). Acestea au task dedicat ulterior.",
+      "Nu crea manual directorul '.husky/' și nu adăuga fișiere de hook (de ex. '.husky/pre-commit') în acest task.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies.husky'.",
+      "Dacă 'husky' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configura încă niciun hook Git și nu adăuga scripturi noi în 'package.json' (de ex. 'prepare'). Acest task se ocupă exclusiv de instalarea dependenței 'husky' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.husky' cu o versiune validă. Opțional, rulează 'pnpm husky --help' din '/var/www/GeniusSuite/' pentru a confirma că pachetul este disponibil.",
+    "outcome": "'husky' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este pregătit pentru a fi inițializat și configurat în task-urile următoare.",
+    "componenta_de_CI_DI": "Deși acest task nu modifică direct pipeline-ul de CI, el pregătește infrastructura necesară pentru a rula local hook-uri de tip 'pre-commit' și 'commit-msg', reducând numărul de erori care ajung în CI și pe branch-urile partajate."
+  }
+},
+```
+
+#### F0.1.35
+
+```JSON
   {
-    "F0.1.35": {
-      "denumire_task": "Inițializare 'husky' (v9+)",
-      "descriere_scurta_task": "Rularea 'husky init' pentru a crea directorul '.husky' și a configura script-ul 'prepare'.",
-      "descriere_lunga_si_detaliata_task": "Rulăm comanda 'husky init' specifică 'pnpm'.[27] Această comandă va: 1. Crea directorul '.husky/'. 2. Crea un exemplu de hook 'pre-commit'. 3. Adăuga un script 'prepare' în 'package.json' de la rădăcină. Script-ul 'prepare' rulează automat după 'pnpm install' și activează hook-urile Git, asigurând că orice dezvoltator care clonează repository-ul va avea hook-urile activate.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.34: 'husky' este instalat.",
-      "contextul_general_al_aplicatiei": "Activarea automată a cârligelor Git pentru toți dezvoltatorii.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută la rădăcină. Va crea '.husky/' și va modifica 'package.json'.",
-      "restrictii_anti_halucinatie": [
-        "Execută comanda: 'pnpm exec husky init'.[27]",
-        "Nu folosi 'npx husky-init' (care este pentru npm). Folosește 'pnpm exec'.[14, 27]"
-      ],
-      "restrictii_de_iesire_din_contex": "Vom suprascrie hook-ul 'pre-commit' implicit în task-urile următoare.",
-      "validare": "Verifică existența directorului '.husky/'. Verifică 'package.json' pentru script-ul 'prepare': '\"prepare\": \"husky\"'.",
-      "outcome": "'husky' este inițializat și configurat să se activeze automat la 'pnpm install'.",
-      "componenta_de_CI_DI": "CI-ul trebuie să ruleze 'pnpm install' (care va rula 'prepare') înainte de a executa teste, deși hook-urile în sine sunt de obicei ocolite în CI."
-    }
-  },
-F0.1.36
+  "F0.1.35": {
+    "denumire_task": "Inițializare 'husky' (v9+)",
+    "descriere_scurta_task": "Rularea 'husky init' pentru a crea directorul '.husky' și a configura script-ul 'prepare'.",
+    "descriere_lunga_si_detaliata_task": "Rulăm comanda 'pnpm exec husky init' pentru a inițializa Husky la rădăcina monorepo-ului. Această comandă va: (1) crea directorul '.husky/' (dacă nu există), (2) crea un hook de exemplu 'pre-commit' în interiorul '.husky/' și (3) adăuga (sau ajusta) script-ul 'prepare' în 'package.json' de la rădăcină. Script-ul 'prepare' rulează automat după 'pnpm install' și se ocupă de activarea hook-urilor Git, astfel încât orice dezvoltator care clonează repository-ul și rulează 'pnpm install' va avea Husky activat fără pași manuali suplimentari.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.34: 'husky' este instalat ca dependență de dezvoltare la rădăcină.",
+    "contextul_general_al_aplicatiei": "Activarea automată a cârligelor Git pentru toți dezvoltatorii, astfel încât verificările de lint/format/commit message să ruleze local înainte ca modificările să ajungă în CI sau pe branch-uri partajate.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda din directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Comanda va crea directorul '/var/www/GeniusSuite/.husky/' și va modifica '/var/www/GeniusSuite/package.json' (script-ul 'prepare').",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu rula comanda în subdirectoare (ex. cp/, shared/, etc.).",
+      "Execută EXACT comanda: `pnpm exec husky init` din '/var/www/GeniusSuite/'.",
+      "Nu folosi comenzi bazate pe npm (NU `npx husky-init`, NU `npx husky install`). Folosește strict varianta recomandată pentru pnpm: `pnpm exec husky init`.",
+      "Nu crea manual directorul '.husky/' înainte de a rula comanda; lasă 'husky init' să îl creeze.",
+      "Nu edita manual script-ul 'prepare' din 'package.json' înainte de a rula comanda. Lasă 'husky init' să adauge sau să actualizeze script-ul.",
+      "Dacă după rularea comenzii script-ul 'prepare' există deja și conține 'husky', nu adăuga duplicate. Nu edita 'prepare' decât dacă un task ulterior cere explicit acest lucru.",
+      "Nu modifica sau șterge hook-ul 'pre-commit' generat implicit în acest task. Va fi suprascris/ajustat în taskurile următoare.",
+      "Nu crea sau modifica alte hook-uri (ex. '.husky/commit-msg') în acest task.",
+      "Nu modifica alte câmpuri din 'package.json' în afară de ceea ce face automat comanda 'pnpm exec husky init'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica conținutul fișierelor din '.husky/' în acest task. Schimbarea conținutului 'pre-commit' și adăugarea altor hook-uri se va face în taskurile următoare.",
+    "validare": "Verifică existența directorului '/var/www/GeniusSuite/.husky/'. Verifică faptul că în '/var/www/GeniusSuite/package.json' există un script 'prepare' care rulează 'husky' (de ex. \"prepare\": \"husky\"). Confirmă că există un fișier '.husky/pre-commit' generat de Husky.",
+    "outcome": "'husky' este inițializat la rădăcina monorepo-ului, directorul '.husky/' este creat, iar script-ul 'prepare' din 'package.json' este configurat pentru a activa hook-urile Git după fiecare 'pnpm install'.",
+    "componenta_de_CI_DI": "CI-ul trebuie să ruleze 'pnpm install' (care va rula script-ul 'prepare') înainte de pașii de build/lint/test, pentru a asigura un mediu local consistent cu cel folosit de dezvoltatori. Hook-urile Git sunt de obicei ocolite în CI, dar această inițializare garantează că repository-ul este pregătit corect pentru dezvoltare locală."
+  }
+},
+```
+
+#### F0.1.36
+
+```JSON
   {
-    "F0.1.36": {
-      "denumire_task": "Instalare 'lint-staged'",
-      "descriere_scurta_task": "Instalarea 'lint-staged' pentru a rula comenzi pe fișierele din 'staged'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'lint-staged'.[8] Acest instrument este esențial pentru hook-ul 'pre-commit'. Permite rularea comenzilor (cum ar fi linter-ul și formatter-ul) doar pe fișierele care sunt pe cale de a fi comisionate ('staged'), în loc de întregul proiect.[8]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat.",
-      "contextul_general_al_aplicatiei": "Optimizarea hook-ului 'pre-commit' pentru a fi extrem de rapid.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu configura încă 'lint-staged' sau hook-ul.",
-      "validare": "Verifică 'package.json' pentru 'lint-staged' în 'devDependencies'.",
-      "outcome": "'lint-staged' este instalat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.37
+  "F0.1.36": {
+    "denumire_task": "Instalare 'lint-staged'",
+    "descriere_scurta_task": "Instalarea 'lint-staged' pentru a rula comenzi doar pe fișierele aflate în 'staged'.",
+    "descriere_lunga_si_detaliata_task": "Instalăm 'lint-staged', un utilitar care permite rularea de comenzi (lint, format, teste rapide) doar pe fișierele care sunt în 'staged' înainte de commit. Acesta va fi folosit împreună cu Husky în hook-ul 'pre-commit' pentru a rula ESLint și Prettier doar pe fișierele modificate, făcând verificările locale foarte rapide vàsă reducând fricțiunea pentru dezvoltatori.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat (directorul '.husky/' și script-ul 'prepare' sunt configurate). F0.1.20–F0.1.32: Prettier și ESLint sunt instalate și configurate.",
+    "contextul_general_al_aplicatiei": "Optimizarea hook-ului 'pre-commit' astfel încât verificările de lint/format să fie rapide, rulând doar pe fișierele din 'staged' în locul întregului monorepo.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută O SINGURĂ comandă de instalare: `pnpm add -D lint-staged` în directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că 'lint-staged' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu configura 'lint-staged' în acest task (nu adăuga cheie 'lint-staged' în 'package.json' și nu crea fișiere separate de config). Configurația va fi făcută într-un task ulterior.",
+      "Nu modifica fișierele din '.husky/' în acest task (de ex. '.husky/pre-commit'). Integrarea efectivă cu Husky va fi făcută în taskuri ulterioare.",
+      "Nu instala alte pachete în aceeași comandă. Acest task se ocupă exclusiv de 'lint-staged'.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"lint-staged\"]'.",
+      "Dacă 'lint-staged' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configura încă mapările 'lint-staged' și nu edita hook-ul 'pre-commit'. Acest task se ocupă strict de instalarea dependenței.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"lint-staged\"]' cu o versiune validă. Opțional, rulează 'pnpm lint-staged --version' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
+    "outcome": "'lint-staged' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi configurat și integrat cu Husky în hook-ul 'pre-commit'.",
+    "componenta_de_CI_DI": "Nu modifică direct pipeline-ul de CI, dar pregătește infrastructura pentru ca verificările locale (pre-commit) să fie rapide și consistente, reducând numărul de erori care ajung în CI."
+  }
+},
+```
+
+#### F0.1.37
+
+```JSON
   {
-    "F0.1.37": {
-      "denumire_task": "Configurare 'lint-staged' în '.lintstagedrc.json' (Critic)",
-      "descriere_scurta_task": "Crearea fișierului '.lintstagedrc.json' cu comenzi Nx (format și lint).",
-      "descriere_lunga_si_detaliata_task": "Creăm configurația pentru 'lint-staged'.[12] Acest fișier definește ce comenzi să ruleze pentru ce tipuri de fișiere. Este crucial să folosim comenzile Nx ('nx format:write' și 'nx affected:lint') în loc de 'prettier' sau 'eslint' direct, pentru a beneficia de caching-ul și graful de dependențe Nx.[8, 28]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.36: 'lint-staged' este instalat. F0.1.32: ESLint/Prettier sunt configurate.",
-      "contextul_general_al_aplicatiei": "Impunerea standardelor de cod într-un mod eficient, specific Nx, la momentul comiterii.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.lintstagedrc.json'.",
-      "restrictii_anti_halucinatie":,",
-        "  \"*.{ts,tsx,js,jsx}\": [",
-        "    \"nx affected:lint --fix --files\"",
-        "  ]",
-        "}",
-        "Folosește 'nx format:write --files' [29] și 'nx affected:lint --fix --files'.[12, 30]",
-        "Nu folosi 'prettier --write' sau 'eslint --fix' direct."
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică existența și conținutul fișierului '.lintstagedrc.json'.",
-      "outcome": "Configurația 'lint-staged' este creată pentru a rula formatarea și linting-ul specific Nx.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.38
+  "F0.1.37": {
+    "denumire_task": "Configurare 'lint-staged' în '.lintstagedrc.json' (Critic)",
+    "descriere_scurta_task": "Crearea fișierului '.lintstagedrc.json' care rulează comenzi Nx ('format:write' și 'affected:lint') pe fișierele staged.",
+    "descriere_lunga_si_detaliata_task": "Creăm configurația pentru 'lint-staged' la rădăcina monorepo-ului. În loc să rulăm direct 'prettier --write' și 'eslint --fix' pe fișierele staged, folosim comenzile wrapper Nx ('nx format:write' și 'nx affected:lint') cu opțiunea '--files'. Astfel, Nx folosește graful de dependențe și caching-ul propriu ca să determine proiectele afectate și să ruleze doar formatarea și linting-ul necesare. Configurația va rula mai întâi 'nx format:write --files' (prettier prin Nx), apoi 'nx affected:lint --fix --files' (ESLint prin Nx) pentru toate fișierele TypeScript și JavaScript aflate în staged.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.36: 'lint-staged' este instalat. F0.1.32: ESLint/Prettier sunt configurate. F0.1.29: ESLint este integrat cu Nx (@nx/enforce-module-boundaries).",
+    "contextul_general_al_aplicatiei": "Impunerea standardelor de cod (formatare + linting Nx-aware) în mod eficient la momentul comiterii, folosind ecosistemul Nx în locul rulării directe a tool-urilor.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.lintstagedrc.json' la rădăcina monorepo-ului. Acesta va fi fișierul de configurare folosit de 'lint-staged' atunci când este apelat din hook-ul Husky 'pre-commit'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Creează (sau suprascrie) fișierul '.lintstagedrc.json' la rădăcină.",
+      "Fișierul '.lintstagedrc.json' trebuie să fie JSON VALID, conținând un obiect cu mapări glob -> listă de comenzi.",
+      "Nu introduce comentarii în JSON (nu sunt suportate).",
+      "Conținutul inițial al fișierului '.lintstagedrc.json' trebuie să fie EXACT următorul:",
+      "{",
+      "  \"*.{ts,tsx,js,jsx}\": [",
+      "    \"nx format:write --files\",",
+      "    \"nx affected:lint --fix --files\"",
+      "  ]",
+      "}",
+      "Nu adăuga alte chei sau pattern-uri glob în acest task. Configurația de mai sus acoperă toate fișierele sursă relevante (TS/JS) și se bazează pe Nx pentru a determina proiectele afectate.",
+      "NU folosi direct 'prettier --write' sau 'eslint --fix' în '.lintstagedrc.json'. Toată logica trebuie să treacă prin comenzi Nx ('nx format:write', 'nx affected:lint').",
+      "Nu modifica fișierele '.eslintrc.json', '.prettierrc', '.prettierignore' sau configurații Nx în cadrul acestui task.",
+      "Nu adăuga script suplimentar 'lint-staged' în 'package.json' în acest task; acesta va fi, dacă este nevoie, adăugat într-un task ulterior."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul definirii configurației 'lint-staged' la rădăcină. Nu modifica hook-urile Husky (ex. '.husky/pre-commit') în acest task; acestea vor fi ajustate în task-ul următor.",
+    "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.lintstagedrc.json' există, este JSON valid și conține exact maparea '*. {ts,tsx,js,jsx}' către lista de comenzi ['nx format:write --files', 'nx affected:lint --fix --files']. Opțional, rulează 'pnpm lint-staged --dry-run' pentru a verifica că fișierele TS/JS staged declanșează comenzile Nx.",
+    "outcome": "Configurația 'lint-staged' este creată astfel încât, pentru fișierele TypeScript/JavaScript din staged, să ruleze mai întâi formatarea Nx ('nx format:write --files') și apoi linting-ul Nx ('nx affected:lint --fix --files').",
+    "componenta_de_CI_DI": "Această configurație asigură că, înainte de orice commit local, formatarea și linting-ul Nx sunt aplicate doar pe fișierele modificate, reducând erorile care ajung în CI și îmbunătățind viteza de feedback pentru dezvoltatori."
+  }
+},
+```
+
+#### F0.1.38
+
+```JSON
   {
     "F0.1.38": {
       "denumire_task": "Creare Hook 'pre-commit' (Husky)",
@@ -5373,278 +5571,581 @@ F0.1.38
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.39
+```
+
+#### F0.1.39
+
+```JSON
   {
-    "F0.1.39": {
-      "denumire_task": "Instalare 'commitlint' (CLI)",
-      "descriere_scurta_task": "Instalarea '@commitlint/cli'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm 'commitlint'.[13] Acest instrument verifică dacă mesajele de commit respectă un format standard.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat.",
-      "contextul_general_al_aplicatiei": "Impunerea unui standard pentru mesajele de commit (Conventional Commits), care este vitală pentru generarea automată a changelog-urilor și versionarea semantică (F0.2).",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala 'config-conventional' încă.",
-      "validare": "Verifică 'package.json' pentru '@commitlint/cli'.",
-      "outcome": "'commitlint' (CLI) este instalat.",
-      "componenta_de_CI_DI": "Această configurație este o dependență cheie pentru F0.2 (CI/CD), permițând 'semantic-release'."
-    }
-  },
-F0.1.40
+  "F0.1.39": {
+    "denumire_task": "Instalare 'commitlint' (CLI)",
+    "descriere_scurta_task": "Instalarea '@commitlint/cli' ca dependență de dezvoltare la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Instalăm '@commitlint/cli', utilitarul în linie de comandă pentru commitlint. Acesta va fi folosit ulterior în hook-ul Git 'commit-msg' (prin Husky) pentru a valida mesajele de commit conform unui standard (ex. Conventional Commits). În acest task ne ocupăm strict de instalarea CLI-ului la rădăcina monorepo-ului, fără a configura încă regulile sau presetul ('config-conventional').",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat ('.husky/' + script 'prepare'). F0.1.34–F0.1.38: infrastructura de hook-uri (Husky + lint-staged) este funcțională.",
+    "contextul_general_al_aplicatiei": "Impunerea unui standard pentru mesajele de commit (ex. Conventional Commits), necesar pentru generarea automată a changelog-urilor și versionarea semantică în F0.2.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută O SINGURĂ comandă de instalare: `pnpm add -D @commitlint/cli` în directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că '@commitlint/cli' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu instala în acest task pachetul '@commitlint/config-conventional' sau alte preseturi/configuri commitlint. Acestea vor fi instalate într-un task separat.",
+      "Nu crea sau modifica fișiere de configurare commitlint în acest task (ex. 'commitlint.config.cjs', '.commitlintrc.*').",
+      "Nu modifica fișierele din '.husky/' în acest task (ex. nu crea încă hook-ul 'commit-msg').",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"@commitlint/cli\"]'.",
+      "Dacă '@commitlint/cli' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configurezi încă regulile commitlint și nu creezi hook-ul 'commit-msg'. Acest task se ocupă exclusiv de instalarea '@commitlint/cli' la rădăcină.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@commitlint/cli\"]' cu o versiune validă. Opțional, rulează 'pnpm commitlint --help' din '/var/www/GeniusSuite/' pentru a verifica faptul că binarul este disponibil.",
+    "outcome": "'commitlint' (CLI) este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi configurat și legat de hook-ul Git 'commit-msg' în taskurile următoare.",
+    "componenta_de_CI_DI": "Această dependență este esențială pentru F0.2 (CI/CD), unde va fi folosită împreună cu preseturi (ex. 'config-conventional') și 'semantic-release' pentru a impune mesaje de commit standardizate și a permite versionare semantică automată."
+  }
+},
+```
+
+#### F0.1.40
+
+```JSON
   {
-    "F0.1.40": {
-      "denumire_task": "Instalare 'commitlint' (Config)",
-      "descriere_scurta_task": "Instalarea '@commitlint/config-conventional'.",
-      "descriere_lunga_si_detaliata_task": "Instalăm '@commitlint/config-conventional', care este setul de reguli standard (de ex. 'feat:', 'fix:', 'docs:') pe care îl vom impune, așa cum este sugerat în [13] și.[14]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.39: '@commitlint/cli' este instalat.",
-      "contextul_general_al_aplicatiei": "Adoptarea standardului 'Conventional Commits'.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică 'package.json' pentru '@commitlint/config-conventional'.",
-      "outcome": "Configurația convențională pentru 'commitlint' este instalată.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.41
+  "F0.1.40": {
+    "denumire_task": "Instalare 'commitlint' (Config)",
+    "descriere_scurta_task": "Instalarea '@commitlint/config-conventional' ca preset de reguli pentru commitlint.",
+    "descriere_lunga_si_detaliata_task": "Instalăm '@commitlint/config-conventional', presetul oficial de reguli pentru commitlint bazat pe 'Conventional Commits' (tipuri de commit precum 'feat:', 'fix:', 'docs:', 'chore:' etc.). Acest pachet va fi folosit în configurația commitlint (de ex. 'commitlint.config.cjs') pentru a impune formatul standardizat al mesajelor de commit. În acest task facem doar instalarea presetului, fără a crea încă fișierele de configurare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.39: '@commitlint/cli' este instalat ca dependență de dezvoltare. F0.1.35: Husky este inițializat și pregătit pentru hook-uri.",
+    "contextul_general_al_aplicatiei": "Adoptarea standardului 'Conventional Commits' pentru mesaje de commit, ca bază pentru changelog automat și versionare semantică în F0.2.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda de instalare în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica '/var/www/GeniusSuite/package.json' și 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută O SINGURĂ comandă de instalare: `pnpm add -D @commitlint/config-conventional` în directorul '/var/www/GeniusSuite/'.",
+      "Nu instala pachetul global (NU folosi `-g`) și nu folosi alți package manageri (NU `npm`, NU `yarn`).",
+      "Asigură-te că '@commitlint/config-conventional' este adăugat în 'devDependencies', nu în 'dependencies'.",
+      "Nu crea încă fișiere de configurare commitlint (ex. 'commitlint.config.cjs', '.commitlintrc.*') în acest task; acestea vor fi create într-un task ulterior.",
+      "Nu modifica fișierele din '.husky/' (ex. hook-ul 'commit-msg') în acest task.",
+      "Nu modifica manual alte câmpuri din 'package.json' în afară de ceea ce adaugă automat comanda pnpm pentru 'devDependencies[\"@commitlint/config-conventional\"]'.",
+      "Dacă '@commitlint/config-conventional' există deja în 'devDependencies', actualizează versiunea prin aceeași comandă pnpm (nu edita 'package.json' direct)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configurezi încă regulile commitlint și nu legi commitlint la Husky. Acest task se ocupă strict de instalarea presetului '@commitlint/config-conventional'.",
+    "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@commitlint/config-conventional\"]' cu o versiune validă. Opțional, rulează 'pnpm commitlint --help' pentru a verifica faptul că presetul este disponibil pentru a fi referit în configurație.",
+    "outcome": "Presetul '@commitlint/config-conventional' este instalat ca dependență de dezvoltare și pregătit pentru a fi folosit în configurația commitlint pentru a impune Conventional Commits.",
+    "componenta_de_CI_DI": "Permite ca, în fazele următoare (F0.1.41+ și F0.2), pipeline-ul de CI și uneltele precum 'semantic-release' să folosească mesaje de commit standardizate pentru generarea automată de changelog și versionare semantică."
+  }
+},
+```
+
+#### F0.1.41
+
+```JSON
   {
-    "F0.1.41": {
-      "denumire_task": "Configurare 'commitlint'",
-      "descriere_scurta_task": "Crearea fișierului 'commitlint.config.js' (sau '.commitlintrc.json').",
-      "descriere_lunga_si_detaliata_task": "Creăm fișierul de configurare pentru 'commitlint' la rădăcină. Acest fișier pur și simplu extinde setul de reguli 'config-conventional' pe care tocmai le-am instalat.[13]",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.40: '@commitlint/config-conventional' este instalat.",
-      "contextul_general_al_aplicatiei": "Activarea regulilor 'Conventional Commits'.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/commitlint.config.js'.",
-      "restrictii_anti_halucinatie": [
-        "Creează un fișier nou 'commitlint.config.js'.",
-        "Conținutul fișierului trebuie să fie:",
-        "module.exports = {",
-        "  extends: ['@commitlint/config-conventional']",
-        "};"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga reguli custom încă.",
-      "validare": "Verifică existența și conținutul fișierului 'commitlint.config.js'.",
-      "outcome": "Configurația 'commitlint' este creată.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.42
+  "F0.1.41": {
+    "denumire_task": "Configurare 'commitlint'",
+    "descriere_scurta_task": "Crearea fișierului de configurare 'commitlint.config.js' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul de configurare pentru 'commitlint' la rădăcină. Configurația extinde presetul '@commitlint/config-conventional', ceea ce activează regulile standard 'Conventional Commits' (feat, fix, docs, chore etc.) pentru toate mesajele de commit. În acest task definim doar configurarea de bază, fără reguli custom.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.40: '@commitlint/config-conventional' este instalat. F0.1.39: '@commitlint/cli' este instalat.",
+    "contextul_general_al_aplicatiei": "Activarea regulilor 'Conventional Commits' pentru a standardiza mesajele de commit și a pregăti terenul pentru changelog automat și semantic-release.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/commitlint.config.js' la rădăcina monorepo-ului. Commitlint îl va folosi automat când rulează în acest director.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'.",
+      "Creează un fișier NOU 'commitlint.config.js' dacă nu există deja. Dacă există, suprascrie-l complet cu conținutul specificat.",
+      "Conținutul fișierului trebuie să fie EXACT acesta (CommonJS, fără alte chei sau reguli):",
+      \"module.exports = {",
+      "  extends: ['@commitlint/config-conventional']",
+      "};",
+      "Nu adăuga alte proprietăți (de ex. 'rules', 'parserPreset') în acest task.",
+      "Nu crea alternativ '.commitlintrc.json' sau alte formate de config în acest task; folosim doar 'commitlint.config.js'.",
+      "Asigură-te că fișierul este JavaScript valid (fără comentarii inline care ar rupe sintaxa CommonJS)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga încă reguli custom commitlint (cheia 'rules') și nu modifică hook-urile Husky ('commit-msg') în acest task.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/commitlint.config.js' și confirmă că exportă un obiect cu 'extends: [\"@commitlint/config-conventional\"]'. Opțional, rulează 'echo \"feat: test\" | pnpm commitlint' pentru a verifica că fișierul este citit fără erori.",
+    "outcome": "Configurația 'commitlint' este creată la rădăcina monorepo-ului și extinde presetul '@commitlint/config-conventional'.",
+    "componenta_de_CI_DI": "Permite ulterior legarea commitlint la hook-ul 'commit-msg' (Husky) și integrarea cu pipeline-ul de CI și semantic-release."
+  }
+},
+```
+
+#### F0.1.42
+
+```JSON
   {
-    "F0.1.42": {
-      "denumire_task": "Creare Hook 'commit-msg' (Husky)",
-      "descriere_scurta_task": "Crearea hook-ului 'commit-msg' folosind 'husky add' pentru a rula 'commitlint'.",
-      "descriere_lunga_si_detaliata_task": "Acum legăm 'husky' de 'commitlint'. Folosim comanda 'husky add' pentru a crea fișierul '.husky/commit-msg'. Acest hook se declanșează *după* ce 'pre-commit' a rulat și *înainte* ca commit-ul să fie finalizat. Acesta va valida mesajul de commit folosind 'commitlint'.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat. F0.1.41: 'commitlint' este configurat.",
-      "contextul_general_al_aplicatiei": "Activarea finală a validării mesajelor de commit.",
-      "contextualizarea_directoarelor_si_cailor": "Comanda va crea fișierul '.husky/commit-msg'.",
-      "restrictii_anti_halucinatie": [
-        "Execută comanda: 'pnpm exec husky add.husky/commit-msg \"npx commitlint --edit $1\"'",
-        "Argumentul '--edit $1' este esențial; $1 este un parametru Git care conține calea către fișierul temporar cu mesajul de commit."
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Verifică conținutul fișierului '.husky/commit-msg'.",
-      "outcome": "Hook-ul 'commit-msg' este configurat pentru a valida mesajele de commit.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.43
+  "F0.1.42": {
+    "denumire_task": "Creare Hook 'commit-msg' (Husky)",
+    "descriere_scurta_task": "Crearea hook-ului 'commit-msg' folosind 'husky add' pentru a rula 'commitlint'.",
+    "descriere_lunga_si_detaliata_task": "Legăm 'husky' de 'commitlint' printr-un hook Git 'commit-msg'. Folosim comanda 'pnpm exec husky add' pentru a crea fișierul '.husky/commit-msg'. Acest hook este declanșat după ce 'pre-commit' a rulat și înainte ca commit-ul să fie finalizat și validează mesajul de commit folosind 'commitlint', bazat pe configurația 'commitlint.config.js' (F0.1.41). Dacă mesajul nu respectă regulile 'Conventional Commits', commit-ul este blocat.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.35: 'husky' este inițializat ('.husky/' + 'prepare'). F0.1.39–F0.1.41: '@commitlint/cli', '@commitlint/config-conventional' și 'commitlint.config.js' sunt configurate.",
+    "contextul_general_al_aplicatiei": "Activarea finală a validării mesajelor de commit conform unui standard unitar (Conventional Commits).",
+    "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/' și va crea fișierul '/var/www/GeniusSuite/.husky/commit-msg'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'.",
+      "Asigură-te că directorul '.husky/' există deja (creat de 'pnpm exec husky init' în F0.1.35).",
+      "Execută EXACT comanda următoare din '/var/www/GeniusSuite/':",
+      "pnpm exec husky add .husky/commit-msg \"pnpm exec commitlint --edit \\\"$1\\\"\"",
+      "Nu folosi comenzi bazate pe npm (NU 'npx commitlint'). Respectă standardul monorepo-ului: 'pnpm exec'.",
+      "Această comandă va crea sau suprascrie fișierul '.husky/commit-msg'. Suprascrierea este intenționată.",
+      "După rularea comenzii, nu modifica manual linia generată de Husky pentru 'pnpm exec commitlint --edit \"$1\"', cu excepția cazului în care un task ulterior cere explicit asta.",
+      "Nu adăuga alte comenzi în hook-ul 'commit-msg' (de exemplu, nu rula teste sau alte scripturi aici).",
+      "Nu modifica alte hook-uri Husky (de ex. '.husky/pre-commit') în acest task."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict la configurarea hook-ului 'commit-msg' pentru commitlint. Nu modifica configurația 'commitlint.config.js' sau alte fișiere de tooling în acest task.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.husky/commit-msg'. Deschide fișierul și confirmă că, după shebang-ul generat de Husky, există o linie care execută 'pnpm exec commitlint --edit \"$1\"'. Opțional, încearcă un commit cu un mesaj invalid (ex. 'bad message') și verifică faptul că este blocat de commitlint.",
+    "outcome": "Hook-ul 'commit-msg' este configurat pentru a rula 'commitlint' la fiecare commit, blocând mesajele care nu respectă standardul 'Conventional Commits'.",
+    "componenta_de_CI_DI": "Deși acest hook rulează local, el asigură că toate commit-urile care ajung în CI respectă formatul necesar pentru generarea automată de changelog și versionare semantică."
+  }
+},
+ ```
+
+#### F0.1.43
+
+```JSON
   {
-    "F0.1.43": {
-      "denumire_task": "Adăugare Script-uri 'lint' în 'package.json'",
-      "descriere_scurta_task": "Adăugarea script-urilor 'lint' și 'lint:fix' în 'package.json' de la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Adăugăm script-uri la rădăcină pentru a rula linting-ul pe *întregul* proiect (de ex., în CI sau la cerere). Folosim 'nx affected:lint --all' [31] pentru a rula pe toate proiectele afectate (sau pe toate dacă se specifică '--all').",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.12: Nx este inițializat. F0.1.32: ESLint configurat.",
-      "contextul_general_al_aplicatiei": "Furnizarea unor puncte de intrare convenabile pentru validarea întregului proiect.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică 'package.json' de la rădăcină, în secțiunea 'scripts'.",
-      "restrictii_anti_halucinatie": [
-        "Adaugă următoarele script-uri la cheia 'scripts':",
-        "\"lint\": \"nx affected:lint --all\",",
-        "\"lint:fix\": \"nx affected:lint --all --fix\"",
-        "Asigură-te că nu ștergi script-ul 'prepare' adăugat de 'husky init'."
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga script-uri 'format' încă.",
-      "validare": "'package.json' conține script-urile 'lint' și 'lint:fix'.",
-      "outcome": "Script-uri de linting global sunt disponibile prin 'pnpm lint'.",
-      "componenta_de_CI_DI": "CI va rula 'pnpm lint'."
-    }
-  },
-F0.1.44
+  "F0.1.43": {
+    "denumire_task": "Adăugare Script-uri 'lint' în 'package.json'",
+    "descriere_scurta_task": "Adăugarea script-urilor 'lint' și 'lint:fix' în 'package.json' de la rădăcină pentru rularea linting-ului pe întregul monorepo.",
+    "descriere_lunga_si_detaliata_task": "Adăugăm scripturi convenabile în 'package.json' de la rădăcină pentru a rula linting pe întregul monorepo, fie local, fie în CI. În loc să apelăm direct ESLint, folosim comanda Nx 'run-many', care rulează ținta 'lint' pe toate proiectele configurate. Scriptul 'lint' rulează verificarea fără fix, iar 'lint:fix' rulează aceeași comandă cu '--fix' pentru a aplica automat remediile acolo unde este posibil.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.12: Nx este inițializat. F0.1.29–F0.1.32: ESLint este configurat la nivel de monorepo și integrat cu Nx.",
+    "contextul_general_al_aplicatiei": "Furnizarea unor puncte de intrare standardizate ('pnpm lint', 'pnpm lint:fix') pentru validarea întregului proiect, utilizabile atât local, cât și în CI.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/package.json', în secțiunea 'scripts'. Nu crea un alt 'package.json'.",
+    "restrictii_anti_halucinatie": [
+      "Deschide fișierul '/var/www/GeniusSuite/package.json' și lucrează EXCLUSIV în cheia 'scripts'.",
+      "Nu șterge scripturile existente (ex. 'prepare' adăugat de Husky, 'dev', 'build', 'test', etc.).",
+      "Dacă nu există deja cheile 'lint' și 'lint:fix' în 'scripts', adaugă-le astfel:",
+      "\"lint\": \"nx run-many -t lint --all\",",
+      "\"lint:fix\": \"nx run-many -t lint --all --fix\"",
+      "Dacă există deja scripturi 'lint' sau 'lint:fix', înlocuiește-le cu valorile de mai sus, fără a modifica alte scripturi.",
+      "Păstrează JSON-ul valid: nu lăsa virgule în plus sau chei duplicate în 'scripts'.",
+      "Nu adăuga încă scripturi suplimentare precum 'format' sau 'format:check' în acest task.",
+      "Nu modifica alte câmpuri (ex. 'dependencies', 'devDependencies', 'name', 'version') în acest task."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict la adăugarea/actualizarea scripturilor 'lint' și 'lint:fix' din 'package.json'. Nu modifici configurarea Nx sau fișiere ESLint în acest task.",
+    "validare": "Verifică faptul că în '/var/www/GeniusSuite/package.json' există cheile 'scripts.lint' și 'scripts.lint:fix' cu valorile 'nx run-many -t lint --all' și respectiv 'nx run-many -t lint --all --fix'. Opțional, rulează 'pnpm lint' din '/var/www/GeniusSuite/' pentru a verifica faptul că comenzile rulează fără erori de configurare.",
+    "outcome": "Scripturile globale de linting sunt disponibile prin 'pnpm lint' și 'pnpm lint:fix', facilitând rularea linting-ului pe întregul monorepo.",
+    "componenta_de_CI_DI": "Pipeline-ul de CI poate folosi acum 'pnpm lint' pentru a rula linting-ul pe toate proiectele (sau 'nx affected -t lint' în joburi dedicate pentru schimbări afectate)."
+  }
+},
+```
+
+#### F0.1.44
+
+```JSON
   {
-    "F0.1.44": {
-      "denumire_task": "Adăugare Script-uri 'format' în 'package.json'",
-      "descriere_scurta_task": "Adăugarea script-urilor 'format:check' și 'format:write' în 'package.json' de la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Adăugăm script-uri la rădăcină pentru a verifica și aplica formatarea Prettier folosind wrapper-ul Nx, 'nx format'.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.12: Nx este inițializat. F0.1.21: Prettier configurat.",
-      "contextul_general_al_aplicatiei": "Furnizarea unor puncte de intrare convenabile pentru formatarea întregului proiect.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică 'package.json' de la rădăcină, în secțiunea 'scripts'.",
-      "restrictii_anti_halucinatie": [
-        "Adaugă următoarele script-uri la cheia 'scripts':",
-        "\"format:check\": \"nx format:check\",",
-        "\"format:write\": \"nx format:write\"",
-        "Asigură-te că nu ștergi script-ul 'prepare' sau script-urile 'lint'."
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "'package.json' conține script-urile 'format:check' și 'format:write'.",
-      "outcome": "Script-uri de formatare globală sunt disponibile prin 'pnpm format:check'.",
-      "componenta_de_CI_DI": "CI va rula 'pnpm format:check'."
-    }
-  },
-F0.1.45
+  "F0.1.44": {
+    "denumire_task": "Adăugare Script-uri 'format' în 'package.json'",
+    "descriere_scurta_task": "Adăugarea script-urilor 'format:check' și 'format:write' în 'package.json' de la rădăcină pentru a folosi wrapper-ul Nx pentru Prettier.",
+    "descriere_lunga_si_detaliata_task": "Adăugăm script-uri convenabile în 'package.json' de la rădăcina monorepo-ului pentru a verifica ('format:check') și aplica ('format:write') formatarea Prettier prin wrapper-ul Nx ('nx format:check' și 'nx format:write'). Aceste comenzi folosesc configurația Prettier definită la rădăcină și sunt integrate cu Nx, astfel încât pot fi folosite atât local, cât și în CI ca puncte de intrare standard.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.12: Nx este inițializat. F0.1.20–F0.1.22: Prettier este instalat și configurat (.prettierrc + .prettierignore). F0.1.32: Integrarea ESLint–Prettier este finalizată.",
+    "contextul_general_al_aplicatiei": "Furnizarea unor comenzi standardizate pentru formatarea întregului monorepo, utilizabile atât de dezvoltatori local (pnpm format:write / format:check), cât și în pipeline-ul de CI.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/package.json', în secțiunea 'scripts'. Nu crea un alt 'package.json' și nu modifica alte pachete.",
+    "restrictii_anti_halucinatie": [
+      "Deschide fișierul '/var/www/GeniusSuite/package.json' și lucrează EXCLUSIV în cheia 'scripts'.",
+      "Nu șterge scripturi existente (ex. 'prepare' pentru Husky, 'lint', 'lint:fix', 'dev', 'build', etc.).",
+      "Dacă nu există deja cheile 'format:check' și 'format:write' în 'scripts', adaugă-le EXACT cu valorile:",
+      "\"format:check\": \"nx format:check\",",
+      "\"format:write\": \"nx format:write\"",
+      "Dacă există deja scripturi 'format:check' sau 'format:write', înlocuiește-le cu valorile de mai sus, fără a modifica alte scripturi.",
+      "Păstrează JSON-ul valid: asigură-te că toate intrările din 'scripts' sunt separate prin virgule corecte și nu există chei duplicate.",
+      "Nu adăuga în acest task scripturi suplimentare (ex. 'format:staged' sau 'format:affected'); acestea ar necesita taskuri separate.",
+      "Nu modifica alte câmpuri din 'package.json' ('dependencies', 'devDependencies', 'name', 'version', etc.)."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict la adăugarea/ajustarea scripturilor 'format:check' și 'format:write'. Nu modifici configurarea Nx, ESLint sau Prettier în acest task.",
+    "validare": "Verifică faptul că în '/var/www/GeniusSuite/package.json' există cheile 'scripts.format:check' și 'scripts.format:write' cu valorile 'nx format:check' și respectiv 'nx format:write'. Opțional, rulează 'pnpm format:check' din '/var/www/GeniusSuite/' pentru a verifica faptul că Nx recunoaște comanda.",
+    "outcome": "Scripturile globale de formatare sunt disponibile prin 'pnpm format:check' (verificare) și 'pnpm format:write' (aplicare), facilitând formatarea consistentă a codului în întregul monorepo.",
+    "componenta_de_CI_DI": "Pipeline-ul de CI poate rula 'pnpm format:check' pentru a valida că PR-urile respectă formatarea Prettier, înainte de merge."
+  }
+},
+```
+
+#### F0.1.45
+
+```JSON
   {
-    "F0.1.45": {
-      "denumire_task": "Validare Hook 'pre-commit' (Test Eșec Lint)",
-      "descriere_scurta_task": "Testarea hook-ului 'pre-commit' prin introducerea intenționată a unei erori de linting.",
-      "descriere_lunga_si_detaliata_task": "Acest task validează că hook-ul 'pre-commit' (F0.1.38) funcționează. Vom crea un fișier temporar, vom introduce o eroare ESLint evidentă (de ex. 'var x = 1;'), îl vom adăuga în 'staged' și vom încerca să-l comisionăm. Commit-ul ar trebui să eșueze.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.38: Hook-ul 'pre-commit' este creat.",
-      "contextul_general_al_aplicatiei": "Testarea infrastructurii de DevEx (Developer Experience).",
-      "contextualizarea_directoarelor_si_cailor": "Se execută comenzi Git și 'echo' la rădăcină.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Commit-ul eșuează cu un mesaj de eroare de la 'lint-staged' / 'eslint'.",
-      "outcome": "Hook-ul 'pre-commit' este confirmat ca fiind funcțional.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.46
+  "F0.1.45": {
+    "denumire_task": "Validare Hook 'pre-commit' (Test Eșec Lint)",
+    "descriere_scurta_task": "Testarea hook-ului 'pre-commit' prin introducerea intenționată a unei erori de linting într-un fișier staged.",
+    "descriere_lunga_si_detaliata_task": "Acest task validează că hook-ul 'pre-commit' configurat cu Husky + lint-staged (F0.1.38) funcționează corect. Scopul este să confirmăm că, atunci când un fișier cu erori de linting este adăugat în 'staged', încercarea de commit eșuează, iar commit-ul NU este creat. Vom crea un fișier temporar TypeScript, vom introduce o eroare ESLint evidentă (de exemplu folosirea tipului 'any'), îl vom adăuga în 'staged' și vom încerca să facem un commit. Ne așteptăm ca hook-ul 'pre-commit' să ruleze 'lint-staged', care la rândul său va apela 'nx format:write --files' și 'nx affected:lint --fix --files', iar linting-ul să eșueze, blocând commit-ul. După test, curățăm fișierul și starea Git.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.36: 'lint-staged' este instalat. F0.1.37: '.lintstagedrc.json' este configurat cu comenzi Nx. F0.1.38: hook-ul 'pre-commit' este creat și rulează 'pnpm exec lint-staged'.",
+    "contextul_general_al_aplicatiei": "Testarea efectivă a infrastructurii de DevEx (Husky + lint-staged + Nx + ESLint/Prettier) pentru a ne asigura că erorile de linting nu pot intra în istoria Git.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'. Fișierul temporar de test poate fi creat într-un subdirector neutru (de exemplu 'tmp/' sau la rădăcină), atâta timp cât calea lui este acoperită de globul din '.lintstagedrc.json' ('*.{ts,tsx,js,jsx}').",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu modifica fișiere de configurare în acest task; doar creezi un fișier de test și rulezi comenzi Git.",
+      "Alege un nume clar pentru fișierul temporar, de exemplu 'lint-precommit-test.ts' și creează-l în rădăcină sau într-un director simplu (de ex. 'tmp/lint-precommit-test.ts'). Asigură-te că extensia este '.ts' astfel încât să fie prins de pattern-ul '*.ts,*.tsx,*.js,*.jsx' din '.lintstagedrc.json'.",
+      "Conținut recomandat pentru eroare ESLint/TS clare (în fișierul de test):",
+      \"export const lintPrecommitTest = (): any => {",
+      "  // folosirea tipului 'any' este interzisă de 'plugin:@typescript-eslint/recommended'",
+      "  const x: any = 1;",
+      "  return x;",
+      "};",
+      "Nu modifica fișiere existente din proiect pentru acest test; folosește DOAR fișierul temporar creat.",
+      "Secvența recomandată de comenzi (execută-le textual, adaptând numele fișierului dacă l-ai schimbat):",
+      "1) cd /var/www/GeniusSuite/",
+      "2) Creează fișierul de test (exemplu):",
+      "   echo \"export const lintPrecommitTest = (): any => { const x: any = 1; return x; };\" > lint-precommit-test.ts",
+      "3) Adaugă fișierul în staging:",
+      "   git add lint-precommit-test.ts",
+      "4) Încearcă un commit de test:",
+      "   git commit -m \"test: pre-commit lint should fail\"",
+      "Așteptarea este ca PASUL 4 să EȘUEZE (exit code nenul) din cauza erorilor ESLint raportate de 'lint-staged' / Nx.",
+      "Dacă, DIN GREȘEALĂ, commit-ul reușește (ceea ce indică o configurare greșită a hook-ului), rulează imediat:",
+      "   git reset --soft HEAD~1",
+      "pentru a anula commit-ul, și marchează testul ca FAILED.",
+      "După ce ai confirmat că hook-ul 'pre-commit' blochează commit-ul (comanda 'git commit' a eșuat), curăță fișierul de test și starea Git:",
+      " - Scoate fișierul din staging (dacă e cazul):",
+      "   git restore --staged lint-precommit-test.ts || true",
+      " - Șterge fișierul de test din filesystem:",
+      "   rm lint-precommit-test.ts || true",
+      "Nu face 'git commit' cu fișierul de test păstrat. Acest fișier NU trebuie să rămână în repository.",
+      "Nu împinge (push) niciun commit rezultat din acest test către un remote.",
+      "Nu modifica configurările '.lintstagedrc.json', '.eslintrc.json', 'nx.json' sau alte fișiere de tooling în cadrul acestui task."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII comportamentului hook-ului 'pre-commit'. Nu încerca să repari configurația în acest task (dacă testul eșuează, se va crea un task separat pentru debugging/configurare).",
+    "validare": "Validarea este considerată REUȘITĂ dacă: (1) comanda 'git commit -m \"test: pre-commit lint should fail\"' eșuează cu un mesaj de eroare provenit din 'lint-staged' / Nx / ESLint, și (2) nu rămâne niciun commit nou în istorie și fișierul de test a fost șters din repository. Poți verifica istoricul cu 'git log -1' pentru a te asigura că ultimul commit REAL nu este commit-ul de test.",
+    "outcome": "Hook-ul 'pre-commit' este confirmat ca fiind funcțional: commit-urile care introduc erori de linting în fișierele sursă sunt blocate înainte de a intra în istoria Git.",
+    "componenta_de_CI_DI": "Acest task validează experiența locală a dezvoltatorilor. Deși CI nu rulează hook-uri Husky în mod normal, această verificare asigură că majoritatea problemelor de linting sunt prinse devreme, înainte ca schimbările să ajungă în pipeline-ul de CI."
+  }
+},
+```
+
+#### F0.1.46
+
+```JSON
   {
-    "F0.1.46": {
-      "denumire_task": "Validare Hook 'pre-commit' (Test Auto-Fix)",
-      "descriere_scurta_task": "Testarea hook-ului 'pre-commit' pentru auto-fixarea erorilor de formatare.",
-      "descriere_lunga_si_detaliata_task": "Acest task validează că 'nx format:write --files' și 'nx affected:lint --fix' (F0.1.37) funcționează. Vom crea un fișier cu formatare incorectă (spații vs. tab-uri), îl vom adăuga în 'staged' și vom încerca să-l comisionăm. 'lint-staged' ar trebui să corecteze automat fișierul.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.45: Eșecul hook-ului a fost validat.",
-      "contextul_general_al_aplicatiei": "Testarea infrastructurii de DevEx.",
-      "contextualizarea_directoarelor_si_cailor": "Se execută comenzi Git și 'echo' la rădăcină.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu lăsa fișierul de test în repository.",
-      "validare": "Commit-ul reușește. Verifică conținutul 'test-format.ts' după 'git add' (ar trebui să fie formatat corect: 'const a = 1;').",
-      "outcome": "Hook-ul 'pre-commit' este confirmat că auto-corectează formatarea.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.47
+  "F0.1.46": {
+    "denumire_task": "Validare Hook 'pre-commit' (Test Auto-Fix)",
+    "descriere_scurta_task": "Testarea hook-ului 'pre-commit' pentru auto-fixarea erorilor de formatare și linting.",
+    "descriere_lunga_si_detaliata_task": "Acest task validează că pipeline-ul 'lint-staged' configurat în F0.1.37 (care rulează 'nx format:write --files' și 'nx affected:lint --fix --files') chiar poate corecta automat probleme simple de formatare și linting la momentul comiterii. Vom crea un fișier TypeScript cu formatare incorectă și o eroare de stil care poate fi auto-fixată (de ex. spațiere greșită și lipsa punctului și virgulei), îl vom adăuga în 'staged' și vom încerca să facem un commit. Ne așteptăm ca hook-ul 'pre-commit' să ruleze 'lint-staged', care la rândul lui va apela Nx: codul va fi reformatat și auto-fixat, iar commit-ul va REUȘI. La final, vom inspecta fișierul pentru a confirma că formatarea a fost corectată și vom curăța orice urme (fișierul de test nu trebuie să rămână în repository).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.36: 'lint-staged' este instalat. F0.1.37: '.lintstagedrc.json' rulează 'nx format:write --files' și 'nx affected:lint --fix --files' pe fișierele staged. F0.1.38: hook-ul 'pre-commit' Husky este configurat să ruleze 'pnpm exec lint-staged'. F0.1.45: S-a validat că hook-ul poate BLOCA commit-uri cu erori de linting.",
+    "contextul_general_al_aplicatiei": "Testarea infrastructurii de Developer Experience pentru a confirma că nu doar blochează codul prost, ci și auto-corectează problemele simple de formatare și linting acolo unde este posibil.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile se execută în '/var/www/GeniusSuite/'. Fișierul de test trebuie creat într-o locație simplă prinsă de glob-ul '.lintstagedrc.json' (ex. 'test-format.ts' la rădăcină).",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Nu modifica fișiere de configurare (Nx, ESLint, Prettier, Husky, lint-staged) în acest task.",
+      "Alege un nume de fișier de test clar, de exemplu 'test-format.ts', creat la rădăcina repository-ului, astfel încât să fie prins de pattern-ul '*.ts' din '.lintstagedrc.json'.",
+      "Creează fișierul de test cu o formatare vizibil incorectă, dar cu probleme care pot fi auto-fixate de Prettier/ESLint. Exemplu minimal:",
+      "\"export const  testFormat=()=>{",
+      "console.log('x')",
+      "}\",
+      "Observații pentru exemplu:",
+      "- Spațiere intenționat greșită ('const  testFormat').",
+      "- Lipsă spații după virgule și înainte de acolade.",
+      "- Lipsă punct și virgulă la finalul liniilor.",
+      "Nu folosi erori de tip pe care ESLint/TS nu le poate auto-fixa (de ex. tipuri invalide sau variabile nedeclarate). Obiectivul este ca hook-ul să poată remedia automat fișierul.",
+      "Secvența recomandată de comenzi (presupunând fișierul 'test-format.ts'):",
+      "1) cd /var/www/GeniusSuite/",
+      "2) Creează fișierul de test (exemplu simplificat în shell):",
+      "   cat > test-format.ts << 'EOF'",
+      "   export const  testFormat=()=>{",
+      "   console.log('x')",
+      "   }",
+      "   EOF",
+      "3) Adaugă fișierul în staging:",
+      "   git add test-format.ts",
+      "4) Încearcă un commit de test:",
+      "   git commit -m "\"test: pre-commit auto-fix formatting\"",
+      "Așteptarea este ca PASUL 4 să REUȘEASCĂ (exit code 0), pentru că:",
+      "- 'lint-staged' va rula 'nx format:write --files' → Prettier re-formatează fișierul.",
+      "- Apoi 'nx affected:lint --fix --files' → ESLint aplică auto-fix acolo unde este cazul.",
+      "- 'lint-staged' va re-adăuga fișierul modificat în index și va permite commit-ul dacă nu mai există erori.",
+      "După commit, verifică faptul că fișierul este formatat corect (ex. cu punct și virgulă, spații normalize):",
+      "   cat test-format.ts",
+      "Te aștepți la ceva de tipul:",
+      \"export const testFormat = () => {",
+      "  console.log('x');",
+      "};",
+      "Dacă commit-ul EȘUEAZĂ cu erori de linting/formatare:",
+      "- Notează comportamentul ca FAIL al testului (hook-ul nu reușește să auto-fixeze complet).",
+      "- Nu încerca să repari configurația în acest task; va fi nevoie de un task separat pentru debugging.",
+      "IMPORTANT: Nu lăsa fișierul de test sau commit-ul în istoria repository-ului.",
+      "Dacă commit-ul a reușit:",
+      "- Anulează commit-ul de test:",
+      "   git reset --soft HEAD~1",
+      "- Scoate fișierul din staging:",
+      "   git restore --staged test-format.ts || true",
+      "- Șterge fișierul de pe disc:",
+      "   rm test-format.ts || true",
+      "Dacă commit-ul nu a reușit, dar fișierul este încă în staging sau în workspace:",
+      "- Scoate fișierul din staging:",
+      "   git restore --staged test-format.ts || true",
+      "- Șterge fișierul de pe disc:",
+      "   rm test-format.ts || true",
+      "Nu împinge (push) niciun commit de test către un remote.",
+      "Nu redenumi sau muta alte fișiere din proiect în acest task."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII comportamentului de auto-fix al hook-ului 'pre-commit'. Nu modifica configurațiile ESLint/Prettier/Nx/Husky și nu adăuga alte fișiere permanente în proiect.",
+    "validare": "Testul este considerat REUȘIT dacă: (1) comanda 'git commit -m \"test: pre-commit auto-fix formatting\"' REUȘEȘTE, (2) conținutul fișierului 'test-format.ts' după rularea hook-ului este formatat corect (ex. 'export const testFormat = () => { console.log(\"x\"); };' cu spații și punct și virgulă conform Prettier), și (3) după finalizarea taskului, fișierul de test și commit-ul de test NU mai există (git reset + rm aplicate).",
+    "outcome": "Hook-ul 'pre-commit' este confirmat că poate auto-corecta formatarea și unele probleme de linting pentru fișierele staged, înainte ca acestea să fie comise.",
+    "componenta_de_CI_DI": "Acest task confirmă că pipeline-ul local (Husky + lint-staged + Nx) aduce codul într-o stare formatată și lint-uită înainte de a ajunge în CI, reducând numărul de erori raportate de joburile de lint/format din pipeline."
+  }
+},
+```
+
+#### F0.1.47
+
+```JSON
   {
-    "F0.1.47": {
-      "denumire_task": "Validare Hook 'commit-msg' (Test Eșec)",
-      "descriere_scurta_task": "Testarea hook-ului 'commit-msg' prin furnizarea unui mesaj de commit neconvențional.",
-      "descriere_lunga_si_detaliata_task": "Acest task validează că hook-ul 'commit-msg' (F0.1.42) și 'commitlint' (F0.1.41) funcționează. Vom încerca să facem un commit (folosind un fișier valid) cu un mesaj invalid, cum ar fi \"test\". Commit-ul ar trebui să fie blocat.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.42: Hook-ul 'commit-msg' este creat.",
-      "contextul_general_al_aplicatiei": "Testarea infrastructurii de DevEx.",
-      "contextualizarea_directoarelor_si_cailor": "Se execută comenzi Git la rădăcină.",
-      "restrictii_anti_halucinatie": [
-        "Execută 'echo \"// test file\" > test-commitmsg.ts'",
-        "Execută 'git add test-commitmsg.ts'",
-        "Execută 'git commit -m \"mesaj invalid\"' (Fără --no-verify)",
-        "Comanda 'git commit' *trebuie* să eșueze.",
-        "Output-ul trebuie să arate erori de la 'commitlint' (de ex. 'subject may not be empty', 'type may not be empty').",
-        "Curăță după: 'rm test-commitmsg.ts' și 'git reset'."
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Commit-ul eșuează cu un mesaj de eroare de la 'commitlint'.",
-      "outcome": "Hook-ul 'commit-msg' este confirmat ca fiind funcțional.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.48
+  "F0.1.47": {
+    "denumire_task": "Validare Hook 'commit-msg' (Test Eșec)",
+    "descriere_scurta_task": "Testarea hook-ului 'commit-msg' prin furnizarea unui mesaj de commit neconform cu Conventional Commits.",
+    "descriere_lunga_si_detaliata_task": "Acest task validează că hook-ul Husky 'commit-msg' (F0.1.42) și configurația 'commitlint' (F0.1.41) funcționează corect. Scopul este să demonstrăm că un commit cu un mesaj care nu respectă regulile 'Conventional Commits' (de ex. un simplu 'test' sau 'mesaj invalid') este blocat. Vom crea un fișier TypeScript de test cu conținut valid, îl vom adăuga în staging și vom încerca să facem un commit folosind un mesaj clar neconform (fără 'type: subject'). Ne așteptăm ca hook-ul 'commit-msg' să ruleze 'commitlint', care va returna erori și va împiedica commit-ul.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.39: '@commitlint/cli' este instalat. F0.1.40: '@commitlint/config-conventional' este instalat. F0.1.41: 'commitlint.config.js' extinde '@commitlint/config-conventional'. F0.1.42: hook-ul '.husky/commit-msg' este configurat să ruleze 'pnpm exec commitlint --edit \"$1\"'.",
+    "contextul_general_al_aplicatiei": "Testarea infrastructurii de Developer Experience pentru a asigura că toate mesajele de commit respectă standardul 'Conventional Commits' înainte de a ajunge în istoria Git.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'. Fișierul de test ('test-commitmsg.ts') va fi creat în acest director sau într-un subdirector simplu, dar suficient încât să fie urmărit de Git.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'.",
+      "Asigură-te că nu ai alte fișiere în 'staged' înainte de acest test. Dacă există, fă commit/stash sau rulează 'git reset' pentru a avea un context curat.",
+      "Creează un fișier de test valid, dar trivial, de exemplu 'test-commitmsg.ts' la rădăcină:",
+      "Comandă recomandată:",
+      "  echo \"export const testCommitMsg = () => 'ok';\" > test-commitmsg.ts",
+      "Adaugă fișierul în staging:",
+      "  git add test-commitmsg.ts",
+      "Execută un commit cu un mesaj intenționat INVALID (nu folosi Conventional Commits):",
+      "  git commit -m 'mesaj invalid'",
+      "NU folosi opțiunea '--no-verify' (aceasta ar ocoli hook-ul 'commit-msg').",
+      "Așteptarea este ca comanda 'git commit' să EȘUEZE cu un cod de ieșire nenul și să afișeze erori provenite din 'commitlint' (de tipul 'type may not be empty', 'subject may not be empty' sau mesaje similare generate de '@commitlint/config-conventional').",
+      "Dacă, din greșeală, commit-ul reușește:",
+      "- tratează testul ca FAILED,",
+      "- anulează imediat commit-ul:",
+      "    git reset --soft HEAD~1",
+      "- și continuă cu pașii de curățare de mai jos.",
+      "După ce comanda 'git commit' a eșuat (comportamentul dorit), curăță starea repository-ului:",
+      "- Scoate fișierul din staging (dacă este încă staged):",
+      "    git restore --staged test-commitmsg.ts || true",
+      "- Șterge fișierul de test din filesystem:",
+      "    rm test-commitmsg.ts || true",
+      "Verifică faptul că nu a fost creat niciun commit nou în istorie:",
+      "- opțional: compară 'git log -1' înainte și după test sau verifică că nu există un commit cu mesajul 'mesaj invalid'.",
+      "Nu împinge (push) niciun commit rezultat din acest test către remote.",
+      "Nu modifica configurările 'commitlint.config.js' sau fișierele din '.husky/' în cadrul acestui task.",
+      "Nu modifica alte fișiere din proiect în afara fișierului temporar de test."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII hook-ului 'commit-msg'. Nu remediezi configurări în acest task; dacă testul eșuează (commit-ul trece cu mesaj invalid), se va crea un task separat pentru debugging.",
+    "validare": "Testul este considerat REUȘIT dacă: (1) comanda 'git commit -m \"mesaj invalid\"' EȘUEAZĂ, (2) mesajul de eroare afișat în terminal provine de la 'commitlint' (ex. erori despre 'type' sau 'subject' lipsă conform 'config-conventional'), și (3) după curățare, nu există niciun commit nou în istorie și fișierul 'test-commitmsg.ts' a fost șters.",
+    "outcome": "Hook-ul 'commit-msg' este confirmat ca fiind funcțional și capabil să blocheze commit-urile care nu respectă regulile 'Conventional Commits'.",
+    "componenta_de_CI_DI": "Deși acest test se concentrează pe comportamentul local al hook-ului, el garantează că toate commit-urile care ajung în CI au mesaje standardizate, lucru esențial pentru integrarea ulterioară cu semantic-release și generarea automată a changelog-urilor."
+  }
+},
+```
+
+#### F0.1.48
+
+```JSON
   {
-    "F0.1.48": {
-      "denumire_task": "Validare Hook 'commit-msg' (Test Succes)",
-      "descriere_scurta_task": "Testarea hook-ului 'commit-msg' cu un mesaj de commit convențional valid.",
-      "descriere_lunga_si_detaliata_task": "Acest task validează că un mesaj de commit valid (de ex. 'feat: add commitlint') trece de hook-ul 'commit-msg'.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.47: Eșecul hook-ului a fost validat.",
-      "contextul_general_al_aplicatiei": "Testarea infrastructurii de DevEx.",
-      "contextualizarea_directoarelor_si_cailor": "Se execută comenzi Git la rădăcină.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu lăsa fișierul de test în repository.",
-      "validare": "Commit-ul reușește fără erori.",
-      "outcome": "Întreaga suită de hook-uri Git (pre-commit, commit-msg) este validată.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.49
+  "F0.1.48": {
+    "denumire_task": "Validare Hook 'commit-msg' (Test Succes)",
+    "descriere_scurta_task": "Testarea hook-ului 'commit-msg' cu un mesaj de commit convențional valid.",
+    "descriere_lunga_si_detaliata_task": "Acest task validează că un mesaj de commit valid conform 'Conventional Commits' (de ex. 'feat: add commitlint') trece de hook-ul 'commit-msg' configurat cu Husky și commitlint. Spre deosebire de F0.1.47 (unde am verificat că un mesaj invalid este blocat), aici verificăm că un mesaj CORECT nu este blocat. Vom crea un fișier TypeScript de test cu conținut valid, îl vom adăuga în staging și vom executa un commit cu un mesaj conform (ex. 'feat: validate commit-msg hook'). Ne așteptăm ca hook-ul 'commit-msg' să ruleze 'commitlint', să accepte mesajul și commit-ul să REUȘEASCĂ. La final, vom curăța commit-ul de test și fișierul, astfel încât repository-ul să revină la starea inițială.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.39–F0.1.41: '@commitlint/cli', '@commitlint/config-conventional' și 'commitlint.config.js' sunt configurate. F0.1.42: hook-ul 'commit-msg' Husky rulează 'pnpm exec commitlint --edit \"$1\"'. F0.1.47: S-a validat că un mesaj de commit INVALID este blocat.",
+    "contextul_general_al_aplicatiei": "Testarea infrastructurii de DevEx pentru a confirma că regulile 'Conventional Commits' sunt aplicate corect: mesajele invalide sunt respinse, iar mesajele valide sunt acceptate fără fricțiune pentru dezvoltatori.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'. Fișierul de test (de ex. 'test-commitmsg-success.ts') va fi creat în acest director, astfel încât să fie urmărit de Git dar ușor de șters ulterior.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'.",
+      "Înainte de test, asigură-te că nu există alte fișiere în 'staged'. Dacă există, rulează 'git status' și curăță starea (commit/stash/reset) astfel încât numai fișierul de test să fie implicat în acest test.",
+      "Creează un fișier de test valid, de exemplu 'test-commitmsg-success.ts' la rădăcină, cu conținut TypeScript simplu și corect. Exemplu:",
+      "  echo \"export const testCommitMsgSuccess = () => 'ok';\" > test-commitmsg-success.ts",
+      "Adaugă fișierul în staging:",
+      "  git add test-commitmsg-success.ts",
+      "Execută un commit cu un mesaj VALID conform 'Conventional Commits', de exemplu:",
+      "  git commit -m \"feat: validate commit-msg hook\"",
+      "NU folosi opțiunea '--no-verify' (ar ocoli hook-ul 'commit-msg').",
+      "Așteptarea este ca comanda 'git commit' să REUȘEASCĂ (exit code 0) fără erori de la 'commitlint'.",
+      "Dacă commit-ul EȘUEAZĂ cu erori de la 'commitlint', marchează testul ca FAILED (înseamnă că regulile sunt prea stricte sau mesajul nu este conform) și NU încerca să repari configurația în acest task.",
+      "După ce ai confirmat că commit-ul de test a REUȘIT:",
+      "- Anulează commit-ul de test pentru a nu polua istoricul:",
+      "    git reset --soft HEAD~1",
+      "- Scoate fișierul din staging (dacă este cazul):",
+      "    git restore --staged test-commitmsg-success.ts || true",
+      "- Șterge fișierul de test de pe disc:",
+      "    rm test-commitmsg-success.ts || true",
+      "Verifică faptul că:",
+      "- Nu mai există commit-ul 'feat: validate commit-msg hook' în istorie (de ex. 'git log -1' nu îl arată ca ultim commit).",
+      "- 'git status' arată un working tree curat sau doar modificările așteptate (fără 'test-commitmsg-success.ts').",
+      "Nu împinge (push) commit-ul de test către remote.",
+      "Nu modifica fișierul 'commitlint.config.js' sau hook-ul '.husky/commit-msg' în acest task.",
+      "Nu modifica alte fișiere din proiect în afara fișierului temporar 'test-commitmsg-success.ts'."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII scenariului de succes al hook-ului 'commit-msg'. Nu schimba configurări, reguli sau hook-uri în acest task.",
+    "validare": "Testul este considerat REUȘIT dacă: (1) 'git commit -m \"feat: validate commit-msg hook\"' REUȘEȘTE fără erori de la 'commitlint', (2) după rularea 'git reset --soft HEAD~1' și ștergerea fișierului, nu există niciun commit nou persistent în istorie și 'test-commitmsg-success.ts' nu mai există în repository.",
+    "outcome": "Hook-ul 'commit-msg' este confirmat nu doar că blochează mesaje invalide (F0.1.47), ci și că acceptă mesajele conform 'Conventional Commits', validând întregul flux de commitlint.",
+    "componenta_de_CI_DI": "Acest test asigură că dezvoltatorii pot folosi mesaje de commit valide fără blocaje artificiale, iar CI și instrumente precum semantic-release pot avea încredere în consistența mesajelor de commit."
+  }
+},
+```
+
+#### F0.1.49
+
+```JSON
   {
-    "F0.1.49": {
-      "denumire_task": "Creare Fișier Rădăcină 'README.md'",
-      "descriere_scurta_task": "Crearea unui fișier 'README.md' de bază pentru monorepo.",
-      "descriere_lunga_si_detaliata_task": "Creăm un fișier 'README.md' la rădăcină. Acesta va servi ca punct de intrare pentru noii dezvoltatori, descriind pe scurt suita GeniusSuite și oferind instrucțiuni de bază (de ex. 'pnpm install').",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.1 - F0.1.48: Fundația este gata.",
-      "contextul_general_al_aplicatiei": "Documentația de bază a proiectului.",
-      "contextualizarea_directoarelor_si_cailor": "Creează '/var/www/GeniusSuite/README.md'.",
-      "restrictii_anti_halucinatie":",
-        "",
-        "## Stack Principal",
-        "*   **Monorepo:** Nx + pnpm workspaces",
-        "*   **Tooling:** TypeScript, ESLint, Prettier, Husky",
-        "",
-        "## Inițializare",
-        "```bash",
-        "pnpm install",
-        "```",
-        "",
-        "## Comenzi Uzuale",
-        "```bash",
-        "# Rulează linting pe proiectele afectate",
-        "pnpm lint",
-        "",
-        "# Verifică formatarea",
-        "pnpm format:check",
-        "```"
-      ],
-      "restrictii_de_iesire_din_contex": "N/A",
-      "validare": "Fișierul 'README.md' există.",
-      "outcome": "Proiectul are un fișier 'README.md' de bază.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.50
+  "F0.1.49": {
+    "denumire_task": "Creare Fișier Rădăcină 'README.md'",
+    "descriere_scurta_task": "Crearea unui fișier 'README.md' de bază pentru monorepo.",
+    "descriere_lunga_si_detaliata_task": "Creăm un fișier 'README.md' la rădăcina monorepo-ului. Acesta va servi ca punct de intrare pentru noii dezvoltatori, descriind pe scurt suita GeniusSuite, stack-ul principal folosit (Nx, pnpm, TypeScript etc.) și oferind instrucțiuni de bază de inițializare și comenzi uzuale (lint, format). În acest task construim doar o versiune minimală, clară și factuală, fără a intra în detalii de arhitectură sau în documentația fiecărui modul.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.1 - F0.1.48: Fundația de monorepo, tooling (pnpm, Nx, TypeScript, ESLint, Prettier), hook-uri Husky și validări a fost configurată și testată.",
+    "contextul_general_al_aplicatiei": "Documentație minimă, dar esențială, pentru onboarding-ul dezvoltatorilor în monorepo-ul GeniusSuite.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/README.md' la rădăcina repository-ului. Acesta va fi primul fișier pe care îl vede un dezvoltator când deschide proiectul în editor sau pe platforma de git hosting.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Creează (sau suprascrie) fișierul 'README.md' la rădăcină.",
+      "Nu crea alte fișiere de documentație în acest task (ex. 'CONTRIBUTING.md', 'docs/').",
+      "Conținutul 'README.md' trebuie să fie Markdown valid și să includă, MINIM, următoarele secțiuni și informații:",
+      "1) Un titlu clar pentru monorepo:",
+      "# GeniusSuite Monorepo",
+      "",
+      "2) O descriere scurtă a proiectului (în 1–3 propoziții), de ex.:",
+      "GeniusSuite este o suită de aplicații și servicii (Control Plane, ERP, DMS, aplicații stand-alone) organizate într-un monorepo Nx, cu tooling unificat pentru dezvoltare, testare și livrare.",
+      "",
+      "3) O secțiune despre stack-ul principal:",
+      "## Stack Principal",
+      "",
+      "* **Monorepo:** Nx + pnpm workspaces",
+      "* **Limbaj:** TypeScript (strict)",
+      "* **Tooling:** ESLint, Prettier, Husky, lint-staged, commitlint",
+      "",
+      "4) O secțiune de inițializare cu comanda de instalare:",
+      "## Inițializare",
+      "",
+      "```bash",
+      "pnpm install",
+      "```",
+      "",
+      "5) O secțiune cu comenzi uzuale, care să folosească scripturile deja definite în 'package.json':",
+      "## Comenzi Uzuale",
+      "",
+      "```bash",
+      "# Rulează linting pe toate proiectele",
+      "pnpm lint",
+      "",
+      "# Verifică formatarea (fără a modifica fișierele)",
+      "pnpm format:check",
+      "",
+      "# Aplică formatarea pe întregul monorepo",
+      "pnpm format:write",
+      "```",
+      "",
+      "Nu inventa alte comenzi care nu sunt definite în 'package.json' (de ex. nu adăuga 'pnpm test' sau 'pnpm dev' dacă nu există încă).",
+      "Nu descrie module sau aplicații care nu au fost încă definite în plan (nu lista servicii, API-uri sau URL-uri speculative). Folosește o descriere generică de nivel înalt pentru GeniusSuite.",
+      "Nu adăuga badge-uri de CI/CD, link-uri către repo remote sau secțiuni avansate (contribuții, release process). Acestea pot fi adăugate în taskuri ulterioare.",
+      "Textul trebuie să fie concis, factual și să reflecte DOAR ceea ce a fost setat efectiv în faza F0.1 (stack, tooling, comenzi)."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării unui 'README.md' de bază. Nu modifica alte fișiere de configurație și nu adăuga documentație suplimentară în acest task.",
+    "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/README.md' există, este Markdown valid și conține cel puțin secțiunile: titlu, descriere scurtă, 'Stack Principal', 'Inițializare' și 'Comenzi Uzuale' cu comenzile 'pnpm install', 'pnpm lint', 'pnpm format:check' și 'pnpm format:write'.",
+    "outcome": "Monorepo-ul GeniusSuite are un fișier 'README.md' de bază, util pentru onboarding-ul inițial al dezvoltatorilor și pentru a expune rapid stack-ul și comenzile fundamentale.",
+    "componenta_de_CI_DI": "N/A"
+  }
+},
+```
+
+#### F0.1.50
+
+```JSON
   {
-    "F0.1.50": {
-      "denumire_task": "Creare Branch 'dev'",
-      "descriere_scurta_task": "Crearea branch-ului 'dev' din 'master' (sau 'main').",
-      "descriere_lunga_si_detaliata_task": "Conform guvernanței Git, creăm branch-ul 'dev' din branch-ul principal ('master' sau 'main'). Presupunem că 'master' este branch-ul implicit. Toată munca F0.1 va fi comisionată pe acest branch.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "Toate task-urile F0.1 sunt finalizate.",
-      "contextul_general_al_aplicatiei": "Respectarea guvernanței Git cu 3 branch-uri (master, staging, dev) menționată în cerință.",
-      "contextualizarea_directoarelor_si_cailor": "Comenzi Git executate la rădăcină.",
-      "restrictii_anti_halucinatie": [
-        "Presupunând că 'git init' și un prim commit (de ex. cu.gitignore) a fost făcut pe 'master'.",
-        "Execută 'git checkout master' (sau 'main').",
-        "Execută 'git pull origin master' (pentru a fi la zi).",
-        "Execută 'git checkout -b dev'"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu comisiona încă.",
-      "validare": "Execută 'git branch --show-current'. Rezultatul trebuie să fie 'dev'.",
-      "outcome": "Un nou branch 'dev' este creat și activ.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.51
+  "F0.1.50": {
+    "denumire_task": "Creare Branch 'dev'",
+    "descriere_scurta_task": "Crearea branch-ului 'dev' din branch-ul principal ('master' sau 'main') și poziționarea pe acesta.",
+    "descriere_lunga_si_detaliata_task": "Conform guvernanței Git cu 3 branch-uri (master, staging, dev), creăm branch-ul de lucru 'dev' pornind din branch-ul principal al repository-ului ('master' sau 'main', în funcție de cum este configurat repo-ul). După crearea branch-ului 'dev', acesta devine branch-ul activ pentru lucrul curent. În acest task NU facem commit-uri și NU împingem (push) nimic; doar creăm/activăm branch-ul 'dev'.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.1 - F0.1.49: Fundația de monorepo, tooling și hook-uri Git este definită la nivel de plan și urmează să fie implementată efectiv pe branch-ul 'dev'.",
+    "contextul_general_al_aplicatiei": "Respectarea guvernanței Git cu 3 branch-uri (master, staging, dev) pentru fluxul de dezvoltare: 'dev' pentru dezvoltare activă, 'staging' pentru testare integrată, 'master' (sau 'main') pentru producție.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile Git se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în '/var/www/GeniusSuite/'. Înainte de orice, rulează: `cd /var/www/GeniusSuite/`.",
+      "Verifică că ești într-un repository Git valid: `git rev-parse --is-inside-work-tree`. Dacă acest comandă eșuează, NU încerca să creezi branch-uri (repo-ul nu este inițializat sau nu e corect).",
+      "Verifică că nu ai modificări necomitate înainte de a schimba branch-ul: `git status --porcelain` trebuie să fie gol. Dacă există modificări, acestea trebuie comitate, stashed sau resetate într-un task separat, nu în acesta.",
+      "Determină branch-ul principal EXISTENT fără a-l presupune:",
+      "1) Dacă `git show-ref --verify --quiet refs/heads/master` are exit code 0, consideră 'master' ca branch principal.",
+      "2) Altfel, dacă `git show-ref --verify --quiet refs/heads/main` are exit code 0, consideră 'main' ca branch principal.",
+      "3) Dacă nici 'master' nici 'main' nu există, oprește task-ul și marchează-l drept FAIL (nu inventa numele branch-ului principal).",
+      "Fă checkout pe branch-ul principal determinat la pasul anterior, de exemplu:",
+      "- `git checkout master` sau",
+      "- `git checkout main`",
+      "Dacă există remote 'origin' (verifică cu `git remote` și vezi dacă include 'origin'), atunci adu ultimele schimbări ALEA branch-ului principal:",
+      "- `git pull origin master` sau `git pull origin main`",
+      "Dacă 'origin' NU există, NU rula 'git pull origin ...'. Nu inventa remote-uri.",
+      "Verifică dacă branch-ul 'dev' există deja:",
+      "- Dacă `git show-ref --verify --quiet refs/heads/dev` are exit code 0, NU îl recrea. Doar fă: `git checkout dev`.",
+      "- Dacă branch-ul 'dev' NU există, creează-l din branch-ul principal curent prin: `git checkout -b dev`.",
+      "NU rula comenzi care modifică istoricul (ex. 'git rebase', 'git merge', 'git reset --hard') în acest task.",
+      "NU face commit-uri și NU rula `git push` în acest task. Scopul este exclusiv crearea/activarea branch-ului 'dev'."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării și activării branch-ului 'dev'. Nu crea și nu modifica alte branch-uri (ex. 'staging') în acest task.",
+    "validare": "Execută `git branch --show-current` sau `git rev-parse --abbrev-ref HEAD` în '/var/www/GeniusSuite/'. Rezultatul trebuie să fie exact 'dev'. Verifică de asemenea că `git show-ref --verify --quiet refs/heads/dev` returnează exit code 0 (branch-ul există).",
+    "outcome": "Branch-ul 'dev' există în repository și este branch-ul curent activ, pregătit pentru a primi implementarea efectivă a task-urilor F0.1 prin commit-uri și PR-uri/MR-uri ulterioare.",
+    "componenta_de_CI_DI": "N/A (acest task pregătește doar structura de branch-uri; integrarea cu CI/CD va fi definită în fazele ulterioare, de ex. F0.2)."
+  }
+},
+```
+
+#### F0.1.51
+
+```JSON
   {
-    "F0.1.51": {
-      "denumire_task": "Comisionare Artefacte F0.1 pe Branch-ul 'dev'",
-      "descriere_scurta_task": "Adăugarea și comisionarea tuturor fișierelor de fundație F0.1.",
-      "descriere_lunga_si_detaliata_task": "Adăugăm toate fișierele create și modificate în Faza F0.1 (package.json, nx.json, pnpm-workspace.yaml, tsconfig.base.json,.eslintrc.json,.prettierrc,.husky/,.gitignore, README.md, și directoarele goale) și le comisionăm cu un mesaj care respectă 'Conventional Commits'.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.50: Branch-ul 'dev' este activ. F0.1.1 - F0.1.49: Toate fișierele au fost create/configurate.",
-      "contextul_general_al_aplicatiei": "Finalizarea fazei F0.1 și pregătirea pentru revizuire.",
-      "contextualizarea_directoarelor_si_cailor": "Comenzi Git executate la rădăcină.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu face push încă.",
-      "validare": "Execută 'git log -1'. Commit-ul trebuie să fie vizibil.",
-      "outcome": "Toate artefactele F0.1 sunt comisionate local pe branch-ul 'dev'.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.52
+  "F0.1.51": {
+    "denumire_task": "Comisionare Artefacte F0.1 pe Branch-ul 'dev'",
+    "descriere_scurta_task": "Adăugarea și comisionarea tuturor fișierelor de fundație F0.1 pe branch-ul 'dev' cu un mesaj de commit convențional.",
+    "descriere_lunga_si_detaliata_task": "Acest task finalizează faza F0.1 prin comisionarea tuturor artefactelor de fundație pe branch-ul 'dev'. Pe acest branch trebuie să se regăsească toate fișierele și configurările introduse în F0.1: monorepo Nx + pnpm (package.json, pnpm-lock.yaml, pnpm-workspace.yaml, nx.json), TypeScript (tsconfig.base.json), ESLint (.eslintrc.json), Prettier (.prettierrc, .prettierignore), Husky (.husky/), lint-staged (.lintstagedrc.json), commitlint (commitlint.config.js), gitignore (.gitignore), README.md și orice alte fișiere de configurare/structură definite în F0.1. Fișierele temporare de test folosite pentru validarea hook-urilor NU trebuie să fie incluse. După verificarea stării repository-ului, toate fișierele relevante sunt adăugate în staging și se creează un singur commit cu un mesaj care respectă 'Conventional Commits' (de ex. 'chore(tooling): bootstrap F0.1 monorepo foundation').",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.1 – F0.1.49: Fundația de monorepo, tooling și documentație de bază a fost configurată. F0.1.50: Branch-ul 'dev' există și este activ.",
+    "contextul_general_al_aplicatiei": "Închiderea fazei F0.1 prin materializarea într-un commit atomic pe branch-ul 'dev', care devine punctul de referință pentru review, PR/MR și fazele ulterioare (F0.2+).",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile Git se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'. Commit-ul creat va exista local pe branch-ul 'dev'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în '/var/www/GeniusSuite/'. Înainte de orice, rulează: `cd /var/www/GeniusSuite/`.",
+      "Verifică că branch-ul curent este 'dev' înainte de a continua: `git branch --show-current` trebuie să returneze 'dev'. Dacă nu, fă `git checkout dev`.",
+      "Asigură-te că toate fișierele temporare de test folosite în validări (de exemplu: 'lint-precommit-test.ts', 'test-format.ts', 'test-commitmsg.ts', 'test-commitmsg-success.ts' sau nume similare) AU FOST șterse și nu apar în 'git status'. Dacă apar, șterge-le și scoate-le din staging (git restore --staged + rm).",
+      "Rulează `git status --short` și inspectează ieșirea. Verifică că modificările corespund DOAR fișierelor și directoarelor asociate fazei F0.1: 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'nx.json', 'tsconfig.base.json', '.eslintrc.json', '.prettierrc', '.prettierignore', '.lintstagedrc.json', 'commitlint.config.js', '.husky/**', '.gitignore', 'README.md', eventual alte fișiere de config/documentație menționate în plan.",
+      "Nu adăuga în acest commit fișiere care țin de alte faze (F0.2+, aplicații CP, DMS, ERP etc.) sau fișiere temporare/compi late.",
+      "Adaugă toate fișierele relevante în staging folosind `git add`:",
+      "– Variante acceptate:",
+      "  * `git add .` URMAT de o verificare atentă cu `git status` pentru a te asigura că nu intră fișiere nedorite.",
+      "  * Sau, mai strict, `git add` pe fișiere/directoare individuale (ex.: `git add package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json .eslintrc.json .prettierrc .prettierignore .lintstagedrc.json commitlint.config.js .husky .gitignore README.md`).",
+      "După `git add`, rulează `git status --short` și confirmă că toate fișierele staged sunt corecte și NU includ fișiere temporare sau artefacte de build (ex. 'node_modules', '.nx/cache', 'dist', etc.).",
+      "Folosește un mesaj de commit care respectă STRICT 'Conventional Commits'. Recomandare pentru acest task:",
+      "– `chore(tooling): bootstrap F0.1 monorepo foundation`",
+      "Dar orice mesaj de forma '<type>(<scope>): <subject>' este acceptabil, cu 'type' din setul convențional (feat, fix, chore, refactor, docs, ci, build, etc.).",
+      "Execută comanda de commit DOAR după ce hook-urile 'pre-commit' și 'commit-msg' sunt funcționale; nu folosi `--no-verify`. Exemplu:",
+      "– `git commit -m \"chore(tooling): bootstrap F0.1 monorepo foundation\"`",
+      "Dacă commit-ul eșuează din cauza linting-ului sau a mesajului, REPARĂ problemele și relansează commit-ul în același task, NU schimba strategia (nu folosi `--no-verify`).",
+      "NU rula `git push` în acest task. Acest task se oprește la commit local pe 'dev'.",
+      "NU modifica istoricul existent (nu folosi `git rebase`, `git reset --hard`, `git commit --amend`) în acest task. Este un commit nou, nu o rescriere de istoric."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu face push către niciun remote (ex. 'origin') în acest task. Nu crea alte branch-uri și nu deschide PR/MR aici; acestea vor fi acoperite de task-uri separate.",
+    "validare": "După commit, rulează `git log -1` și verifică: (1) că branch-ul curent este 'dev' (`git branch --show-current` == 'dev'), (2) că ultimul commit are mesajul de tip Conventional Commits ales (ex. 'chore(tooling): bootstrap F0.1 monorepo foundation'), și (3) că `git status` raportează un working tree curat ('nothing to commit, working tree clean').",
+    "outcome": "Toate artefactele de fundație ale fazei F0.1 sunt comisionate local într-un singur commit coerent pe branch-ul 'dev', pregătit pentru review și pentru integrarea în fluxul de PR/MR.",
+    "componenta_de_CI_DI": "N/A (acest task pregătește baza codului comisionat; integrarea cu CI/CD și pipeline-urile aferente vor fi tratate în fazele următoare)."
+  }
+},
+```
+
+#### F0.1.52
+
+```JSON
   {
     "F0.1.52": {
       "denumire_task": "Push Branch 'dev' și Creare PR/MR",
@@ -5666,8 +6167,9 @@ F0.1.52
         "descriere": "Acest PR stabilește fundația completă a monorepo-ului GeniusSuite (Faza F0.1), conform planului de arhitectură.\n\n**Schimbări Cheie:**\n\n1.  **Manager de Pachete:** Inițializat cu `pnpm` și configurat `pnpm-workspace.yaml` pentru a reflecta structura exactă a aplicațiilor din (ex. `cp/*`, `shared/*`, `vettify.app`, etc.).\n2.  **Manager Monorepo:** `Nx` a fost instalat și configurat (`nx.json`) pentru a adopta workspace-ul `pnpm`, cu `targetDefaults` pentru caching. \n3.  **TypeScript:** Configurat `tsconfig.base.json` cu setări `strict: true`  și alias-uri `paths` pentru toate bibliotecile `shared/*` (de ex. `@genius-suite/ui-design-system`). \n4.  **Standarde de Cod:**\n    *   `Prettier` instalat și configurat (`.prettierrc`). \n    *   `ESLint` instalat și configurat (`.eslintrc.json`) cu plugin-urile `@nx/eslint-plugin`, `@typescript-eslint/eslint-plugin`  și integrare `eslint-config-prettier`. \n5.  **Cârlige Git (Husky v9):**\n    *   `pre-commit`: Rulează `lint-staged`, care execută `nx format:write` și `nx affected:lint --fix` pe fișierele din staged. \n    *   `commit-msg`: Rulează `commitlint` pentru a impune 'Conventional Commits' (bazat pe `@commitlint/config-conventional`). \n\n**Validare:**\n\n*   Toate hook-urile (pre-commit, commit-msg) au fost testate local (task-urile F0.1.45 - F0.1.48) și funcționează conform așteptărilor.\n*   Script-urile `pnpm lint` și `pnpm format:check` sunt disponibile pentru CI."
       }
     }
-  }
-F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry.
+```
+
+### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry.
 F0.2.1
 {
   "F0.2.1": {
