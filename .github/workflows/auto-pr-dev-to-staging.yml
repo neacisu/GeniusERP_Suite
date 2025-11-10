@@ -1,10 +1,8 @@
 name: Auto-create PR dev → staging
 
-# Trigger: După ce CI Validation trece cu succes pe branch-ul dev
+# Trigger: After pushes to dev branch (e.g., when PRs are merged)
 on:
-  workflow_run:
-    workflows: ["CI Validation"]
-    types: [completed]
+  push:
     branches: [dev]
 
 permissions:
@@ -15,8 +13,6 @@ jobs:
   create-pr:
     name: Create PR dev → staging
     runs-on: ubuntu-latest
-    # Rulează doar dacă CI a trecut cu succes
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout repository
@@ -78,11 +74,11 @@ jobs:
           cat << 'EOF' > pr_body.md
           ## 🚀 Promovare automată dev → staging
 
-          Acest PR a fost creat automat după ce CI Validation a trecut cu succes pe branch-ul `dev`.
+          Acest PR a fost creat automat după modificări pe branch-ul `dev`.
 
           ### 📋 Checklist înainte de merge
 
-          - [ ] CI Validation a trecut (verificat automat)
+          - [ ] Toate verificările CI au trecut
           - [ ] Changesets sunt prezente pentru toate modificările de pachete
           - [ ] Testare funcțională efectuată local
           - [ ] Documentația este actualizată (dacă e cazul)
