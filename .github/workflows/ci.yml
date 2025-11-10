@@ -1,0 +1,62 @@
+name: CI Validation
+
+# CI workflow principal pentru GeniusSuite – configurat în F0.2.3+
+on:
+  pull_request:
+    branches:
+      - master
+      - staging
+      - dev
+  push:
+    branches:
+      - dev
+      # Rulează CI și după merge-uri în dev pentru a valida codul înainte de promovare
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          check-latest: true
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Set Nx SHAs
+        uses: nrwl/nx-set-shas@v4
+      - name: Connect to Nx Cloud
+        continue-on-error: true
+        run: pnpm exec nx-cloud start-ci-run
+        env:
+          NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
+      # Run Jest tests for configuration validation
+      - name: Run configuration tests
+        run: pnpm test
+      # TODO: Nx affected commands - will be enabled when workspace packages are added. add all test here when project will have more packages.
+      - name: Check formatting (affected)
+        continue-on-error: true
+        run: pnpm exec nx affected -t format:check || echo "⚠️ No Nx projects found yet"
+      - name: Lint affected projects
+        continue-on-error: true
+        run: pnpm exec nx affected -t lint || echo "⚠️ No Nx projects found yet"
+      - name: Test affected projects
+        continue-on-error: true
+        run: pnpm exec nx affected -t test || echo "⚠️ No Nx projects found yet"
+      - name: Build affected projects
+        continue-on-error: true
+        run: pnpm exec nx affected -t build || echo "⚠️ No Nx projects found yet"

@@ -1,0 +1,9 @@
+# Lockfile-uri ale altor package manageri (nu folosim npm/yarn în acest monorepo)
+package-lock.json
+yarn.lock
+
+# Cod generat care NU trebuie formatat (chiar dacă este urmărit de Git)
+shared/ui-design-system/icons/react/generated/
+
+# Intenționat NU ignorăm 'pnpm-lock.yaml' pentru a permite formatarea lui de către Prettier,
+# astfel încât dif-urile să fie consistente în echipă.

@@ -1,0 +1,137 @@
+name: Auto-create PR dev → staging
+
+# Trigger: După ce CI Validation trece cu succes pe branch-ul dev
+on:
+  workflow_run:
+    workflows: ["CI Validation"]
+    types: [completed]
+    branches: [dev]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    name: Create PR dev → staging
+    runs-on: ubuntu-latest
+    # Rulează doar dacă CI a trecut cu succes
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Necesare pentru comparare branch-uri
+          ref: dev
+
+      - name: Check if PR already exists
+        id: check-pr
+        run: |
+          # Verifică dacă există deja un PR deschis dev → staging
+          PR_COUNT=$(gh pr list --base staging --head dev --state open --json number --jq length)
+          echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "✅ PR dev → staging deja există"
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Nu există PR dev → staging"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if there are new commits
+        id: check-commits
+        if: steps.check-pr.outputs.pr_exists == 'false'
+        run: |
+          # Verifică dacă dev este ahead of staging
+          git fetch origin staging:staging
+          COMMITS_AHEAD=$(git rev-list --count staging..dev)
+          echo "commits_ahead=$COMMITS_AHEAD" >> $GITHUB_OUTPUT
+
+          if [ "$COMMITS_AHEAD" -gt 0 ]; then
+            echo "✅ Dev este ahead cu $COMMITS_AHEAD commit-uri față de staging"
+            echo "has_new_commits=true" >> $GITHUB_OUTPUT
+          else
+            echo "ℹ️ Dev și staging sunt sincronizate"
+            echo "has_new_commits=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate PR body
+        id: pr-body
+        if: steps.check-pr.outputs.pr_exists == 'false' && steps.check-commits.outputs.has_new_commits == 'true'
+        run: |
+          # Generează lista de commit-uri pentru PR body
+          COMMITS=$(git log staging..dev --pretty=format:"- %s (%h)" --no-merges | head -20)
+          
+          # Dacă sunt mai mult de 20 commit-uri, adaugă note
+          TOTAL_COMMITS=$(git rev-list --count staging..dev --no-merges)
+          if [ "$TOTAL_COMMITS" -gt 20 ]; then
+            COMMITS="$COMMITS
+
+... și alte $((TOTAL_COMMITS - 20)) commit-uri. Vezi istoricul complet în tab-ul Commits."
+          fi
+
+          # Creează PR body
+          cat << 'EOF' > pr_body.md
+          ## 🚀 Promovare automată dev → staging
+
+          Acest PR a fost creat automat după ce CI Validation a trecut cu succes pe branch-ul `dev`.
+
+          ### 📋 Checklist înainte de merge
+
+          - [ ] CI Validation a trecut (verificat automat)
+          - [ ] Changesets sunt prezente pentru toate modificările de pachete
+          - [ ] Testare funcțională efectuată local
+          - [ ] Documentația este actualizată (dacă e cazul)
+          - [ ] Breaking changes sunt documentate în changesets
+
+          ### 📝 Commit-uri incluse
+
+          EOF
+
+          echo "$COMMITS" >> pr_body.md
+          
+          cat << 'EOF' >> pr_body.md
+
+          ### 🎯 Next Steps
+
+          1. **Review**: Verifică modificările în tab-ul "Files changed"
+          2. **Testare**: Testează în staging după merge
+          3. **Label**: Adaugă label-ul `ready-for-staging` când ești gata pentru auto-merge (opțional)
+
+          ---
+
+          **⚠️ IMPORTANT**: Acest PR **NU va fi merge-uit automat**. Necesită aprobare manuală.
+
+          Pentru auto-merge, adaugă label-ul `ready-for-staging` după ce toate verificările au trecut.
+          EOF
+
+          # Salvează PR body pentru următorul pas
+          echo "pr_body_path=pr_body.md" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.check-pr.outputs.pr_exists == 'false' && steps.check-commits.outputs.has_new_commits == 'true'
+        run: |
+          gh pr create \
+            --base staging \
+            --head dev \
+            --title "🚀 Promovare dev → staging (auto)" \
+            --body-file pr_body.md \
+            --label "auto-created"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check-pr.outputs.pr_exists }}" == "true" ]; then
+            echo "✅ PR dev → staging deja există. Nu este necesară crearea unui nou PR."
+          elif [ "${{ steps.check-commits.outputs.has_new_commits }}" == "false" ]; then
+            echo "ℹ️ Dev și staging sunt sincronizate. Nu este necesară crearea unui PR."
+          else
+            echo "✅ PR dev → staging a fost creat cu succes!"
+            echo "🔗 Verifică PR-ul: https://github.com/${{ github.repository }}/pulls"
+          fi
+

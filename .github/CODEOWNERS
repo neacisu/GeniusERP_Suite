@@ -1,0 +1,204 @@
+# CODEOWNERS - Definește ownership-ul codului pentru review automat
+#
+# Sintaxă: <pattern> <owner1> <owner2> ...
+# Pattern-urile sunt evaluate în ordine inversă (ultimul match câștigă)
+# Owners pot fi: @username, @org/team-name, sau email
+#
+# Documentație: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# ==============================================================================
+# DEFAULT OWNERS
+# ==============================================================================
+
+# Default owner pentru orice fișier din repository
+# Review obligatoriu de la lead pentru orice modificare care nu are alt owner
+* @neacisu
+
+# ==============================================================================
+# INFRASTRUCTURE & CI/CD
+# ==============================================================================
+
+# Workflow-uri GitHub Actions - necesită aprobare de la DevOps/Lead
+/.github/workflows/ @neacisu
+/.github/CODEOWNERS @neacisu
+
+# Docker & containerizare
+/scripts/Dockerfile* @neacisu
+docker-compose*.yml @neacisu
+
+# Configurare CI/CD și tooling
+/nx.json @neacisu
+/tsconfig.base.json @neacisu
+/.eslintrc.json @neacisu
+/.prettierrc @neacisu
+/commitlint.config.js @neacisu
+
+# ==============================================================================
+# SHARED LIBRARIES
+# ==============================================================================
+
+# UI Design System - Frontend Lead + Designer
+/shared/ui-design-system/ @neacisu
+# Uncomment când există echipă: /shared/ui-design-system/ @neacisu @designer-username
+
+# Auth Client - Security Lead
+/shared/auth-client/ @neacisu
+# /shared/auth-client/ @neacisu @security-lead
+
+# Common utilities
+/shared/common/ @neacisu
+
+# Types - TypeScript Lead
+/shared/types/ @neacisu
+
+# Feature Flags
+/shared/feature-flags/ @neacisu
+
+# Observability & Monitoring
+/shared/observability/ @neacisu
+# /shared/observability/ @neacisu @devops-team
+
+# Integrations
+/shared/integrations/ @neacisu
+# /shared/integrations/ @neacisu @integration-team
+
+# ==============================================================================
+# CONTROL PLANE (CP)
+# ==============================================================================
+
+# Identity & Auth - Security critical
+/cp/identity/ @neacisu
+# /cp/identity/ @neacisu @security-lead
+
+# Licensing & Billing - Business critical
+/cp/licensing/ @neacisu
+# /cp/licensing/ @neacisu @billing-team
+
+# Suite Admin - Platform Team
+/cp/suite-admin/ @neacisu
+# /cp/suite-admin/ @neacisu @platform-team
+
+# Suite Login - Security + Frontend
+/cp/suite-login/ @neacisu
+# /cp/suite-login/ @neacisu @security-lead @frontend-lead
+
+# Suite Shell (Micro-frontend host)
+/cp/suite-shell/ @neacisu
+# /cp/suite-shell/ @neacisu @frontend-lead
+
+# Analytics Hub - Data Team
+/cp/analytics-hub/ @neacisu
+# /cp/analytics-hub/ @neacisu @data-team
+
+# AI Hub - ML/AI Team
+/cp/ai-hub/ @neacisu
+# /cp/ai-hub/ @neacisu @ai-team
+
+# ==============================================================================
+# STANDALONE APPLICATIONS
+# ==============================================================================
+
+# GeniusERP (Main orchestrator)
+/geniuserp.app/ @neacisu
+
+# Archify (DMS)
+/archify.app/ @neacisu
+# /archify.app/ @neacisu @archify-team
+
+# Cerniq (BI & Data Mesh)
+/cerniq.app/ @neacisu
+# /cerniq.app/ @neacisu @cerniq-team @data-team
+
+# Flowxify (BPM & iPaaS)
+/flowxify.app/ @neacisu
+# /flowxify.app/ @neacisu @flowxify-team
+
+# I-WMS (Warehouse Management)
+/i-wms.app/ @neacisu
+# /i-wms.app/ @neacisu @wms-team
+
+# Mercantiq (Commerce & Sales)
+/mercantiq.app/ @neacisu
+# /mercantiq.app/ @neacisu @commerce-team
+
+# Numeriqo (Accounting & HR/Payroll)
+/numeriqo.app/ @neacisu
+# /numeriqo.app/ @neacisu @accounting-team
+
+# Triggerra (Marketing Automation)
+/triggerra.app/ @neacisu
+# /triggerra.app/ @neacisu @marketing-tech-team
+
+# Vettify (CRM)
+/vettify.app/ @neacisu
+# /vettify.app/ @neacisu @crm-team
+
+# ==============================================================================
+# GATEWAY & PROXY
+# ==============================================================================
+
+# API Gateway - Platform critical
+/gateway/ @neacisu
+# /gateway/ @neacisu @platform-team @backend-lead
+
+# Traefik Proxy - Infrastructure critical
+/proxy/ @neacisu
+# /proxy/ @neacisu @devops-team
+
+# ==============================================================================
+# DOCUMENTATION
+# ==============================================================================
+
+# Main documentation
+/docs/ @neacisu
+# /docs/ @neacisu @tech-writer
+
+# README files
+README.md @neacisu
+**/README.md @neacisu
+
+# ==============================================================================
+# CONFIGURATION FILES
+# ==============================================================================
+
+# Package configuration - Lead approval required
+/package.json @neacisu
+/pnpm-lock.yaml @neacisu
+/pnpm-workspace.yaml @neacisu
+
+# Changesets - Release Manager
+/.changeset/ @neacisu
+# /.changeset/ @neacisu @release-manager
+
+# ==============================================================================
+# SECURITY SENSITIVE
+# ==============================================================================
+
+# Security policies & config - Security team mandatory review
+SECURITY.md @neacisu
+# SECURITY.md @neacisu @security-team
+
+# ==============================================================================
+# NOTES
+# ==============================================================================
+
+# Cum să folosești acest fișier:
+#
+# 1. Uncomment liniile cu team-uri când echipa crește
+# 2. Înlocuiește @neacisu cu username-uri reale sau team-uri GitHub
+# 3. Teams se creează în: Organization → Teams
+# 4. Pattern-urile pot folosi glob syntax: *, **, ?, [abc], [!abc]
+# 5. Ultimul pattern care se potrivește câștigă
+#
+# Exemple de patterns:
+# - /path/to/dir/     - director specific
+# - *.js              - toate fișierele .js
+# - **/test/**        - orice director test
+# - docs/**/*.md      - toate .md din docs și subdirectoare
+#
+# Best Practices:
+# - Păstrează ownership-ul granular (per feature/modul)
+# - Asigură-te că fiecare owner este disponibil pentru review
+# - Review-urile CODEOWNERS sunt obligatorii dacă branch protection este activat
+# - Documentează decisiile de ownership în comments
+
