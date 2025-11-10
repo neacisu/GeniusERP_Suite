@@ -20,6 +20,8 @@ Name: NX_CLOUD_AUTH_TOKEN
 Value: [token-ul tău aici]
 ```
 
+**Note**: Workflow-urile folosesc **pnpm v10** (ultima versiune LTS). Asigură-te că versiunea locală este compatibilă.
+
 **Status**: ⬜ Neconfigurat / ✅ Configurat
 
 ---
