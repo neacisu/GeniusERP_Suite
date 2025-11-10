@@ -1,16 +1,10 @@
-# GeniusERP Suite Plan
-
-
-# Capitolul 1
-
-## GeniusSuite – Plan general
-
-### 1) Descriere generală
-
+GeniusERP Suite Plan
+Add Headings (Format > Paragraph styles) and they will appear in your table of contents.
+Capitolul 1
+# GeniusSuite – Plan general
+## 1) Descriere generală
 GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo, Docker) vândută fie ca suita completă **GeniusERP.app**, fie ca aplicații stand‑alone: **archify.app, cerniq.app, flowxify.app, geniuserp.app, i-wms.app, mercantiq.app, numeriqo.app, triggerra.app, vettify.app**. Fiecare aplicație rulează în containere proprii, cu rețele Docker interne, SSO comun și control centralizat al licențelor.
-
-### 2) Distribuția modulelor pe domenii
-
+## 2) Distribuția modulelor pe domenii
 - **geniuserp.app** – Control Plane (admin, auth, settings, analytics, audit, ai, integrations, shared, users)
 - **archify.app** – Document Management (documents, OCR, versionare, registru)
 - **cerniq.app** – Platformă Data Mesh & BI (consumator de "Produse de Date", semantic layer, dashboards, governance)
@@ -20,9 +14,7 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **numeriqo.app** – Accounting (RO) + HR & Payroll + Invoicing (pro)
 - **triggerra.app** – Marketing Automation (campanii, journeys, comms)
 - **vettify.app** – CRM & Relații + Firmographics (CUI/ANAF/Termene)
-
-### 3) Stack tehnologic
-
+## 3) Stack tehnologic
 - **Frontend:** React 19 LTS, TypeScript (latest), tRPC 3.1.0, Tailwind
 - **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM (latest) + Drizzle‑kit, PostgreSQL 18
 - **Auth:** SuperTokens 11.2.0 LTS (PKCE → JWT), OIDC, RBAC, multi‑tenant
@@ -30,9 +22,7 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **Broker:** Apache Kafka 4.1.0 LTS
 - **Observabilitate:** OpenTelemetry, Prometheus, Grafana, Loki, Tempo
 - **Containerizare:** pnpm, NX, Docker Compose (model hibrid)
-
-### 4) Control Plane (CP)
-
+## 4) Control Plane (CP)
 - **suite-shell** – orchestrator micro‑frontend (routing, registry, runtime)
 - **suite-admin** – portal administrare centrală
 - **suite-login** – portal PKCE + OIDC
@@ -40,11 +30,9 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **licensing** – licențe, entitlement & metering, billing
 - **analytics-hub** – Hub de Evenimente & Data Mesh (colectare stream-uri Kafka, publicare "Produse de Date" ale suitei)
 - **ai-hub** – servicii AI (inference, RAG, assistants)
-
-### 5) Structură directoare (radăcină + 2 niveluri)
-
+## 5) Structură directoare (radăcină + 2 niveluri)
 ```
-/var/www/GeniusSuite/                        # rădăcina monorepo‑ului NX + orchestrator
+/var/www/GeniusSuite/                       # rădăcina monorepo‑ului NX + orchestrator
 ├── shared/                                  # librării comune reutilizabile
 │   ├── ui-design-system/                    # componente UI, layouts, tokens
 │   ├── feature-flags/                       # SDK flags server/client + API admin
@@ -59,17 +47,17 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 │   ├── suite-login/                         # login PKCE/OIDC (web + pkce + oidc)
 │   ├── identity/                            # SuperTokens + OIDC provider + RBAC
 │   ├── licensing/                           # entitlement/metering/billing + SDK
-│   ├── analytics-hub/                       # Hub Data Mesh (stream consumers, data products, semantics)
+│   ├── analytics-hub/            # Hub Data Mesh (stream consumers, data products, semantics)
 │   └── ai-hub/                              # inference, embeddings, RAG, assistants
 ├── archify.app/                             # DMS stand‑alone (web/api/db)
 │   ├── web/                                 # frontend
 │   ├── api/                                 # BFF/REST/tRPC
 │   └── compose/                             # docker‑compose al aplicației
-├── cerniq.app/                              # Platformă Data Mesh & BI stand‑alone
-│   ├── consumers/                           # Conectori/Consumatori pt. "Data Products"
-│   ├── semantics/                           # Semantic layer (metrici, KPIs)
-│   ├── dashboards/                          # Vizualizări (Grafana, etc.) 
-│   └── compose/                             # orchestrare BI
+├── cerniq.app/ # Platformă Data Mesh & BI stand‑alone
+│   ├── consumers/             # Conectori/Consumatori pt. "Data Products"
+│   ├── semantics/              # Semantic layer (metrici, KPIs)
+│   ├── dashboards/           # Vizualizări (Grafana, etc.) 
+│   └── compose/               # orchestrare BI
 ├── flowxify.app/                            # BPM + Collaboration + Intranet
 │   ├── web/
 │   ├── api/
@@ -117,20 +105,16 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 **Notă orchestrare (model hibrid):**
 - Compose **per aplicație** (`*/compose/docker-compose.yml`) → izolare, rulare rapidă, ownership clar.
 - Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
-
-### 6) Licențiere & Deployment
+## 6) Licențiere & Deployment
 - Stand‑alone sau suită completă; licențiere și entitlement centralizate în **CP/licensing**.
 - SSO PKCE→JWT comun (SuperTokens/identity), multi‑tenant la nivel de subdomeniu.
 - Pipeline CI/CD pe profiluri (dev/staging/prod) + observabilitate unificată.
 
 
-# Capitolul 2
-
-## `shared/` – modul comun al suitei (arhitectură și structuri detaliate)
-
+Capitolul 2
+# `shared/` – modul comun al suitei (arhitectură și structuri detaliate)
 > Scop: oferă biblioteci, tipuri, utilitare, SDK‑uri și observabilitate comune tuturor aplicațiilor și Control Plane‑ului. Standardizează API‑urile, erorile, contractele de evenimente și UX‑ul.
-
-### 1) `ui-design-system/`
+## 1) `ui-design-system/`
 Structură pe 6–7 niveluri până la fișiere, cu comentarii pentru fiecare element.
 
 ```
@@ -283,8 +267,8 @@ shared/ui-design-system/
 ├── scripts/release.ts
 └── scripts/changelog.ts
 ```
-
-### 2) `feature-flags/` - SDK server/client + API admin, cu DB și openapi.
+## 2) `feature-flags/`
+SDK server/client + API admin, cu DB și openapi.
 
 ```
 shared/feature-flags/
@@ -326,8 +310,8 @@ shared/feature-flags/
 │   └── guards/require-admin.ts       # authN/authZ pentru admin flags
 └── README.md
 ```
-
-### 3) `auth-client/` - PKCE → OIDC → JWT, hooks React, guards RBAC/ABAC, multi‑tenant routing.
+## 3) `auth-client/`
+PKCE → OIDC → JWT, hooks React, guards RBAC/ABAC, multi‑tenant routing.
 
 ```
 shared/auth-client/
@@ -385,8 +369,8 @@ shared/auth-client/
 │   └── session.test.ts
 └── README.md
 ```
-
-### 4) `types/` - Tipuri cross‑domain: domain/api/events/security/ui/validation/dto/errors/utils.
+## 4) `types/`
+Tipuri cross‑domain: domain/api/events/security/ui/validation/dto/errors/utils.
 
 ```
 shared/types/
@@ -420,8 +404,8 @@ shared/types/
 ├── errors/{codes.ts,http.ts,domain.ts,retryable.ts,index.ts}
 └── utils/{result.ts,option.ts,branded.ts,ids.ts,index.ts}
 ```
-
-### 5) `common/` - Utilitare, config centralizat, logger, middleware și mapare erori.
+## 5) `common/`
+Utilitare, config centralizat, logger, middleware și mapare erori.
 
 ```
 shared/common/
@@ -433,8 +417,8 @@ shared/common/
 ├── error-handling/{problem.ts,errorMapper.ts}
 └── logger/{pino.ts,formatters.ts,index.ts}
 ```
-
-### 6) `integrations/` - Conectori oficiali (BNR, ANAF, Revolut, Shopify, Stripe, PandaDoc, e‑mail/SMS/WA, Graph, OpenAI, ElevenLabs, curieri).
+## 6) `integrations/`
+Conectori oficiali (BNR, ANAF, Revolut, Shopify, Stripe, PandaDoc, e‑mail/SMS/WA, Graph, OpenAI, ElevenLabs, curieri).
 
 ```
 shared/integrations/
@@ -447,8 +431,8 @@ shared/integrations/
 ├── ai/{openai/{chat.ts,embeddings.ts,index.ts},elevenlabs/{tts.ts,index.ts}}
 └── logistics/{sameday/{client.ts,index.ts},fancourier/{client.ts,index.ts},cargus/{client.ts,index.ts}}
 ```
-
-### 7) `observability/` - Stack complet: logs/metrics/traces + dashboards, alerts și OTEL collector.
+## 7) `observability/`
+Stack complet: logs/metrics/traces + dashboards, alerts și OTEL collector.
 
 ```
 shared/observability/
@@ -471,16 +455,12 @@ shared/observability/
 - **Strict TS:** `"strict": true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
 - **Testare:** unit (Jest), vizual (Playwright), e2e acolo unde are sens (component stories).
 - **Versionare:** changeset pe pachetele `shared/*` + release automat în registry intern.
----
 
-# Capitolul 3
 
-## `cp/` – Control Plane (arhitectură și structuri detaliate)
-
+Capitolul 3
+# `cp/` – Control Plane (arhitectură și structuri detaliate)
 > Scop: găzduiește serviciile centrale ale suitei: orchestrator MF, admin, login PKCE/OIDC, identitate (SuperTokens + OIDC provider + RBAC), licențiere & metering, analytics hub (BI pentru suită) și AI hub. Toate serviciile sunt containerizate și pot rula independent sau orchestrate la rădăcină.
-
-### 1) `suite-shell/` – orchestrator micro‑frontend (Module Federation host)
-
+## 1) `suite-shell/` – orchestrator micro‑frontend (Module Federation host)
 ```
 cp/suite-shell/
 ├── package.json
@@ -541,9 +521,7 @@ cp/suite-shell/
 │   └── nginx.conf                      # static host pt. assets/shell
 └── README.md
 ```
-
-### 2) `suite-admin/` – portal administrare centrală
-
+## 2) `suite-admin/` – portal administrare centrală
 ```
 cp/suite-admin/
 ├── package.json
@@ -591,21 +569,18 @@ cp/suite-admin/
 │       │   │   ├── licensing.service.ts
 │       │   │   └── audit.service.ts
 │       │   ├── db/
-│       │   │   ├── drizzle/             # schema.ts + migrations
-│       │   │   └── seeds.ts
+│       │   │   ├── drizzle/             # schema.ts + migrations │       │   │   └── seeds.ts
 │       │   ├── auth/
-│       │   │   ├── guards.ts            # requireScope/role/entitlement
-│       │   │   └── session.ts           # verify JWT
-│       │   ├── index.ts                 # Fastify v5.6.1 bootstrap
+│       │   │   ├── guards.ts           # requireScope/role/entitlement
+│       │   │   └── session.ts          # verify JWT
+│       │   ├── index.ts                # Fastify v5.6.1 bootstrap
 │       │   └── health.ts
 │       └── Dockerfile
 ├── compose/
 │   └── docker-compose.yml
 └── README.md
 ```
-
-### 3) `suite-login/` – portal PKCE + OIDC
-
+## 3) `suite-login/` – portal PKCE + OIDC
 ```
 cp/suite-login/
 ├── package.json
@@ -646,9 +621,7 @@ cp/suite-login/
 │   └── Dockerfile
 └── README.md
 ```
-
-### 4) `identity/` – SuperTokens + OIDC provider + RBAC + tenants
-
+## 4) `identity/` – SuperTokens + OIDC provider + RBAC + tenants
 ```
 cp/identity/
 ├── package.json
@@ -665,8 +638,7 @@ cp/identity/
 │   │   │   ├── session.ts
 │   │   │   └── multitenancy.ts         # org realms
 │   │   └── adapters/
-│   │       ├── db.adapter.ts           # Drizzle/PG adapter
-│   │       ├── email.adapter.ts        # SMTP provider
+│   │       ├── db.adapter.ts           # Drizzle/PG adapter │   │       ├── email.adapter.ts        # SMTP provider
 │   │       └── sms.adapter.ts          # SMS provider
 │   ├── oidc-provider/
 │   │   ├── jwks.json                   # chei publice (rotate periodic)
@@ -686,7 +658,7 @@ cp/identity/
 │   │   └── sso.ts                      # SAML/OIDC brokers (federare)
 │   ├── db/
 │   │   ├── drizzle/
-│   │   │   ├── schema.ts               # Users, Sessions, Tenants, Orgs
+│   │   │   ├── schema.ts           # Users, Sessions, Tenants, Orgs
 │   │   │   └── migrations/
 │   │   └── seeds.ts
 │   ├── api/
@@ -704,9 +676,7 @@ cp/identity/
 │   └── Dockerfile
 └── README.md
 ```
-
-### 5) `licensing/` – licențe, entitlements, metering, billing
-
+## 5) `licensing/` – licențe, entitlements, metering, billing
 ```
 cp/licensing/
 ├── package.json
@@ -740,7 +710,7 @@ cp/licensing/
 │   │       └── index.ts
 │   ├── db/
 │   │   ├── drizzle/
-│   │   │   ├── schema.ts               # plans, features, entitlements, usage
+│   │   │   ├── schema.ts           # plans, features, entitlements, usage
 │   │   │   └── migrations/
 │   │   └── seeds.ts
 │   ├── jobs/
@@ -753,9 +723,7 @@ cp/licensing/
 │   └── Dockerfile
 └── README.md
 ```
-
-### 6) `analytics-hub/` – BI pentru suită (ingestion → warehouse → semantic → APIs)
-
+## 6) `analytics-hub/` – BI pentru suită (ingestion → warehouse → semantic → APIs)
 ```
 cp/analytics-hub/
 ├── package.json
@@ -779,7 +747,7 @@ cp/analytics-hub/
 │   │   ├── cdc-to-raw.ts               # CDC → raw zone
 │   │   ├── http-to-raw.ts              # webhooks → raw
 │   │   └── otel-to-metrics.ts
-│   └── scheduler.ts                    # Temporal workflows pentru publicare Data Products
+│   └── scheduler.ts                     # Temporal workflows pentru publicare Data Products
 ├── transforms/
 │   ├── dbt/
 │   │   ├── dbt_project.yml
@@ -823,9 +791,7 @@ cp/analytics-hub/
 │   └── Dockerfile
 └── README.md
 ```
-
-### 7) `ai-hub/` – servicii AI centralizate (inference, RAG, assistants)
-
+## 7) `ai-hub/` – servicii AI centralizate (inference, RAG, assistants)
 ```
 cp/ai-hub/
 ├── package.json
@@ -877,16 +843,12 @@ cp/ai-hub/
 - **Temporal**: workflows pentru ingestie (analytics-hub) și joburi programate (licensing.jobs).
 - **Kafka**: topics canonice pentru evenimente cross‑app (publicate din apps ca "Data Products", consumate de cerniq și alte module).
 - **Docker Compose** la nivel de serviciu + profiluri orchestrate la rădăcină.
----
 
-# Capitolul 4
 
-## `archify.app/` – Document Management (DMS) – arhitectură și structuri detaliate
-
+Capitolul 4
+# `archify.app/` – Document Management (DMS) – arhitectură și structuri detaliate
 > Scop: gestionare documente enterprise (upload, OCR, indexare, versionare, permisiuni granulare, registru intrări/ieșiri, șabloane, e‑semnătură, fluxuri de aprobare, retenție legală), integrată în suita GeniusERP sau vândută stand‑alone.
-
-### 1) Structură generală (6–7 niveluri, până la fișier) – web + API + servicii
-
+## 1) Structură generală (6–7 niveluri, până la fișier) – web + API + servicii
 ```
 archify.app/
 ├── package.json
@@ -926,11 +888,11 @@ archify.app/
 │   │   │   │   │   ├── VersionTimeline.tsx
 │   │       │   │   │   └── ShareDialog.tsx
 │   │       │   │   ├── hooks/
-│   │       │   │   │   ├── useDocuments.ts              # tRPC queries + cache
-│   │       │   │   │   ├── useUpload.ts                 # resumable + progress
-│   │       │   │   │   └── useShare.ts                  # link secure, expirare
+│   │       │   │   │   ├── useDocuments.ts     # tRPC queries + cache
+│   │       │   │   │   ├── useUpload.ts        # resumable + progress
+│   │       │   │   │   └── useShare.ts         # link secure, expirare
 │   │       │   │   ├── state/
-│   │       │   │   │   ├── selection.store.ts           # Zustand: selectare rânduri
+│   │       │   │   │   ├── selection.store.ts  # Zustand: selectare rânduri
 │   │       │   │   │   └── filters.store.ts
 │   │       │   │   └── index.ts
 │   │       │   ├── search/
@@ -938,7 +900,7 @@ archify.app/
 │   │       │   │   │   ├── SearchBox.tsx
 │   │       │   │   │   ├── Facets.tsx
 │   │       │   │   │   └── ResultItem.tsx
-│   │       │   │   ├── hooks/useSearch.ts               # query builder, highlight
+│   │       │   │   ├── hooks/useSearch.ts      # query builder, highlight
 │   │       │   │   └── index.ts
 │   │       │   ├── workflows/
 │   │       │   │   ├── components/WorkflowDesigner.tsx  # canvas steps
@@ -970,7 +932,7 @@ archify.app/
 │       │   │   └── rbac.ts                    # guards pe resurse/owner
 │       │   ├── db/
 │       │   │   ├── drizzle/
-│       │   │   │   ├── schema.ts              # Documents, Files, Versions, Tags, ACL
+│       │   │   │   ├── schema.ts          # Documents, Files, Versions, Tags, ACL
 │       │   │   │   └── migrations/
 │       │   │   ├── drizzle/                   # opțional: shared schemas
 │       │   │   └── index.ts                   # drizzle ORM + telemetry
@@ -1081,13 +1043,13 @@ archify.app/
 │       └── Dockerfile
 ├── services/                                   # workers pentru joburi grele
 │   ├── thumbnailer/
-│   │   ├── src/{index.ts, worker.ts}           # ascultă evenimente dms.file.uploaded
+│   │   ├── src/{index.ts, worker.ts}          # ascultă evenimente dms.file.uploaded
 │   │   └── Dockerfile
 │   ├── ocr-worker/
-│   │   ├── src/{index.ts, worker.ts}           # procesează coada OCR
+│   │   ├── src/{index.ts, worker.ts}          # procesează coada OCR
 │   │   └── Dockerfile
 │   ├── converter/
-│   │   ├── src/{index.ts, worker.ts}           # office→pdf, split/merge
+│   │   ├── src/{index.ts, worker.ts}          # office→pdf, split/merge
 │   │   └── Dockerfile
 │   └── antivirus/
 │       ├── src/{index.ts, worker.ts}
@@ -1103,18 +1065,18 @@ archify.app/
 │       └── reset.sh
 ├── storage/
 │   ├── buckets/
-│   │   ├── originals/                          # fișiere brute
+│   │   ├── originals/                        # fișiere brute
 │   │   ├── thumbnails/
 │   │   └── previews/
 │   └── policy/
-│       ├── retention.yaml                      # reguli ștergere/archivare
+│       ├── retention.yaml                    # reguli ștergere/archivare
 │       └── lifecycle.yaml
 ├── env/
 │   ├── .env.example
 │   ├── vault.template.hcl
 │   └── README.md
 ├── compose/
-│   ├── docker-compose.yml                      # api, web, workers, db, minio, clamav
+│   ├── docker-compose.yml                     # api, web, workers, db, minio, clamav
 │   ├── profiles/
 │   │   ├── compose.dev.yml
 │   │   ├── compose.staging.yml
@@ -1134,40 +1096,32 @@ archify.app/
 │   ├── documents.router.test.ts
 │   └── upload.presign.test.ts
 ├── e2e/
-│   └── flows.spec.ts                           # upload → OCR → index → search → share
+│   └── flows.spec.ts                     # upload → OCR → index → search → share
 └── fixtures/
 ├── pdfs/
 ├── images/
 └── office/
 ```
-
-### 2) Fluxuri funcționale cheie (overview)
-
+## 2) Fluxuri funcționale cheie (overview)
 - **Upload** (web → presign → S3/MinIO) → **antivirus** → **thumbnailer** → **OCR** (dacă e cazul) → **indexer** → disponibil în listare/căutare.
 - **Share**: link securizat cu expirare/număr accesări, politicile ACL sunt verificate la fiecare acces.
 - **Workflows**: aprobări/semnături orchestrate prin Temporal; Webhooks PandaDoc sincronizează starea.
 - **Registry**: intrări/ieșiri cu serii numerice per tenant, export CSV/PDF.
 - **Retention**: politici declarative per tip document, executate de joburi programate.
-
-### 3) Securitate & Observabilitate
-- **Auth**: PKCE→OIDC→JWT (SuperTokens/identity), RBAC + entitlements din CP/licensing.
-- **RLS/CLS**: filtre la nivel de tenant/utilizator pentru interogări și căutări.
-- **OTEL**: trace pentru upload/OCR/indexare; logs structurate (pino) + metrics (durate OCR, rata erori, dimensiune fișiere).
-
-### 4) Integrare cu suita
-- **MF remote**: `web` poate fi încărcat în `cp/suite-shell`.
-- **API**: expune tRPC + OpenAPI; gateway-ul global poate compune rute și policy‑uri.
-- **Evenimente (Data Mesh)**: Publică "Produse de Date" (ex. dms.document.created, dms.document.ocr_extracted) pe Kafka, disponibile pentru consum de către cerniq.app și ai-hub`.'
+## 3) Securitate & Observabilitate
+- Auth: PKCE→OIDC→JWT (SuperTokens/identity), RBAC + entitlements din CP/licensing.
+- RLS/CLS: filtre la nivel de tenant/utilizator pentru interogări și căutări.
+- OTEL: trace pentru upload/OCR/indexare; logs structurate (pino) + metrics (durate OCR, rata erori, dimensiune fișiere).
+## 4) Integrare cu suita
+- MF remote: `web` poate fi încărcat în `cp/suite-shell`.
+- API: expune tRPC + OpenAPI; gateway-ul global poate compune rute și policy‑uri.
+- Evenimente (Data Mesh): Publică "Produse de Date" (ex. dms.document.created, dms.document.ocr_extracted) pe Kafka, disponibile pentru consum de către cerniq.app și ai-hub`.'
 
 
-# Capitolul 5
-
-## `cerniq.app/` – Advanced Business Intelligence Hub (arhitectură și structuri detaliate)
-
+Capitolul 5
+# `cerniq.app/` – Advanced Business Intelligence Hub (arhitectură și structuri detaliate)
 > Scop: platformă Data Mesh & BI. Acționează ca un **consumator** inteligent de "Produse de Date" publicate de celelalte module (archify, numeriqo, i-wms etc.). Nu deține datele brute. Unifică aceste date într-un semantic layer centralizat pentru dashboards, AI și analiză predictivă.
-
-### 1) Structură generală (6–7 niveluri, până la fișiere) – collectors → ingestion → transforms → warehouse → semantics → apis → dashboards → governance
-
+## 1) Structură generală (6–7 niveluri, până la fișiere) – collectors → ingestion → transforms → warehouse → semantics → apis → dashboards → governance
 ```
 cerniq.app/
 ├── package.json
@@ -6049,7 +6003,1079 @@ F0.2.24
     }
   }
 F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază.
-
+F0.3.1
+{
+  "F0.3.1": {
+    "denumire_task": "Creare Subdirector 'telemetry' pentru Observabilitate",
+    "descriere_scurta_task": "Creează directorul `telemetry/` în `shared/observability/` pentru codul de instrumentare (OpenTelemetry & logging).",
+    "descriere_lunga_si_detaliata_task": "Începem integrarea observabilității prin organizarea structurii de fișiere. Acest task creează subdirectorul `telemetry` în interiorul directorului existent `shared/observability/`, conform planului de arhitectură al suitei:contentReference[oaicite:0]{index=0}. Directorul `telemetry/` va conține cod sursă pentru inițializarea OpenTelemetry (traces) și configurarea logger-ului (Pino) la nivelul întregii suite. Astfel, toate aplicațiile vor putea importa module comune de observabilitate din acest loc.",
+    "directorul_directoarele": [
+      "shared/observability/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.6: Structura de bază a fost creată, inclusiv directorul `shared/observability` gol:contentReference[oaicite:1]{index=1}. Acum adăugăm subdirectoare specifice observabilității.",
+    "contextul_general_al_aplicatiei": "Sub-faza F0.3 presupune implementarea scheletului de observabilitate pentru toate modulele suitei:contentReference[oaicite:2]{index=2}. Pentru a facilita reutilizarea, se centralizează codul de inițializare a telemetriei într-un modul comun (în `shared/observability/`).",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda `mkdir -p /var/www/GeniusSuite/shared/observability/telemetry` pe mașina de dezvoltare. Acest lucru va crea directorul `telemetry/` la calea specificată.",
+    "restrictii_anti_halucinatie": "Nu crea alte fișiere sau subdirectoare în acest pas - doar creează directorul cerut.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga conținut în `telemetry/` încă; acest task se limitează strict la crearea directorului.",
+    "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/telemetry/` pe disc.",
+    "outcome": "Directorul `telemetry/` a fost creat în structura proiectului, pregătit pentru a găzdui codul de observabilitate.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.2
+  "F0.3.2": {
+    "denumire_task": "Creare Structură pentru Loguri în `shared/observability/logs/`",
+    "descriere_scurta_task": "Creează subdirectoarele de bază pentru loguri: `ingestion/`, `parsers/`, `processors/`, `retention/`, `sinks/` și `dashboards/` în `shared/observability/logs/`.",
+    "descriere_lunga_si_detaliata_task": "Conform planului de arhitectură, componenta de loguri va fi structurată pe mai multe subfoldere pentru a separa preocupările:contentReference[oaicite:3]{index=3}. Acest task creează următoarele subdirectoare sub `shared/observability/logs/`: `ingestion/` (configurații de ingestie loguri, ex. Promtail sau colector OTEL), `parsers/` (șabloane/definiții pentru parsarea logurilor, de ex. formate JSON sau regex pentru Traefik), `processors/` (scripturi sau definiții de procesare a logurilor - ex. filtrare, redacție PII), `retention/` (configurații privind retenția logurilor), `sinks/` (configurații de destinație pentru loguri, ex. Loki) și `dashboards/` (dashboard-uri Grafana legate de loguri). Această separare clară permite gestionarea și extinderea facilă a pipeline-ului de loguri.",
+    "directorul_directoarele": [
+      "shared/observability/logs/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.1: A fost creat directorul comun `telemetry/` pentru codul de observabilitate. În continuare, definim structura de directoare pentru componenta de loguri.",
+    "contextul_general_al_aplicatiei": "Logurile aplicațiilor vor fi colectate centralizat (Folosing Loki) și vor fi prelucrate conform necesităților (ex. ștergere date sensibile). Structura creată acum urmărește guvernarea clară a fișierelor de configurare și a definițiilor legate de loguri.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzi de tip `mkdir -p` pentru fiecare subdirector necesar, de exemplu:\n- `mkdir -p /var/www/GeniusSuite/shared/observability/logs/ingestion`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/logs/parsers`\n(și repetat pentru `processors`, `retention`, `sinks`, `dashboards`).",
+    "restrictii_anti_halucinatie": "Nu crea fișiere de configurare în aceste directoare în cadrul acestui task, doar directoarele în sine.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare suplimentare în afara celor specificate; respectă exact lista indicată.",
+    "validare": "Verifică faptul că toate cele 6 directoare (`ingestion/`, `parsers/`, `processors/`, `retention/`, `sinks/`, `dashboards/`) există sub `shared/observability/logs/`.",
+    "outcome": "Structura de directoare pentru gestionarea logurilor centralizate este creată cu succes, conform planificării arhitecturale.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.3
+  "F0.3.3": {
+    "denumire_task": "Creare Structură pentru Metrici în `shared/observability/metrics/`",
+    "descriere_scurta_task": "Creează subdirectoarele de bază pentru metrici: `exporters/`, `recorders/`, `rules/` și `dashboards/` în `shared/observability/metrics/`.",
+    "descriere_lunga_si_detaliata_task": "Se pregătește structura pentru componenta de metrici, similar cu cea de loguri. Sub `shared/observability/metrics/` vom crea directoarele: `exporters/` (configurații sau cod pentru exportul metricilor, dacă este cazul, ex. către Prometheus), `recorders/` (cod care generează și înregistrează metrici personalizate în aplicații), `rules/` (reguli de alertare sau de agregare/recording rules pentru Prometheus) și `dashboards/` (dashboard-uri Grafana specifice metricilor). Acest design urmează planul suitei pentru un stack complet de observabilitate (logs/metrics/traces):contentReference[oaicite:4]{index=4}, segregând clar resursele legate de metrici.",
+    "directorul_directoarele": [
+      "shared/observability/metrics/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.2: Structura pentru loguri este creată. Acum definim structura pentru metrici, asigurând paritatea organizării pentru toate componentele observabilității.",
+    "contextul_general_al_aplicatiei": "Metricile aplicațiilor (ex. număr de request-uri, latențe, erori) vor fi colectate în Prometheus și vizualizate în Grafana:contentReference[oaicite:5]{index=5}. Structura creată permite definirea ușoară a oricăror metrici suplimentare și a regulilor de alertare într-un mod centralizat.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzi `mkdir -p` pentru a crea subdirectoarele:\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/exporters`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/recorders`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/rules`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/dashboards`.",
+    "restrictii_anti_halucinatie": "Limitează-te la crearea acestor directoare. Nu crea altele sau fișiere de configurare la acest pas.",
+    "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare în afara celor specificate; respectăm strict calea indicată.",
+    "validare": "Verifică existența directoarelor `exporters/`, `recorders/`, `rules/` și `dashboards/` în `shared/observability/metrics/`.",
+    "outcome": "Structura de directoare pentru metrici este creată, pregătind terenul pentru configurarea colectării și vizualizării metricilor.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.4
+  "F0.3.4": {
+    "denumire_task": "Creare Director Configurații Prometheus",
+    "descriere_scurta_task": "Creează directorul `prometheus/` în `shared/observability/` pentru fișierele de configurare ale Prometheus (config principal și reguli).",
+    "descriere_lunga_si_detaliata_task": "Pentru a centraliza configurarea serviciului Prometheus, adăugăm un director dedicat acestuia. Directorul `shared/observability/prometheus/` va conține fișierul principal de configurare `prometheus.yml` (definind job-urile de scrap și parametrii globali) și eventual fișiere separate de reguli de alertă/înregistrare (ex. `traefik.rules.yml` pentru Traefik):contentReference[oaicite:6]{index=6}. Acest task creează directorul respectiv, urmând ca în pașii ulteriori să populăm configurațiile necesare.",
+    "directorul_directoarele": [
+      "shared/observability/prometheus/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.3: A fost creată structura pentru metrici în general. Acum avem nevoie de un loc specific pentru configurările instanței Prometheus ce va colecta metricile.",
+    "contextul_general_al_aplicatiei": "Prometheus acționează ca baza de date de metrici pentru întreaga suită. Configurațiile sale trebuie organizate separat pentru a gestiona scraping-ul mai multor servicii și eventual regulile de alertare. Prin crearea acestui director dedicat, facilităm actualizarea și versiunea controlată a configurațiilor Prometheus.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda `mkdir -p /var/www/GeniusSuite/shared/observability/prometheus` pentru a crea directorul. Se va lucra în acest director pentru a adăuga fișiere de config (ex. `prometheus.yml`) în taskurile următoare.",
+    "restrictii_anti_halucinatie": "Nu crea încă fișierele de configurare. Acest pas se rezumă la crearea directorului.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu presupune conținutul configurațiilor Prometheus în avans; nu inventa job-uri de scrap sau alerte la acest pas.",
+    "validare": "Verifică existența directorului gol `/var/www/GeniusSuite/shared/observability/prometheus/`.",
+    "outcome": "Directorul `prometheus/` este disponibil în structura de proiect, pregătit pentru a găzdui configurațiile Prometheus.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.5
+  "F0.3.5": {
+    "denumire_task": "Creare Director pentru Dashboard-urile Grafana",
+    "descriere_scurta_task": "Creează structura dedicată pentru dashboard-urile Grafana: directorul `grafana/dashboards/` în `shared/observability/`.",
+    "descriere_lunga_si_detaliata_task": "Pentru a versiona și menține dashboard-urile Grafana în cod, vom stoca definițiile acestora (fișiere JSON) într-un director dedicat. Acest task creează `shared/observability/grafana/dashboards/`, unde vom plasa dashboard-urile de bază (ex. un dashboard pentru Traefik sau altele relevante):contentReference[oaicite:7]{index=7}. Vom putea astfel să provisionăm automat aceste dashboard-uri în containerul Grafana la pornire, asigurând vizibilitatea metricilor și logurilor fără configurare manuală ulterioară.",
+    "directorul_directoarele": [
+      "shared/observability/grafana/dashboards/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.4: Directorul de config Prometheus a fost creat. În mod similar, avem nevoie de un loc central pentru definițiile de dashboard-uri Grafana, conform practicilor de Infrastructure as Code.",
+    "contextul_general_al_aplicatiei": "Grafana este instrumentul principal de vizualizare pentru metrici, loguri și trace-uri. Păstrarea dashboard-urilor în repozitoriu asigură reproducibilitatea mediului de observabilitate și posibilitatea de a oferi clienților un set de panouri predefinite:contentReference[oaicite:8]{index=8}.",
+    "contextualizarea_directoarelor_si_cailor": "Execută `mkdir -p /var/www/GeniusSuite/shared/observability/grafana/dashboards` pentru a crea ierarhia necesară. Se vor adăuga ulterior fișiere `.json` reprezentând panouri Grafana în acest director.",
+    "restrictii_anti_halucinatie": "Nu crea fișiere JSON de dashboard în acest pas. Ne limităm la crearea structurii de directoare.",
+    "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga alte directoare în afara celor specificate; respectăm strict calea indicată.",
+    "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/grafana/dashboards/` în proiect.",
+    "outcome": "Directorul pentru stocarea dashboard-urilor Grafana este creat, permițând versionarea panourilor de monitorizare în cod.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.6
+  "F0.3.6": {
+    "denumire_task": "Adăugare Dependențe OpenTelemetry și Prometheus Client",
+    "descriere_scurta_task": "Instalează pachetele necesare în monorepo pentru observabilitate: OpenTelemetry (tracing), clientul Prometheus (metrici) și logger-ul Pino.",
+    "descriere_lunga_si_detaliata_task": "Pentru a implementa codul de observabilitate, este necesară instalarea librăriilor relevante. Acest task adaugă următoarele pachete npm la dependențele proiectului (probabil în `package.json`-ul rădăcină, utilizând `pnpm` cu flag `-w`):\n- **OpenTelemetry SDK**: `@opentelemetry/api`, `@opentelemetry/sdk-node` (sau echivalent, pentru a inițializa tracer-ul global), `@opentelemetry/exporter-trace-otlp-http` (exporter OTLP prin HTTP către colector) și `@opentelemetry/auto-instrumentations-node` (pentru a capta automat HTTP, DB etc.).\n- **Prometheus client**: `prom-client` pentru expunerea metricilor aplicatiilor (HTTP handler `/metrics`).\n- **Logger**: `pino` (dacă nu este deja inclus prin Fastify) și eventual plugin-uri utile (`pino-pretty` pentru dev, `pino-http` pentru integrare cu serverul web).\nInstalarea se face cu versiuni compatibile cu Node 24 LTS. După adăugare, rulează `pnpm install` pentru a actualiza lockfile-ul.",
+    "directorul_directoarele": [
+      "/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.1-F0.3.5: Am pregătit structura de foldere pentru observabilitate. Înainte de a scrie codul de instrumentare, trebuie să avem la dispoziție pachetele third-party necesare.",
+    "contextul_general_al_aplicatiei": "Suitei GeniusERP i se adaugă capabilități de observabilitate la nivel de cod. OpenTelemetry va fi folosit pentru trasabilitate distribuită, Prometheus pentru metrici și Pino pentru logare structurată. Aceste biblioteci trebuie incluse ca dependențe pentru a putea fi folosite ulterior în implementare.",
+    "contextualizarea_directoarelor si_cailor": "Execută comanda `pnpm add -w @opentelemetry/sdk-node @opentelemetry/api @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http prom-client pino` în directorul rădăcină al monorepo-ului (`/var/www/GeniusSuite/`). Aceasta va adăuga pachetele menționate în `package.json` și va actualiza modulul node.",
+    "restrictii_anti_halucinatie": "Nu instala alte pachete în afara celor menționate. Folosește versiuni stabile (latest compatibile LTS) și nu modifica alte setări în `package.json`.",
+    "restrictii_de_iesire_din context_sau_de_inventare_de_sub_taskuri": "Nu executa configurări sau inițializări ale acestor pachete în acest pas; doar asigură-te că sunt disponibile ca dependențe.",
+    "validare": "Verifică în `package.json` prezența noilor pachete la secțiunea de dependențe/devDependencies. Asigură-te că instalarea a fost finalizată cu succes (ieșirea comenzii pnpm nu conține erori).",
+    "outcome": "Dependențele necesare observabilității sunt instalate în proiect, pregătite pentru a fi utilizate în codul de instrumentare.",
+    "componenta_de_CI_DI": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."
+  },
+F0.3.7
+  "F0.3.7": {
+    "denumire_task": "Implementare Modul de Tracing în `telemetry/otel.ts`",
+    "descriere_scurta_task": "Implementează fișierul `otel.ts` în `shared/observability/telemetry/` pentru inițializarea OpenTelemetry (traces) la pornirea aplicațiilor.",
+    "descriere_lunga_si_detaliata_task": "Se creează modulul central de configurare a trasabilității distribuite folosind OpenTelemetry. În `shared/observability/telemetry/otel.ts` vom scrie codul care:\n- Configurează un `NodeSDK` OpenTelemetry cu resurse implicite (ex. `service.name` setat dinamic la numele aplicației) și cu exporter OTLP către colectorul OTEL (URL-ul va fi preluat din variabila de mediu `OTEL_EXPORTER_OTLP_ENDPOINT`, de ex. `http://otel-collector:4318`).\n- Activează instrumentările automate (prin `auto-instrumentations-node`) pentru HTTP (și eventual pentru alte componente standard) astfel încât request-urile și interacțiunile I/O să fie capturate fără cod boilerplate în fiecare serviciu.\n- Inițializează tracer-ul global (`trace.setGlobalTracerProvider(...)`) astfel încât toate modulele suitei să trimită trace-urile către colector.\nAcest modul va fi importat și invocat în fiecare serviciu la pornire, asigurând că trasabilitatea (span-uri) este activă peste tot:contentReference[oaicite:9]{index=9}.",
+    "directorul_directoarele": [
+      "shared/observability/telemetry/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.6: Pachetele OpenTelemetry necesare (SDK, exporter, instrumentații) sunt instalate. Acum scriem efectiv codul de inițializare a tracer-ului.",
+    "contextul_general_al_aplicatiei": "Implementarea tracing-ului distribuit permite corelarea evenimentelor între microserviciile suitei. Conform arhitecturii, folosim un colector OTEL central:contentReference[oaicite:10]{index=10}, deci fiecare serviciu trebuie să trimită trace-urile către acesta. Modulul `otel.ts` asigură o inițializare consistentă a acestui mecanism în toate aplicațiile.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/telemetry/otel.ts` (creează-l dacă nu există) și implementează logica descrisă: \n- Importă `NodeSDK` și configurările necesare din pachetele OpenTelemetry.\n- Setează resource-ul implicit cu `service.name` (poate citi dintr-o variabilă de mediu specifică fiecărei aplicații, ex. `OTEL_SERVICE_NAME`).\n- Configurează un TraceExporter de tip OTLP HTTP către `otel-collector:4318`.\n- Apelează `NodeSDK.start()` pentru a porni colectarea trasabilității înainte de pornirea serverului aplicației.",
+    "restrictii_anti_halucinatie": "Nu implementa mai mult decât inițializarea de bază. Nu adăuga instrumentări personalizate specifice aplicațiilor în acest modul (acestea pot fi adăugate ulterior dacă e nevoie).",
+    "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Limitează-te la configurări standard OpenTelemetry. Nu iniția aici conexiuni la baze de date sau alte servicii - doar setup-ul de tracing.",
+    "validare": "Asigură-te că modulul compilează (comanda `pnpm build` trebuie să reușească). Poți verifica output-ul prin adăugarea temporară a unui `console.log` în modul și rularea unei aplicații pentru a vedea că inițializarea se execută (de exemplu, pornind un serviciu în mod dev și observând că nu apar erori de OTEL).",
+    "outcome": "Fișierul `otel.ts` este implementat, permițând fiecărui serviciu al suitei să inițializeze trasabilitatea distribuită la pornire printr-un simplu import.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.8
+  "F0.3.8": {
+    "denumire_task": "Implementare Modul de Logging în `telemetry/pino.ts`",
+    "descriere_scurta_task": "Implementează fișierul `pino.ts` în `shared/observability/telemetry/` pentru configurarea logger-ului (Pino) uniform în toate serviciile.",
+    "descriere_lunga_si_detaliata_task": "Se creează modulul comun de logging bazat pe Pino, astfel încât toate serviciile să folosească același format de logare. În `shared/observability/telemetry/pino.ts`, implementăm o funcție/utilitar care:\n- Inițializează un logger Pino cu format JSON compact, potrivit pentru agregare în Loki (ex. fără culori sau altă formatare dificil de parsat).\n- Include în fiecare mesaj de log un identificator de corelație (de exemplu ID-ul trace-ului sau al span-ului OTEL curent), ceea ce va permite legarea log-urilor de trace-uri:contentReference[oaicite:11]{index=11}.\n- Expune configurarea astfel încât aplicațiile să poată fie să înlocuiască logger-ul implicit (dacă framework-ul permite, ex. Fastify permite injecția unui instance Pino personalizat), fie să folosească acest logger pentru loguri custom.\nDe asemenea, se poate configura nivelul de logare dinamic (via variabilă de mediu, ex. `LOG_LEVEL`) și activarea prettifier-ului în medii de dev (dar logurile producție rămân JSON pur).",
+    "directorul_directoarele": [
+      "shared/observability/telemetry/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.7: Modulul de tracing OTEL este implementat. Urmează modulul de logging, complementând observabilitatea prin loguri structurate.",
+    "contextul_general_al_aplicatiei": "Logurile consistente și corelate cu trace-urile sunt esențiale pentru depanare. Conform obiectivelor observabilității, toate aplicațiile vor folosi un format uniform de log (JSON) cu date de corelație:contentReference[oaicite:12]{index=12}, iar acest modul asigură implementarea centralizată a acestei cerințe.",
+    "contextualizarea_directoarelor_si cailor": "Creează/editează fișierul `/var/www/GeniusSuite/shared/observability/telemetry/pino.ts`. În acest fișier:\n- Importă biblioteca `pino`.\n- Configurează instanța principală: ex. `const logger = pino({ level: process.env.LOG_LEVEL || 'info', transport: {...} })` pentru dev (optional pretty print) sau simplu JSON pentru prod.\n- Dacă este posibil, interceptează contextul OTEL (folosind, de exemplu, `async_hooks` sau API-ul OTEL) pentru a extrage `traceId` și a-l include ca și câmp în log (ex. `logger.child({ traceId })`).\n- Exportă fie direct logger-ul, fie o funcție `getLogger()` pe care aplicațiile o pot utiliza.",
+    "restrictii_anti_halucinatie": "Nu introduce logică de logare specifică unei aplicații anume (ex: nu scrie aici logica de logare a unei tranzacții financiare). Menține modulul generic și reutilizabil.",
+    "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Nu iniția aici scrierea efectivă către Loki sau altceva - acest modul doar formatează și scrie la stdout. Expedierea către Loki va fi gestionată de pipeline-ul de loguri (Promtail/OTEL Collector).",
+    "validare": "Asigură-te că, la rularea unui serviciu, logurile apar în consolă în format JSON corect. De exemplu, pornește un serviciu și verifică că mesajele de log conțin câmpurile așteptate (`level`, `msg`, eventual `traceId`).",
+    "outcome": "Fișierul `pino.ts` este implementat, furnizând un logger standardizat pentru toate modulele, facilitând agregarea logurilor în sistemul de observabilitate.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.9
+  "F0.3.9": {
+    "denumire_task": "Implementare Modul de Metrici în `metrics/prometheus.ts`",
+    "descriere_scurta_task": "Implementează fișierul `prometheus.ts` în `shared/observability/metrics/` pentru expunerea metricilor Prometheus în aplicații.",
+    "descriere_lunga_si_detaliata_task": "Pentru a permite colectarea metricilor de către Prometheus, fiecare serviciu va expune un endpoint `/metrics`. În `shared/observability/metrics/prometheus.ts` vom implementa un modul care:\n- Initializează clientul Prometheus (`prom-client`) global, apelând `collectDefaultMetrics()` pentru a aduna metricile de bază Node.js (CPU, memorie, event loop):contentReference[oaicite:13]{index=13}.\n- Furnizează o funcție (sau middleware) care, integrată în serverul web al fiecărei aplicații, răspunde la cereri HTTP pe calea `/metrics` cu metricile în format text (formatul de expunere al Prometheus).\n- Opțional, permite înregistrarea ușoară a unor metrici personalizate (ex. counteri, histograme) prin expunerea obiectelor corespunzătoare din `prom-client`.\nAcest modul va fi importat și utilizat în initializer-ul fiecărui API, asigurând că metricile devin disponibile imediat ce serviciul pornește.",
+    "directorul_directoarele": [
+      "shared/observability/metrics/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.6: Biblioteca `prom-client` este instalată. Putem acum să scriem codul de integrare a metricilor Prometheus în aplicații.",
+    "contextul_general_al_aplicatiei": "Monitorizarea metricilor (CPU, memorie, cereri pe secundă, erori HTTP etc.) este o componentă cheie a observabilității:contentReference[oaicite:14]{index=14}. Acest modul permite suitei să expună metrici într-un mod uniform, fără duplicarea codului în fiecare serviciu.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/metrics/prometheus.ts`. În el:\n- Importă `prom-client`.\n- Apelează `promClient.collectDefaultMetrics({ prefix: '<prefix_opțional>', register: promClient.register })` pentru a porni colectarea metricilor default.\n- Exportă fie o funcție `initMetrics(server)` care atașează la instanța serverului web ruta `/metrics` (în funcție de framework: pentru Fastify, un handler ce returnează `promClient.register.metrics()` cu content-type text; pentru Express, un middleware similar). Alternativ, exportă direct `promClient.register` și fiecare serviciu îl va folosi la definirea rutei.\n- Asigură-te că modulul este idempotent (să nu înregistreze metrici duplicat dacă e apelat de mai multe ori).",
+    "restrictii_anti_halucinatie": "Nu implementa metrici specifice de business în acest modul (ex: metrici financiare). Se limitează la metricile generice și mecanismul de expunere.",
+    "restrictii_de_iesire_din context_sau de inventare de sub_taskuri": "Nu deschide un port separat pentru metrici - folosește serverul existent al aplicației. Nu modifica configurații globale în afara înregistrării metricilor.",
+    "validare": "Pornește un serviciu (ex. suite-admin) în modul dev după integrare și accesează ruta `/metrics`. Ar trebui să vezi un output text cu metricile default (ex. `process_cpu_user_seconds_total`, etc.), semn că modulul funcționează.",
+    "outcome": "Fișierul `prometheus.ts` este implementat, oferind mecanismul necesar ca toate aplicațiile să expună metricile pentru Prometheus.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.10
+  "F0.3.10": {
+    "denumire_task": "Creare Fișier de Export `index.ts` pentru Pachetul Observability",
+    "descriere_scurta_task": "Creează `index.ts` în `shared/observability/` pentru a exporta centralizat funcțiile și clasele din modulele de observabilitate.",
+    "descriere_lunga_si_detaliata_task": "Pentru a facilita importurile din pachetul comun de observabilitate (`@genius-suite/observability`), se adaugă un fișier `index.ts` care re-exportă componentele principale. În acest fișier vom face export explicit la:\n- Funcțiile/utilitarele din `telemetry/otel.ts` (ex. o funcție de inițiere a tracing-ului sau direct execuția modulului dacă e auto-invocat).\n- Funcționalitatea din `telemetry/pino.ts` (ex. instanța de logger sau o funcție de obținere a logger-ului configurat).\n- Funcțiile din `metrics/prometheus.ts` (ex. `initMetrics()` sau registrul de metrici).\nAstfel, celelalte pachete/aplicații pot importa din `@genius-suite/observability` direct, fără a cunoaște structura internă a modulelor.",
+    "directorul_directoarele": [
+      "shared/observability/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.7, F0.3.8, F0.3.9: Modulele interne (tracing, logging, metrici) au fost implementate. Acum creăm un punct de acces unificat pentru acestea.",
+    "contextul_general_al_aplicatiei": "Standardizarea importurilor crește lizibilitatea și reduce erorile. Conform convenției în monorepo, fiecare librărie are un fișier de intrare (`index.ts`) care definește API-ul public al modulului:contentReference[oaicite:15]{index=15}. Procedăm la fel pentru pachetul de observabilitate.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/index.ts` și adaugă următoarele linii:\n```ts\nexport * from './telemetry/otel';\nexport * from './telemetry/pino';\nexport * from './metrics/prometheus';\n```\nAstfel, când un serviciu va folosi, de exemplu, `import { initMetrics } from '@genius-suite/observability';`, modulul va rezolva automat către implementarea din interiorul pachetului.",
+    "restrictii_anti_halucinatie": "Nu adăuga altă logică în acest fișier în afară de exporturi. Nu transforma modulul în altceva (ex. nu inițializa nimic aici).",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Exportă doar entități reale, existente. Nu crea exporturi pentru module neimplementate sau inexistente.",
+    "validare": "Verifică compilarea proiectului (`pnpm build`). Orice eroare legată de module nelocate indică un export greșit. De asemenea, testează un import într-un serviciu, asigurându-te că intellisense vede funcțiile exportate.",
+    "outcome": "Pachetul `@genius-suite/observability` are un punct unic de acces (`index.ts`) care expune modulele de tracere, logare și metrici, gata de a fi utilizat de aplicații.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.11
+  "F0.3.11": {
+    "denumire_task": "Creare Fișier Docker Compose pentru Observabilitate (profil dev)",
+    "descriere_scurta_task": "Creează fișierul `compose.dev.yml` în `shared/observability/compose/`, care va defini serviciile stack-ului de observabilitate pentru mediul de dezvoltare.",
+    "descriere_lunga_si_detaliata_task": "Vom configura componentele de observabilitate (OTEL Collector, Prometheus, Grafana, Loki, Tempo etc.) ca servicii Docker Compose. Acest task inițiază fișierul de orchestrare dedicat profilului de dezvoltare: `shared/observability/compose/compose.dev.yml`. Fișierul va fi ulterior completat cu definiția containerelor și a setărilor necesare pentru fiecare componentă din stack:contentReference[oaicite:16]{index=16}. În primul rând, creăm fișierul gol (sau cu un schelet de YAML minimal) pentru a pregăti terenul integrării serviciilor.",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Pachetul de cod observability este gata. Acum trecem la integrarea componentelor externe (third-party) de observabilitate în mediul de dezvoltare.",
+    "contextul_general_al_aplicatiei": "Modelul de orchestrare este hibrid: fiecare aplicație are un Compose propriu, iar la nivel de suită există un Compose orchestrator:contentReference[oaicite:17]{index=17}. Componentele de observabilitate fiind comune, le vom defini într-un fișier de Compose separat (pentru profilul de dev), care poate fi inclus în orchestrare când e nevoie.",
+    "contextualizarea_directoarelor_si_cailor": "Creează directorul `shared/observability/compose/` dacă nu există deja (din structura proiectului). Apoi creează fișierul gol `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`. Adaugă un antet de bază YAML (ex. `version: '3.9'` și un bloc gol de `services:`) pentru a valida sintaxa inițială.",
+    "restrictii_anti_halucinatie": "Nu definești încă niciun serviciu în detaliu. Nu adăuga configurări la acest pas, doar fișierul și structura minimală.",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu crea încă fișiere pentru alte profiluri (staging/prod) – ne concentrăm doar pe dev acum. Nu include aplicațiile propriu-zise în acest compose, doar stack-ul de observabilitate.",
+    "validare": "Verifică că fișierul `compose.dev.yml` există și este recunoscut ca YAML valid (poți rula `docker compose -f shared/observability/compose/compose.dev.yml config` pentru a verifica că nu sunt erori).",
+    "outcome": "Fișierul de orchestrare `compose.dev.yml` a fost creat, pregătit pentru definirea serviciilor de observabilitate în mediul de dezvoltare.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.12
+  "F0.3.12": {
+    "denumire_task": "Definire Rețea Docker 'observability' în Compose",
+    "descriere_scurta_task": "Adaugă în `compose.dev.yml` definirea unei rețele Docker dedicate observabilității (ex. `observability`) la care vor adera componentele și aplicațiile.",
+    "descriere_lunga si_detaliata_task": "Pentru a permite comunicarea între serviciile de observabilitate și aplicații, creăm o rețea Docker izolată numită `observability`. În fișierul `compose.dev.yml`, adaugă o secțiune `networks:` la sfârșit, definind rețeaua `observability`. Această rețea va fi folosită de containerul OTEL Collector, Prometheus, Grafana, Loki, Tempo etc., precum și de containerele aplicațiilor (acestea vor fi atașate la rețea prin propriile Compose-uri). Asigură-te că rețeaua este de tip bridge și (opțional) marcată ca external dacă va fi accesată și din alte fișiere Compose (de ex. Compose-urile aplicațiilor stand-alone).",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.11: A fost creat fișierul `compose.dev.yml`. Acum stabilim infrastructura de rețea necesară înainte de a adăuga serviciile concrete.",
+    "contextul_general_al_aplicatiei": "Conform arhitecturii Docker Compose hibride, rețelele partajate (edge, internal, observability) sunt pre-definite pentru a lega containerele între ele:contentReference[oaicite:18]{index=18}. Rețeaua `observability` va izola traficul de telemetrie și va permite componentelor precum Prometheus sau OTEL Collector să comunice cu serviciile monitorizate.",
+    "contextualizarea_directoarelor si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă la sfârșit:\n```yaml\nnetworks:\n  observability:\n    name: geniuserp_observability\n    driver: bridge\n```\nAcest exemplu definește rețeaua cu un nume explicit (`geniuserp_observability`) pentru a evita conflicte și permite altor Compose-uri să se refere la ea. Poți marca rețeaua ca `external: true` dacă dorești să fie creată manual în avans și reutilizată, însă deocamdată o vom lăsa implicită (Docker o va crea la nevoie).",
+    "restrictii_anti_halucinatie": "Nu defini alte rețele decât cea specificată. Nu schimba driver-ul default (bridge) și nu seta opțiuni avansate care nu sunt necesare acum.",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Limitează-te la definirea rețelei. Nu atașa încă serviciile la rețea în acest pas - acest lucru se va face la definirea fiecărui serviciu.",
+    "validare": "Rulează `docker compose -f shared/observability/compose/compose.dev.yml config` și verifică existența secțiunii networks și a rețelei `observability`. Nu trebuie raportate erori de sintaxă.",
+    "outcome": "Rețeaua Docker `observability` este definită în config-ul Compose dev, gata să fie folosită de serviciile de observabilitate și de aplicațiile monitorizate.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.13
+  "F0.3.13": {
+    "denumire_task": "Creare Configurație OpenTelemetry Collector (`otel-collector-config.yml`)",
+    "descriere_scurta_task": "Adaugă fișierul de configurare pentru OTEL Collector (ex. `otel-collector-config.yml`) în `shared/observability/` pentru definirea pipeline-urilor de loguri și trace-uri.",
+    "descriere_lunga_si_detaliata_task": "Pentru a inițializa OpenTelemetry Collector-ul, avem nevoie de un fișier de configurare YAML care să specifice ce date colectează și unde le trimite. Vom crea fișierul `otel-collector-config.yml` în directorul `shared/observability/`, conținând cel puțin:\n- **Receivere**: configurare pentru a primi date OTLP pe protocol gRPC (port 4317) și HTTP (port 4318) pentru traces (și eventual logs dacă decidem să le trimitem prin collector). Aceste receivere permit primirea span-urilor trimise de serviciile noastre.\n- **Exportere**: configurare pentru a trimite mai departe datele către Tempo (pentru traces) prin OTLP gRPC către adresa `tempo:4317`. Pentru logs, dacă am folosi collector, am defini un exporter Loki, dar în acest skelet vom lăsa logs separat prin Promtail.\n- **Pipeline**: definirea unui pipeline de `traces` care leagă receiver-ul OTLP de exporter-ul Tempo (inclusiv eventual un procesor de tip `batch` pentru optimizare). Astfel, orice trace primit de colector va fi trimis către Tempo pentru stocare.\nConfig-ul poate rămâne minimalist la acest stadiu, urmând să fie extins pe măsură ce adăugăm procesări sau alte tipuri de date.",
+    "directorul_directoarele": [
+      "shared/observability/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.12: Rețeaua de observabilitate e definită. Acum pregătim configurația necesară primului serviciu din stack: OTEL Collector-ul.",
+    "contextul_general_al_aplicatiei": "OpenTelemetry Collector centralizează datele de telemetrie (traces, logs, metrici) și le rutează către backend-urile de stocare (Tempo, Loki, Prometheus etc.). Conform design-ului, Collector-ul va primi trace-urile de la aplicații și le va trimite către Tempo (stack-ul Grafana pentru traces). Această configurație realizează legătura între microservicii și sistemul de stocare a trasabilității.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/otel-collector-config.yml`. În interior, adaugă conținut YAML, de exemplu:\n```yaml\nreceivers:\n  otlp:\n    protocols:\n      http:\n      grpc:\nexporters:\n  otlp/tempo:\n    endpoint: \"tempo:4317\"\nprocessors:\n  batch:\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp/tempo]\n```\nAceasta configurează minimal colectorul să accepte orice trace pe protocoalele standard OTLP și să le trimită către serviciul Tempo. Asigură-te că indentarea YAML este corectă.",
+    "restrictii_anti_halucinatie": "Nu adăuga configurații inutile sau neplanificate (ex: nu activa deocamdată metrici sau loguri prin collector, deoarece metricile le colectăm direct cu Prometheus, iar logurile prin Promtail).",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Menține configurația cât mai simplă, doar elementele necesare pentru skeleton. Nu inventa alți exporteri/receivere în afară de cele discutate (OTLP input, Tempo output).",
+    "validare": "Poți valida sintaxa rulând containerul OTEL Collector local cu acest fișier (comanda `otelcol --dry-run -c otel-collector-config.yml` în interiorul imaginii) sau, odată integrat în Compose, verificând logs la pornirea containerului OTEL (nu trebuie să apară erori de config).",
+    "outcome": "Fișierul de configurare pentru OpenTelemetry Collector este creat, definind pipeline-ul de bază pentru preluarea trasabilității și transmiterea către Tempo.",
+    "componenta_de_CI_DI": "N/A"
+  },
+F0.3.14
+  "F0.3.14": {
+    "denumire_task": "Adăugare Serviciu OTEL Collector în `compose.dev.yml`",
+    "descriere_scurta_task": "Configurează serviciul Docker `otel-collector` în fișierul de Compose dev, folosind imaginea OpenTelemetry Collector și fișierul de configurare creat.",
+    "descriere_lunga si_detaliata_task": "Introducem în `shared/observability/compose/compose.dev.yml` primul serviciu: OTEL Collector. Vom adăuga sub secțiunea `services:` un serviciu numit, de exemplu, `otel-collector`, cu următoarele atribute:\n- **Image**: Folosește imaginea oficială OpenTelemetry Collector (ex. `otel/opentelemetry-collector:latest` sau o versiune fixă compatibilă).\n- **Volumes**: Montează fișierul de configurare `otel-collector-config.yml` în container, de ex.: `- ./shared/observability/otel-collector-config.yml:/etc/otel-collector-config.yml:ro`.\n- **Command**: Specifică comanda de start a colectorului pentru a folosi config-ul montat (ex.: `--config=/etc/otel-collector-config.yml`).\n- **Ports**: Expune porturile necesare dacă vrei să accesezi colectorul extern (poate nu e necesar în dev; OTEL colectează date de la celelalte containere direct prin rețeaua Docker). Totuși, asigură-te că porturile 4317 (gRPC) și 4318 (HTTP) sunt disponibile pentru celelalte containere (prin rețeaua `observability`).\n- **Networks**: Atașează serviciul la rețeaua `observability` definită la F0.3.12.\nAstfel configurat, OTEL Collector-ul va porni în container și va asculta pe porturile specifice pentru date OTLP de la aplicații.",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.13: Fișierul de config pentru colector este gata. Acum definim containerul OTEL Collector în orchestrare folosindu-l.",
+    "contextul_general_al_aplicatiei": "Collectorul OTEL reprezintă punctul central al pipeline-ului de trasabilitate. Prin includerea lui în Docker Compose, ne asigurăm că la rularea mediului de dev (`docker compose up`) acesta va porni împreună cu celelalte componente, conform cerinței de a avea Traefik+observability lansate cu o singură comandă:contentReference[oaicite:19]{index=19}.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă:\n```yaml\n  otel-collector:\n    image: otel/opentelemetry-collector:latest\n    command: [\"--config=/etc/otel-collector-config.yml\"]\n    volumes:\n      - ../../otel-collector-config.yml:/etc/otel-collector-config.yml:ro\n    networks:\n      - observability\n```\nNotă: se folosește calea relativă potrivită (presupunând că `compose.dev.yml` se află în `shared/observability/compose/`, mergem două niveluri în sus pentru a monta config-ul din `shared/observability/`). Nu expunem porturi în mod explicit aici, deoarece celelalte containere îl vor accesa prin rețeaua internă Docker.",
+    "restrictii_anti_halucinatie": "Nu adăuga environment variables inutile; configurarea se face prin fișier, deci nu defini variabile OTEL în acest container. Nu include încă dependințe `depends_on` către alte servicii (collectorul poate porni independent de celelalte).",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu modifica fișierul de config OTEL în acest pas - presupunem că este corect. Nu activa încă colectarea de metrici prin acest colector, focusul e doar pe trasabilitate (conform config-ului minimal).",
+    "validare": "Rulare `docker compose -f shared/observability/compose/compose.dev.yml up -d otel-collector` și verifică log-urile: containerul ar trebui să pornească fără erori de configurare (mesaj de tip \"Everything is ready\" de la otelcol).",
+    "outcome": "Serviciul Docker `otel-collector` este definit în configurația de dezvoltare, folosind config-ul specific, și se alătură rețelei de observabilitate.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.15": {
+    "denumire_task": "Creare Configurație Prometheus (`prometheus.yml`)",
+    "descriere_scurta_task": "Adaugă fișierul `prometheus.yml` în `shared/observability/prometheus/` cu job-urile de scrap pentru metricile expuse de suite.",
+    "descriere_lunga si_detaliata_task": "Se pregătește configurarea serverului Prometheus, definind ce ținte (aplicații) să monitorizeze. În `shared/observability/prometheus/prometheus.yml`, vom specifica cel puțin următoarele:\n- Un job global (ex. `genius-apps`) care include toate serviciile suitei ce expun metrici. Vom lista ca **static_configs** adresele containerelor pentru fiecare aplicație, pe portul pe care expun metricile (de exemplu, dacă convenim portul 3000 pentru API-urile back-end, atunci țintele pot fi `archify.app:3000`, `flowxify.app:3000`, etc., respectiv numele de servicii din Compose-ul orchestrator care vor fi definite în F0.4). În contextul dev, putem folosi numele serviciilor (sau aliasuri) în rețeaua `observability`.\n- Un job pentru propriile componente de observabilitate dacă e cazul (ex. putem adăuga un job `otel-collector` pentru a scrapa metricile colectorului la portul său intern 8888, deși nu e critic acum; și un job pentru Traefik, care va fi configurat în F0.4 să expună metrici Prometheus:contentReference[oaicite:20]{index=20}).\n- Setări globale de scrape interval (ex. `scrape_interval: 15s` pentru dev) și eventual `evaluation_interval` pentru reguli.\nDe asemenea, includem referințe către eventualele fișiere de rules (ex. includerea fișierului `traefik.rules.yml` din același director, dacă definim reguli de alertă pentru Traefik). Această configurare va permite ca, odată ce toate serviciile sunt pornite, Prometheus să colecteze date despre CPU, memorie, număr de request-uri etc. de la fiecare.",
+    "directorul_directoarele": [
+      "shared/observability/prometheus/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.4: Directorul de config Prometheus a fost creat. Acum scriem configurația efectivă pentru a putea rula containerul Prometheus cu aceste setări.",
+    "contextul_general_al_aplicatiei": "Prometheus va fi sursa unică de adevăr pentru metricile runtime ale suitei. Configurându-l corespunzător încă din faza skeleton, ne asigurăm că fiecare serviciu este monitorizat. Acest pas se aliniază cerinței de a avea dashboarduri de bază disponibile în Grafana, bazate pe metricile colectate:contentReference[oaicite:21]{index=21}.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/prometheus/prometheus.yml` cu conținut exemplificativ:\n```yaml\nglobal:\n  scrape_interval: 15s\nscrape_configs:\n  - job_name: 'genius_applications'\n    static_configs:\n      - targets: ['archify.app:3000','flowxify.app:3000','i-wms.app:3000', 'mercantiq.app:3000', 'numeriqo.app:3000', 'triggerra.app:3000', 'vettify.app:3000', 'suite-admin:3000', 'suite-login:3000', 'identity:3000', 'licensing:3000', 'analytics-hub:3000', 'ai-hub:3000']\n  - job_name: 'traefik'\n    static_configs:\n      - targets: ['traefik:9100']\n    metrics_path: /metrics\n    scrape_interval: 5s\nrule_files:\n  - traefik.rules.yml\n```\nLista de ținte include fiecare serviciu al suitei cu numele DNS al containerului (aceste nume vor fi definite când vom scrie Compose-ul orchestrator în F0.4). Pentru Traefik am presupus un endpoint de metrici la 9100 (va fi configurat ulterior). Include `rule_files` către fișierul de reguli Traefik (creat în alt task).",
+    "restrictii_anti_halucinatie": "Nu listăm servicii care nu există; folosește doar numele cunoscute ale aplicațiilor (conform structurii / planului). Dacă unele module nu au metrici (ex. frontend-uri pure), le putem omite sau vom adăuga când vor exista metrici relevante.",
+    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu defini alerte complexe sau reguli de înregistrare la acest pas, doar include fișierul de rules pentru Traefik dacă e cazul. Nu activa scrap-ul pentru metrici de sistem (node_exporter etc.) în acest config skeleton.",
+    "validare": "Poți valida fișierul rulând containerul Prometheus cu acest config (vom face în task-ul următor), sau folosind un validator online de config Prometheus. Asigură-te că indentarea YAML este corectă și că fișierul `traefik.rules.yml` referit există (va fi creat în alt task).",
+    "outcome": "Fișierul de configurare `prometheus.yml` este pregătit, specificând scrapping-ul metricilor pentru toate aplicațiile și componentele relevante ale suitei.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.16": {
+    "denumire_task": "Adăugare Serviciu Prometheus în `compose.dev.yml`",
+    "descriere_scurta_task": "Configurează serviciul Docker `prometheus` în fișierul Compose dev, folosind imaginea oficială și montând configurația `prometheus.yml` generată.",
+    "descriere_lunga si_detaliata_task": "Adăugăm serviciul de monitorizare Prometheus în `shared/observability/compose/compose.dev.yml`. Sub secțiunea `services:`, introducem serviciul `prometheus` cu setările necesare:\n- **Image**: `prom/prometheus:latest` (sau o versiune stabilă actuală, ex. v2.x).\n- **Volumes**: Montăm fișierul de configurare creat la F0.3.15: ex. `- ../../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro`. De asemenea, putem monta un volum persistent pentru date (ex. `- prom_data:/prometheus`), deși pentru dev nu e critic.\n- **Command/Args**: putem specifica parametri suplimentari dacă e nevoie (ex. `--config.file=/etc/prometheus/prometheus.yml` dacă imaginea nu o ia implicit, dar în general prom/prometheus citește implicit acel fișier de config când e montat la locația default `/etc/prometheus/prometheus.yml`).\n- **Ports**: expune portul 9090 (UI web Prometheus) dacă dorim să accesăm interfața de dev (ex. mapping la host doar în dev). Acest pas e opțional, dat fiind că ne vom uita la metrici mai mult prin Grafana.\n- **Networks**: atașăm containerul la rețeaua `observability` astfel încât să poată rezolva DNS-urile serviciilor de monitorizat.\nCu această definiție, la pornire Compose-ului, Prometheus va citi configurația montată și va începe să scrape-uiască metricile serviciilor suitei.",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.15: Fișierul `prometheus.yml` este disponibil cu toate țintele. Acum definim containerul Prometheus folosind acel fișier.",
+    "contextul_general_al_aplicatiei": "Integrarea Prometheus ca serviciu Docker ne permite să includem monitorizarea metricilor în mediul de dezvoltare. Acest lucru este parte din skeleton-ul de observabilitate al suitei, conform planificării F0.3:contentReference[oaicite:22]{index=22}.",
+    "contextualizarea_directoarelor si_cailor": "Deschide `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă serviciul:\n```yaml\n  prometheus:\n    image: prom/prometheus:latest\n    volumes:\n      - ../../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro\n    networks:\n      - observability\n    ports:\n      - 9090:9090\n```\nDacă definim un volum extern pentru date: adaugă un volum named (ex. `prom_data`) și montează-l la `/prometheus`. Pentru skeleton însă, persistența datelor nu e obligatorie. Port-ul 9090 e expus pentru acces web opțional (poate fi omis dacă nu e necesar).",
+    "restrictii_anti_halucinatie": "Nu uita să includă containerul în rețeaua corectă (observability) altfel nu va putea atinge țintele. Nu adăuga în acest moment alertmanager sau alte servicii, ne limităm la serverul Prometheus simplu.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu configura în plus autentificare sau alte flag-uri avansate Prometheus (ex. remote_write etc.) în skeleton. Rămânem la setup-ul minimal descris.",
+    "validare": "Pornește local doar serviciul Prometheus din Compose (`docker compose -f ... up -d prometheus`) după ce toate serviciile sunt integrate, și vizitează `http://localhost:9090/targets`. Ar trebui să vezi lista de job-uri definite (chiar dacă unele ținte pot fi inactive până la pornirea aplicațiilor).",
+    "outcome": "Serviciul Prometheus este definit în configurația Docker Compose, configurat să își încarce setările și să colecteze metricile din suita GeniusERP.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.17": {
+    "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
+    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/grafana/` (ex. `datasources.yml`).",
+    "descriere_lunga_si_detaliata_task": "Pentru ca instanța Grafana să cunoască automat sursele de date (Prometheus pentru metrici, Loki pentru loguri, Tempo pentru trace-uri), vom folosi mecanismul de provisioning. Creăm un fișier YAML (ex. `datasources.yml`) sub directorul `shared/observability/grafana/`, cu conținut de forma:\n```yaml\napiVersion: 1\ndatasources:\n  - name: Prometheus\n    type: prometheus\n    url: http://prometheus:9090\n    access: proxy\n    isDefault: true\n  - name: Loki\n    type: loki\n    url: http://loki:3100\n    access: proxy\n  - name: Tempo\n    type: tempo\n    url: http://tempo:3100\n    access: proxy\n```\nAcest exemplu definește 3 surse: Prometheus, Loki și Tempo, indicând Grafanei cum să le acceseze (prin DNS-ul serviciilor respective în rețeaua Docker). Notăm că Tempo folosește același port ca Loki în modul single-binary (3100) fiind configurat astfel implicit; dacă e alt port, vom ajusta. Flagul `isDefault: true` face ca Prometheus să fie sursa implicită pentru panel-urile de grafice. Acest fișier va fi montat în containerul Grafana la pornire, asigurând configurarea automată a surselor de date.",
+    "directorul_directoarele": [
+      "shared/observability/grafana/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.5: A fost creat directorul pentru Grafana dashboards. Acum ne ocupăm de configurarea automată a datelor sursă (Prom, Loki, Tempo) pentru Grafana.",
+    "contextul_general_al_aplicatiei": "Provisionarea surselor de date elimină necesitatea configurării manuale post-deploy a Grafana. În modul skeleton dev, definim sursele esențiale conform stack-ului planificat de observabilitate (Prometheus, Loki, Tempo).",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/datasources.yml` cu conținutul de mai sus. Asigură-te că URL-urile corespund numelor de servicii pe care le vom folosi în Compose (de ex. `prometheus` pentru serviciul Prometheus). Păstrează fișierul într-o substructură pe care o vom monta în container (Grafana are convenția de a citi config-urile de datasource din `/etc/grafana/provisioning/datasources/`).",
+    "restrictii_anti_halucinatie": "Nu crea mai multe datasources decât este cazul. Nu adăuga date source pentru baze de date sau altele care nu fac parte din observabilitate (ex: nu definim un datasource pentru PostgreSQL aici).",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu schimba porturile standard în acest config fără motiv. Nu seta credențiale sau alte câmpuri (toate serviciile noastre rulează fără autentificare intern în modul dev).",
+    "validare": "Va fi validată la pornirea containerului Grafana (dacă fișierul are erori, Grafana va loga mesaje de eroare în container). Poți verifica vizual că fișierul este corect formatat YAML și conține toate cele 3 data source-uri așteptate.",
+    "outcome": "Fișierul de provisioning pentru sursele de date Grafana este creat, permițând configurarea automată a conexiunilor către Prometheus, Loki și Tempo la startul Grafana.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.18": {
+    "denumire_task": "Creare Configurație Provisionare Dashboard-uri Grafana",
+    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana (ex. `dashboards.yml`) care indică încărcarea automată a dashboard-urilor JSON din directorul `grafana/dashboards/`.",
+    "descriere_lunga si_detaliata_task": "Pentru a încărca automat dashboard-urile de bază în Grafana, vom folosi tot mecanismul de provisioning. Creăm un fișier, de exemplu `dashboards.yml`, în `shared/observability/grafana/`, cu conținutul:\n```yaml\napiVersion: 1\nproviders:\n  - name: 'Genius Suite Dashboards'\n    orgId: 1\n    folder: ''\n    type: file\n    disableDeletion: false\n    updateIntervalSeconds: 60\n    options:\n      path: /etc/grafana/provisioning/dashboards\n```\nAcest config spune Grafana să ia toate dashboard-urile JSON din calea specificată și să le încarce automat. Noi vom monta directorul nostru `shared/observability/grafana/dashboards/` în container la acea cale (`/etc/grafana/provisioning/dashboards`). Astfel, orice fișier `.json` plasat acolo (de ex. `traefik.json` pe care îl vom crea) va apărea ca dashboard în Grafana fără acțiuni manuale ulterioare. Parametrul `updateIntervalSeconds: 60` indică verificarea periodică a modificărilor (nu critic în dev, dar util).",
+    "directorul_directoarele": [
+      "shared/observability/grafana/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.17: Configurarea surselor de date Grafana este pregătită. Urmează configurarea încărcării dashboard-urilor.",
+    "contextul_general_al_aplicatiei": "Dashboard-urile de bază (cum este cel pentru Traefik) trebuie să fie disponibile imediat în Grafana pentru a valida observabilitatea. Acest fișier asigură că panourile noastre JSON din cod sunt propagate în UI Grafana la run-time.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/dashboards.yml` cu conținutul de mai sus. Notă: `path` indică un director din container. Vom monta folderul nostru local de dashboards acolo la configurarea serviciului Grafana. Verifică să nu existe erori de indentare YAML și că `apiVersion` este setat la 1 (versiunea schema de provisioning).",
+    "restrictii_anti_halucinatie": "Nu schimba valorile cheie (ex: orgId trebuie să rămână 1, reprezentând organizația implicită Grafana). Nu adăuga provideri multipli inutil - un singur provider global e suficient pentru skeleton.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu plasa path-ul către altă locație - menținem convenția standard. Nu adăuga opțiuni avansate (ex: filtrare după tag) atâta timp cât avem doar câteva dashboard-uri generice.",
+    "validare": "Similar cu datasources, validarea are loc la pornirea Grafana: dacă configul are erori, apar în log. După pornire, verifică în UI Grafana la Settings -> Provisioning -> Dashboard că provider-ul 'Genius Suite Dashboards' apare și indică calea corectă.",
+    "outcome": "Fișierul de provisioning al dashboard-urilor este creat, instructând Grafana să preia automat definițiile din cod pentru panourile de monitorizare.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.19": {
+    "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml`",
+    "descriere_scurta_task": "Configurează serviciul Docker `grafana` în Compose dev, montând fișierele de provisioning și folderul de dashboard-uri, și expunând UI-ul Grafana.",
+    "descriere_lunga si_detaliata_task": "Adăugăm serviciul de vizualizare Grafana la orchestrarea dev. În `compose.dev.yml`, sub `services:`, definim `grafana` cu:\n- **Image**: `grafana/grafana-oss:latest` (varianta open-source a Grafana).\n- **Volumes**: \n  - Montează fișierul `datasources.yml` în container la `/etc/grafana/provisioning/datasources/datasources.yml` (să fie citit la pornire).\n  - Montează fișierul `dashboards.yml` la `/etc/grafana/provisioning/dashboards/dashboards.yml`.\n  - Montează directorul local `grafana/dashboards/` în container la `/etc/grafana/provisioning/dashboards` (pentru a livra toate dashboard-urile JSON).\n- **Ports**: expune portul 3000 (interfața web Grafana) către host pentru acces (ex. `- 3000:3000`).\n- **Networks**: atașează la `observability` network.\n- **Environment**: poți seta variabile pentru admin (ex. `GF_SECURITY_ADMIN_USER=admin` și `GF_SECURITY_ADMIN_PASSWORD=admin` pentru credențiale implicite ușoare în dev) și timezone/alte preferințe dacă e cazul.\nCu această configurație, la pornire Grafana va prelua automat sursele de date (prin `datasources.yml`) și panourile (prin `dashboards.yml` și fișierele JSON montate).",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.17 & F0.3.18: Au fost pregătite fișierele de provisioning pentru surse de date și dashboard-uri. Acum integrăm Grafana ca serviciu folosindu-le.",
+    "contextul_general_al_aplicatiei": "Grafana completează triada observabilității (logs, metrics, traces) oferind UI unificat. Prin adăugarea sa în Compose, realizăm cerința de a avea tot stack-ul (Prometheus, Grafana, etc.) integrat în mediul de dev:contentReference[oaicite:23]{index=23}.",
+    "contextualizarea_directoarelor si_cailor": "Editează `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă:\n```yaml\n  grafana:\n    image: grafana/grafana-oss:latest\n    volumes:\n      - ../../grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro\n      - ../../grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro\n      - ../../grafana/dashboards:/etc/grafana/provisioning/dashboards:ro\n    environment:\n      - GF_SECURITY_ADMIN_USER=admin\n      - GF_SECURITY_ADMIN_PASSWORD=admin\n    networks:\n      - observability\n    ports:\n      - 3000:3000\n```\nAsigură-te că calea relativă pentru volume e corectă (din `compose.dev.yml` către fișierele locale). Setăm utilizatorul admin/admin doar în dev, fiind un mediu controlat.",
+    "restrictii_anti_halucinatie": "Nu uita să montezi și folderul de dashboards pe lângă fișierele YAML, altfel Grafana nu va găsi panourile. Nu adăuga alte servicii Grafana (ex. grafana-image-renderer) în acest task, nu sunt necesare acum.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Păstrează config-ul clar: un singur user admin default, fără LDAP sau alte integrări. Nu modifica portul web implicit (3000) pentru Grafana în dev.",
+    "validare": "După pornire, accesează `http://localhost:3000` cu user-ul/parola specificate (admin/admin) și verifică: sursele de date (meniul Configuration -> Data Sources) ar trebui să arate Prometheus, Loki, Tempo preconfigurate; iar în lista de dashboard-uri să apară panoul Traefik (după ce-l vom adăuga).",
+    "outcome": "Serviciul Grafana este adăugat și configurat complet în docker-compose dev, pregătit să afișeze metricile și logurile colectate, fără configurații manuale post-lansare.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.20": {
+    "denumire_task": "Creare Configurație Promtail pentru Colectarea Logurilor",
+    "descriere_scurta_task": "Adaugă fișierul de configurare Promtail (agent Loki) în `shared/observability/logs/ingestion/` (ex. `promtail-config.yml`), pentru a defini ce loguri să fie trimise către Loki.",
+    "descriere_lunga si_detaliata_task": "În vederea colectării logurilor containerelor și trimiterii lor către Loki, vom folosi Promtail, agentul de loguri pentru Loki. Creăm un fișier `promtail-config.yml` sub `shared/observability/logs/ingestion/`, care să conțină configurația necesară. Configurația va specifica:\n- **scrape_configs**: definim job-uri pentru colectarea logurilor. Un job generic poate prelua logurile tuturor containerelor din rețeaua noastră `observability` (sau toate containerele, filtrând după etichete Docker). Exemplu de config relevant:\n```yaml\nserver:\n  http_listen_port: 9080\npositions:\n  filename: /tmp/positions.yaml\nclients:\n  - url: http://loki:3100/loki/api/v1/push\nscrape_configs:\n  - job_name: all-containers\n    docker_sd_configs:\n      - host: unix:///var/run/docker.sock\n        network: geniuserp_observability\n    relabel_configs:\n      - source_labels: [__docker_container_image]\n        action: keep\n        regex: .*\n    pipeline_stages:\n      - json:\n          expressions:\n            level: level\n            msg: message\n            trace: traceId\n      - labeldrop: [\"__address__\"]\n```\nAcest config instructează Promtail să descopere automat toate containerele din rețeaua `geniuserp_observability` (numele rețelei definit la F0.3.12) via Docker socket, să preia logurile lor (Promtail va citi stream-ul de log al fiecărui container) și să le trimită la Loki. Stadiile de pipeline includ un parser JSON (presupunând că logurile sunt JSON, ex. cele generate de Pino), extrăgând câmpurile standard (level, message, traceId) ca etichete sau mesaje. Se elimină etichete implicite inutile (`__address__`). Vom putea adăuga parse-stage specific pentru Traefik (format diferit) folosind `parsers/traefik.json` separat în alt task.",
+    "directorul_directoarele": [
+      "shared/observability/logs/ingestion/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.2: Structura de directoare pentru loguri a fost creată. Acum completăm fișierul principal de config pentru ingestia de loguri (Promtail).",
+    "contextul_general_al_aplicatiei": "Loki necesită un agent de loguri pentru a primi date; Promtail este soluția standard. Configurând Promtail acum, asigurăm colectarea centralizată a logurilor generate de toate aplicațiile și componentele, îndeplinind obiectivul 'loguri colectate unitar în Loki':contentReference[oaicite:24]{index=24}.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/ingestion/promtail-config.yml` cu conținutul exemplificat mai sus. Verifică să folosești numele corect al rețelei Docker (dacă la F0.3.12 s-a dat un alt nume, reflectă-l aici). Asigură-te că URL-ul Loki (`http://loki:3100`) corespunde numelui serviciului pe care îl vom defini. Prin configurarea stage-ului `json`, presupunem că logurile majorității serviciilor sunt deja în format JSON (așa cum asigurăm prin Pino).",
+    "restrictii_anti_halucinatie": "Nu adăuga configuri de Promtail pentru surse inexistente (ex: nu definim file_sd dacă nu folosim fișiere). Nu trimite loguri către altă destinație decât Loki.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu include încă parser-ul Traefik direct aici; vom folosi un pipeline stage separat dacă e nevoie, după cum vom defini în `logs/parsers/traefik.json` ulterior. Menține config-ul general și cât mai simplu.",
+    "validare": "Validarea completă va fi la rularea containerului Promtail. Ca verificare preliminară, asigură-te că sintaxa YAML este corectă și că fiecare secțiune este bine indentată. Poți testa config-ul prin rularea locală a promtail (dacă ai instalat) cu flag de dry-run, dar în mod uzual doar pornirea containerului ne va confirma.",
+    "outcome": "Fișierul de configurare pentru Promtail este creat, permițând agentului de loguri să culeagă automat logurile containerelor și să le transmită către Loki.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.21": {
+    "denumire_task": "Adăugare Serviciu Loki în `compose.dev.yml`",
+    "descriere_scurta_task": "Configurează serviciul Docker `loki` (Grafana Loki) în Compose dev, pentru stocarea centralizată a logurilor, incluzând un volum de date pentru persistență temporară.",
+    "descriere_lunga si_detaliata_task": "Adăugăm componenta de log management Grafana Loki ca serviciu în `compose.dev.yml`. Sub secțiunea `services:`, definim serviciul `loki` cu parametri:\n- **Image**: `grafana/loki:latest` (imaginea oficială Loki, mod single-binary care ascultă pe portul 3100 pentru scriere/querie de loguri).\n- **Ports**: putem expune portul 3100 extern dacă vrem să testăm direct interogări (nu neapărat necesar, Grafana va comunica intern cu Loki). Pentru dev, putem totuși expune `3100:3100` ca să avem acces eventual la API-ul Loki.\n- **Volumes**: definește un volum de stocare pentru datele Loki (ex. mount la `/loki` în container) astfel încât logurile să nu fie păstrate doar în memoria containerului. În dev, pot fi stocate și ephemeral, dar vom configura un volum named de ex. `loki_data`.\n- **Command/Config**: Loki vine cu un config implicit pentru single-process mode. Putem să nu montăm un config custom acum, folosim implicitul care stochează date local și are retenție by default destul de mare. Pentru skeleton, acceptăm configurația default (ceea ce stochează logurile local indefinite, fiind dev). Dacă am vrea, am putea monta un fișier minimal de config să limităm retenția (ex. 7 zile), dar nu e necesar in dev skeleton.\n- **Networks**: atașăm `loki` la rețeaua `observability`.\nAcum Promtail (definit în task următor) va putea trimite logurile la `http://loki:3100`. Grafana are deja data source-ul configurat tot către această adresă. Loki nu necesită alte servicii auxiliare în modul de bază (nu folosim Cassandra sau alt storage extern, modul single-binary folosește sistemul de fișiere).",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.20: Configul Promtail (agentul de loguri) este pregătit să trimită către Loki. Acum adăugăm efectiv serviciul Loki care să primească și să stocheze logurile.",
+    "contextul general_al_aplicatiei": "Stocarea centralizată a logurilor completează cerința de observabilitate (alături de metrici și trace-uri). Loki va permite interogarea logurilor istorice în Grafana și corelarea cu metrici/traces. Integrarea lui acum asigură că la pornire, suită va avea un loc unde să-și trimită toate logurile.",
+    "contextualizarea_directoarelor si_cailor": "În `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`, adaugă serviciul:\n```yaml\n  loki:\n    image: grafana/loki:latest\n    networks:\n      - observability\n    volumes:\n      - loki_data:/loki\n    ports:\n      - 3100:3100\n```\nIar la finalul fișierului (sau secțiunea volumes globală) adaugă definirea volumului named:\n```yaml\nvolumes:\n  loki_data:\n```\nPentru skeleton, nu personalizăm config-ul Loki (folosește config default intern). Expunerea portului 3100 e opțională, dar utilă pentru debug (ex. se pot face interogări direct).",
+    "restrictii_anti_halucinatie": "Nu configura replici multiple sau microservicii pentru Loki (ingester, querier separate) - rulăm modul all-in-one. Nu adăuga parametri de linie de comandă nejustificați; modul implicit e suficient acum.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu seta autentificare sau multi-tenancy în config-ul Loki la acest pas - skeletonul e single-tenant dev. Nu uita volumul de date, altfel la restart logurile se pierd (în dev nu e grav, dar preferăm persistență minimă).",
+    "validare": "După pornire, verifică rapid starea: accesează `http://localhost:3100/metrics` (Loki expune metrici) - dacă primești un răspuns text, containerul rulează. Grafana va raporta status-ul sursei Loki ca up dacă totul e ok.",
+    "outcome": "Serviciul Loki este configurat și integrat în orchestrarea dev, gata să primească logurile colectate de la aplicații.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.22": {
+    "denumire_task": "Adăugare Serviciu Promtail (Agent de Loguri) în `compose.dev.yml`",
+    "descriere_scurta_task": "Configurează serviciul Docker `promtail` în Compose dev, montând configurația `promtail-config.yml` și accesul la Docker socket, pentru a trimite logurile containerelor către Loki.",
+    "descriere_lunga si_detaliata_task": "Adăugăm ultimul component al stack-ului de observabilitate: agentul de loguri Promtail. În `compose.dev.yml`, definim serviciul `promtail` astfel:\n- **Image**: `grafana/promtail:latest` (imaginea oficială Promtail compatibilă cu versiunea Loki folosită).\n- **Volumes**: \n  - Montăm configurația noastră: `- ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro`.\n  - Montăm socket-ul Docker al host-ului în container: `- /var/run/docker.sock:/var/run/docker.sock:ro`. Aceasta permite Promtail-ului să descopere containerele și să le citească logurile direct.\n- **Command/Args**: Putem lansa Promtail cu `-config.file=/etc/promtail/promtail-config.yml` pentru a ne asigura că folosește fișierul montat.\n- **Networks**: atașăm `promtail` la rețeaua `observability` (deși Promtail citește logurile de la Docker direct, e nevoie să poată rezolva DNS-ul `loki` pentru a trimite datele, deci trebuie în aceeași rețea).\nNu expunem porturi pentru Promtail, acesta acționând doar ca agent. Prin această configurare, Promtail va porni, va citi config-ul (job-ul all-containers) și se va conecta la Docker socket. Va găsi toate containerele (inclusiv aplicațiile și serviciile de observabilitate) din rețeaua `observability` și va începe să trimită logurile lor către Loki:contentReference[oaicite:25]{index=25}.",
+    "directorul_directoarele": [
+      "shared/observability/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.20: Configurația Promtail este scrisă. F0.3.21: Serviciul Loki este disponibil ca țintă. Acum punem Promtail în funcțiune pentru a lega aceste componente.",
+    "contextul_general_al_aplicatiei": "Promtail, împreună cu Loki, realizează centralizarea logurilor pentru întreg sistemul, completând implementarea observabilității inițiale (skeleton). Acest pas finalizează pipeline-ul de loguri: aplicațiile -> stdout (Pino JSON) -> Promtail -> Loki -> Grafana.",
+    "contextualizarea_directoarelor si_cailor": "În `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`, adaugă:\n```yaml\n  promtail:\n    image: grafana/promtail:latest\n    command: -config.file=/etc/promtail/promtail-config.yml\n    volumes:\n      - ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n    networks:\n      - observability\n```\nVerifică corectitudinea indentării YAML. Montarea socket-ului Docker necesită ca demonul Docker să ruleze pe host (ceea ce e cazul tipic in dev). Asigură-te că denumirea rețelei din config (geniuserp_observability) corespunde cu cea reală (dacă diferă, ajustează în promtail-config).",
+    "restrictii_anti_halucinatie": "Nu porni Promtail fără a-l lega la Docker sock (altfel nu va culege nimic). Nu monta socket-ul cu permisiuni de scriere, păstrează-l read-only pentru siguranță.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu definești restart policy speciale sau alte constrângeri, nu sunt necesare în dev. Nu conecta promtail la alte rețele inutile (doar observability).",
+    "validare": "Pornește tot stack-ul Observability (toate serviciile din compose.dev.yml). Verifică logurile containerului Promtail (`docker compose logs promtail`): ar trebui să vezi linii care indică ce containere a descoperit și confirmarea trimiterii logurilor către Loki (cod 204 de succes). În Grafana, accesează Loki via explore și verifică dacă apar intrări de log.",
+    "outcome": "Serviciul Promtail este integrat, colectând logurile din toate containerele suitei și direcționându-le către Loki, finalizând setup-ul de log management al skeleton-ului de observabilitate.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.23": {
+    "denumire_task": "Creare Reguli de Alertă Prometheus pentru Traefik (`traefik.rules.yml`)",
+    "descriere_scurta_task": "Adaugă un fișier de reguli Prometheus în `shared/observability/prometheus/traefik.rules.yml` cu o regulă exemplificativă de alertă pentru Traefik (ex. rată ridicată de erori 5xx).",
+    "descriere_lunga si_detaliata_task": "Pentru a demonstra capacitatea de alertare (chiar dacă minimală în skeleton), definim un set de reguli pentru Traefik, ale cărui metrici vor fi colectate. Creăm fișierul `shared/observability/prometheus/traefik.rules.yml` cu conținut YAML pentru o alertă simplă, de exemplu:\n```yaml\ngroups:\n- name: traefik_alerts\n  rules:\n  - alert: TraefikHighErrorRate\n    expr: sum(rate(traefik_service_requests_total{code=~\"5..\"}[5m])) by (service) > 0.1\n    for: 2m\n    labels:\n      severity: warning\n    annotations:\n      summary: \"Rată mare de erori 5xx pe serviciul {{ $labels.service }}\"\n      description: \"Traefik raportează >10% request-uri cu erori 5xx în ultimele 5 minute.\"\n```\nAceastă regulă (exemplificativă) alertează dacă mai mult de 10% din cererile prin Traefik au cod 5xx în medie pe 5 minute, timp de 2 minute continuu. Am setat severitatea ca 'warning'. Acest fișier va fi încărcat de Prometheus (inclus în `prometheus.yml` la `rule_files`). Deși nu avem acum un alertmanager configurat (acesta va veni în faze ulterioare), putem vedea starea alertelor în UI Prometheus/Grafana.",
+    "directorul_directoarele": [
+      "shared/observability/prometheus/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.15: Configul Prometheus include referință către `traefik.rules.yml`. Acum creăm efectiv acest fișier conform planului de a avea dashboarduri și metrici de bază pentru Traefik incluse:contentReference[oaicite:26]{index=26}.",
+    "contextul_general_al_aplicatiei": "Traefik, ca reverse-proxy, este critic pentru suită și merită monitorizat special. Definirea unei alerte de exemplu ilustrează cum vom gestiona și alte alerte în viitor, asigurând capacitatea de a detecta condiții anormale (ex. erori) chiar din faza incipientă.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/prometheus/traefik.rules.yml` și inserează definițiile de mai sus. Verifică sintaxa YAML a regulilor (indentarea sub `rules:`). Fișierul va fi încărcat automat de serviciul Prometheus la pornire, așa că asigură-te că este accesibil (montat) - noi l-am listat în `prometheus.yml` deci montarea volumului `prometheus/` în container îl va include implicit.",
+    "restrictii_anti_halucinatie": "Nu defini zeci de alerte; ne limităm la una de exemplu. Nu forța condiții prea stricte de alertare (ex: 0.1 rate e doar exemplu, nu optimizăm acum pragul).",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu încerca să configurezi acum Alertmanager sau rute de notificare pentru aceste alerte - doar definim regula în Prometheus. Nu inventa metrici inexistente (folosim `traefik_service_requests_total` care e metrică reală în Traefik cu plugin Prom).",
+    "validare": "Deschide UI Prometheus (sau Grafana Alerts view) după ce Traefik va fi integrat (F0.4) și generează o situație de test (ex. simulează cereri eronate) pentru a vedea alerta. Pentru acum, validează că Prometheus a încărcat grupa de reguli (în UI Prometheus la /rules, grupa traefik_alerts ar trebui să apară ca 'inactive').",
+    "outcome": "Fișierul de reguli de alertare `traefik.rules.yml` este creat și integrat, conținând o regulă exemplificativă de monitorizare a Traefik.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.24": {
+    "denumire_task": "Creare Dashboard Grafana pentru Traefik (`traefik.json`)",
+    "descriere_scurta_task": "Adaugă un fișier JSON în `shared/observability/grafana/dashboards/traefik.json` care definește un dashboard Grafana de bază pentru Traefik (metrice de trafic și erori).",
+    "descriere_lunga si_detaliata_task": "Pentru a verifica vizual metricile și starea Traefik, creăm un dashboard Grafana minimal. Fișierul `traefik.json` va conține un obiect JSON conform schema Grafana, cu panouri precum:\n- Un graph/time-series pentru rata de cereri prin Traefik, defalcate pe cod de status (200, 400, 500), folosind metrica Prometheus `rate(traefik_service_requests_total[1m])` grupată pe cod.\n- Un panel gauge sau singlestat pentru numărul curent de instance active (metrica `traefik_service_open_connections` dacă disponibilă).\n- Un graph pentru latenta medie a request-urilor (dacă Traefik expune histograme, ex. `traefik_service_request_duration_seconds`).\nDashboard-ul va avea titlul 'Traefik Overview' și va fi setat să folosească sursa de date Prometheus implicită. Acest JSON poate fi generat prin Grafana (făcând export) sau scris manual. Pentru skeleton, putem folosi un exemplu existent adaptat. Important: plasăm fișierul în directorul `grafana/dashboards/` și ne asigurăm că provisioning-ul definit la F0.3.18 îl va încărca. Astfel, la pornire, vom avea în Grafana un dashboard predefinit pentru Traefik, îndeplinind cerința de 'dashboards de bază':contentReference[oaicite:27]{index=27}.",
+    "directorul_directoarele": [
+      "shared/observability/grafana/dashboards/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.18: Grafana este setat să importe automat dashboard-urile din acest director. Acum furnizăm conținutul pentru un astfel de dashboard (Traefik).",
+    "contextul_general_al_aplicatiei": "Traefik fiind frontiera de intrare în sistem, este util să avem vizibilitate rapidă asupra sănătății sale: trafic, erori, latențe. Acest dashboard va fi folosit de dev și ops pentru a observa comportamentul Traefik în timp real.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/dashboards/traefik.json`. Inserează structura JSON completă a dashboard-ului. De exemplu, poți folosi un templating minimal:\n```json\n{\n  \"title\": \"Traefik Overview\",\n  \"panels\": [\n     { \"type\": \"timeseries\", \"title\": \"Request Rate by Status\", ... metric queries on traefik_service_requests_total ... },\n     { \"type\": \"stat\", \"title\": \"Active Connections\", ... query traefik_service_open_connections ... }\n  ],\n  \"time\": {\"from\": \"now-5m\", \"to\": \"now\"},\n  \"datasource\": \"Prometheus\"\n}\n```\n(Nota: Se inserează configurația completă Grafana; aici e abstractizat.) Asigură-te că fișierul este valid JSON (poți verifica prin deschiderea într-un editor cu highlighting sau un linter JSON).",
+    "restrictii_anti_halucinatie": "Nu defini un dashboard extrem de complex; păstrează 2-3 panouri relevante. Nu folosi variabile sau template-uri avansate - skeleton-ul poate avea totul fix pentru simplitate.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Folosește exclusiv metricile reale expuse de Traefik. Nu presupune existența altor metrici decât cele standard (requests_total, open_connections etc.).",
+    "validare": "După pornire Grafana, verifică existența dashboard-ului 'Traefik Overview'. Deschide-l și asigură-te că panourile afișează date (dacă Traefik nu e încă integrat, pot apărea goale sau erori de query, ceea ce e normal până la F0.4). Cel puțin, Grafana ar trebui să recunoască sursa Prometheus și sintaxa query-urilor fără erori majore.",
+    "outcome": "Dashboard-ul Traefik de bază este creat și versionat în cod, urmând a fi încărcat automat în Grafana pentru vizualizarea metricilor Traefik.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.25": {
+    "denumire_task": "Creare Configurație Parser Log Traefik (`traefik.json` în parsers)",
+    "descriere_scurta_task": "Adaugă un fișier JSON de configurare a parser-ului de loguri Traefik în `shared/observability/logs/parsers/traefik.json` pentru a decoda și curăța logurile de acces Traefik (format text) înainte de trimiterea în Loki.",
+    "descriere_lunga si_detaliata_task": "Deoarece Traefik va produce loguri de acces (request-uri) într-un format specific (common log format sau JSON dacă e configurat), definim un parser care să structureze aceste loguri. În `shared/observability/logs/parsers/traefik.json` vom pune definiția unui pipeline Promtail personalizat pentru logurile Traefik. De exemplu, dacă Traefik e setat să logheze în JSON, putem specifica:\n```json\n{\n  \"pipeline_stages\": [\n    { \"json\": { \" expressions\": {\"ClientIP\": \"ClientHost\", \"Path\": \"RequestPath\", \"Status\": \"StatusCode\"} } },\n    { \"timestamp\": { \"source\": \"StartUTC\", \"format\": \"2006-01-02T15:04:05.999Z\" } },\n    { \"metrics\": [ { \"type\": \"Counter\", \"name\": \"traefik_http_count\", \"help\": \"HTTP Requests\", \"match\": \"StatusCode>=200\" } ] }\n  ]\n}\n```\n(Acesta e un exemplu fictiv simplificat.) Scopul este să extragem câmpurile importante (IP client, cale, cod status, eventual durata) și să putem filtra/masca PII. De asemenea, putem elimina sau anonimiza anumite câmpuri (ex. IP-ul client, dacă dorim, pentru confidențialitate). Promtail va putea încorpora acest parser dacă configurăm un job special pentru Traefik. În config-ul nostru promtail (F0.3.20) am tratat uniform logurile, dar putem extinde ulterior să aplicăm acest parser pe intrările provenite de la containerul Traefik. Pentru skeleton, definim fișierul ca referință, chiar dacă nu e încă referit explicit în config, indicând intenția de a procesa logurile Traefik corespunzător.",
+    "directorul_directoarele": [
+      "shared/observability/logs/parsers/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.23: Avem monitorizare Traefik prin metrici. Acum pregătim și partea de loguri Traefik, pentru a putea eventual corela evenimentele.",
+    "contextul_general_al_aplicatiei": "Logurile de acces Traefik pot conține date sensibile (IP-uri clienți, URL-uri). Definind un parser, ne asigurăm că atunci când vom agrega logurile, putem elimina/masca PII (cum e cerut de politici) și structura informația pentru căutare facilă. Acest pas este conform cu nota din plan privind redactarea PII și trimiterea logurilor la observability:contentReference[oaicite:28]{index=28}.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/parsers/traefik.json`. Include obiectul JSON ce descrie pașii de procesare. De exemplu, dacă folosim log JSON nativ Traefik, definim stagii care să parcurgă câmpurile JSON. Dacă ar fi text (CLF), am defini un regex stage aici. Pentru skeleton, putem lăsa un comentariu în JSON (sau documentație separată) indicând ce face parserul (nu efectiv în JSON, ci ca README).",
+    "restrictii_anti_halucinatie": "Nu complica excesiv parserul. Nu introduce 10 stagii de curățare inutilă; un parse JSON sau regex plus eventual redactarea unui câmp e suficient aici.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu forța aplicarea acestui parser în config-ul promtail fără a-l fi testat. E mai mult o plasare a fișierului ca piesă a puzzle-ului; integrarea exactă poate urma în faza Traefik (F0.4).",
+    "validare": "Acest fișier în sine nu poate fi validat runtime până nu e referit de Promtail. Verifică că e JSON valid (parsabil). Ulterior, când Traefik va genera loguri, se poate actualiza config-ul Promtail să folosească acest parser și testa că logurile sunt etichetate/parseate corect (ex. consultați Loki pentru câmpuri extrase).",
+    "outcome": "Fișierul de parser pentru logurile Traefik este creat, pregătit pentru a fi folosit de agentul de loguri în vederea interpretării corecte și sigure a logurilor Traefik.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.26": {
+    "denumire_task": "Creare Script de Validare Observabilitate (`validate.sh`)",
+    "descriere_scurta_task": "Adaugă un script `validate.sh` în `shared/observability/scripts/` care pornește componentele de observabilitate și execută verificări de bază (servicii up, endpoint-uri accesibile).",
+    "descriere_lunga si_detaliata_task": "Pentru a facilita testarea integrării observabilității, creăm un script Bash de validare automată. `shared/observability/scripts/validate.sh` va efectua pași precum:\n- Pornirea stack-ului de observabilitate (dacă nu e deja pornit) folosind Docker Compose: `docker compose -f compose.dev.yml up -d` (presupunând că ne aflăm în rădăcina proiectului sau script-ul schimbă directorul curent).\n- Așteptarea câtorva secunde pentru ca serviciile să fie up, apoi interogarea fiecărui serviciu:\n  - Execuție `docker compose exec prometheus wget -qO- localhost:9090/-/ready` pentru readiness Prometheus (cod 200 așteptat).\n  - Execuție `curl -f http://localhost:3000/api/health` pentru Grafana (ar trebui să întoarcă `{\"database\": \"ok\"}` cu status 200 dacă e up).\n  - Eventual `docker compose exec loki wget -qO- localhost:3100/ready` pentru Loki, și similar pentru Tempo (Tempo are /metrics sau /ready endpoint default?).\n- Verificarea prezenței datelor: de exemplu, scriptul poate interoga API-ul Prometheus pentru o metrică generică (ex. `up{job=\"prometheus\"}`) ca să se asigure că Prom scrape-uiește ceva; sau Grafana API pentru lista de datasource-uri.\nScript-ul va ieși cu cod de eroare !=0 dacă vreo verificare eșuează, facilitând integrarea în pipeline-uri CI/QA. Rolul lui e să confirme că serviciile de observabilitate sunt integrate corect (comunică, datele de bază sunt accesibile).",
+    "directorul_directoarele": [
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Toate serviciile și configurațiile au fost definite (F0.3.11 - F0.3.25). Acum oferim un mijloc automat de a verifica că ansamblul funcționează.",
+    "contextul_general_al_aplicatiei": "Scripturile de validare reduc muncă manuală și se aliniază practicilor DevOps (testare automată a mediului). Acest script se poate rula la finalul setării locale sau chiar integrat în CI (pipeline dev) pentru a asigura că observabilitatea nu este ruptă de viitoare modificări.",
+    "contextualizarea_directoarelor si_cailor": "Creează fișierul executabil `/var/www/GeniusSuite/shared/observability/scripts/validate.sh`. Populează-l cu comenzi Bash ca cele descrise (folosind `curl` și `docker compose`). Adaugă mesaje informative (echo) și folosește `exit 1` dacă o verificare eșuează. Asigură-te că scriptul poate fi rulat independent (de ex, dacă are nevoie, setează `DOCKER_CONTEXT` sau folderul potrivit). Include în script și verificarea pornirii containerelor (ex: `docker compose ps` și grep după 'healthy' sau 'running').",
+    "restrictii_anti_halucinatie": "Nu adăuga verificări complicate (ex: query complexe Grafana); menține-l simplu. Nu șterge date, nu opri containere în acest script - doar verifică starea.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu asuma credențiale speciale (Grafana API utilizat fără auth sau cu admin/admin dacă necesar). În dev, asta e acceptabil, dar notează dacă e necesar să trimită auth la curl (ex: --user admin:admin).",
+    "validare": "Rulează manual scriptul pe mașina de dev: `bash shared/observability/scripts/validate.sh`. Ar trebui să vezi mesaje de succes pentru fiecare componentă (sau ieșire silent dacă totul e ok) și codul de ieșire 0. În caz de probleme, scriptul va raporta ce nu a pornit sau ce endpoint nu a răspuns.",
+    "outcome": "Scriptul de validare `validate.sh` este creat. Rularea lui va porni și verifica rapid starea componentelor cheie ale observabilității, asigurându-ne că integrarea skeleton este funcțională.",
+    "componenta_de_CI_DI": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."
+  },
+  "F0.3.27": {
+    "denumire_task": "Integră Observabilitate în suite-shell (Cod)",
+    "descriere_scurta_task": "Importă și inițializează modulul de observabilitate (`@genius-suite/observability`) în codul aplicației suite-shell, activând tracing-ul, metricile și logarea structurată.",
+    "descriere_lunga si_detaliata_task": "În serviciul **suite-shell** (parte a Control Plane), adăugăm codul necesar pentru a porni telemetria la startup. Concret, în fișierul de inițializare principal al serverului (ex. `main.ts` sau echivalent) al suite-shell, vom:\n- **Tracing**: Importa modulul de tracing din `@genius-suite/observability` și apela funcția de inițializare OTEL (din `otel.ts`). Aceasta va porni colectarea de trace-uri înainte de a se executa logica serverului.\n- **Logging**: Înlocui logger-ul implicit (dacă aplicația folosește unul, ex. Fastify cu Pino integrat) cu instanța din modulul nostru `pino.ts`, astfel încât toate logurile să fie formatate JSON unitar. De exemplu, la creare server Fastify, se poate pasa `logger: observabilityLogger` în opțiuni.\n- **Metrici**: Importa funcția de inițializare metrici din `prometheus.ts` și expune endpoint-ul `/metrics`. Dacă suite-shell are un server HTTP, adăugăm o rută GET `/metrics` care returnează `promClient.register.metrics()` cu header Content-Type adecvat (`text/plain`). Astfel, Prometheus va putea scrapa metricile aplicației.\n- Setați numele serviciului pentru OTEL: fie prin variabilă de mediu `OTEL_SERVICE_NAME` (ex. \"suite-shell\"), fie programatic prin resource (să corespundă identificării acestui modul în trace-uri și metrici).\nDupă aceste modificări, suite-shell va publica metrici pe /metrics și va trimite trace-uri către colectorul OTEL, iar logurile sale (prin Pino) vor fi structurate corespunzător pentru Loki.",
+    "directorul_directoarele": [
+      "cp/suite-shell/",
+      "cp/suite-shell/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Pachetul `@genius-suite/observability` este pregătit pentru import. Acum îl folosim în implementarea specifică suite-shell.",
+    "contextul_general_al_aplicatiei": "Integrarea observabilității la nivel de cod garantează că acest modul al suitei trimite date către platforma de observabilitate. suite-shell fiind parte din Control Plane, este esențial să fie monitorizat la fel ca toate celelalte.",
+    "contextualizarea_directoarelor si_cailor": "Modifică fișierul sursă principal din `cp/suite-shell/` (de ex. `src/main.ts`): \n- Adaugă `import * as Observability from '@genius-suite/observability';` pentru a accesa funcțiile necesare (nume de import ajustat după modulul efectiv).\n- Apelează imediat la start, înainte de a porni serverul: `Observability.initTracing()` (sau importul modulului OTEL dacă acesta execută cod la import).\n- În configurația serverului, setează logger-ul: ex. `const server = Fastify({ logger: Observability.logger })` sau înlocuiește instanța default cu cea din modulul Observability.\n- Implementează endpoint-ul /metrics: ex. `server.get('/metrics', async (req, reply) => { reply.type('text/plain').send(Observability.register.metrics()); } );` folosind registrul din prom-client expus de modul.\nAsigură-te că aceste schimbări nu alterează comportamentul de bază al aplicației (rulează testele locale pentru suite-shell).",
+    "restrictii_anti_halucinatie": "Nu modifica logica de business a modulului, doar adaugă cross-cutting concerns de observabilitate. Nu dubla importuri - folosește pachetul comun, nu un alt client de metrics sau alt logger.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu inițializa observabilitatea în alte locuri decât la startup (nu în fiecare request individual, de exemplu). Nu adăuga endpoint-uri sau config suplimentare neplanificate (ex: nu definești /metrics dacă deja era definit altundeva).",
+    "validare": "Pornește local serviciul suite-shell (mod dev) și verifică: \n- Accesând `http://localhost:{port}/metrics` primești textul cu metricile default și eventual custom.\n- Logurile afișate în consolă apar în format JSON (conțin câmpuri structurale, ex. `level`, `msg`, `traceId`).\n- Inițiind o operație în suite-shell (ex. un API call), observă în consolă că nu apar erori de observabilitate; eventual poți verifica în Tempo sau în logs după implementarea completă că datele apar.",
+    "outcome": "Aplicația suite-shell are observabilitatea activată: expune metrici, își formatează logurile JSON cu identificatori de corelație și transmite trasabilitatea către colectorul central.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.28": {
+    "denumire_task": "Actualizare Docker Compose pentru suite-shell",
+    "descriere_scurta_task": "Modifică configurația Docker Compose a modulului suite-shell pentru a se integra cu observabilitatea: atașează-l la rețeaua `observability` și setează variabile de mediu OTEL.",
+    "descriere_lunga si_detaliata_task": "În fișierul Docker Compose al aplicației **suite-shell** (ex. `cp/suite-shell/compose/docker-compose.yml`), realizăm următoarele modificări:\n- **Rețea**: Adăugăm serviciul (containerul) suite-shell ca membru al rețelei `observability` (pe lângă rețeaua internă existentă). Astfel, containerul va putea comunica cu OTEL Collector, Prometheus etc. (Exemplu: sub `services:`, la definiția containerului, în lista de networks adăugăm `observability`).\n- **Environment**: Introducem variabilele de mediu necesare pentru agentul OTEL din aplicație:\n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` pentru a direcționa exportul de trace-uri (și metrici, dacă ar fi cazul) către colector.\n  - `OTEL_SERVICE_NAME=suite-shell` pentru a identifica unic serviciul în sistemul de observabilitate.\n- **Depends_on** (opțional): Putem adăuga `depends_on: [\"otel-collector\"]` la serviciul suite-shell, asigurând că atunci când orchestrăm local, colectorul pornește înainte (prevenind mesaje de eroare la inițializare). Acest pas este opțional deoarece biblioteca OTEL va retrimite datele și după start dacă colectorul apare cu întârziere.\nDupă aceste schimbări, când containerul suite-shell este lansat alături de stack-ul de observabilitate, va putea trimite telemetria cu succes.",
+    "directorul_directoarele": [
+      "cp/suite-shell/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.27: Codul suite-shell a fost instrumentat pentru observabilitate. Acum ajustăm configurarea containerului pentru a-l conecta la stack-ul de observabilitate.",
+    "contextul_general_al_aplicatiei": "Guvernanța rețelelor Docker cere ca serviciile ce comunică să fie pe aceeași rețea. Prin adăugarea suite-shell în rețeaua `observability`, ne asigurăm că datele de telemetrie ajung la destinație. Setarea variabilelor de mediu oferă flexibilitate configurării agentului OTEL din interiorul containerului (poate fi ajustată per mediu de deploy).",
+    "contextualizarea_directoarelor si_cailor": "Deschide fișierul `cp/suite-shell/compose/docker-compose.yml`. Sub definiția serviciului, în secțiunea `networks:`, adaugă `observability` (asigură-te că există definită rețeaua observability la nivel de orchestrare global). În secțiunea `environment:`, adaugă liniile:\n```yaml\n- OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n- OTEL_SERVICE_NAME=suite-shell\n```\nSalvează modificările. Dacă containerul are deja o secțiune de environment, doar inserează aceste chei. Verifică că indentarea YAML este corectă și că suite-shell figurează acum sub lista de rețele conectate.",
+    "restrictii_anti_halucinatie": "Nu elimina rețele existente (ex: `internal` sau `default`) ale serviciului, doar adaugă pe cea nouă. Nu modifica alte setări (volume, porturi) care nu țin de observabilitate.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu adăuga port mapping sau alte servicii noi în acest Compose - modificările țin strict de observabilitate. Nu seta variabile de mediu inutile (ex: nu definim aici `OTEL_LOG_LEVEL` sau altele, dacă nu e necesar).",
+    "validare": "Dacă rulezi `docker compose up -d suite-shell` (în contextul orchestrării care include rețeaua observability), execută `docker inspect suite-shell` și verifică în output că rețeaua observability apare la Networks. De asemenea, poți intra în container (`docker compose exec suite-shell printenv`) și verifica prezența variabilelor `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Totul trebuie să fie setat corect.",
+    "outcome": "Configurația Docker Compose pentru suite-shell este actualizată: containerul este conectat la rețeaua de observabilitate și configurat să comunice cu colectorul OTEL.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.29": {
+    "denumire_task": "Integră Observabilitate în suite-admin (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația suite-admin pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **suite-admin** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `suite-admin`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că suite-admin trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/suite-admin/",
+      "cp/suite-admin/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la suite-admin.",
+    "contextul_general_al_aplicatiei": "suite-admin este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea_directoarelor si_cailor": "Deschide fișierul principal al serverului în `cp/suite-admin/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti_halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația suite-admin local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația suite-admin a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.30": {
+    "denumire_task": "Actualizare Docker Compose pentru suite-admin",
+    "descriere_scurta task": "Conectează containerul suite-admin la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si_detaliata_task": "În `cp/suite-admin/compose/docker-compose.yml`, modificăm serviciul suite-admin astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=suite-admin` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul suite-admin împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul_directoarele": [
+      "cp/suite-admin/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.29: Codul suite-admin este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general_al_aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, suite-admin devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea_directoarelor si_cailor": "Deschide `cp/suite-admin/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti_halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul suite-admin împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul suite-admin apare ca atașat. De asemenea, rulează `docker compose exec suite-admin env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs suite-admin` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru suite-admin a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.31": {
+    "denumire_task": "Integră Observabilitate în suite-login (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația suite-login pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **suite-login** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `suite-login`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că suite-login trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/suite-login/",
+      "cp/suite-login/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la suite-login.",
+    "contextul_general_al_aplicatiei": "suite-login este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea_directoarelor si_cailor": "Deschide fișierul principal al serverului în `cp/suite-login/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti_halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația suite-login local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația suite-login a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.32": {
+    "denumire_task": "Actualizare Docker Compose pentru suite-login",
+    "descriere_scurta_task": "Conectează containerul suite-login la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si_detaliata_task": "În `cp/suite-login/compose/docker-compose.yml`, modificăm serviciul suite-login astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=suite-login` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul suite-login împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "cp/suite-login/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.31: Codul suite-login este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, suite-login devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cp/suite-login/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că mentionează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti_halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul suite-login împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul suite-login apare ca atashat. De asemenea, rulează `docker compose exec suite-login env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs suite-login` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru suite-login a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta de CI/DI": "N/A"
+  },
+  "F0.3.33": {
+    "denumire_task": "Integră Observabilitate în identity (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația identity pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **identity** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `identity`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că identity trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/identity/",
+      "cp/identity/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la identity.",
+    "contextul_general_al_aplicatiei": "identity este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea_directoarelor si_cailor": "Deschide fișierul principal al serverului în `cp/identity/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti_halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația identity local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația identity a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.34": {
+    "denumire_task": "Actualizare Docker Compose pentru identity",
+    "descriere_scurta task": "Conectează containerul identity la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si_detaliata_task": "În `cp/identity/compose/docker-compose.yml`, modificăm serviciul identity astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=identity` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul identity împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul_directoarele": [
+      "cp/identity/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.33: Codul identity este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, identity devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cp/identity/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii_de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul identity împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul identity apare listat. De asemenea, rulează `docker compose exec identity env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs identity` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru identity a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.35": {
+    "denumire_task": "Integră Observabilitate în licensing (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația licensing pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **licensing** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `licensing`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că licensing trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/licensing/",
+      "cp/licensing/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la licensing.",
+    "contextul_general al aplicatiei": "licensing este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cp/licensing/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația licensing local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația licensing a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.36": {
+    "denumire_task": "Actualizare Docker Compose pentru licensing",
+    "descriere_scurta_task": "Conectează containerul licensing la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `cp/licensing/compose/docker-compose.yml`, modificăm serviciul licensing astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=licensing` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul licensing împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "cp/licensing/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.35: Codul licensing este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, licensing devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cp/licensing/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul licensing împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul licensing apare listat. De asemenea, rulează `docker compose exec licensing env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs licensing` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru licensing a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta de CI DI": "N/A"
+  },
+  "F0.3.37": {
+    "denumire_task": "Integră Observabilitate în analytics-hub (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația analytics-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **analytics-hub** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `analytics-hub`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că analytics-hub trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/analytics-hub/",
+      "cp/analytics-hub/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la analytics-hub.",
+    "contextul_general al aplicatiei": "analytics-hub este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cp/analytics-hub/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația analytics-hub local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația analytics-hub a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta de CI/DI": "N/A"
+  },
+  "F0.3.38": {
+    "denumire_task": "Actualizare Docker Compose pentru analytics-hub",
+    "descriere_scurta_task": "Conectează containerul analytics-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `cp/analytics-hub/compose/docker-compose.yml`, modificăm serviciul analytics-hub astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=analytics-hub` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul analytics-hub împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul_directoarele": [
+      "cp/analytics-hub/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.37: Codul analytics-hub este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, analytics-hub devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cp/analytics-hub/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul analytics-hub împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul analytics-hub apare listat. De asemenea, rulează `docker compose exec analytics-hub env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs analytics-hub` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru analytics-hub a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta de CI/DI": "N/A"
+  },
+  "F0.3.39": {
+    "denumire_task": "Integră Observabilitate în ai-hub (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația ai-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **ai-hub** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `ai-hub`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că ai-hub trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cp/ai-hub/",
+      "cp/ai-hub/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la ai-hub.",
+    "contextul general al aplicatiei": "ai-hub este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cp/ai-hub/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația ai-hub local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația ai-hub a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta de CI/DI": "N/A"
+  },
+  "F0.3.40": {
+    "denumire_task": "Actualizare Docker Compose pentru ai-hub",
+    "descriere_scurta task": "Conectează containerul ai-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `cp/ai-hub/compose/docker-compose.yml`, modificăm serviciul ai-hub astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=ai-hub` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul ai-hub împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul_directoarele": [
+      "cp/ai-hub/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.39: Codul ai-hub a fost instrumentat pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, ai-hub devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cp/ai-hub/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul ai-hub împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul ai-hub apare listat. De asemenea, rulează `docker compose exec ai-hub env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs ai-hub` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru ai-hub a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta de CI DI": "N/A"
+  },
+  "F0.3.41": {
+    "denumire_task": "Integră Observabilitate în archify.app (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația archify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **archify.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `archify.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că archify.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "archify.app/",
+      "archify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la archify.app.",
+    "contextul_general al aplicatiei": "archify.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `archify.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii_anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația archify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația archify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.42": {
+    "denumire_task": "Actualizare Docker Compose pentru archify.app",
+    "descriere_scurta task": "Conectează containerul archify.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `archify.app/compose/docker-compose.yml`, modificăm serviciul archify.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=archify.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul archify.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "archify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.41: Codul archify.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, archify.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `archify.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul archify.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul archify.app apare listat. De asemenea, rulează `docker compose exec archify.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs archify.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru archify.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.43": {
+    "denumire_task": "Integră Observabilitate în cerniq.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația cerniq.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **cerniq.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `cerniq.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că cerniq.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul_directoarele": [
+      "cerniq.app/",
+      "cerniq.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la cerniq.app.",
+    "contextul_general al aplicatiei": "cerniq.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cerniq.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația cerniq.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația cerniq.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.44": {
+    "denumire_task": "Actualizare Docker Compose pentru cerniq.app",
+    "descriere_scurta task": "Conectează containerul cerniq.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `cerniq.app/compose/docker-compose.yml`, modificăm serviciul cerniq.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=cerniq.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul cerniq.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "cerniq.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.43: Codul cerniq.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, cerniq.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `cerniq.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul cerniq.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul cerniq.app apare listat. De asemenea, rulează `docker compose exec cerniq.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs cerniq.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru cerniq.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.45": {
+    "denumire_task": "Integră Observabilitate în flowxify.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația flowxify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **flowxify.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `flowxify.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că flowxify.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul directoarele": [
+      "flowxify.app/",
+      "flowxify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la flowxify.app.",
+    "contextul general al aplicatiei": "flowxify.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `flowxify.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația flowxify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația flowxify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.46": {
+    "denumire_task": "Actualizare Docker Compose pentru flowxify.app",
+    "descriere_scurta task": "Conectează containerul flowxify.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `flowxify.app/compose/docker-compose.yml`, modificăm serviciul flowxify.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=flowxify.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul flowxify.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "flowxify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.45: Codul flowxify.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, flowxify.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `flowxify.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul flowxify.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul flowxify.app apare listat. De asemenea, rulează `docker compose exec flowxify.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs flowxify.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru flowxify.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.47": {
+    "denumire_task": "Integră Observabilitate în i-wms.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația i-wms.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **i-wms.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `i-wms.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că i-wms.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul directoarele": [
+      "i-wms.app/",
+      "i-wms.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la i-wms.app.",
+    "contextul general al aplicatiei": "i-wms.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `i-wms.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația i-wms.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația i-wms.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.48": {
+    "denumire_task": "Actualizare Docker Compose pentru i-wms.app",
+    "descriere_scurta task": "Conectează containerul i-wms.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `i-wms.app/compose/docker-compose.yml`, modificăm serviciul i-wms.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=i-wms.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul i-wms.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "i-wms.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.47: Codul i-wms.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, i-wms.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `i-wms.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul i-wms.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul i-wms.app apare listat. De asemenea, rulează `docker compose exec i-wms.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs i-wms.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru i-wms.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta de CI/DI": "N/A"
+  },
+  "F0.3.49": {
+    "denumire_task": "Integră Observabilitate în mercantiq.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația mercantiq.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **mercantiq.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `mercantiq.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că mercantiq.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul directoarele": [
+      "mercantiq.app/",
+      "mercantiq.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la mercantiq.app.",
+    "contextul general al aplicatiei": "mercantiq.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `mercantiq.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația mercantiq.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația mercantiq.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.50": {
+    "denumire_task": "Actualizare Docker Compose pentru mercantiq.app",
+    "descriere_scurta task": "Conectează containerul mercantiq.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `mercantiq.app/compose/docker-compose.yml`, modificăm serviciul mercantiq.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=mercantiq.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul mercantiq.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "mercantiq.app/compose/"
+    ],
+    "contextul taskurilor anterioare": "F0.3.49: Codul mercantiq.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, mercantiq.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `mercantiq.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul mercantiq.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul mercantiq.app apare listat. De asemenea, rulează `docker compose exec mercantiq.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs mercantiq.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru mercantiq.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.51": {
+    "denumire_task": "Integră Observabilitate în numeriqo.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația numeriqo.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **numeriqo.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `numeriqo.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că numeriqo.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul directoarele": [
+      "numeriqo.app/",
+      "numeriqo.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la numeriqo.app.",
+    "contextul general al aplicatiei": "numeriqo.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `numeriqo.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația numeriqo.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația numeriqo.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.52": {
+    "denumire_task": "Actualizare Docker Compose pentru numeriqo.app",
+    "descriere_scurta task": "Conectează containerul numeriqo.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `numeriqo.app/compose/docker-compose.yml`, modificăm serviciul numeriqo.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=numeriqo.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul numeriqo.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "numeriqo.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.51: Codul numeriqo.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, numeriqo.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `numeriqo.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul numeriqo.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul numeriqo.app apare listat. De asemenea, rulează `docker compose exec numeriqo.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs numeriqo.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru numeriqo.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.53": {
+    "denumire_task": "Integră Observabilitate în triggerra.app (Cod)",
+    "descriere_scurta task": "Instrumentează aplicația triggerra.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **triggerra.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `triggerra.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că triggerra.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "directorul directoarele": [
+      "triggerra.app/",
+      "triggerra.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la triggerra.app.",
+    "contextul general al aplicatiei": "triggerra.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
+    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `triggerra.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
+    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
+    "validare": "Rulează aplicația triggerra.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
+    "outcome": "Aplicația triggerra.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.54": {
+    "denumire_task": "Actualizare Docker Compose pentru triggerra.app",
+    "descriere_scurta task": "Conectează containerul triggerra.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga si detaliata_task": "În `triggerra.app/compose/docker-compose.yml`, modificăm serviciul triggerra.app astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=triggerra.app` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul triggerra.app împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "directorul directoarele": [
+      "triggerra.app/compose/"
+    ],
+    "contextul taskurilor anterioare": "F0.3.53: Codul triggerra.app este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
+    "contextul general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, triggerra.app devine parte integrantă a ecosistemului de monitorizare.",
+    "contextualizarea directoarelor si cailor": "Deschide `triggerra.app/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
+    "restrictii anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
+    "validare": "În contextul orchestrării dev, pornește serviciul triggerra.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul triggerra.app apare listat. De asemenea, rulează `docker compose exec triggerra.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs triggerra.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
+    "outcome": "Docker Compose-ul pentru triggerra.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
+    "componenta_de_CI_DI": "N/A"
+  },
+  "F0.3.55": {
+    "denumire_task": "Integră Observabilitate în vettify.app (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația vettify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
+    "descriere_lunga_si_detaliata_task": "Pentru aplicația stand-alone vettify.app, adaugă integrarea cu librăria comună de observabilitate. În codul sursă al serverului (punctul de intrare al API-ului), efectuează aceiași pași ca la celelalte module: importă pachetul \"@genius-suite/observability\" și rulează inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri; setează logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente; expune ruta \"/metrics\" folosind clientul Prometheus (prom-client) din librăria comună pentru metricile default; configurează numele serviciului pentru telemetrie (de ex. \"vettify.app\") prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate corect. Nu modifica fluxul de business existent, doar introdu layer-ul de observabilitate; adaptează minim codul pentru a folosi infrastructura comună (logger, OTEL, metrics) fără a rescrie logica domeniului.",
+    "directorul_directoarele": [
+      "vettify.app/",
+      "vettify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "Librăria comună de observabilitate (@genius-suite/observability) a fost creată și integrată în aplicațiile din Control Plane și în celelalte aplicații stand-alone. Stack-ul OTEL collector + Prometheus + Grafana + Loki + Tempo este definit la nivel de compose, iar aplicațiile CP trimit deja telemetrie. Acum aplicăm același pattern de integrare pentru vettify.app.",
+    "contextul_general_al_aplicatiei": "vettify.app este aplicația de CRM & firmographics din suită și trebuie monitorizată la fel ca celelalte module. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri) și o aliniem cu standardul comun definit în shared/observability.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul principal al serverului din \"vettify.app/\" (de exemplu \"src/index.ts\", \"src/main.ts\" sau echivalentul lui, în funcție de framework-ul efectiv). Adaugă importurile necesare din \"@genius-suite/observability\" și apelează funcția de bootstrap OTEL (de ex. \"initTracing()\" sau echivalentul) imediat la startul aplicației, înainte de inițializarea serverului Fastify/HTTP. În aceeași zonă setează logger-ul global al aplicației la instanța Pino furnizată de Observability și montează un endpoint \"/metrics\" care folosește registrul prom-client expus de modulul comun. Dacă aplicația avea deja un logger local sau un endpoint \"/metrics\", adaptează-le pentru a folosi implementarea comună, fără a rupe compatibilitatea cu codul existent (tipuri de răspuns, coduri HTTP).",
+    "restrictii_anti_halucinatie": "Nu adăuga dependințe noi de observabilitate în \"package.json\"-ul vettify.app; folosește exclusiv pachetul comun deja definit. Nu inventa alți provideri OTEL, alți exporteri sau alte convenții de nume pentru service/resource decât cele deja folosite de restul aplicațiilor. Nu modifica rutele de business, contractele API (request/response) sau schemele de date; intervii doar în layer-ul de bootstrap și infrastructură tehnică (logging, traces, metrics).",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu presupune existența unor infrastructuri suplimentare specifice pentru vettify.app față de ce este definit pentru restul suitei. Nu crea sub-taskuri noi, directoare noi sau alte aplicații; limitează-te strict la integrarea layer-ului de observabilitate în codul vettify.app, urmând pattern-ul deja implementat în aplicațiile din Control Plane.",
+    "validare": "Rulează local vettify.app în modul de dezvoltare. Verifică: 1) că endpoint-ul de sănătate existent continuă să răspundă corect; 2) că ruta \"/metrics\" răspunde cu un payload în format text Prometheus (content-type \"text/plain; version=0.0.4\"); 3) că în loguri apar mesaje JSON structurate (Pino) cu câmpuri standard (timestamp, level, msg, service); 4) că, având stack-ul de observabilitate din compose pornit, apare cel puțin un trace sau un log etichetat cu \"service.name=vettify.app\" în Grafana/Loki/Tempo. Dacă oricare dintre pași eșuează, ajustează configurarea până când toate verificările trec.",
+    "outcome": "Aplicația vettify.app este instrumentată la același nivel cu restul aplicațiilor suitei: loguri structurate, metrici de bază accesibile prin \"/metrics\" și trace-uri trimise prin OTEL către stack-ul de observabilitate, folosind convențiile standardizate definite în shared/observability.",
+    "componenta_de_CI_DI": "Toate modificările se fac pe branch-ul \"dev\". După ce testele locale și verificările de observabilitate trec, creează un commit cu un mesaj descriptiv (de ex. \"feat(observability): add OTEL, metrics and structured logging to vettify.app\") și împinge branch-ul. Deschide un Pull Request/Merge Request din \"dev\" către \"staging\", asigurându-te că pipeline-ul CI existent rulează testele și, după introducerea F0.3.64, scriptul standard de validare a observabilității. După validare pe \"staging\" și QA minim, modificările pot fi promovate către \"master\" printr-un PR separat, cu același set de verificări CI verzi."
+  },
+  "F0.3.56": {
+    "denumire_task": "Actualizează Docker Compose pentru vettify.app cu Observabilitate",
+    "descriere_scurta_task": "Extinde fișierele Docker Compose ale vettify.app pentru a conecta serviciul la stack-ul de observabilitate: rețele comune, variabile OTEL și expunerea endpoint-ului /metrics.",
+    "descriere_lunga_si_detaliata_task": "În directoarele de compose ale vettify.app, actualizează serviciul principal astfel încât să fie aliniat cu profilurile de observabilitate deja definite pentru restul aplicațiilor. Adaugă environment variables standardizate pentru OTEL (de ex. \"OTEL_EXPORTER_OTLP_ENDPOINT\", \"OTEL_SERVICE_NAME=vettify.app\", \"OTEL_RESOURCE_ATTRIBUTES\" etc.), mapează portul pe care aplicația expune \"/metrics\" astfel încât să poată fi scrapat de Prometheus și asigură-te că serviciul se află în aceeași rețea Docker ca stack-ul de observabilitate (de ex. \"observability-net\" sau o rețea comună definită la nivel root de compose). Dacă există fișiere de profil separate pentru dev/staging/prod, aplică modificările în profilul corespunzător fazei F0.3 (de regulă \"compose.dev.yml\"), fără a altera acum setările specifice pentru staging/prod.",
+    "directorul_directoarele": [
+      "vettify.app/compose/"
+    ],
+    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate (OTEL collector, Prometheus, Grafana, Loki, Tempo) a fost definit la nivel de compose în F0.3.x, iar aplicațiile din Control Plane și alte module stand-alone au fost deja conectate la el prin variabile de mediu și rețele comune. Codul vettify.app este instrumentat în F0.3.55, dar containerul trebuie aliniat ca runtime cu același stack.",
+    "contextul_general_al_aplicatiei": "Toate aplicațiile din suită trebuie să poată trimite telemetrie către stack-ul comun de observabilitate atunci când sunt rulate prin Docker Compose. vettify.app trebuie să folosească aceleași convenții de rețea, denumire de serviciu și variabile de mediu pentru OTEL și Prometheus ca restul aplicațiilor, pentru a obține o observabilitate unificată.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierele de compose asociate vettify.app din \"vettify.app/compose/\" (de exemplu \"docker-compose.yml\" și/sau \"profiles/compose.dev.yml\", în funcție de structura concretă). În secțiunea de servicii, găsește serviciul principal al aplicației. 1) Adaugă variabilele de mediu OTEL/Prometheus folosite și de celelalte servicii din suită (reuse exact aceleași chei și valori, adaptând doar numele serviciului la \"vettify.app\"); 2) atașează serviciul la aceeași rețea declarată pentru observability (de ex. \"observability-net\" sau rețeaua comună configurată în compose root); 3) expune portul pe care rulează \"/metrics\" pentru a permite scraping-ul Prometheus, păstrând convențiile de port aplicate în restul serviciilor (nu inventa porturi noi dacă nu este strict necesar).",
+    "restrictii_anti_halucinatie": "Nu inventa nume noi de rețele sau variabile; reutilizează aceleași rețele și aceleași chei de variabile de mediu care au fost introduse pentru observabilitate la celelalte aplicații. Nu adăuga containere noi pentru vettify.app în afara serviciului existent; nu modifica mapping-ul de volume sau politicile de resurse ale containerului decât dacă este strict necesar pentru a expune \"/metrics\". Nu modifica stack-ul global de observabilitate definit anterior.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea profiluri noi de compose sau fișiere adiționale; lucrează strict în fișierele deja definite pentru vettify.app. Nu introduce alte servicii (de ex. baze de date, cache-uri) ca parte a acestui task; scopul este doar integrarea cu observability. Nu inventa pași suplimentari în afara actualizării configurației compose.",
+    "validare": "Pornește local stack-ul de observabilitate și serviciul vettify.app folosind \"docker compose up\" cu profilul de dezvoltare. 1) Verifică în UI-ul Prometheus că ținta vettify.app apare în lista de targets și are status UP; 2) verifică printr-un request HTTP direct (curl sau browser) că \"/metrics\" este accesibil din afara containerului și răspunde corect; 3) verifică în Grafana că există metrici cu labeluri de tip \"service=vettify.app\" sau \"service_name=vettify.app\" în dashboard-ul generic. Dacă apar erori de rețea sau variabile OTEL lipsă, ajustează fișierele de compose până când toate verificările sunt verzi.",
+    "outcome": "Containerul vettify.app este complet integrat cu stack-ul de observabilitate atunci când este rulat prin Docker Compose, folosind aceleași rețele și variabile standardizate, permițând colectarea unificată a metricilor și a trace-urilor alături de restul aplicațiilor GeniusSuite.",
+    "componenta_de_CI_DI": "După actualizarea fișierelor de compose, rulează local \"docker compose config\" pentru a valida sintaxa. Commit-ul cu modificări se face pe branch-ul \"dev\" cu un mesaj clar (de ex. \"chore(observability): wire vettify.app compose to observability stack\"). Asigură-te că pipeline-ul CI include (sau va include ulterior, în F0.3.64) un pas de verificare a fișierelor Docker Compose și că acest pas este verde înainte de a deschide un PR/MR din \"dev\" către \"staging\". După ce modificările sunt verificate pe \"staging\" și nu afectează alte servicii, ele pot fi promovate către \"master\" în cadrul PR-ului final de fază."
+  },
+  "F0.3.57": {
+    "denumire_task": "Creează scriptul shared/observability/scripts/install.sh (skeleton)",
+    "descriere_scurta_task": "Definește un script Bash minimal install.sh în shared/observability/scripts pentru bootstrap-ul stack-ului de observabilitate în mediul local.",
+    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"install.sh\" și marchează-l executabil. Scriptul trebuie să fie un skeleton clar, cu antet standard (\"#!/usr/bin/env bash\", set -euo pipefail), care: 1) afișează un mesaj de help când este apelat cu \"-h\"/\"--help\"; 2) verifică precondiții de bază (prezența \"docker\" și \"docker compose\" sau a aliasului folosit în proiect); 3) pentru faza F0.3, poate să se limiteze la a descrie pașii care vor fi executați (echo) și, opțional, să invoce \"docker compose\" pe fișierele din \"shared/observability/compose/docker-compose.yml\" pentru profilul de dezvoltare. Structura scriptului trebuie gândită astfel încât să poată fi extinsă în fazele ulterioare (F0.4, F0.8) cu instalare pentru staging/prod, fără a fi nevoie de o rescriere completă.",
+    "directorul_directoarele": [
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Structura directorului \"shared/observability/\" a fost definită: logs/, metrics/, traces/, dashboards/, alerts/, exporters/, otel-config/, compose/, scripts/, docs/. Stack-ul de observabilitate este descris la nivel conceptual și prin fișiere de compose. Avem nevoie acum de un entrypoint scriptat pentru bootstrap local, care va fi folosit și de alte faze (CI, QA, demo).",
+    "contextul_general_al_aplicatiei": "GeniusSuite are nevoie de un mod standardizat de a porni stack-ul de observabilitate în mediul local pentru dezvoltatori și pentru pipeline-uri. Scriptul install.sh este primul pas către automatizarea completă a acestui bootstrap, chiar dacă în F0.3 implementăm doar un skeleton minim, focalizat pe dev.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în directorul \"shared/observability/scripts/\" și creează \"install.sh\". Scriptul trebuie să facă referire explicită la fișierele de compose din \"shared/observability/compose/\" (de ex. \"docker-compose.yml\" și profilele dedicate), fără a folosi căi hardcodate invalide. Asigură-te că scriptul poate fi apelat din rădăcina repo-ului (\"/var/www/GeniusSuite/\") cu o cale relativă clară (de ex. \"bash shared/observability/scripts/install.sh dev\"). Comentează în interiorul scriptului ce va face fiecare secțiune în fazele viitoare, dar fără a implementa acum logică complexă.",
+    "restrictii_anti_halucinatie": "Nu implementa logică completă de provisioning pentru medii de staging/prod în acest task; scriptul este un skeleton pentru dev. Nu adăuga pași care modifică infrastructura cloud sau servicii externe; limitează-te la validări locale și la eventuală invocare a docker compose-ului local. Nu crea alte fișiere în afara \"install.sh\" în acest task.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea directoare noi în afara celor deja definite în shared/observability. Nu inventa alte scripturi; \"install.sh\" este singura țintă a acestui task. Nu modifica fișierele de compose sau de configurare OTEL în cadrul acestui task; acestea sunt gestionate în alte taskuri F0.3.",
+    "validare": "Rulează din rădăcina repo-ului comanda \"bash shared/observability/scripts/install.sh --help\" și verifică faptul că scriptul afișează un mesaj de ajutor clar, cu parametrii acceptați (de ex. dev, staging, prod) și cu mențiunea că pentru F0.3 este suportat doar modul dev. Verifică faptul că, apelat cu \"dev\", scriptul nu returnează erori de execuție și că se limitează la pașii definiți (validatează precondițiile, eventual pornește sau sugerează pornirea stack-ului de observabilitate).",
+    "outcome": "Există un script \"shared/observability/scripts/install.sh\" clar, documentat minimal, care poate fi folosit ca entrypoint pentru bootstrap-ul stack-ului de observabilitate în mediul local, pregătit pentru extindere în fazele ulterioare.",
+    "componenta_de_CI_DI": "Deocamdată, scriptul nu este încă integrat în CI; în F0.3.64 va fi definit explicit un job CI care rulează scriptul de validare. În acest task, doar asigură-te că scriptul este executabil (chmod +x) și că poate fi rulat manual de pe branch-ul \"dev\". Modificarea trebuie comisă pe \"dev\" cu un mesaj clar (de ex. \"chore(observability): add install.sh skeleton for observability stack\"), urmând a fi inclusă în PR-ul final de fază F0.3."
+  },
+  "F0.3.58": {
+    "denumire_task": "Creează scriptul shared/observability/scripts/validate.sh (standard validare observabilitate)",
+    "descriere_scurta_task": "Definește scriptul validate.sh în shared/observability/scripts ca standard unic de validare a observabilității, utilizabil și în CI.",
+    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"validate.sh\" (executabil) care joacă rolul de standard de validare a observabilității pentru suite: în modul skeleton F0.3, scriptul trebuie să verifice minim că stack-ul de observabilitate poate porni și că cel puțin o aplicație (de ex. CP sau vettify.app) expune sănătos endpoint-ul \"/metrics\". Structura recomandată: 1) antet Bash cu \"#!/usr/bin/env bash\" și \"set -euo pipefail\"; 2) funcții mici pentru verificarea precondițiilor (docker, docker compose, network), pornirea stack-ului de observabilitate (sau validarea că este deja pornit), executarea unor HTTP checks simple (curl către \"/metrics\" și, opțional, către un endpoint de health al unei aplicații) și raportarea rezultatelor; 3) exit code 0 dacă toate verificările trec, cod nenul în caz de eșec. Scriptul trebuie să poată fi rulat atât manual de dezvoltatori, cât și din pipeline-ul CI, fără a cere input interactiv.",
+    "directorul_directoarele": [
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate este definit conceptual și la nivel de compose. Scriptul install.sh (F0.3.57) oferă un skeleton de bootstrap. Avem nevoie acum de un script clar, \"validate.sh\", care să fie punctul unic de intrare pentru validarea observabilității, astfel încât să poată fi inclus ușor ca job în CI și folosit de developeri înainte de a deschide PR-uri.",
+    "contextul_general_al_aplicatiei": "Validarea observabilității trebuie standardizată pentru a evita scenarii în care aplicațiile par OK din perspectiva testelor unitare sau de integrare, dar stack-ul de metrics/logs/traces este nefuncțional sau incomplet. Scriptul validate.sh devine contractul minim: dacă el trece, considerăm că observabilitatea de bază este configurată corect pentru faza F0.3.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/scripts/\" și creează \"validate.sh\". Scriptul poate apela, dacă este necesar, compose-ul din \"shared/observability/compose/\" sau poate presupune că stack-ul de observabilitate este deja pornit. Folosește comenzi simple \"curl\" către \"/metrics\" pentru cel puțin o aplicație instrumentată (de ex. CP) și verifică status code 200 și prezența unor metrici de bază. Toate căile din script trebuie să fie relative față de rădăcina repo-ului (\"/var/www/GeniusSuite/\") sau să fie documentate clar. Prevede un mod \"--strict\" care poate fi folosit în viitor pentru verificări mai dure, dar pentru F0.3 este suficientă verificarea de bază.",
+    "restrictii_anti_halucinatie": "Nu implementa teste de load, security sau e2e complexe în acest script; acestea țin de alte faze (F0.8). Nu te conecta la servicii externe (cloud, SaaS) din acest script; limitează-te la verificări locale ale stack-ului de observabilitate. Nu crea alte scripturi sau directoare în afara \"validate.sh\".",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica fișierele de compose, configurațiile OTEL sau codul aplicațiilor în cadrul acestui task; focusul este exclusiv pe scriptul de validare. Nu inventa sub-taskuri noi; scriptul trebuie să rămână atomic și clar, astfel încât să poată fi invocat direct din CI.",
+    "validare": "Rulează manual (din rădăcina repo-ului) comanda \"bash shared/observability/scripts/validate.sh\" cu stack-ul de observabilitate și cel puțin o aplicație (ex. CP) pornite. Verifică: 1) că scriptul afișează pașii pe care îi execută; 2) că face cel puțin un HTTP check către \"/metrics\" și returnează HTTP 200; 3) că exit code este 0 în condiții normale și nenul dacă endpoint-ul nu răspunde sau răspunde cu cod de eroare. Ajustează scriptul până când comportamentul este determinist și reproductibil.",
+    "outcome": "Există un script standard \"shared/observability/scripts/validate.sh\" care poate fi folosit atât local, cât și în pipeline-ul CI, pentru a valida că stack-ul de observabilitate de bază funcționează și că cel puțin o aplicație instrumentată raportează metrici.",
+    "componenta_de_CI_DI": "Acest script este gândit pentru a fi integrat în pipeline-ul CI ca job de validare a observabilității (vezi F0.3.64). În acest task, asigură-te doar că scriptul este determinist și returnează coduri de exit corecte, astfel încât job-ul CI să poată eșua sau trece în mod clar. Commit-ul se face pe branch-ul \"dev\" (de ex. mesaj \"chore(observability): add validate.sh as observability validation standard\") și va fi inclus în PR-ul de fază F0.3."
+  },
+  "F0.3.59": {
+    "denumire_task": "Creează scriptul shared/observability/scripts/smoke.sh (smoke tests observabilitate)",
+    "descriere_scurta_task": "Adaugă scriptul smoke.sh în shared/observability/scripts pentru a rula smoke tests rapide asupra endpoint-urilor critice și a observabilității.",
+    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"smoke.sh\" (executabil), responsabil cu un set minim de smoke tests pentru observabilitate și rute critice. Spre deosebire de validate.sh, care se concentrează pe stack-ul de observabilitate în sine, smoke.sh poate: 1) invoca endpoint-uri cheie de sănătate (de ex. \"/health\", \"/ready\") pentru CP și câteva aplicații stand-alone; 2) verifica rapid că \"/metrics\" răspunde pentru cel puțin două servicii; 3) loga un sumar al rezultatelor (câte teste OK / FAILED). În faza F0.3, scriptul este încă minimalist (număr mic de endpoint-uri), dar structurat astfel încât să poată fi extins ulterior. Trebuie să fie non-interactiv și să folosească exit code pentru a semnaliza succesul sau eșecul.",
+    "directorul_directoarele": [
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate și scriptul de validare validate.sh au fost definite. Avem nevoie și de un script de tip smoke, orientat pe verificări foarte rapide ale punctelor critice (health, metrics), care poate fi rulată manual după deploy sau automat într-un stage rapid de CI/CD.",
+    "contextul_general_al_aplicatiei": "Smoke tests-urile sunt o verigă importantă între observabilitate și health checking: ajută la detectarea rapidă a unor probleme evidente după un deploy (servicii căzute, endpoint-uri lipsă) fără a rula suite complete de teste. În contextul Observabilității, smoke.sh trebuie să valideze că există un minim de semnale (health și metrics) pentru câteva componente cheie.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/scripts/\" și creează \"smoke.sh\". Scriptul poate apela HTTP endpoints (folosind curl) din serviciile care rulează, adresându-se fie prin hostname-urile expuse în Docker Compose (de ex. cp-identity:port), fie prin localhost + port mapat, în funcție de contextul de execuție. Structura scriptului: secțiune de config (lista minimală de endpoint-uri), funcție generică de check HTTP (care loghează status și timp de răspuns), agregare de rezultate și exit code în funcție de numărul de eșecuri. Comentariile trebuie să explice cum pot fi adăugate servicii noi în lista de smoke tests.",
+    "restrictii_anti_halucinatie": "Nu transforma acest script într-o suită completă de teste e2e sau de load; el trebuie să rămână foarte rapid. Nu adăuga logica de pornire/oprire a mediului; smoke.sh pornește de la premisa că serviciile sunt deja up. Nu crea alte fișiere sau directoare în afară de scriptul smoke.sh în acest task.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica configurațiile aplicațiilor sau fișierele de compose în cadrul acestui task. Nu inventa sub-taskuri suplimentare; smoke.sh este o componentă izolată care se bazează pe infrastructura deja existentă.",
+    "validare": "Cu câteva servicii pornite (ex. CP + una-două aplicații stand-alone), rulează \"bash shared/observability/scripts/smoke.sh\" și verifică: 1) că scriptul raportează în mod clar fiecare endpoint testat și rezultatul; 2) că exit code este 0 când toate endpoint-urile răspund cu HTTP 200 (sau codurile așteptate); 3) că în caz de eșec pentru un endpoint, scriptul marchează FAIL și returnează un exit code nenul. Ajustează lista minimă de endpoint-uri astfel încât scriptul să fie reprezentativ dar rapid.",
+    "outcome": "Există un script \"shared/observability/scripts/smoke.sh\" care rulează un set minim de smoke tests pe endpoint-uri critice și pe \"/metrics\", ajutând la validarea rapidă a sănătății sistemului după modificări sau deploy.",
+    "componenta_de_CI_DI": "În această fază, smoke.sh poate fi folosit manual sau inclus opțional în pipeline-uri dedicate de QA. Integrarea lui formală în CI/CD complet (ca gate obligatoriu) poate fi planificată în faze ulterioare (F0.8). Commit-ul se face pe branch-ul \"dev\" (ex. \"chore(observability): add smoke.sh for observability smoke tests\") și scriptul va fi inclus în PR-ul de fază F0.3."
+  },
+  "F0.3.60": {
+    "denumire_task": "Creează README pentru shared/observability/scripts (usage & convenții)",
+    "descriere_scurta_task": "Documentează în README.md din shared/observability/scripts modul de utilizare a scripturilor install.sh, validate.sh și smoke.sh.",
+    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"README.md\" care descrie clar rolul fiecărui script (install.sh, validate.sh, smoke.sh), parametrii acceptați, modurile de execuție (local vs CI) și convențiile de extindere. README-ul trebuie să includă exemple concrete de comenzi (bash shared/observability/scripts/install.sh dev, bash .../validate.sh, bash .../smoke.sh), explicații despre codurile de exit și recomandări de folosire înainte de deschiderea unui PR. Scopul este ca orice dezvoltator sau pipeline să poată înțelege rapid cum să pornească și să verifice stack-ul de observabilitate folosind aceste scripturi, fără a citi direct codul lor.",
+    "directorul_directoarele": [
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Scripturile install.sh, validate.sh și smoke.sh au fost create ca skeletons funcționale. Fără documentație, utilizarea lor poate fi neuniformă sau greșită. Acest README leagă împreună intenția scripturilor și modul corect de utilizare, fiind o sursă de adevăr pentru dezvoltatori și pentru configurarea CI/CD.",
+    "contextul_general_al_aplicatiei": "Documentația clară în repo este esențială pentru a evita knowledge silos și pentru a asigura că Observabilitatea este folosită consistent de echipă. shared/observability/scripts/README.md devine entrypoint-ul de documentație pentru tool-urile de Observabilitate la nivel de script.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul \"shared/observability/scripts/README.md\" și structurează-l cu secțiuni precum: Introducere, Precondiții, install.sh (rol și exemple), validate.sh (rol și exemple, inclusiv în CI), smoke.sh (rol și exemple), Extensii viitoare. Referențiază clar căi relative din repo (de ex. \"shared/observability/compose/docker-compose.yml\" acolo unde este cazul).",
+    "restrictii_anti_halucinatie": "Nu documenta comportamente care nu există în scripturi (de ex. parametri sau moduri de execuție neimplementate încă). Dacă un feature este planificat pentru faze ulterioare, marchează-l explicit ca \"future work\" sau \"planned\". Nu introduce în README concepte de observabilitate sau infrastructură care nu sunt menționate în planul actual.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în afara acestui README în cadrul acestui task. Nu modifica scripturile pentru a se potrivi documentației; mai degrabă ajustează documentația pentru a reflecta exact comportamentul existent sau actualizează scripturile într-un task dedicat, dacă este nevoie.",
+    "validare": "Deschide README-ul și verifică dacă un dezvoltator fără context poate urma pașii pentru: 1) a porni stack-ul de observabilitate în modul dev; 2) a rula validate.sh; 3) a rula smoke.sh. Verifică corespondența dintre exemplele din README și comportamentul real al scripturilor (comenzile trebuie să funcționeze exact așa cum sunt scrise). Ajustează formulările pentru claritate.",
+    "outcome": "Există un README coerent pentru scripturile de observabilitate care standardizează modul de utilizare și pregătește integrarea lor în CI/CD și în procesele operaționale.",
+    "componenta_de_CI_DI": "README-ul nu introduce logică nouă în CI/CD, dar devine referința atunci când se configurează joburile CI (ex. în F0.3.64). Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add README for observability scripts\"), iar documentația va fi verificată și în cadrul PR-ului final de fază."
+  },
+  "F0.3.61": {
+    "denumire_task": "Creează shared/observability/docs/architecture.md (arhitectura Observabilității)",
+    "descriere_scurta_task": "Documentează la nivel înalt arhitectura stack-ului de observabilitate în shared/observability/docs/architecture.md.",
+    "descriere_lunga_si_detaliata_task": "Creează fișierul \"shared/observability/docs/architecture.md\" și descrie arhitectura Observabilității în GeniusSuite în faza F0.3: componentele principale (OTEL collector, Prometheus, Grafana, Loki, Tempo), modul în care aplicațiile trimit telemetrie (OTLP, /metrics, log JSON către Loki), convențiile de denumire (service.name, environment, tenant, etc.) și integrarea cu Docker Compose (rețele comune, profiles). Documentul trebuie să explice clar ce înseamnă \"skeleton\" în F0.3 (minimul necesar pentru logs/metrics/traces + dashboards de bază), ce rămâne pentru fazele ulterioare și cum este structurată mapa \"shared/observability/\" (logs/, metrics/, traces/, dashboards/, alerts/, exporters/, otel-config/, compose/, scripts/, docs/).",
+    "directorul_directoarele": [
+      "shared/observability/docs/"
+    ],
+    "contextul_taskurilor_anterioare": "Structura directorului shared/observability a fost definită, stack-ul de observabilitate a fost configurat la nivel de compose, scripturile de bază au fost create. Lipsesc însă explicațiile arhitecturale centralizate care să lege toate aceste elemente într-o imagine clară pentru dezvoltatori și DevOps.",
+    "contextul_general_al_aplicatiei": "Documentarea arhitecturii Observabilității ajută la onboarding, la troubleshooting și la evoluția stack-ului. architecture.md devine referința principală atunci când cineva vrea să înțeleagă cum sunt colectate și agregate logurile, metricile și trace-urile în GeniusSuite.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/docs/\" și creează \"architecture.md\". Structurează documentul cu secțiuni clare (Overview, Components, Data Flow, Conventions, Compose Integration, Limitări F0.3). Referențiază explicit alte fișiere relevante (de ex. \"otel-config/apps/*.yaml\", \"compose/docker-compose.yml\", scripturile din \"scripts/\") pentru a crea o hartă mentală coerentă.",
+    "restrictii_anti_halucinatie": "Nu descrie componente sau scenarii care nu sunt în plan (de ex. alerte complexe bazate pe machine learning, integrări cu tool-uri externe ne-menționate). Dacă un element este planificat pentru faze viitoare, marchează-l explicit ca atare și nu îl prezenta ca fiind deja implementat. Nu introduce nume de servicii sau label-uri OTEL care nu au fost stabilite.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în afara architecture.md în cadrul acestui task. Nu modifica cod sau configurații doar pentru a se potrivi descrierii; dacă există discrepanțe majore, acestea trebuie adresate într-un task separat.",
+    "validare": "Citește documentul din perspectiva unui dezvoltator sau DevOps nou în proiect: poate înțelege rapid ce componente există, cum curg datele de observabilitate și cum se pornește stack-ul? Verifică faptul că toate rutele și fișierele menționate există efectiv în repo și că numele lor sunt exacte. Ajustează documentul pentru claritate și acuratețe.",
+    "outcome": "Există un document architecture.md în shared/observability/docs care descrie arhitectura Observabilității pentru faza F0.3 și servește drept bază pentru extinderi ulterioare.",
+    "componenta_de_CI_DI": "Documentul nu adaugă logică de CI/CD, dar poate fi referențiat în descrierea PR-ului final de fază F0.3 ca parte din documentația obligatorie. Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add architecture overview for observability skeleton\") și este verificat în review-ul de cod."
+  },
+  "F0.3.62": {
+    "denumire_task": "Creează shared/observability/docs/how-to-add-app.md (guideline integrare nouă aplicație)",
+    "descriere_scurta_task": "Documentează pașii standard pentru a integra o nouă aplicație în stack-ul de observabilitate în how-to-add-app.md.",
+    "descriere_lunga_si_detaliata_task": "Creează fișierul \"shared/observability/docs/how-to-add-app.md\" care descrie pas cu pas cum se integrează o aplicație nouă (sau un nou modul) în Observabilitate. Ghidul trebuie să acopere: 1) ce trebuie adăugat în cod (importul librăriei shared/observability, init tracing, logger, /metrics); 2) ce fișiere de config trebuie create sau extinse (de ex. otel-config/apps/<app>.yaml); 3) cum se conectează aplicația la stack-ul de observabilitate în Docker Compose (rețele, variabile OTEL, porturi); 4) cum se validează integrarea folosind validate.sh și smoke.sh; 5) ce așteptări de naming și tagging există (service.name, environment etc.). Documentul trebuie să folosească exemple reale deja implementate (de ex. CP sau una dintre aplicațiile stand-alone) ca model.",
+    "directorul_directoarele": [
+      "shared/observability/docs/"
+    ],
+    "contextul_taskurilor_anterioare": "Integrarea Observabilității a fost realizată pentru mai multe aplicații ale suitei (CP, archify.app, vettify.app etc.), dar procesul nu este încă formalizat într-un ghid reutilizabil. how-to-add-app.md este acel ghid, care reduce riscul de implementări inconsistente atunci când se adaugă aplicații noi.",
+    "contextul_general_al_aplicatiei": "Pe termen lung, vor exista mai multe module și servicii noi în GeniusSuite. Un ghid clar de integrare Observabilitate asigură că fiecare aplicație este onboardată în mod standard, fără discuții repetitive sau decizii ad-hoc.",
+    "contextualizarea_directoarelor_si_cailor": "Creează \"shared/observability/docs/how-to-add-app.md\" și structurează-l în secțiuni: Precondiții, Modificări în cod, Configurări OTEL, Integrare în Compose, Validare cu scripturi, Checklist final. Folosește referințe către fișiere concrete (de ex. \"shared/observability/otel-config/apps/vettify.yaml\", exemplu de cod dintr-o aplicație deja instrumentată) pentru a face ghidul cât mai practic.",
+    "restrictii_anti_halucinatie": "Nu descrie pași care nu sunt utilizați de niciuna dintre aplicațiile deja integrate. Dacă unele pattern-uri sunt dorite, dar încă neimplementate, marchează-le explicit ca recomandări viitoare. Nu inventa noi directoare sau structuri în repo; rămâi în limitele structurii deja definite pentru shared/observability.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în acest task și nu modifica codul aplicațiilor existente doar pentru a se potrivi perfect cu ghidul; dacă se observă diferențe majore, acestea se pot adresa în taskuri separate.",
+    "validare": "Verifică ghidul practic: simulează integrarea unei aplicații noi urmând exclusiv pașii din how-to-add-app.md și confirmă că, în principiu, se poate ajunge la o integrare completă a observabilității (cod, config, compose, validare). Asigură-te că toate referințele de fișiere și comenzi sunt corecte.",
+    "outcome": "Există un ghid clar how-to-add-app.md pentru integrarea noilor aplicații în Observabilitate, reducând efortul de onboarding și crescând consistența implementărilor.",
+    "componenta_de_CI_DI": "Documentul poate fi folosit ca referință obligatorie pentru viitoarele PR-uri care introduc aplicații noi (link în template-ul de PR). Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): add how-to-add-app guideline\") și este verificat în cadrul PR-ului de fază.",
+    "componenta_de_CI_DI_note": "Câmp auxiliar opțional dacă vrei să separi clar partea de PR/template; poate fi ignorat de parser dacă nu este folosit."
+  },
+  "F0.3.63": {
+    "denumire_task": "Creează shared/observability/docs/dashboards.md și runbooks.md (documentație dashboards & runbooks)",
+    "descriere_scurta_task": "Documentează dashboards-urile de bază și runbook-urile asociate în fișierele dashboards.md și runbooks.md din shared/observability/docs.",
+    "descriere_lunga_si_detaliata_task": "Creează fișierele \"shared/observability/docs/dashboards.md\" și \"shared/observability/docs/runbooks.md\". În dashboards.md descrie dashboard-urile de bază disponibile în Grafana pentru faza F0.3: ce panel-uri există, ce servicii acoperă, ce metrici sunt esențiale (de ex. rate de eroare, latency p95, număr de request-uri) și cum pot fi extinse. În runbooks.md definește runbook-uri minimale pentru incidente legate de observabilitate (de ex. \"nu apar metrici pentru un serviciu\", \"Loki nu mai indexează loguri\", \"Tempo nu returnează trace-uri\"), cu pași de verificare (check compose, check validate.sh, check endpoints) și acțiuni recomandate. Ambele documente trebuie să reflecte starea reală a stack-ului skeleton F0.3, nu o versiune idealizată completă.",
+    "directorul_directoarele": [
+      "shared/observability/docs/"
+    ],
+    "contextul_taskurilor_anterioare": "Dashboards de bază au fost create pentru servicii, iar scripturile validate.sh și smoke.sh oferă un prim nivel de verificare. Documentația pentru modul în care se folosesc dashboards-urile și pentru răspunsul la incidente nu este însă formalizată. dashboards.md și runbooks.md rezolvă această lacună.",
+    "contextul_general_al_aplicatiei": "Observabilitatea nu se limitează la colectarea de date; este esențială și partea de interpretare (dashboards) și reacție (runbooks) atunci când apar probleme. Aceste documente pun cap la cap modul de utilizare a dashboard-urilor și pașii de urmat atunci când semnalele indică o problemă.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/docs/\" și creează \"dashboards.md\" și \"runbooks.md\". În dashboards.md, include tabele sau liste cu: numele dashboard-ului, scopul, principalele panel-uri și linkuri relative către JSON-urile sau template-urile de dashboard din repo, dacă există. În runbooks.md, structura recomandată este: Simptom, Posibile cauze, Pași de diagnostic, Acțiuni de remediere, Linkuri către dashboards relevante.",
+    "restrictii_anti_halucinatie": "Nu documenta dashboards sau runbook-uri care nu există sau nu sunt pregătite în F0.3. Dacă unele sunt planificate, marchează-le ca \"planned\" sau \"TODO\" cu claritate. Nu inventa alerte complexe sau integrare cu sisteme de on-call care nu sunt descrise în planul actual.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte documente în acest task. Nu modifica configurații Grafana/Prometheus/Loki; scopul este doar documentarea stării curente.",
+    "validare": "Verifică faptul că pentru fiecare dashboard documentat există un corespondent real în configurarea Grafana (sau în fișierele din repo) și că runbook-urile corespund unor scenarii reale posibile (ex. aplicația nu mai trimite metrici). Ajustează descrierile pentru a fi pragmatice și ușor de urmat.",
+    "outcome": "Există documente dashboards.md și runbooks.md care descriu modul de utilizare a dashboard-urilor și pașii de reacție la probleme de observabilitate în faza F0.3.",
+    "componenta_de_CI_DI": "Aceste documente nu afectează direct CI/CD, dar pot fi menționate în descrierile PR-urilor și în playbook-urile echipei de operațiuni. Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): document dashboards and runbooks for F0.3 skeleton\") și este inclus în PR-ul final de fază."
+  },
+  "F0.3.64": {
+    "denumire_task": "Integrează shared/observability/scripts/validate.sh în pipeline-ul CI (dev/staging)",
+    "descriere_scurta_task": "Adaugă un job de CI care rulează validate.sh pentru a verifica observabilitatea pe branch-urile dev și staging înainte de merge.",
+    "descriere_lunga_si_detaliata_task": "Actualizează configurația de CI existentă (de ex. \".github/workflows/ci.yml\" pentru GitHub sau \".gitlab-ci.yml\" pentru GitLab) pentru a introduce un job nou, de tip \"observability-validate\", care rulează scriptul \"shared/observability/scripts/validate.sh\". Job-ul trebuie să pornească de la o imagine care are la dispoziție un mediu potrivit (bash, docker, eventual docker-in-docker dacă este necesar) și să se asigure că stack-ul de observabilitate și cel puțin o aplicație relevantă sunt pornite sau pornite temporar în contextul job-ului. Job-ul trebuie configurat să ruleze automat pe PR/MR deschise către branch-urile \"dev\" și \"staging\" (sau pe push-uri către aceste branch-uri), iar eșecul scriptului validate.sh să blocheze merge-ul. Include în configurație timeouts rezonabile pentru a evita blocări.",
+    "directorul_directoarele": [
+      ".github/workflows/",
+      ".gitlab-ci.yml",
+      "shared/observability/scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "Scriptul standard de validare a observabilității (validate.sh) a fost creat în shared/observability/scripts. CI/CD de bază a fost configurat în faza F0.2. Acum trebuie conectate aceste componente astfel încât Observabilitatea să devină o condiție de trecere pentru PR-urile relevante.",
+    "contextul_general_al_aplicatiei": "Integrarea Observabilității în CI asigură că problemele legate de stack-ul de telemetrie sunt detectate din timp și nu ajung în branch-urile principale. Job-ul observability-validate va deveni un gate obligatoriu pentru merge pe dev și staging, crescând calitatea generală a sistemului.",
+    "contextualizarea_directoarelor_si_cailor": "În funcție de platforma de CI folosită: 1) dacă există \".github/workflows/ci.yml\", adaugă un nou job YAML (de ex. \"observability-validate\") care, în pașii săi, execută \"bash shared/observability/scripts/validate.sh\"; 2) dacă există \".gitlab-ci.yml\", adaugă un nou job în pipeline, cu stage adecvat (ex. \"validation\") și script de execuție a validate.sh. Nu crea simultan ambele configurații; detectează contextul bazându-te pe fișierele existente. Asigură-te că job-ul este condiționat să ruleze doar acolo unde este relevant (PR/MR sau branch-uri dev/staging) pentru a evita costuri inutile.",
+    "restrictii_anti_halucinatie": "Nu presupune că proiectul folosește în același timp GitHub și GitLab; lucrează doar cu fișierele de CI care există deja în repo. Nu modifica alte job-uri CI în afara adăugării/legării job-ului de observabilitate. Nu introduce pași care distrug sau modifică resurse din medii de producție; job-ul trebuie să se limiteze la mediile de test/CI.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea fișiere noi de pipeline complet diferite de structura deja existentă; extinde pipeline-ul actual. Nu inventa alte job-uri sau stage-uri complicate; job-ul observability-validate trebuie să fie atomic și clar.",
+    "validare": "Deschide un PR/MR de test către branch-ul \"dev\" care modifică un fișier nesemnificativ și verifică: 1) că job-ul observability-validate apare în pipeline; 2) că acesta rulează scriptul validate.sh; 3) că, în condiții normale, job-ul trece cu succes. Simulează și un eșec (de ex. modificând temporar scriptul pentru a returna exit code nenul) pentru a verifica faptul că pipeline-ul marchează PR/MR-ul ca failed și nu permite merge-ul până la remediere.",
+    "outcome": "Pipeline-ul CI include un job observability-validate care rulează validate.sh pe branch-urile dev și staging, transformând observabilitatea într-o condiție automată de trecere pentru PR/MR.",
+    "componenta_de_CI_DI": "Job-ul observability-validate este acum parte integrantă din CI. Orice PR/MR către dev și staging trebuie să treacă acest job înainte de merge. Modificările de configurare CI se fac pe branch-ul \"dev\" (ex. commit \"ci(observability): run validate.sh in CI pipeline\"), sunt revizuite în cadrul unui PR către \"staging\" și, după verificare, sunt propagate către \"master\" odată cu restul livrabilelor F0.3."
+  },
+  "F0.3.65": {
+    "denumire_task": "PR/MR final pentru F0.3 Observabilitate (dev → staging → master)",
+    "descriere_scurta_task": "Agregă toate modificările din F0.3 pe branch-ul dev și deschide PR/MR-urile necesare către staging și master, cu descriere detaliată și referințe la Observabilitate.",
+    "descriere_lunga_si_detaliata_task": "După finalizarea tuturor taskurilor F0.3.x (inclusiv integrarea în cod, Docker Compose, scripturi, documentație și CI), agregă modificările pe branch-ul \"dev\" și pregătește un PR/MR de fază către branch-ul \"staging\". Descrierea PR-ului trebuie să includă: rezumatul arhitecturii Observabilității skeleton, lista principalelor componente adăugate (shared/observability, stack OTEL/Prometheus/Grafana/Loki/Tempo, scripturi, documente), modul de utilizare (link către how-to-add-app.md și README-urile relevante) și impactul asupra mediului de dezvoltare. După review și testare pe staging, creează un al doilea PR/MR din \"staging\" către \"master\" (sau folosește fluxul standard al echipei) pentru a promova Observabilitatea skeleton în linia principală. Asigură-te că toate job-urile CI (inclusiv observability-validate) sunt verzi înainte de merge.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "Toate taskurile F0.3 au fost implementate: configurare shared/observability, stack OTEL + Prometheus + Grafana + Loki + Tempo, integrarea în aplicații (CP și stand-alone), scripturi (install.sh, validate.sh, smoke.sh), documentație și integrare în CI. Acest task finalizează faza printr-un PR/MR coerent și bine documentat.",
+    "contextul_general_al_aplicatiei": "GeniusSuite folosește o strategie cu trei branch-uri principale (dev, staging, master). Fiecare fază majoră trebuie integrată prin PR-uri clar documentate, pentru a permite code review, validare CI și testare incrementale înainte de a ajunge în master.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează din rădăcina repo-ului. Verifică faptul că toate modificările legate de F0.3 sunt comise pe branch-ul \"dev\". Creează PR/MR către \"staging\" cu o descriere bogată, folosind secțiuni precum: \"Context\", \"Schimbări cheie\", \"Impact\", \"Instrucțiuni de rulare\", \"Checklist de validare\" (inclusiv rularea validate.sh și smoke.sh). După aprobarea PR-ului și testarea pe staging, pregătește un PR/MR către \"master\" cu un rezumat orientat pe release (ce aduce Observabilitatea skeleton în produs).",
+    "restrictii_anti_halucinatie": "Nu introduce schimbări noi de cod sau configurare în acest task; focusul este exclusiv pe operațiunile Git și pe descrierea PR-urilor. Nu modifica istoricul Git (rebase/force-push) într-un mod care ar putea afecta alte faze fără acordul echipei. Nu promite în descriere funcționalități de Observabilitate care nu sunt implementate efectiv.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte branch-uri în afara celor necesare pentru fluxul dev → staging → master. Nu inventa sub-taskuri suplimentare; toate modificările de cod/config ar trebui să fie deja acoperite de taskurile F0.3.1–F0.3.64.",
+    "validare": "Asigură-te că: 1) toate job-urile CI legate de PR (inclusiv observability-validate) sunt verzi; 2) cel puțin un reviewer tehnic a aprobat PR-ul către staging; 3) pe staging, scripturile validate.sh și smoke.sh trec și se pot vizualiza dashboards-urile de bază; 4) PR-ul către master este aprobat conform procesului echipei și merge-ul se face fără conflicte.",
+    "outcome": "Faza F0.3 Observabilitate (skeleton) este complet integrată în branch-ul master, cu un istoric clar de PR-uri și o descriere detaliată a schimbărilor, gata pentru a fi folosită ca fundație în fazele următoare (F0.4, F0.8 etc.).",
+    "componenta_de_CI_DI": "Acest task este strict legat de fluxul de CI/CD: PR/MR din \"dev\" către \"staging\" și apoi către \"master\". CI trebuie să ruleze automat pe fiecare PR, incluzând job-ul observability-validate și restul verificărilor definite în F0.2. Nu se face merge manual (fără PR) în branch-urile staging sau master; toate actualizările Observabilității skeleton trebuie să treacă prin aceste PR-uri cu CI verde."
+  }
 
 F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing.
 
@@ -6253,7 +7279,3 @@ Reguli de tranziție între faze
 Faza următoare începe doar când: criteriile de acceptare anterioare + testele e2e cross‑app sunt verzi.
 Orice dependență (ex. Auth Client) se livrează „versionată” și adoptată prin changelog clar.
 Orice „breaking change” în contracts (tRPC/OpenAPI, events) necesită migration guides și adapters temporari.
-
-
-
-
