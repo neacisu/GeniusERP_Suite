@@ -7,6 +7,10 @@ on:
       - master
       - staging
       - dev
+  push:
+    branches:
+      - dev
+      # Rulează CI și după merge-uri în dev pentru a valida codul înainte de promovare
 jobs:
   validate:
     runs-on: ubuntu-latest
