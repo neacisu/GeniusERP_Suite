@@ -6144,29 +6144,99 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```
 
 #### F0.1.52
+```JSON
+  {
+  "F0.1.52": {
+    "denumire_task": "Migrare hook-uri Husky la format v9+ și commit + push pe 'dev'",
+    "descriere_scurta_task": "Actualizarea fișierelor .husky/pre-commit și .husky/commit-msg la formatul fără husky.sh, apoi commit și push pe branch-ul 'dev'.",
+    "descriere_lunga_si_detaliata_task": "Acest task rezolvă deprecările raportate de Husky și clarifică comportamentul lint-staged. În prezent, hook-urile .husky/pre-commit și .husky/commit-msg folosesc încă formatul vechi bazat pe scriptul _/husky.sh, ceea ce produce warning-uri de tipul 'husky - DEPRECATED ... They WILL FAIL in v10.0.0'. Conform recomandărilor Husky v9+, aceste hook-uri trebuie să conțină doar shebang-ul și comanda efectivă (pnpm exec lint-staged / pnpm exec commitlint --edit \"$1\") fără sourcing-ul husky.sh. În acest task rescriem ambele fișiere în formatul modern, verificăm că doar aceste fișiere sunt modificate, apoi creăm un commit nou pe branch-ul 'dev' cu un mesaj Conventional Commits descriptiv (de ex. 'chore(husky): migrate hooks to v9+ format') și facem push către origin/dev. Mesajul informativ de la lint-staged ('could not find any staged files matching configured tasks') este considerat comportament normal atunci când nu există fișiere .ts/.tsx/.js/.jsx în staged, astfel că nu modificăm configurația lint-staged.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/",
+      "/var/www/GeniusSuite/.husky/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.36–F0.1.38: lint-staged și hook-ul 'pre-commit' au fost configurate. F0.1.39–F0.1.42: commitlint și hook-ul 'commit-msg' au fost configurate. F0.1.50–F0.1.52: branch-ul 'dev' a fost creat, comisionat și împins pe remote.",
+    "contextul_general_al_aplicatiei": "Asigurarea că infrastructura de DevEx (Husky, lint-staged, commitlint) este compatibilă cu versiunile actuale și viitoare ale Husky (v9+ / v10), fără warning-uri de deprecări, și că branch-ul 'dev' rămâne sursa de adevăr pentru F0.1.",
+    "contextualizarea_directoarelor_si_cailor": "Toate modificările se fac în '/var/www/GeniusSuite/.husky/pre-commit' și '/var/www/GeniusSuite/.husky/commit-msg'. Commit-ul și push-ul se execută din '/var/www/GeniusSuite/' pe branch-ul 'dev'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în directorul '/var/www/GeniusSuite/'. Începe prin a rula: cd /var/www/GeniusSuite/",
+      "Verifică branch-ul curent: git branch --show-current trebuie să returneze EXACT 'dev'. Dacă nu, execută git checkout dev și verifică din nou.",
+      "Asigură-te că nu există modificări necomitate neintenționate înainte de a edita hook-urile. Rulează: git status --porcelain. Dacă apar fișiere în afară de .husky/* pe care nu dorești să le incluzi în acest commit, gestionează-le într-un task separat (commit/stash/reset) înainte de a continua.",
+      "Deschide fișierul '.husky/pre-commit' și rescrie ÎNTREG conținutul lui astfel încât să fie EXACT:",
+      "#!/usr/bin/env sh",
+      "pnpm exec lint-staged",
+      "Nu include nicio altă linie (NU . \"$(dirname -- \"$0\")/_/husky.sh\"). Asigură-te că nu există spații sau caractere ascunse suplimentare.",
+      "Deschide fișierul '.husky/commit-msg' și rescrie ÎNTREG conținutul lui astfel încât să fie EXACT:",
+      "#!/usr/bin/env sh",
+      "pnpm exec commitlint --edit \"$1\"",
+      "Din nou, NU include linia veche cu . \"$(dirname -- \"$0\")/_/husky.sh\" și nu adăuga alte comenzi.",
+      "Asigură-te că ambele fișiere sunt executabile, conform cerințelor Husky: rulează comanda:",
+      "chmod +x .husky/pre-commit .husky/commit-msg",
+      "Nu modifica fișierele de configurare lint-staged ('.lintstagedrc.json') sau commitlint ('commitlint.config.js') în acest task. Mesajul lint-staged 'could not find any staged files matching configured tasks' este acceptat ca comportament normal când nu există fișiere .ts/.tsx/.js/.jsx în staging și nu necesită schimbări de configurare.",
+      "După editarea fișierelor Husky, rulează din nou: git status --porcelain. Verifică faptul că DOAR '.husky/pre-commit' și '.husky/commit-msg' apar ca modificate. Dacă apar și alte fișiere, fie le revii (git restore), fie le tratezi în alt task – nu le include implicit în acest commit.",
+      "Adaugă în staging DOAR cele două fișiere Husky:",
+      "git add .husky/pre-commit .husky/commit-msg",
+      "Verifică staging-ul: git status --short trebuie să arate exact liniile pentru M .husky/pre-commit și M .husky/commit-msg (sau similare).",
+      "Creează un commit nou cu un mesaj valid Conventional Commits, descriptiv pentru această schimbare. De exemplu:",
+      "git commit -m \"chore(husky): migrate hooks to v9+ style\"",
+      "Nu folosi --no-verify; trebuie să permiți rularea hook-urilor 'pre-commit' și 'commit-msg' pentru a valida configurația.",
+      "Este posibil ca la acest commit lint-staged să afișeze în continuare un mesaj informativ dacă nu există fișiere .ts/.tsx/.js/.jsx în staged. Acest mesaj NU este o eroare și nu trebuie tratat ca failure.",
+      "După commit, verifică faptul că worktree-ul este curat: git status trebuie să arate 'nothing to commit, working tree clean'.",
+      "Execută push pe branch-ul 'dev' către remote-ul 'origin'. Dacă upstream-ul este deja configurat, poți folosi:",
+      "git push",
+      "Dacă upstream-ul NU este configurat (de exemplu la primul push), folosește:",
+      "git push -u origin dev",
+      "Nu folosi în acest task comenzi destructive precum git push --force, git rebase sau git reset --hard."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica configurațiile lint-staged, ESLint, Prettier sau commitlint în acest task. Nu creea sau modifica alte branch-uri (ex. 'staging', 'master/main') și nu efectua merge între branch-uri. Rămâi strict la actualizarea hook-urilor Husky, commit și push pe 'dev'.",
+    "validare": "Validarea este considerată reușită dacă: (1) conținutul fișierelor '.husky/pre-commit' și '.husky/commit-msg' este exact în formatul modern (fără linia cu 'husky.sh'), (2) un commit cu mesaj de forma 'chore(husky): migrate hooks to v9+ style' a fost creat cu succes pe branch-ul 'dev' și apare ca ultim commit în 'git log -1', (3) 'git status' este curat și (4) 'git ls-remote --heads origin dev' arată că branch-ul 'dev' a fost împins pe remote cu acest commit inclus.",
+    "outcome": "Hook-urile Husky sunt aliniate cu formatul v9+ (compatibile cu v10), warning-urile de deprecări dispar, iar branch-ul 'dev' conține un commit clar care documentează migrarea hook-urilor și păstrează comportamentul lint-staged/commitlint conform planului F0.1.",
+    "componenta_de_CI_DI": "La push-ul rezultat, pipeline-ul de CI configurat în F0.2 va rula pe branch-ul 'dev' cu hook-uri Husky modernizate și nu va fi afectat de deprecările legate de husky.sh. Linting-ul și format-check-ul continuă să fie declanșate prin scripturile 'pnpm lint' și 'pnpm format:check'."
+  }
+}
+```
+
+#### F0.1.53
 
 ```JSON
   {
-    "F0.1.52": {
-      "denumire_task": "Push Branch 'dev' și Creare PR/MR",
-      "descriere_scurta_task": "Publicarea branch-ului 'dev' și pregătirea instrucțiunilor pentru un PR/MR către 'master'.",
-      "descriere_lunga_si_detaliata_task": "Acest task finalizează Faza F0.1 prin publicarea branch-ului 'dev' pe 'origin' și instruirea agentului AI să genereze descrierea pentru un Pull Request (PR) sau Merge Request (MR) de la 'dev' la 'master' (sau 'main'), conform cerinței.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.51: Munca F0.1 este comisionată local pe 'dev'.",
-      "contextul_general_al_aplicatiei": "Respectarea guvernanței Git și finalizarea primei unități de lucru.",
-      "contextualizarea_directoarelor_si_cailor": "Comenzi Git executate la rădăcină.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu executa 'merge'. Doar pregătește PR/MR-ul.",
-      "validare": "Branch-ul 'dev' există pe 'origin' și conține commit-ul F0.1.",
-      "outcome": "Faza F0.1 este finalizată, comisionată și gata de revizuire într-un PR/MR.",
-      "componenta_de_CI_DI": "Acest push va declanșa primul pipeline CI (definit în F0.2), care ar trebui să ruleze 'pnpm install', 'pnpm lint' și 'pnpm format:check'.",
-      "PR_MR": {
-        "sursa_branch": "dev",
-        "destinatie_branch": "master",
-        "titlu": "feat(platform): F0.1 - Inițializare Fundație Monorepo și Tooling",
-        "descriere": "Acest PR stabilește fundația completă a monorepo-ului GeniusSuite (Faza F0.1), conform planului de arhitectură.\n\n**Schimbări Cheie:**\n\n1.  **Manager de Pachete:** Inițializat cu `pnpm` și configurat `pnpm-workspace.yaml` pentru a reflecta structura exactă a aplicațiilor din (ex. `cp/*`, `shared/*`, `vettify.app`, etc.).\n2.  **Manager Monorepo:** `Nx` a fost instalat și configurat (`nx.json`) pentru a adopta workspace-ul `pnpm`, cu `targetDefaults` pentru caching. \n3.  **TypeScript:** Configurat `tsconfig.base.json` cu setări `strict: true`  și alias-uri `paths` pentru toate bibliotecile `shared/*` (de ex. `@genius-suite/ui-design-system`). \n4.  **Standarde de Cod:**\n    *   `Prettier` instalat și configurat (`.prettierrc`). \n    *   `ESLint` instalat și configurat (`.eslintrc.json`) cu plugin-urile `@nx/eslint-plugin`, `@typescript-eslint/eslint-plugin`  și integrare `eslint-config-prettier`. \n5.  **Cârlige Git (Husky v9):**\n    *   `pre-commit`: Rulează `lint-staged`, care execută `nx format:write` și `nx affected:lint --fix` pe fișierele din staged. \n    *   `commit-msg`: Rulează `commitlint` pentru a impune 'Conventional Commits' (bazat pe `@commitlint/config-conventional`). \n\n**Validare:**\n\n*   Toate hook-urile (pre-commit, commit-msg) au fost testate local (task-urile F0.1.45 - F0.1.48) și funcționează conform așteptărilor.\n*   Script-urile `pnpm lint` și `pnpm format:check` sunt disponibile pentru CI."
-      }
+  "F0.1.53": {
+    "denumire_task": "Push Branch 'dev' și Creare PR/MR",
+    "descriere_scurta_task": "Publicarea branch-ului 'dev' pe remote și pregătirea datelor pentru un PR/MR către branch-ul principal.",
+    "descriere_lunga_si_detaliata_task": "Acest task finalizează Faza F0.1 prin publicarea branch-ului 'dev' pe remote-ul 'origin' și pregătirea metadatelor necesare pentru un Pull Request (PR) sau Merge Request (MR) de la 'dev' către branch-ul principal ('master' sau 'main', în funcție de repository). Push-ul va conține commit-ul/commit-urile în care au fost comisionate artefactele F0.1 (tooling monorepo, hook-uri, configurări). În plus, definim în câmpul 'PR_MR' titlul și descrierea structurate, astfel încât un agent AI sau un dezvoltator să le poată folosi direct pentru a deschide PR/MR în interfața platformei de hosting (GitHub, GitLab, etc.). Acest task NU execută merge și NU modifică istoricul branch-urilor principale.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.50: Branch-ul 'dev' a fost creat și activ. F0.1.51: Artefactele F0.1 au fost comisionate local pe branch-ul 'dev' cu un mesaj valid 'Conventional Commits'.",
+    "contextul_general_al_aplicatiei": "Respectarea guvernanței Git cu 3 branch-uri (master, staging, dev) și finalizarea primei faze (F0.1) ca unitate de lucru revizuibilă prin PR/MR.",
+    "contextualizarea_directoarelor_si_cailor": "Toate comenzile Git se execută în directorul rădăcină al repository-ului: '/var/www/GeniusSuite/'. PR/MR-ul va avea ca sursă branch-ul 'dev' și ca destinație branch-ul principal ('master' sau 'main').",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV în '/var/www/GeniusSuite/'. Rulează la început: 'cd /var/www/GeniusSuite/'.",
+      "Verifică branch-ul curent înainte de push: 'git branch --show-current' trebuie să fie 'dev'. Dacă nu este, execută 'git checkout dev' și verifică din nou.",
+      "Asigură-te că nu există modificări necomitate înainte de push: 'git status --porcelain' trebuie să fie gol. Dacă există modificări, acestea trebuie comisionate sau resetate într-un task separat, NU în acest task.",
+      "Verifică existența remote-ului 'origin' cu 'git remote'. Dacă 'origin' NU există, NU încerca să creezi remote-uri noi și NU inventa URL-uri. Marchează task-ul ca blocat până când remote-ul este configurat manual.",
+      "Determină branch-ul principal EXISTENT pe remote, fără a-l presupune:",
+      "- Dacă 'git ls-remote --heads origin master' returnează un head, consideră 'master' ca branch principal.",
+      "- Altfel, dacă 'git ls-remote --heads origin main' returnează un head, consideră 'main' ca branch principal.",
+      "- Dacă nici 'master' nici 'main' nu există pe remote, marchează task-ul ca blocat. Nu inventa branch principal.",
+      "Pentru push-ul inițial al branch-ului 'dev', folosește:",
+      "- 'git push -u origin dev'",
+      "Dacă branch-ul 'dev' există deja pe remote și push-ul eșuează din cauza divergențelor, NU folosi 'git push --force' sau rebase în acest task. Aceasta necesită un task clar separat de rezolvare a conflictelor.",
+      "După push, NU executa 'git merge', 'git rebase' sau alte operații care schimbă istoricul branch-ului principal. Acest task se oprește la publicarea branch-ului 'dev' și pregătirea metadatelor pentru PR/MR.",
+      "NU încerca să creezi PR/MR prin API-uri sau comenzi CLI externe în acest task. Scopul este să furnizezi datele ('titlu', 'descriere', 'sursa_branch', 'destinatie_branch') pentru a fi folosite manual sau de un agent AI într-un context separat.",
+      "Nu modifica conținutul commit-urilor deja create în F0.1.51 (nu folosi 'git commit --amend', 'git rebase', 'git reset --hard')."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu executa merge între 'dev' și branch-ul principal. Nu crea în acest task branch-ul 'staging' și nu modifică politica de branch-uri. Rămâi strict în contextul push-ului pentru 'dev' și a pregătirii datelor pentru PR/MR.",
+    "validare": "După 'git push -u origin dev', verifică: (1) 'git branch --show-current' returnează 'dev', (2) 'git status' arată 'nothing to commit, working tree clean', (3) 'git ls-remote --heads origin dev' returnează un head (branch-ul 'dev' există pe remote).",
+    "outcome": "Branch-ul 'dev' care conține artefactele F0.1 este publicat pe remote-ul 'origin' și există date clare pentru deschiderea unui PR/MR către branch-ul principal.",
+    "componenta_de_CI_DI": "Primul push al branch-ului 'dev' va declanșa pipeline-ul CI configurat în F0.2 (de exemplu rularea 'pnpm install', 'pnpm lint', 'pnpm format:check'), permițând verificarea automată a fundației monorepo-ului.",
+    "PR_MR": {
+      "sursa_branch": "dev",
+      "destinatie_branch": "master",
+      "titlu": "feat(platform): F0.1 - Inițializare Fundație Monorepo și Tooling",
+      "descriere": "Acest PR stabilește fundația completă a monorepo-ului GeniusSuite (Faza F0.1), conform planului de arhitectură.\n\n**Schimbări cheie**\n\n1. Manager de pachete și monorepo\n- Configurat managerul de pachete pnpm și fișierul pnpm-workspace.yaml pentru a reflecta structura generală a aplicațiilor și bibliotecilor (cp/*, shared/*, vettify.app etc.).\n- Inițializat Nx și configurat nx.json pentru a lucra împreună cu pnpm workspaces, cu targetDefaults pentru caching-ul task-urilor standard (build, lint, test).\n\n2. TypeScript\n- Adăugat tsconfig.base.json ca sursă unică de adevăr pentru configurarea TypeScript în monorepo.\n- Activat Strict TS (strict: true, noUncheckedIndexedAccess, exactOptionalPropertyTypes și alte opțiuni stricte).\n- Configurat compilerOptions moderne pentru Node 24 și React (ESNext, jsx: react-jsx).\n- Definite alias-uri paths pentru bibliotecile shared/* (ex. @genius-suite/ui-design-system, @genius-suite/types, @genius-suite/common etc.).\n\n3. Standarde de cod (ESLint + Prettier)\n- Instalate și configurate Prettier (.prettierrc, .prettierignore) ca formatter principal.\n- Instalate și configurate ESLint și integrarea cu TypeScript (@typescript-eslint/parser, @typescript-eslint/eslint-plugin).\n- Integrat pluginul Nx (@nx/eslint-plugin) și activată regula de bază pentru module boundaries.\n- Configurat .eslintrc.json de rădăcină cu overrides pentru fișiere TS/JS și integrare completă cu Prettier (plugin:prettier/recommended).\n\n4. Cârlige Git și verificări locale\n- Instalate Husky v9, lint-staged și commitlint.\n- Hook pre-commit: rulează lint-staged, care execută nx format:write --files și nx affected:lint --fix --files pe fișierele staged.\n- Hook commit-msg: rulează commitlint cu presetul @commitlint/config-conventional pentru a impune Conventional Commits.\n- Configurațiile au fost validate prin task-urile F0.1.45–F0.1.48 (teste deliberate de eșec și succes pentru pre-commit și commit-msg).\n\n5. Scripturi și documentație\n- Adăugate scripturi standardizate în package.json: pnpm lint (nx run-many -t lint --all), pnpm lint:fix, pnpm format:check (nx format:check), pnpm format:write (nx format:write).\n- Creat README.md de rădăcină cu descrierea stack-ului și comenzile de bază (pnpm install, pnpm lint, pnpm format:check, pnpm format:write).\n\n**Motivație**\n\nAcest PR pregătește un fundament solid pentru dezvoltarea ulterioară (Control Plane, ERP, DMS, aplicații stand-alone), asigurând un DevEx coerent (tooling unificat, standarde stricte de cod, hook-uri Git și Conventional Commits) și un monorepo Nx pregătit pentru fazele F0.2+ (CI/CD, release, module noi)."
     }
+  }
+}
 ```
 
 ### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry.
