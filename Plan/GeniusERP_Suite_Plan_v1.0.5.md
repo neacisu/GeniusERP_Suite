@@ -4343,31 +4343,44 @@ Capitolul 16
 > Versiunea acestui schelet: **v1 core**. Pentru extindere (ex: e‑Factura detaliu, SAF‑T, modele HR avansate, E‑commerce complet) se pot adăuga sub‑canvasuri pe module.
 
 
-Capitolul 17
-Program de implementare pe faze – GeniusSuite
+# Capitolul 17
+
+# Program de implementare pe faze – GeniusSuite
+
 Structură generală de implementare, fiecare canvas = o fază. În fiecare fază avem subfaze (F1.1..Fn.m) care acoperă structura + scripturile din canvasul dedicat. Ordonarea ține cont de dependențe (Fundație/Auth/CP înaintea apps) și de livrabile incrementale (MVP → Hardening → GA).
 
-F0 - Faza 0 — Fundația: Guvernanță, DevEx, DB & Scripts
+## F0 - Faza 0 — Fundația: Guvernanță, DevEx, DB & Scripts
+
 Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate proiectele.
-F0.1 Monorepo & Tooling: NX + pnpm, workspaces, standard TS/ESLint/Prettier, commit hooks.
-F0.1.1
-{ 
-"F0.1.1": { 
-"denumire_task": "Creare Director Rădăcină Monorepo", 
-"descriere_scurta_task": "Crearea directorului rădăcină /var/www/GeniusSuite.",
-"descriere_lunga_si_detaliata_task": "Acest task inițiază structura fizică pe disc. Vom crea directorul rădăcină pentru întregul monorepo GeniusSuite. Conform planului, calea standardizată este '/var/www/GeniusSuite'. Această comandă trebuie executată cu permisiunile necesare (posibil 'sudo') în funcție de mediul sistemului de operare.",
-"directorul_directoarele": [ "/var/www/" ],
-"contextul_taskurilor_anterioare": "N/A. Acesta este primul task.",
-"contextul_general_al_aplicatiei": "Se inițiază structura de fișiere pentru monorepo-ul GeniusSuite, care va conține toate aplicațiile (vettify.app, numeriqo.app, etc.) și bibliotecile partajate (shared/), conform.",
-"contextualizarea_directoarelor_si_cailor": "Comanda 'mkdir -p /var/www/GeniusSuite' va crea directorul rădăcină. Toate task-urile următoare se vor desfășura în interiorul acestei căi.",
-"Restrictii_anti_halucinatie":null,
-"restrictii_de_iesire_din_contex": "Nu executa 'git init' sau alte comenzi. Doar creează directorul.",
-"validare": "Rulează 'ls -d /var/www/GeniusSuite'. Comanda trebuie să returneze cu succes calea directorului.",
-"outcome": "Directorul rădăcină '/var/www/GeniusSuite' există.",
-"componenta_de_CI_DI": "În CI, acest pas este de obicei înlocuit de 'git checkout' într-un director de lucru predefinit." 
+
+### F0.1 Monorepo & Tooling: NX + pnpm, workspaces, standard TS/ESLint/Prettier, commit hooks.
+
+#### F0.1.1
+
+```json
+{
+  "F0.1.1": {
+    "denumire_task": "Creare Director Rădăcină Monorepo",
+    "descriere_scurta_task": "Crearea directorului rădăcină /var/www/GeniusSuite.",
+    "descriere_lunga_si_detaliata_task": "Acest task inițiază structura fizică pe disc. Vom crea directorul rădăcină pentru întregul monorepo GeniusSuite. Conform planului, calea standardizată este '/var/www/GeniusSuite'. Această comandă trebuie executată cu permisiunile necesare (posibil 'sudo') în funcție de mediul sistemului de operare.",
+    "directorul_directoarele": [
+      "/var/www/"
+    ],
+    "contextul_taskurilor_anterioare": "N/A. Acesta este primul task.",
+    "contextul_general_al_aplicatiei": "Se inițiază structura de fișiere pentru monorepo-ul GeniusSuite, care va conține toate aplicațiile (vettify.app, numeriqo.app, etc.) și bibliotecile partajate (shared/), conform.",
+    "contextualizarea_directoarelor_si_cailor": "Comanda 'mkdir -p /var/www/GeniusSuite' va crea directorul rădăcină. Toate task-urile următoare se vor desfășura în interiorul acestei căi.",
+    "Restrictii_anti_halucinatie": null,
+    "restrictii_de_iesire_din_contex": "Nu executa 'git init' sau alte comenzi. Doar creează directorul.",
+    "validare": "Rulează 'ls -d /var/www/GeniusSuite'. Comanda trebuie să returneze cu succes calea directorului.",
+    "outcome": "Directorul rădăcină '/var/www/GeniusSuite' există.",
+    "componenta_de_CI_DI": "În CI, acest pas este de obicei înlocuit de 'git checkout' într-un director de lucru predefinit."
+  }
 }
-}
-F0.1.2 
+```
+
+#### F0.1.2 
+
+```json
 {
   "F0.1.2": {
     "denumire_task": "Inițializare pnpm",
@@ -4384,58 +4397,71 @@ F0.1.2
     "componenta_de_CI_DI": "N/A"
   }
 }
-F0.1.3
-  {
-    "F0.1.3": {
-      "denumire_task": "Setare 'private: true' în 'package.json'",
-      "descriere_scurta_task": "Editarea 'package.json' de la rădăcină pentru a seta 'private: true'.",
-      "descriere_lunga_si_detaliata_task": "Este o practică standard pentru rădăcina unui monorepo să fie setată ca 'private: true'. Acest lucru previne publicarea accidentală a pachetului rădăcină în registrul npm. De asemenea, activează anumite funcționalități ale managerilor de pachete pentru workspaces.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.2: 'package.json' a fost creat.",
-      "contextul_general_al_aplicatiei": "Securizarea monorepo-ului împotriva publicării accidentale.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/package.json'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu modifica alte chei în 'package.json'.",
-      "validare": "Conținutul 'package.json' include '\"private\": true'.",
-      "outcome": "'package.json' este marcat ca privat.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.1.4  
+```
+
+#### F0.1.3
+```json
 {
-    "F0.1.4": {
-      "denumire_task": "Creare Fișier 'pnpm-workspace.yaml'",
-      "descriere_scurta_task": "Crearea fișierului 'pnpm-workspace.yaml' pentru a defini pachetele din monorepo.",
-      "descriere_lunga_si_detaliata_task": "Acesta este fișierul central de configurare pentru 'pnpm workspaces'.[15, 16, 17] Prin crearea acestui fișier, îi spunem lui 'pnpm' că acesta este un monorepo și unde să caute pachetele (sub-proiectele).",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.2: 'package.json' de rădăcină există.",
-      "contextul_general_al_aplicatiei": "Definirea formală a structurii monorepo-ului pentru 'pnpm'.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu adăuga conținut în fișier. Acest lucru se va face în task-ul următor.",
-      "validare": "Verifică existența fișierului '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
-      "outcome": "Fișierul 'pnpm-workspace.yaml' este creat.",
-      "componenta_de_CI_DI": "Acest fișier este esențial pentru CI pentru a înțelege cum să instaleze dependențele (pnpm install)."
-    }
-  },
-F0.1.5 
- {
-    "F0.1.5": {
-      "denumire_task": "Populare 'pnpm-workspace.yaml' (Critic)",
-      "descriere_scurta_task": "Adăugarea căilor (glob patterns) în 'pnpm-workspace.yaml' conform structurii.",
-      "descriere_lunga_si_detaliata_task": "Acest task definește 'inima' monorepo-ului. Bazat pe structura de directoare din  (Capitolul 1.5), trebuie să specificăm toate căile unde 'pnpm' și 'Nx' vor găsi proiecte (aplicații și biblioteci). Acest lucru include 'shared/', 'cp/', aplicațiile '.app' și directoarele de suport.",
-      "directorul_directoarele":,
-      "contextul_taskurilor_anterioare": "F0.1.4: Fișierul 'pnpm-workspace.yaml' există.",
-      "contextul_general_al_aplicatiei": "Alinierea definiției workspace-ului pnpm cu arhitectura.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
-      "restrictii_anti_halucinatie":,
-      "restrictii_de_iesire_din_contex": "Nu folosi ghilimele duble în YAML. Folosește ghilimele simple. Nu inventa alte căi.",
-      "validare": "Conținutul 'pnpm-workspace.yaml' corespunde exact specificației de mai sus.",
-      "outcome": "pnpm este acum conștient de structura completă a monorepo-ului.",
-      "componenta_de_CI_DI": "Acest fișier dictează modul în care 'pnpm install' descoperă și leagă pachetele locale."
-    }
-  },
-F0.1.6 
+  "F0.1.3": {
+    "denumire_task": "Setare 'private: true' în 'package.json'",
+    "descriere_scurta_task": "Editarea 'package.json' de la rădăcină pentru a seta 'private: true'.",
+    "descriere_lunga_si_detaliata_task": "Este o practică standard pentru rădăcina unui monorepo să fie setată ca 'private: true'. Acest lucru previne publicarea accidentală a pachetului rădăcină în registrul npm. De asemenea, activează anumite funcționalități ale managerilor de pachete pentru workspaces.",
+    "directorul_directoarele": "",
+    "contextul_taskurilor_anterioare": "F0.1.2: 'package.json' a fost creat.",
+    "contextul_general_al_aplicatiei": "Securizarea monorepo-ului împotriva publicării accidentale.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/package.json'.",
+    "restrictii_anti_halucinatie": "",
+    "restrictii_de_iesire_din_contex": "Nu modifica alte chei în 'package.json'.",
+    "validare": "Conținutul 'package.json' include '\"private\": true'.",
+    "outcome": "'package.json' este marcat ca privat.",
+    "componenta_de_CI_DI": "N/A"
+  }
+}
+```
+#### F0.1.4
+```json
+{
+  "F0.1.4": {
+    "denumire_task": "Creare Fișier 'pnpm-workspace.yaml'",
+    "descriere_scurta_task": "Crearea fișierului 'pnpm-workspace.yaml' pentru a defini pachetele din monorepo.",
+    "descriere_lunga_si_detaliata_task": "Acesta este fișierul central de configurare pentru 'pnpm workspaces'.[15, 16, 17] Prin crearea acestui fișier, îi spunem lui 'pnpm' că acesta este un monorepo și unde să caute pachetele (sub-proiectele).",
+    "directorul_directoarele": "",
+    "contextul_taskurilor_anterioare": "F0.1.2: 'package.json' de rădăcină există.",
+    "contextul_general_al_aplicatiei": "Definirea formală a structurii monorepo-ului pentru 'pnpm'.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
+    "restrictii_anti_halucinatie": "",
+    "restrictii_de_iesire_din_contex": "Nu adăuga conținut în fișier. Acest lucru se va face în task-ul următor.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
+    "outcome": "Fișierul 'pnpm-workspace.yaml' este creat.",
+    "componenta_de_CI_DI": "Acest fișier este esențial pentru CI pentru a înțelege cum să instaleze dependențele (pnpm install)."
+  }
+}
+```
+
+#### F0.1.5
+
+```json
+{
+  "F0.1.5": {
+    "denumire_task": "Populare 'pnpm-workspace.yaml' (Critic)",
+    "descriere_scurta_task": "Adăugarea căilor (glob patterns) în 'pnpm-workspace.yaml' conform structurii.",
+    "descriere_lunga_si_detaliata_task": "Acest task definește 'inima' monorepo-ului. Bazat pe structura de directoare din  (Capitolul 1.5), trebuie să specificăm toate căile unde 'pnpm' și 'Nx' vor găsi proiecte (aplicații și biblioteci). Acest lucru include 'shared/', 'cp/', aplicațiile '.app' și directoarele de suport.",
+    "directorul_directoarele": "",
+    "contextul_taskurilor_anterioare": "F0.1.4: Fișierul 'pnpm-workspace.yaml' există.",
+    "contextul_general_al_aplicatiei": "Alinierea definiției workspace-ului pnpm cu arhitectura.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
+    "restrictii_anti_halucinatie": "",
+    "restrictii_de_iesire_din_contex": "Nu folosi ghilimele duble în YAML. Folosește ghilimele simple. Nu inventa alte căi.",
+    "validare": "Conținutul 'pnpm-workspace.yaml' corespunde exact specificației de mai sus.",
+    "outcome": "pnpm este acum conștient de structura completă a monorepo-ului.",
+    "componenta_de_CI_DI": "Acest fișier dictează modul în care 'pnpm install' descoperă și leagă pachetele locale."
+  }
+}
+```
+
+#### F0.1.6 
+
+```JSON
  {
     "F0.1.6": {
       "denumire_task": "Creare Structură Directoare (Partea 1 - Biblioteci)",
@@ -4460,7 +4486,11 @@ F0.1.6
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.7 
+```
+
+#### F0.1.7
+
+```JSON
  {
     "F0.1.7": {
       "denumire_task": "Creare Structură Directoare (Partea 2 - Control Plane)",
@@ -4485,7 +4515,11 @@ F0.1.7
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.8 
+```
+
+#### F0.1.8
+
+```JSON
  {
     "F0.1.8": {
       "denumire_task": "Creare Structură Directoare (Partea 3 - Aplicații)",
@@ -4512,7 +4546,11 @@ F0.1.8
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.9 
+```
+
+#### F0.1.9
+
+```JSON
  {
     "F0.1.9": {
       "denumire_task": "Creare Structură Directoare (Partea 4 - Infrastructură & Tooling)",
@@ -4534,7 +4572,11 @@ F0.1.9
       "componenta_de_CI_DI": "N/A"
     }
   },
-F0.1.10 
+```
+
+#### F0.1.10
+
+```JSON
  {
     "F0.1.10": {
       "denumire_task": "Creare Fișier Rădăcină '.gitignore'",
@@ -4551,7 +4593,11 @@ F0.1.10
       "componenta_de_CI_DI": "Acest fișier este fundamental pentru a preveni cache-ul CI să fie poluat cu fișiere irelevante."
     }
   },
-F0.1.11 
+```
+
+#### F0.1.11
+
+```JSON
  {
     "F0.1.11": {
       "denumire_task": "Instalare 'nx' ca Dependență Rădăcină",
@@ -4561,14 +4607,15 @@ F0.1.11
       "contextul_taskurilor_anterioare": "F0.1.2: 'package.json' este configurat. F0.1.5: 'pnpm-workspace.yaml' este configurat.",
       "contextul_general_al_aplicatiei": "Nx este instrumentul central [1, 18] ales pentru gestionarea dependențelor, rularea task-urilor, caching și orchestrarea generală a monorepo-ului GeniusSuite.",
       "contextualizarea_directoarelor_si_cailor": "Comanda se execută în '/var/www/GeniusSuite/'. Va modifica 'package.json' și va crea 'node_modules' (și/sau '.pnpm-store').",
-      "restrictii_anti_halucinatie":"
-      ],
+      "restrictii_anti_halucinatie":"N/A",
       "restrictii_de_iesire_din_contex": "Nu rula încă 'nx init' sau alte comenzi 'nx'. Doar instalează pachetul.",
       "validare": "Verifică 'package.json' pentru a vedea 'nx' listat în 'devDependencies'. Verifică existența directorului 'node_modules'.",
       "outcome": "Pachetul 'nx' este instalat la rădăcina monorepo-ului.",
       "componenta_de_CI_DI": "Acest pas este echivalentul 'pnpm install' din CI. Adaugă prima dependență majoră."
     }
   },
+```
+
 F0.1.12 
  {
     "F0.1.12": {
