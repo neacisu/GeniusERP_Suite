@@ -3,11 +3,16 @@ import { readdirSync } from 'fs';
 import { join } from 'path';
 
 describe('GitHub Workflows YAML Validation', () => {
-  let workflowFiles: string[];
+  let workflowFiles: string[] = [];
 
   beforeAll(() => {
-    const workflowsDir = join(process.cwd(), '.github/workflows');
-    workflowFiles = readdirSync(workflowsDir).filter((file) => file.endsWith('.yml'));
+    try {
+      const workflowsDir = join(process.cwd(), '.github/workflows');
+      workflowFiles = readdirSync(workflowsDir).filter((file) => file.endsWith('.yml'));
+    } catch (error) {
+      console.warn('Unable to read workflows directory:', error);
+      workflowFiles = [];
+    }
   });
 
   describe('Workflow Files Existence', () => {
@@ -26,15 +31,31 @@ describe('GitHub Workflows YAML Validation', () => {
   });
 
   describe('YAML Structure Validation', () => {
-    workflowFiles.forEach((file) => {
+    // Define known workflow files to test
+    const knownWorkflows = [
+      'ci.yml',
+      'release.yml',
+      'deploy-staging.yml',
+      'deploy-prod.yml',
+      'changeset-bot.yml',
+      'auto-pr-dev-to-staging.yml',
+      'auto-merge-labeled.yml',
+      'auto-pr-staging-to-master.yml'
+    ];
+
+    knownWorkflows.forEach((file) => {
       describe(`${file}`, () => {
         let content: string;
 
         beforeAll(() => {
-          content = readFile(`.github/workflows/${file}`);
+          try {
+            content = readFile(`.github/workflows/${file}`);
+          } catch (error) {
+            content = '';
+          }
         });
 
-        it('should not be empty', () => {
+        it('should exist and not be empty', () => {
           expect(content.length).toBeGreaterThan(0);
         });
 
