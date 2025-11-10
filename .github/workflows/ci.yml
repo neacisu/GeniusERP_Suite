@@ -7,6 +7,10 @@ on:
       - master
       - staging
       - dev
+  push:
+    branches:
+      - dev
+      # Rulează CI și după merge-uri în dev pentru a valida codul înainte de promovare
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -23,7 +27,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
@@ -36,7 +40,7 @@ jobs:
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v4
       - name: Connect to Nx Cloud
-        if: ${{ secrets.NX_CLOUD_AUTH_TOKEN != '' }}
+        continue-on-error: true
         run: pnpm exec nx-cloud start-ci-run
         env:
           NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
