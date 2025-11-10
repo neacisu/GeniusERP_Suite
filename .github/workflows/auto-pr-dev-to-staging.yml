@@ -40,7 +40,11 @@ jobs:
             echo "pr_exists=false" >> $GITHUB_OUTPUT
           fi
         env:
+
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+
 
       - name: Check if there are new commits
         id: check-commits
@@ -122,7 +126,11 @@ jobs:
             --body-file pr_body.md \
             --label "auto-created"
         env:
+
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+
 
       - name: Summary
         run: |
