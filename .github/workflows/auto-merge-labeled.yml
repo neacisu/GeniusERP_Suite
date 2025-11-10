@@ -1,0 +1,230 @@
+name: Auto-merge cu Label
+
+# Trigger: Când un label este adăugat la un PR
+on:
+  pull_request:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge PR cu label ready-for-staging
+    runs-on: ubuntu-latest
+    # Rulează doar pentru label-ul specific
+    if: github.event.label.name == 'ready-for-staging'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verifică branch-ul țintă
+        id: check-target
+        run: |
+          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          HEAD_BRANCH="${{ github.event.pull_request.head.ref }}"
+          
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+          echo "head_branch=$HEAD_BRANCH" >> $GITHUB_OUTPUT
+          
+          # Auto-merge este permis DOAR pentru PR-uri dev → staging
+          if [ "$BASE_BRANCH" == "staging" ] && [ "$HEAD_BRANCH" == "dev" ]; then
+            echo "✅ Auto-merge permis pentru dev → staging"
+            echo "allowed=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Auto-merge NU este permis pentru $HEAD_BRANCH → $BASE_BRANCH"
+            echo "Auto-merge este disponibil DOAR pentru PR-uri dev → staging"
+            echo "allowed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Verifică status CI
+        id: check-ci
+        if: steps.check-target.outputs.allowed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Obține toate check-urile pentru commit-ul de pe head
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha,
+            });
+            
+            // Verifică dacă toate check-urile au trecut
+            const allPassed = checks.check_runs.every(check => 
+              check.status === 'completed' && check.conclusion === 'success'
+            );
+            
+            const totalChecks = checks.check_runs.length;
+            const passedChecks = checks.check_runs.filter(c => c.conclusion === 'success').length;
+            
+            console.log(`✅ ${passedChecks}/${totalChecks} verificări au trecut`);
+            
+            if (allPassed && totalChecks > 0) {
+              core.setOutput('ci_passed', 'true');
+              return true;
+            } else {
+              core.setOutput('ci_passed', 'false');
+              
+              // Adaugă un comentariu explicativ
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `⚠️ **Auto-merge nu poate continua**\n\n` +
+                      `Verificările CI nu au trecut toate:\n` +
+                      `- ✅ Trecut: ${passedChecks}\n` +
+                      `- ❌ Eșuat/În așteptare: ${totalChecks - passedChecks}\n\n` +
+                      `Te rog așteaptă ca toate verificările să treacă și apoi adaugă din nou label-ul \`ready-for-staging\`.`
+              });
+              
+              return false;
+            }
+
+      - name: Verifică review-uri
+        id: check-reviews
+        if: steps.check-target.outputs.allowed == 'true' && steps.check-ci.outputs.ci_passed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Obține toate review-urile
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            
+            // Grupează review-urile per utilizator (ultimul review cont)
+            const latestReviews = {};
+            reviews.forEach(review => {
+              if (!latestReviews[review.user.login] || 
+                  new Date(review.submitted_at) > new Date(latestReviews[review.user.login].submitted_at)) {
+                latestReviews[review.user.login] = review;
+              }
+            });
+            
+            // Verifică dacă există cel puțin o aprobare
+            const approvals = Object.values(latestReviews).filter(r => r.state === 'APPROVED');
+            const rejections = Object.values(latestReviews).filter(r => r.state === 'CHANGES_REQUESTED');
+            
+            console.log(`✅ Aprobare: ${approvals.length}`);
+            console.log(`❌ Modificări cerute: ${rejections.length}`);
+            
+            // Pentru dev → staging, este opțional să ai review (mai relaxat)
+            // Dar dacă există review-uri, nu trebuie să fie rejection
+            if (rejections.length > 0) {
+              core.setOutput('reviews_ok', 'false');
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `⚠️ **Auto-merge nu poate continua**\n\n` +
+                      `Există ${rejections.length} review-uri care cer modificări.\n\n` +
+                      `Te rog rezolvă feedback-ul și apoi adaugă din nou label-ul \`ready-for-staging\`.`
+              });
+              
+              return false;
+            }
+            
+            core.setOutput('reviews_ok', 'true');
+            return true;
+
+      - name: Merge Pull Request
+        if: |
+          steps.check-target.outputs.allowed == 'true' && 
+          steps.check-ci.outputs.ci_passed == 'true' && 
+          steps.check-reviews.outputs.reviews_ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            try {
+              // Merge PR-ul folosind merge commit (no-ff)
+              const result = await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                merge_method: 'merge',  // Folosește merge commit (no fast-forward)
+                commit_title: `🚀 Auto-merge: ${pr.title}`,
+                commit_message: `Auto-merged PR #${pr.number} prin workflow automation.\n\n` +
+                                `Label: ready-for-staging\n` +
+                                `Merged by: github-actions[bot]`
+              });
+              
+              console.log('✅ PR merge-uit cu succes!');
+              
+              // Adaugă un comentariu de confirmare
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `✅ **Auto-merge reușit!**\n\n` +
+                      `PR-ul a fost merge-uit automat în \`${pr.base.ref}\`.\n\n` +
+                      `Următorii pași:\n` +
+                      `1. ✅ Deploy-ul pe staging va fi declanșat automat\n` +
+                      `2. 🧪 Testează schimbările în staging\n` +
+                      `3. 🚀 Când ești gata, creează PR staging → master pentru production`
+              });
+              
+              return result;
+            } catch (error) {
+              console.error('❌ Eroare la merge:', error);
+              
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `❌ **Auto-merge eșuat**\n\n` +
+                      `A apărut o eroare la merge:\n\`\`\`\n${error.message}\n\`\`\`\n\n` +
+                      `Te rog verifică conflictele sau merge-uiește manual PR-ul.`
+              });
+              
+              throw error;
+            }
+
+      - name: Cleanup label (dacă merge eșuează)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Elimină label-ul pentru a putea fi re-adăugat după rezolvarea problemei
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              name: 'ready-for-staging'
+            });
+
+      - name: Warning pentru branch-uri nesuportate
+        if: steps.check-target.outputs.allowed == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: `⚠️ **Auto-merge nu este disponibil pentru acest PR**\n\n` +
+                    `Label-ul \`ready-for-staging\` funcționează DOAR pentru PR-uri **dev → staging**.\n\n` +
+                    `Acest PR este: **${pr.head.ref} → ${pr.base.ref}**\n\n` +
+                    `Pentru alte PR-uri (ex: staging → master), merge-ul trebuie făcut **manual** după review.`
+            });
+            
+            // Elimină label-ul pentru că nu este valid pentru acest PR
+            await github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              name: 'ready-for-staging'
+            });
+

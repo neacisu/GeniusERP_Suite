@@ -4373,7 +4373,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu executa 'git init' sau alte comenzi. Doar creează directorul.",
     "validare": "Rulează 'ls -d /var/www/GeniusSuite'. Comanda trebuie să returneze cu succes calea directorului.",
     "outcome": "Directorul rădăcină '/var/www/GeniusSuite' există.",
-    "componenta_de_CI_DI": "În CI, acest pas este de obicei înlocuit de 'git checkout' într-un director de lucru predefinit."
+    "componenta_de_CI_CD": "În CI, acest pas este de obicei înlocuit de 'git checkout' într-un director de lucru predefinit."
   }
 }
 ```
@@ -4394,7 +4394,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu instala niciun pachet. Doar creează 'package.json'.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/package.json'.",
     "outcome": "Fișierul 'package.json' de rădăcină este creat.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   }
 }
 ```
@@ -4414,7 +4414,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu modifica alte chei în 'package.json'.",
     "validare": "Conținutul 'package.json' include '\"private\": true'.",
     "outcome": "'package.json' este marcat ca privat.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   }
 }
 ```
@@ -4433,7 +4433,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu adăuga conținut în fișier. Acest lucru se va face în task-ul următor.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/pnpm-workspace.yaml'.",
     "outcome": "Fișierul 'pnpm-workspace.yaml' este creat.",
-    "componenta_de_CI_DI": "Acest fișier este esențial pentru CI pentru a înțelege cum să instaleze dependențele (pnpm install)."
+    "componenta_de_CI_CD": "Acest fișier este esențial pentru CI pentru a înțelege cum să instaleze dependențele (pnpm install)."
   }
 }
 ```
@@ -4454,7 +4454,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu folosi ghilimele duble în YAML. Folosește ghilimele simple. Nu inventa alte căi.",
     "validare": "Conținutul 'pnpm-workspace.yaml' corespunde exact specificației de mai sus.",
     "outcome": "pnpm este acum conștient de structura completă a monorepo-ului.",
-    "componenta_de_CI_DI": "Acest fișier dictează modul în care 'pnpm install' descoperă și leagă pachetele locale."
+    "componenta_de_CI_CD": "Acest fișier dictează modul în care 'pnpm install' descoperă și leagă pachetele locale."
   }
 }
 ```
@@ -4483,7 +4483,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu crea fișiere în interiorul acestor directoare. Doar directoarele.",
       "validare": "Verifică existența celor 7 subdirectoare în 'shared/'.",
       "outcome": "Structura de directoare 'shared/' este creată.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -4512,7 +4512,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu crea fișiere în interiorul acestor directoare.",
       "validare": "Verifică existența celor 7 subdirectoare în 'cp/'.",
       "outcome": "Structura de directoare 'cp/' este creată.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -4543,7 +4543,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu crea fișiere în interiorul acestor directoare.",
       "validare": "Verifică existența celor 9 directoare de aplicații la rădăcină.",
       "outcome": "Structura de directoare pentru aplicații este creată.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -4569,7 +4569,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu crea fișiere în interiorul acestor directoare.",
       "validare": "Verifică existența celor 4 directoare de suport la rădăcină.",
       "outcome": "Structura de directoare  este completă.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -4590,7 +4590,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu adăuga reguli specifice aplicațiilor (de ex. 'archify.app/build'). Ne limităm la reguli globale.",
       "validare": "Verifică existența și conținutul fișierului '/var/www/GeniusSuite/.gitignore'.",
       "outcome": "Un fișier '.gitignore' global este configurat.",
-      "componenta_de_CI_DI": "Acest fișier este fundamental pentru a preveni cache-ul CI să fie poluat cu fișiere irelevante."
+      "componenta_de_CI_CD": "Acest fișier este fundamental pentru a preveni cache-ul CI să fie poluat cu fișiere irelevante."
     }
   },
 ```
@@ -4611,7 +4611,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu rula încă 'nx init' sau alte comenzi 'nx'. Doar instalează pachetul.",
       "validare": "Verifică 'package.json' pentru a vedea 'nx' listat în 'devDependencies'. Verifică existența directorului 'node_modules'.",
       "outcome": "Pachetul 'nx' este instalat la rădăcina monorepo-ului.",
-      "componenta_de_CI_DI": "Acest pas este echivalentul 'pnpm install' din CI. Adaugă prima dependență majoră."
+      "componenta_de_CI_CD": "Acest pas este echivalentul 'pnpm install' din CI. Adaugă prima dependență majoră."
     }
   },
 ```
@@ -4638,7 +4638,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu configura manual 'nx.json' în acest pas; lasă 'init' să creeze fișierul de bază.",
       "validare": "Verifică existența fișierului '/var/www/GeniusSuite/nx.json'.",
       "outcome": "Fișierul 'nx.json' a fost creat, iar Nx a preluat gestiunea workspace-ului 'pnpm' existent.",
-      "componenta_de_CI_DI": "Crearea 'nx.json' este fundamentală. CI va folosi 'nx' pentru a rula task-uri afectate (affected tasks)."
+      "componenta_de_CI_CD": "Crearea 'nx.json' este fundamentală. CI va folosi 'nx' pentru a rula task-uri afectate (affected tasks)."
     }
   },
 ```
@@ -4681,7 +4681,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu adăuga încă proiecte ('projects: {}'). Nx le va descoperi automat (Inferred Tasks).[2]",
     "validare": "Conținutul 'nx.json' include cheia 'targetDefaults' cu configurațiile specificate.",
     "outcome": "'nx.json' este configurat cu valori implicite pentru caching-ul task-urilor comune.",
-    "componenta_de_CI_DI": "Această configurație activează Nx Remote Cache (Nx Cloud sau similar), reducând drastic timpii de CI.[22]"
+    "componenta_de_CI_CD": "Această configurație activează Nx Remote Cache (Nx Cloud sau similar), reducând drastic timpii de CI.[22]"
   }
 }
 ```
@@ -4706,7 +4706,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "N/A",
       "validare": "Conținutul 'nx.json' include '\"packageManager\": \"pnpm\"'.",
       "outcome": "Nx este configurat explicit să folosească 'pnpm'.",
-      "componenta_de_CI_DI": "Previne erorile de CI în care agentul ar putea încerca să folosească 'npm install' din greșeală."
+      "componenta_de_CI_CD": "Previne erorile de CI în care agentul ar putea încerca să folosească 'npm install' din greșeală."
     }
   },
 ```
@@ -4735,7 +4735,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu instala 'ts-node' sau '@types/node' încă. Le vom instala separat pentru a fi atomici.",
     "validare": "Verifică 'package.json' pentru a vedea 'typescript' în 'devDependencies'.",
     "outcome": "TypeScript este instalat.",
-    "componenta_de_CI_DI": "Acest pachet va fi necesar pentru toți pașii de 'build' și 'lint' din CI."
+    "componenta_de_CI_CD": "Acest pachet va fi necesar pentru toți pașii de 'build' și 'lint' din CI."
   }
 },
 ```
@@ -4762,7 +4762,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "N/A",
       "validare": "Verifică 'package.json' pentru 'ts-node' și '@types/node' în 'devDependencies'.",
       "outcome": "Dependențele de suport TypeScript sunt instalate.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -4790,7 +4790,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu popula încă 'compilerOptions' sau 'paths'. Acestea vor fi făcute în task-urile următoare.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/tsconfig.base.json' și că JSON-ul este valid cu cheile 'compilerOptions' goale și 'exclude' setat la ['node_modules', 'tmp'].",
     "outcome": "Fișierul 'tsconfig.base.json' este creat cu un skeleton minim, gata să fie extins de taskurile ulterioare.",
-    "componenta_de_CI_DI": "CI va folosi acest fișier ca bază pentru 'typecheck' și 'build' după ce opțiunile vor fi completate în taskurile următoare."
+    "componenta_de_CI_CD": "CI va folosi acest fișier ca bază pentru 'typecheck' și 'build' după ce opțiunile vor fi completate în taskurile următoare."
   }
 },
 ```
@@ -4854,7 +4854,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul configurării 'compilerOptions' din 'tsconfig.base.json'. Nu modifica 'nx.json', '.eslintrc.*', config-uri Vite sau alte fișiere.",
     "validare": "'tsconfig.base.json' conține un obiect 'compilerOptions' cu 'strict: true', 'noUncheckedIndexedAccess', 'exactOptionalPropertyTypes', 'declaration: true', 'sourceMap: true' și NU conține 'noEmit: true'. Fișierul este JSON valid.",
     "outcome": "Configurația de bază TypeScript este strictă, modernă și capabilă să emită fișiere de build (.js, .d.ts) pentru biblioteci și servicii backend.",
-    "componenta_de_CI_DI": "Toate job-urile 'typecheck' și 'build' din CI vor moșteni aceste reguli stricte și vor avea o bază comună coerentă."
+    "componenta_de_CI_CD": "Toate job-urile 'typecheck' și 'build' din CI vor moșteni aceste reguli stricte și vor avea o bază comună coerentă."
   }
 },
 ```
@@ -4892,7 +4892,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu rula 'nx sync', 'nx graph', 'nx run' sau alte comenzi. Acest task se ocupă strict de editarea fișierului tsconfig.base.json.",
     "validare": "'tsconfig.base.json' conține 'compilerOptions.paths' cu toate cele 7 alias-uri definite conform structurilor reale (inclusiv 'src/index.ts' pentru feature-flags și auth-client), iar fișierul este JSON valid.",
     "outcome": "Alias-urile de import pentru bibliotecile partajate sunt configurate centralizat, permițând importuri de forma '@genius-suite/<pachet>' în tot monorepo-ul, în acord cu structurile din Capitolul 2.",
-    "componenta_de_CI_DI": "Job-urile de CI care rulează 'typecheck' și 'build' vor folosi aceste mapări de căi, asigurând rezolvarea corectă a importurilor către 'shared/*'."
+    "componenta_de_CI_CD": "Job-urile de CI care rulează 'typecheck' și 'build' vor folosi aceste mapări de căi, asigurând rezolvarea corectă a importurilor către 'shared/*'."
   }
 },
 ```
@@ -4922,7 +4922,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu te atinge de configurările ESLint sau Nx în acest task. Nu crea scripturi noi în 'package.json'. Doar instalează dependența 'prettier' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.prettier' cu o versiune validă. Opțional, rulează 'pnpm prettier --version' din '/var/www/GeniusSuite/' pentru a verifica instalarea.",
     "outcome": "'prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului.",
-    "componenta_de_CI_DI": "Această dependență va fi folosită ulterior în pipeline-urile de CI pentru a rula 'prettier --check' sau 'nx format:check' asupra codului, asigurând formatare consistentă înainte de merge."
+    "componenta_de_CI_CD": "Această dependență va fi folosită ulterior în pipeline-urile de CI pentru a rula 'prettier --check' sau 'nx format:check' asupra codului, asigurând formatare consistentă înainte de merge."
   }
 },
 ```
@@ -4966,7 +4966,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu crea '.prettierignore' încă. Acesta este un task separat (F0.1.22). Nu definești aici integrarea cu ESLint sau Nx.",
     "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.prettierrc' există, este JSON valid și conține exact cheile specificate ('singleQuote', 'semi', 'tabWidth', 'useTabs', 'trailingComma', 'printWidth', 'arrowParens', 'bracketSpacing', 'bracketSameLine', 'endOfLine', 'proseWrap').",
     "outcome": "Regulile de formatare Prettier sunt definite centralizat, permițând formatare consistentă a codului în întregul monorepo.",
-    "componenta_de_CI_DI": "Configurația va fi folosită implicit de pașii de CI care rulează 'prettier --check' sau 'nx format:check', asigurând că toate schimbările respectă același stil de cod."
+    "componenta_de_CI_CD": "Configurația va fi folosită implicit de pașii de CI care rulează 'prettier --check' sau 'nx format:check', asigurând că toate schimbările respectă același stil de cod."
   }
 },
 ```
@@ -5005,7 +5005,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării și populării fișierului '.prettierignore'. Nu modifica 'package.json', '.prettierrc', '.eslintrc.*' sau alte configurări.",
     "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.prettierignore' există și conține exact liniile specificate, în ordinea indicată. Rulează opțional 'pnpm prettier --list-different .' pe un subset de fișiere pentru a confirma că directorul 'shared/ui-design-system/icons/react/generated/' este ignorat.",
     "outcome": "Prettier este configurat să ignore doar fișierele și directoarele care nu necesită formatare (lockfile-uri ale altor package manageri și cod generat), fără duplicarea regulilor din '.gitignore', păstrând mentenabilitatea ridicată.",
-    "componenta_de_CI_DI": "Accelerează pasul 'format:check' din CI prin excluderea căilor irelevante și evită interferența cu 'pnpm-lock.yaml', care rămâne formatat consistent de Prettier și pnpm."
+    "componenta_de_CI_CD": "Accelerează pasul 'format:check' din CI prin excluderea căilor irelevante și evită interferența cu 'pnpm-lock.yaml', care rămâne formatat consistent de Prettier și pnpm."
   }
 },
 ```
@@ -5036,7 +5036,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu instala încă plugin-uri TS, React sau Nx, și nu configurezi reguli ESLint în acest task. Doar adaugi dependența de bază 'eslint' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.eslint' cu o versiune validă. Opțional, rulează 'pnpm eslint --version' din '/var/www/GeniusSuite/' pentru a verifica instalarea.",
     "outcome": "Motorul ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului.",
-    "componenta_de_CI_DI": "Acest pachet este necesar pentru pașii de 'lint' din CI (de ex. joburi care vor rula 'nx lint' sau comenzi ESLint directe asupra proiectelor)."
+    "componenta_de_CI_CD": "Acest pachet este necesar pentru pașii de 'lint' din CI (de ex. joburi care vor rula 'nx lint' sau comenzi ESLint directe asupra proiectelor)."
   }
 },
 ```
@@ -5067,7 +5067,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu instala încă plugin-ul '@typescript-eslint/eslint-plugin', preseturi sau configuri Nx/React pentru ESLint. Nu configurezi câmpul 'parser' în '.eslintrc.*' în acest task.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@typescript-eslint/parser\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @typescript-eslint/parser' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "Parser-ul TypeScript pentru ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi folosit în configurația ESLint.",
-    "componenta_de_CI_DI": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când ESLint este configurat să ruleze pe fișiere TypeScript."
+    "componenta_de_CI_CD": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când ESLint este configurat să ruleze pe fișiere TypeScript."
   }
 },
 ```
@@ -5098,7 +5098,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configurezi încă 'plugins' sau 'rules' în '.eslintrc.*'. Acest task se ocupă exclusiv de instalarea dependenței '@typescript-eslint/eslint-plugin' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@typescript-eslint/eslint-plugin\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @typescript-eslint/eslint-plugin' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "Plugin-ul TypeScript pentru ESLint este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie referit în configurația ESLint.",
-    "componenta_de_CI_DI": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când configurația ESLint va activa regulile '@typescript-eslint'."
+    "componenta_de_CI_CD": "Pachetul va fi folosit de joburile de 'lint' din CI atunci când configurația ESLint va activa regulile '@typescript-eslint'."
   }
 },
 ```
@@ -5129,7 +5129,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configurezi încă 'plugins', 'extends' sau reguli Nx ('@nx/enforce-module-boundaries') în '.eslintrc.*'. Acest task se ocupă exclusiv de instalarea dependenței '@nx/eslint-plugin' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@nx/eslint-plugin\"]' cu o versiune validă. Opțional, rulează 'pnpm ls @nx/eslint-plugin' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "Plugin-ul ESLint specific Nx este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie folosit în configurațiile ESLint pentru a aplica reguli de module boundaries și bune practici Nx.",
-    "componenta_de_CI_DI": "Joburile de 'lint' din CI vor folosi '@nx/eslint-plugin' pentru a aplica reguli critice (ex. enforce-module-boundaries) și pentru a preveni dependențele incorecte între proiecte în monorepo."
+    "componenta_de_CI_CD": "Joburile de 'lint' din CI vor folosi '@nx/eslint-plugin' pentru a aplica reguli critice (ex. enforce-module-boundaries) și pentru a preveni dependențele incorecte între proiecte în monorepo."
   }
 },
 ```
@@ -5166,7 +5166,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu adăuga încă reguli ESLint ('rules') sau 'extends'. Acestea vor fi configurate în task-uri separate, folosind secțiunea 'overrides'.",
     "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.eslintrc.json' există, este JSON valid și conține cheile 'root', 'ignorePatterns', 'plugins' și 'overrides' exact ca în skeleton-ul definit.",
     "outcome": "Fișierul '.eslintrc.json' de bază este creat la rădăcina monorepo-ului, cu 'root: true' și 'ignorePatterns: [\"**/*\"]', pregătit pentru a fi extins prin 'overrides' specifice proiectelor.",
-    "componenta_de_CI_DI": "Acest fișier va fi folosit ca bază pentru toate rulările ESLint din CI (ex. 'nx lint'), asigurând un punct unic de configurare pentru întregul monorepo."
+    "componenta_de_CI_CD": "Acest fișier va fi folosit ca bază pentru toate rulările ESLint din CI (ex. 'nx lint'), asigurând un punct unic de configurare pentru întregul monorepo."
   }
 },
 ```
@@ -5203,7 +5203,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu adăuga alte plugin-uri Nx (ex: '@nx/next/plugin') în acest task. Nu definești aici ținte explicite 'lint' în proiecte individuale; doar activezi plugin-ul de inferență.",
     "validare": "Verifică faptul că 'nx.json' conține un array 'plugins' în care există un obiect cu 'plugin': '@nx/eslint/plugin' și 'options.targetName' setat la 'lint'. Confirmă că JSON-ul este valid și că nu au fost modificate alte secțiuni în afară de 'plugins'.",
     "outcome": "Nx este configurat să descopere și să ruleze automat task-uri de linting ('lint') pentru proiectele care dețin o configurare ESLint, prin intermediul plugin-ului '@nx/eslint/plugin'.",
-    "componenta_de_CI_DI": "Acest pas permite pipeline-urilor de CI să ruleze 'nx affected:lint' sau 'nx lint <project>' bazându-se pe task-urile inferate de plugin-ul '@nx/eslint/plugin', fără a configura manual 'lint' în fiecare proiect."
+    "componenta_de_CI_CD": "Acest pas permite pipeline-urilor de CI să ruleze 'nx affected:lint' sau 'nx lint <project>' bazându-se pe task-urile inferate de plugin-ul '@nx/eslint/plugin', fără a configura manual 'lint' în fiecare proiect."
   }
 },
 ```
@@ -5263,7 +5263,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul configurării '.eslintrc.json' root pentru TypeScript + Nx. Nu configurezi integrarea cu Prettier în acest task și nu adaugi reguli sau overrides suplimentare.",
     "validare": "Verifică faptul că '/var/www/GeniusSuite/.eslintrc.json' există, este JSON valid și conține cheile 'root', 'ignorePatterns', 'plugins' și 'overrides' exact ca în structura indicată. Confirmă că 'parser' este '@typescript-eslint/parser', că 'extends' include 'plugin:@nx/typescript' și 'plugin:@typescript-eslint/recommended' și că regula '@nx/enforce-module-boundaries' este definită cu nivel 'error' și obiect de opțiuni cu 'enforceBuildableLibDependency', 'allow' și 'depConstraints'.",
     "outcome": "ESLint este configurat la rădăcină pentru a înțelege TypeScript, a folosi regulile de bază Nx și a aplica regula '@nx/enforce-module-boundaries' în tot monorepo-ul.",
-    "componenta_de_CI_DI": "Această configurație permite job-urilor de 'lint' din CI (ex. 'nx affected:lint') să aplice reguli stricte Nx și TypeScript la nivelul întregului monorepo, inclusiv verificarea granițelor dintre module."
+    "componenta_de_CI_CD": "Această configurație permite job-urilor de 'lint' din CI (ex. 'nx affected:lint') să aplice reguli stricte Nx și TypeScript la nivelul întregului monorepo, inclusiv verificarea granițelor dintre module."
   }
 },
 ```
@@ -5294,7 +5294,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu instala 'eslint-plugin-prettier' și nu configurezi încă integrarea Prettier în '.eslintrc.json'. Acest lucru va fi făcut într-un task ulterior.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"eslint-config-prettier\"]' cu o versiune validă. Opțional, rulează 'pnpm ls eslint-config-prettier' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "Pachetul 'eslint-config-prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este gata să fie folosit în configurația ESLint pentru a dezactiva regulile în conflict cu Prettier.",
-    "componenta_de_CI_DI": "Permite configurarea ulterioară a ESLint astfel încât verificările de stil din CI (lint + format) să nu se contrazică între ele, reducând zgomotul și conflictele în PR-uri."
+    "componenta_de_CI_CD": "Permite configurarea ulterioară a ESLint astfel încât verificările de stil din CI (lint + format) să nu se contrazică între ele, reducând zgomotul și conflictele în PR-uri."
   }
 },
 ```
@@ -5325,7 +5325,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configurezi încă integrarea Prettier în ESLint (nu adăuga 'prettier' în 'extends' sau 'prettier/prettier' în 'rules'). Acest task se ocupă strict de instalarea dependenței.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"eslint-plugin-prettier\"]' cu o versiune validă. Opțional, rulează 'pnpm ls eslint-plugin-prettier' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "Pachetul 'eslint-plugin-prettier' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este pregătit pentru a fi folosit în configurația ESLint.",
-    "componenta_de_CI_DI": "Permite, în task-uri ulterioare, configurarea CI astfel încât verificările ESLint să raporteze și erorile de formatare Prettier, asigurând un stil de cod consistent în toate PR-urile."
+    "componenta_de_CI_CD": "Permite, în task-uri ulterioare, configurarea CI astfel încât verificările ESLint să raporteze și erorile de formatare Prettier, asigurând un stil de cod consistent în toate PR-urile."
   }
 },
 ```
@@ -5375,7 +5375,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu modifica 'nx.json', '.prettierrc' sau '.prettierignore' în acest task. Nu introduci alte 'overrides' și nu redefiniți reguli care nu au legătură cu Prettier.",
     "validare": "Verifică faptul că '.eslintrc.json' conține acum 'plugins': [\"@nx\", \"prettier\"] la rădăcină, că pentru override-ul cu 'files': [\"*.ts\", \"*.tsx\", \"*.js\", \"*.jsx\"] array-ul 'extends' se termină cu '\"plugin:prettier/recommended\"', iar în 'rules' există atât 'prettier/prettier': 'error', cât și '@nx/enforce-module-boundaries' configurat corect. Rulează opțional 'pnpm eslint . --ext .ts,.tsx,.js,.jsx' pentru a verifica că fișierul de configurare este acceptat.",
     "outcome": "ESLint și Prettier sunt complet integrate: plugin-ul și config-ul Prettier sunt active, iar regulile de formatare sunt raportate ca erori ESLint.",
-    "componenta_de_CI_DI": "Pasul de 'lint' din CI (ex. 'nx affected:lint') va eșua acum atât pe erori de calitate a codului (inclusiv '@nx/enforce-module-boundaries'), cât și pe erori de formatare Prettier, asigurând un stil de cod coerent în toate PR-urile."
+    "componenta_de_CI_CD": "Pasul de 'lint' din CI (ex. 'nx affected:lint') va eșua acum atât pe erori de calitate a codului (inclusiv '@nx/enforce-module-boundaries'), cât și pe erori de formatare Prettier, asigurând un stil de cod coerent în toate PR-urile."
   }
 },
 ```
@@ -5409,7 +5409,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu extinde acest fișier cu reguli generale de tip '.gitignore'. Rămâi strict la excluderi specifice de cod generat.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.eslintignore' și că acesta conține exact comentariul și calea 'shared/ui-design-system/icons/react/generated/' pe linii separate, fără pattern-uri suplimentare.",
     "outcome": "ESLint este configurat să ignore explicit doar codul generat sensibil (ex. icoane React generate), fără a duplica regulile generale de ignorare deja acoperite de '.gitignore' și 'ignorePatterns'.",
-    "componenta_de_CI_DI": "Reduce zgomotul în joburile de 'lint' din CI prin excluderea codului generat din analiza ESLint, menținând în același timp o configurație ușor de întreținut (fără dublarea regulilor de ignore)."
+    "componenta_de_CI_CD": "Reduce zgomotul în joburile de 'lint' din CI prin excluderea codului generat din analiza ESLint, menținând în același timp o configurație ușor de întreținut (fără dublarea regulilor de ignore)."
   }
 },
 ```
@@ -5440,7 +5440,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configura încă niciun hook Git și nu adăuga scripturi noi în 'package.json' (de ex. 'prepare'). Acest task se ocupă exclusiv de instalarea dependenței 'husky' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies.husky' cu o versiune validă. Opțional, rulează 'pnpm husky --help' din '/var/www/GeniusSuite/' pentru a confirma că pachetul este disponibil.",
     "outcome": "'husky' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și este pregătit pentru a fi inițializat și configurat în task-urile următoare.",
-    "componenta_de_CI_DI": "Deși acest task nu modifică direct pipeline-ul de CI, el pregătește infrastructura necesară pentru a rula local hook-uri de tip 'pre-commit' și 'commit-msg', reducând numărul de erori care ajung în CI și pe branch-urile partajate."
+    "componenta_de_CI_CD": "Deși acest task nu modifică direct pipeline-ul de CI, el pregătește infrastructura necesară pentru a rula local hook-uri de tip 'pre-commit' și 'commit-msg', reducând numărul de erori care ajung în CI și pe branch-urile partajate."
   }
 },
 ```
@@ -5473,7 +5473,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu modifica conținutul fișierelor din '.husky/' în acest task. Schimbarea conținutului 'pre-commit' și adăugarea altor hook-uri se va face în taskurile următoare.",
     "validare": "Verifică existența directorului '/var/www/GeniusSuite/.husky/'. Verifică faptul că în '/var/www/GeniusSuite/package.json' există un script 'prepare' care rulează 'husky' (de ex. \"prepare\": \"husky\"). Confirmă că există un fișier '.husky/pre-commit' generat de Husky.",
     "outcome": "'husky' este inițializat la rădăcina monorepo-ului, directorul '.husky/' este creat, iar script-ul 'prepare' din 'package.json' este configurat pentru a activa hook-urile Git după fiecare 'pnpm install'.",
-    "componenta_de_CI_DI": "CI-ul trebuie să ruleze 'pnpm install' (care va rula script-ul 'prepare') înainte de pașii de build/lint/test, pentru a asigura un mediu local consistent cu cel folosit de dezvoltatori. Hook-urile Git sunt de obicei ocolite în CI, dar această inițializare garantează că repository-ul este pregătit corect pentru dezvoltare locală."
+    "componenta_de_CI_CD": "CI-ul trebuie să ruleze 'pnpm install' (care va rula script-ul 'prepare') înainte de pașii de build/lint/test, pentru a asigura un mediu local consistent cu cel folosit de dezvoltatori. Hook-urile Git sunt de obicei ocolite în CI, dar această inițializare garantează că repository-ul este pregătit corect pentru dezvoltare locală."
   }
 },
 ```
@@ -5505,7 +5505,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configura încă mapările 'lint-staged' și nu edita hook-ul 'pre-commit'. Acest task se ocupă strict de instalarea dependenței.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"lint-staged\"]' cu o versiune validă. Opțional, rulează 'pnpm lint-staged --version' din '/var/www/GeniusSuite/' pentru a confirma instalarea.",
     "outcome": "'lint-staged' este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi configurat și integrat cu Husky în hook-ul 'pre-commit'.",
-    "componenta_de_CI_DI": "Nu modifică direct pipeline-ul de CI, dar pregătește infrastructura pentru ca verificările locale (pre-commit) să fie rapide și consistente, reducând numărul de erori care ajung în CI."
+    "componenta_de_CI_CD": "Nu modifică direct pipeline-ul de CI, dar pregătește infrastructura pentru ca verificările locale (pre-commit) să fie rapide și consistente, reducând numărul de erori care ajung în CI."
   }
 },
 ```
@@ -5543,7 +5543,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul definirii configurației 'lint-staged' la rădăcină. Nu modifica hook-urile Husky (ex. '.husky/pre-commit') în acest task; acestea vor fi ajustate în task-ul următor.",
     "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/.lintstagedrc.json' există, este JSON valid și conține exact maparea '*. {ts,tsx,js,jsx}' către lista de comenzi ['nx format:write --files', 'nx affected:lint --fix --files']. Opțional, rulează 'pnpm lint-staged --dry-run' pentru a verifica că fișierele TS/JS staged declanșează comenzile Nx.",
     "outcome": "Configurația 'lint-staged' este creată astfel încât, pentru fișierele TypeScript/JavaScript din staged, să ruleze mai întâi formatarea Nx ('nx format:write --files') și apoi linting-ul Nx ('nx affected:lint --fix --files').",
-    "componenta_de_CI_DI": "Această configurație asigură că, înainte de orice commit local, formatarea și linting-ul Nx sunt aplicate doar pe fișierele modificate, reducând erorile care ajung în CI și îmbunătățind viteza de feedback pentru dezvoltatori."
+    "componenta_de_CI_CD": "Această configurație asigură că, înainte de orice commit local, formatarea și linting-ul Nx sunt aplicate doar pe fișierele modificate, reducând erorile care ajung în CI și îmbunătățind viteza de feedback pentru dezvoltatori."
   }
 },
 ```
@@ -5568,7 +5568,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       "restrictii_de_iesire_din_contex": "Nu adăuga alte comenzi în hook-ul 'pre-commit'.",
       "validare": "Verifică conținutul fișierului '.husky/pre-commit'. Acesta ar trebui să conțină 'npx lint-staged'.",
       "outcome": "Hook-ul 'pre-commit' este configurat pentru a rula 'lint-staged'.",
-      "componenta_de_CI_DI": "N/A"
+      "componenta_de_CI_CD": "N/A"
     }
   },
 ```
@@ -5600,7 +5600,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configurezi încă regulile commitlint și nu creezi hook-ul 'commit-msg'. Acest task se ocupă exclusiv de instalarea '@commitlint/cli' la rădăcină.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@commitlint/cli\"]' cu o versiune validă. Opțional, rulează 'pnpm commitlint --help' din '/var/www/GeniusSuite/' pentru a verifica faptul că binarul este disponibil.",
     "outcome": "'commitlint' (CLI) este instalat ca dependență de dezvoltare la rădăcina monorepo-ului și pregătit pentru a fi configurat și legat de hook-ul Git 'commit-msg' în taskurile următoare.",
-    "componenta_de_CI_DI": "Această dependență este esențială pentru F0.2 (CI/CD), unde va fi folosită împreună cu preseturi (ex. 'config-conventional') și 'semantic-release' pentru a impune mesaje de commit standardizate și a permite versionare semantică automată."
+    "componenta_de_CI_CD": "Această dependență este esențială pentru F0.2 (CI/CD), unde va fi folosită împreună cu preseturi (ex. 'config-conventional') și 'semantic-release' pentru a impune mesaje de commit standardizate și a permite versionare semantică automată."
   }
 },
 ```
@@ -5631,7 +5631,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu configurezi încă regulile commitlint și nu legi commitlint la Husky. Acest task se ocupă strict de instalarea presetului '@commitlint/config-conventional'.",
     "validare": "După rularea comenzii, verifică fișierul '/var/www/GeniusSuite/package.json' și confirmă că există cheia 'devDependencies[\"@commitlint/config-conventional\"]' cu o versiune validă. Opțional, rulează 'pnpm commitlint --help' pentru a verifica faptul că presetul este disponibil pentru a fi referit în configurație.",
     "outcome": "Presetul '@commitlint/config-conventional' este instalat ca dependență de dezvoltare și pregătit pentru a fi folosit în configurația commitlint pentru a impune Conventional Commits.",
-    "componenta_de_CI_DI": "Permite ca, în fazele următoare (F0.1.41+ și F0.2), pipeline-ul de CI și uneltele precum 'semantic-release' să folosească mesaje de commit standardizate pentru generarea automată de changelog și versionare semantică."
+    "componenta_de_CI_CD": "Permite ca, în fazele următoare (F0.1.41+ și F0.2), pipeline-ul de CI și uneltele precum 'semantic-release' să folosească mesaje de commit standardizate pentru generarea automată de changelog și versionare semantică."
   }
 },
 ```
@@ -5664,7 +5664,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu adăuga încă reguli custom commitlint (cheia 'rules') și nu modifică hook-urile Husky ('commit-msg') în acest task.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/commitlint.config.js' și confirmă că exportă un obiect cu 'extends: [\"@commitlint/config-conventional\"]'. Opțional, rulează 'echo \"feat: test\" | pnpm commitlint' pentru a verifica că fișierul este citit fără erori.",
     "outcome": "Configurația 'commitlint' este creată la rădăcina monorepo-ului și extinde presetul '@commitlint/config-conventional'.",
-    "componenta_de_CI_DI": "Permite ulterior legarea commitlint la hook-ul 'commit-msg' (Husky) și integrarea cu pipeline-ul de CI și semantic-release."
+    "componenta_de_CI_CD": "Permite ulterior legarea commitlint la hook-ul 'commit-msg' (Husky) și integrarea cu pipeline-ul de CI și semantic-release."
   }
 },
 ```
@@ -5697,7 +5697,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict la configurarea hook-ului 'commit-msg' pentru commitlint. Nu modifica configurația 'commitlint.config.js' sau alte fișiere de tooling în acest task.",
     "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.husky/commit-msg'. Deschide fișierul și confirmă că, după shebang-ul generat de Husky, există o linie care execută 'pnpm exec commitlint --edit \"$1\"'. Opțional, încearcă un commit cu un mesaj invalid (ex. 'bad message') și verifică faptul că este blocat de commitlint.",
     "outcome": "Hook-ul 'commit-msg' este configurat pentru a rula 'commitlint' la fiecare commit, blocând mesajele care nu respectă standardul 'Conventional Commits'.",
-    "componenta_de_CI_DI": "Deși acest hook rulează local, el asigură că toate commit-urile care ajung în CI respectă formatul necesar pentru generarea automată de changelog și versionare semantică."
+    "componenta_de_CI_CD": "Deși acest hook rulează local, el asigură că toate commit-urile care ajung în CI respectă formatul necesar pentru generarea automată de changelog și versionare semantică."
   }
 },
  ```
@@ -5730,7 +5730,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict la adăugarea/actualizarea scripturilor 'lint' și 'lint:fix' din 'package.json'. Nu modifici configurarea Nx sau fișiere ESLint în acest task.",
     "validare": "Verifică faptul că în '/var/www/GeniusSuite/package.json' există cheile 'scripts.lint' și 'scripts.lint:fix' cu valorile 'nx run-many -t lint --all' și respectiv 'nx run-many -t lint --all --fix'. Opțional, rulează 'pnpm lint' din '/var/www/GeniusSuite/' pentru a verifica faptul că comenzile rulează fără erori de configurare.",
     "outcome": "Scripturile globale de linting sunt disponibile prin 'pnpm lint' și 'pnpm lint:fix', facilitând rularea linting-ului pe întregul monorepo.",
-    "componenta_de_CI_DI": "Pipeline-ul de CI poate folosi acum 'pnpm lint' pentru a rula linting-ul pe toate proiectele (sau 'nx affected -t lint' în joburi dedicate pentru schimbări afectate)."
+    "componenta_de_CI_CD": "Pipeline-ul de CI poate folosi acum 'pnpm lint' pentru a rula linting-ul pe toate proiectele (sau 'nx affected -t lint' în joburi dedicate pentru schimbări afectate)."
   }
 },
 ```
@@ -5763,7 +5763,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict la adăugarea/ajustarea scripturilor 'format:check' și 'format:write'. Nu modifici configurarea Nx, ESLint sau Prettier în acest task.",
     "validare": "Verifică faptul că în '/var/www/GeniusSuite/package.json' există cheile 'scripts.format:check' și 'scripts.format:write' cu valorile 'nx format:check' și respectiv 'nx format:write'. Opțional, rulează 'pnpm format:check' din '/var/www/GeniusSuite/' pentru a verifica faptul că Nx recunoaște comanda.",
     "outcome": "Scripturile globale de formatare sunt disponibile prin 'pnpm format:check' (verificare) și 'pnpm format:write' (aplicare), facilitând formatarea consistentă a codului în întregul monorepo.",
-    "componenta_de_CI_DI": "Pipeline-ul de CI poate rula 'pnpm format:check' pentru a valida că PR-urile respectă formatarea Prettier, înainte de merge."
+    "componenta_de_CI_CD": "Pipeline-ul de CI poate rula 'pnpm format:check' pentru a valida că PR-urile respectă formatarea Prettier, înainte de merge."
   }
 },
 ```
@@ -5816,7 +5816,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII comportamentului hook-ului 'pre-commit'. Nu încerca să repari configurația în acest task (dacă testul eșuează, se va crea un task separat pentru debugging/configurare).",
     "validare": "Validarea este considerată REUȘITĂ dacă: (1) comanda 'git commit -m \"test: pre-commit lint should fail\"' eșuează cu un mesaj de eroare provenit din 'lint-staged' / Nx / ESLint, și (2) nu rămâne niciun commit nou în istorie și fișierul de test a fost șters din repository. Poți verifica istoricul cu 'git log -1' pentru a te asigura că ultimul commit REAL nu este commit-ul de test.",
     "outcome": "Hook-ul 'pre-commit' este confirmat ca fiind funcțional: commit-urile care introduc erori de linting în fișierele sursă sunt blocate înainte de a intra în istoria Git.",
-    "componenta_de_CI_DI": "Acest task validează experiența locală a dezvoltatorilor. Deși CI nu rulează hook-uri Husky în mod normal, această verificare asigură că majoritatea problemelor de linting sunt prinse devreme, înainte ca schimbările să ajungă în pipeline-ul de CI."
+    "componenta_de_CI_CD": "Acest task validează experiența locală a dezvoltatorilor. Deși CI nu rulează hook-uri Husky în mod normal, această verificare asigură că majoritatea problemelor de linting sunt prinse devreme, înainte ca schimbările să ajungă în pipeline-ul de CI."
   }
 },
 ```
@@ -5891,7 +5891,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII comportamentului de auto-fix al hook-ului 'pre-commit'. Nu modifica configurațiile ESLint/Prettier/Nx/Husky și nu adăuga alte fișiere permanente în proiect.",
     "validare": "Testul este considerat REUȘIT dacă: (1) comanda 'git commit -m \"test: pre-commit auto-fix formatting\"' REUȘEȘTE, (2) conținutul fișierului 'test-format.ts' după rularea hook-ului este formatat corect (ex. 'export const testFormat = () => { console.log(\"x\"); };' cu spații și punct și virgulă conform Prettier), și (3) după finalizarea taskului, fișierul de test și commit-ul de test NU mai există (git reset + rm aplicate).",
     "outcome": "Hook-ul 'pre-commit' este confirmat că poate auto-corecta formatarea și unele probleme de linting pentru fișierele staged, înainte ca acestea să fie comise.",
-    "componenta_de_CI_DI": "Acest task confirmă că pipeline-ul local (Husky + lint-staged + Nx) aduce codul într-o stare formatată și lint-uită înainte de a ajunge în CI, reducând numărul de erori raportate de joburile de lint/format din pipeline."
+    "componenta_de_CI_CD": "Acest task confirmă că pipeline-ul local (Husky + lint-staged + Nx) aduce codul într-o stare formatată și lint-uită înainte de a ajunge în CI, reducând numărul de erori raportate de joburile de lint/format din pipeline."
   }
 },
 ```
@@ -5941,7 +5941,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII hook-ului 'commit-msg'. Nu remediezi configurări în acest task; dacă testul eșuează (commit-ul trece cu mesaj invalid), se va crea un task separat pentru debugging.",
     "validare": "Testul este considerat REUȘIT dacă: (1) comanda 'git commit -m \"mesaj invalid\"' EȘUEAZĂ, (2) mesajul de eroare afișat în terminal provine de la 'commitlint' (ex. erori despre 'type' sau 'subject' lipsă conform 'config-conventional'), și (3) după curățare, nu există niciun commit nou în istorie și fișierul 'test-commitmsg.ts' a fost șters.",
     "outcome": "Hook-ul 'commit-msg' este confirmat ca fiind funcțional și capabil să blocheze commit-urile care nu respectă regulile 'Conventional Commits'.",
-    "componenta_de_CI_DI": "Deși acest test se concentrează pe comportamentul local al hook-ului, el garantează că toate commit-urile care ajung în CI au mesaje standardizate, lucru esențial pentru integrarea ulterioară cu semantic-release și generarea automată a changelog-urilor."
+    "componenta_de_CI_CD": "Deși acest test se concentrează pe comportamentul local al hook-ului, el garantează că toate commit-urile care ajung în CI au mesaje standardizate, lucru esențial pentru integrarea ulterioară cu semantic-release și generarea automată a changelog-urilor."
   }
 },
 ```
@@ -5989,7 +5989,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul VALIDĂRII scenariului de succes al hook-ului 'commit-msg'. Nu schimba configurări, reguli sau hook-uri în acest task.",
     "validare": "Testul este considerat REUȘIT dacă: (1) 'git commit -m \"feat: validate commit-msg hook\"' REUȘEȘTE fără erori de la 'commitlint', (2) după rularea 'git reset --soft HEAD~1' și ștergerea fișierului, nu există niciun commit nou persistent în istorie și 'test-commitmsg-success.ts' nu mai există în repository.",
     "outcome": "Hook-ul 'commit-msg' este confirmat nu doar că blochează mesaje invalide (F0.1.47), ci și că acceptă mesajele conform 'Conventional Commits', validând întregul flux de commitlint.",
-    "componenta_de_CI_DI": "Acest test asigură că dezvoltatorii pot folosi mesaje de commit valide fără blocaje artificiale, iar CI și instrumente precum semantic-release pot avea încredere în consistența mesajelor de commit."
+    "componenta_de_CI_CD": "Acest test asigură că dezvoltatorii pot folosi mesaje de commit valide fără blocaje artificiale, iar CI și instrumente precum semantic-release pot avea încredere în consistența mesajelor de commit."
   }
 },
 ```
@@ -6054,7 +6054,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării unui 'README.md' de bază. Nu modifica alte fișiere de configurație și nu adăuga documentație suplimentară în acest task.",
     "validare": "Verifică faptul că fișierul '/var/www/GeniusSuite/README.md' există, este Markdown valid și conține cel puțin secțiunile: titlu, descriere scurtă, 'Stack Principal', 'Inițializare' și 'Comenzi Uzuale' cu comenzile 'pnpm install', 'pnpm lint', 'pnpm format:check' și 'pnpm format:write'.",
     "outcome": "Monorepo-ul GeniusSuite are un fișier 'README.md' de bază, util pentru onboarding-ul inițial al dezvoltatorilor și pentru a expune rapid stack-ul și comenzile fundamentale.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   }
 },
 ```
@@ -6096,7 +6096,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Rămâi strict în contextul creării și activării branch-ului 'dev'. Nu crea și nu modifica alte branch-uri (ex. 'staging') în acest task.",
     "validare": "Execută `git branch --show-current` sau `git rev-parse --abbrev-ref HEAD` în '/var/www/GeniusSuite/'. Rezultatul trebuie să fie exact 'dev'. Verifică de asemenea că `git show-ref --verify --quiet refs/heads/dev` returnează exit code 0 (branch-ul există).",
     "outcome": "Branch-ul 'dev' există în repository și este branch-ul curent activ, pregătit pentru a primi implementarea efectivă a task-urilor F0.1 prin commit-uri și PR-uri/MR-uri ulterioare.",
-    "componenta_de_CI_DI": "N/A (acest task pregătește doar structura de branch-uri; integrarea cu CI/CD va fi definită în fazele ulterioare, de ex. F0.2)."
+    "componenta_de_CI_CD": "N/A (acest task pregătește doar structura de branch-uri; integrarea cu CI/CD va fi definită în fazele ulterioare, de ex. F0.2)."
   }
 },
 ```
@@ -6138,7 +6138,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu face push către niciun remote (ex. 'origin') în acest task. Nu crea alte branch-uri și nu deschide PR/MR aici; acestea vor fi acoperite de task-uri separate.",
     "validare": "După commit, rulează `git log -1` și verifică: (1) că branch-ul curent este 'dev' (`git branch --show-current` == 'dev'), (2) că ultimul commit are mesajul de tip Conventional Commits ales (ex. 'chore(tooling): bootstrap F0.1 monorepo foundation'), și (3) că `git status` raportează un working tree curat ('nothing to commit, working tree clean').",
     "outcome": "Toate artefactele de fundație ale fazei F0.1 sunt comisionate local într-un singur commit coerent pe branch-ul 'dev', pregătit pentru review și pentru integrarea în fluxul de PR/MR.",
-    "componenta_de_CI_DI": "N/A (acest task pregătește baza codului comisionat; integrarea cu CI/CD și pipeline-urile aferente vor fi tratate în fazele următoare)."
+    "componenta_de_CI_CD": "N/A (acest task pregătește baza codului comisionat; integrarea cu CI/CD și pipeline-urile aferente vor fi tratate în fazele următoare)."
   }
 },
 ```
@@ -6190,7 +6190,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu modifica configurațiile lint-staged, ESLint, Prettier sau commitlint în acest task. Nu creea sau modifica alte branch-uri (ex. 'staging', 'master/main') și nu efectua merge între branch-uri. Rămâi strict la actualizarea hook-urilor Husky, commit și push pe 'dev'.",
     "validare": "Validarea este considerată reușită dacă: (1) conținutul fișierelor '.husky/pre-commit' și '.husky/commit-msg' este exact în formatul modern (fără linia cu 'husky.sh'), (2) un commit cu mesaj de forma 'chore(husky): migrate hooks to v9+ style' a fost creat cu succes pe branch-ul 'dev' și apare ca ultim commit în 'git log -1', (3) 'git status' este curat și (4) 'git ls-remote --heads origin dev' arată că branch-ul 'dev' a fost împins pe remote cu acest commit inclus.",
     "outcome": "Hook-urile Husky sunt aliniate cu formatul v9+ (compatibile cu v10), warning-urile de deprecări dispar, iar branch-ul 'dev' conține un commit clar care documentează migrarea hook-urilor și păstrează comportamentul lint-staged/commitlint conform planului F0.1.",
-    "componenta_de_CI_DI": "La push-ul rezultat, pipeline-ul de CI configurat în F0.2 va rula pe branch-ul 'dev' cu hook-uri Husky modernizate și nu va fi afectat de deprecările legate de husky.sh. Linting-ul și format-check-ul continuă să fie declanșate prin scripturile 'pnpm lint' și 'pnpm format:check'."
+    "componenta_de_CI_CD": "La push-ul rezultat, pipeline-ul de CI configurat în F0.2 va rula pe branch-ul 'dev' cu hook-uri Husky modernizate și nu va fi afectat de deprecările legate de husky.sh. Linting-ul și format-check-ul continuă să fie declanșate prin scripturile 'pnpm lint' și 'pnpm format:check'."
   }
 }
 ```
@@ -6228,7 +6228,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu executa merge între 'dev' și branch-ul principal. Nu crea în acest task branch-ul 'staging' și nu modifică politica de branch-uri. Rămâi strict în contextul push-ului pentru 'dev' și a pregătirii datelor pentru PR/MR.",
     "validare": "După 'git push -u origin dev', verifică: (1) 'git branch --show-current' returnează 'dev', (2) 'git status' arată 'nothing to commit, working tree clean', (3) 'git ls-remote --heads origin dev' returnează un head (branch-ul 'dev' există pe remote).",
     "outcome": "Branch-ul 'dev' care conține artefactele F0.1 este publicat pe remote-ul 'origin' și există date clare pentru deschiderea unui PR/MR către branch-ul principal.",
-    "componenta_de_CI_DI": "Primul push al branch-ului 'dev' va declanșa pipeline-ul CI configurat în F0.2 (de exemplu rularea 'pnpm install', 'pnpm lint', 'pnpm format:check'), permițând verificarea automată a fundației monorepo-ului.",
+    "componenta_de_CI_CD": "Primul push al branch-ului 'dev' va declanșa pipeline-ul CI configurat în F0.2 (de exemplu rularea 'pnpm install', 'pnpm lint', 'pnpm format:check'), permițând verificarea automată a fundației monorepo-ului.",
     "PR_MR": {
       "sursa_branch": "dev",
       "destinatie_branch": "master",
@@ -6240,501 +6240,1152 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```
 
 ### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry.
-F0.2.1
+
+#### F0.2.1
+
+```JSON
 {
   "F0.2.1": {
     "denumire_task": "Creare Director Workflows GitHub Actions",
-    "descriere_scurta_task": "Creează directorul '.github/workflows' la rădăcina monorepo-ului.",
-    "descriere_lunga_si_detaliata_task": "Acest task stabilește locația standard pentru fișierele de pipeline GitHub Actions. Vom crea ierarhia de directoare '.github/workflows/' în directorul rădăcină '/var/www/GeniusSuite'.",
+    "descriere_scurta_task": "Crearea ierarhiei '.github/workflows' la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Acest task stabilește locația standard pentru fișierele de pipeline GitHub Actions. La rădăcina monorepo-ului GeniusSuite vom crea ierarhia de directoare '.github/workflows/'. Nu adăugăm încă niciun fișier de workflow; doar pregătim structura necesară pentru următoarele taskuri din Faza F0.2 (CI/CD).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1: Fundația monorepo (tooling, Nx, pnpm, hook-uri Git) este completă și comisionată pe branch-ul 'dev'. F0.1.52: Branch-ul 'dev' este deja push-uit și pregătit pentru integrarea cu CI.",
+    "contextul_general_al_aplicatiei": "Inițierea Fazei F0.2 (CI/CD) prin crearea infrastructurii de directoare unde vor fi definite workflow-urile GitHub Actions.",
+    "contextualizarea_directoarelor_si_cailor": "În directorul rădăcină al repository-ului ('/var/www/GeniusSuite/'), trebuie creată structura '.github/workflows/'. Se poate folosi comanda: mkdir -p .github/workflows",
+    "restrictii_anti_halucinatie": [
+      "Nu crea alte directoare decât '.github' și '.github/workflows' la rădăcina '/var/www/GeniusSuite/'.",
+      "Nu crea niciun fișier YAML de workflow în acest task (de ex. 'ci.yml', 'pipeline.yml'). Acestea vor fi adăugate în taskurile următoare din Faza F0.2.",
+      "Nu modifica niciun alt fișier existent (package.json, nx.json, tsconfig.base.json, etc.).",
+      "Nu executa comenzi Git (add/commit/push) în cadrul acestui task; aici ne ocupăm strict de structura de directoare.",
+      "Asigură-te că lucrezi în '/var/www/GeniusSuite/' și nu la rădăcina sistemului de fișiere ('/')."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict la crearea ierarhiei '.github/workflows'. Nu configura conținutul workflow-urilor și nu definește încă pași de CI/CD.",
+    "validare": "Verifică existența directorului '/var/www/GeniusSuite/.github/workflows' prin comanda 'test -d .github/workflows' sau listarea sa cu 'ls -ld .github/workflows'.",
+    "outcome": "Directorul standard pentru stocarea fișierelor de workflow GitHub Actions este creat la rădăcina monorepo-ului.",
+    "componenta_de_CI_CD": "Acesta este directorul standard în care vor fi plasate workflow-urile GitHub Actions (de ex. pipeline-ul principal de CI pentru branch-urile 'dev', 'staging' și 'master')."
+  }
+},
+```
+
+#### F0.2.2
+
+```JSON
+  {
+  "F0.2.2": {
+    "denumire_task": "Creare Fișier Workflow CI Principal ('ci.yml')",
+    "descriere_scurta_task": "Creează fișierul 'ci.yml' pentru validarea Pull Request-urilor.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul principal de workflow, 'ci.yml', în care vor fi definite ulterior triggerele (F0.2.3) și job-ul 'validate' (F0.2.4+). În această fază, scopul este doar crearea fișierului și, opțional, adăugarea unui comentariu de header, fără niciun conținut funcțional (fără 'name', 'on', 'jobs'), pentru a evita introducerea de logică de CI înaintea task-urilor dedicate.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' a fost creat.",
+    "contextul_general_al_aplicatiei": "Faza F0.2 automatizează validările definite în F0.1 (lint, format, test, build) prin GitHub Actions. Fișierul 'ci.yml' va deveni pipeline-ul principal de validare pentru PR-uri către 'dev', 'staging' și 'master', dar logica efectivă este introdusă în task-urile următoare.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrezi în rădăcina monorepo-ului '/var/www/GeniusSuite'. Creează fișierul YAML '.github/workflows/ci.yml' (cale completă: '/var/www/GeniusSuite/.github/workflows/ci.yml'). Dacă directorul '.github/workflows/' nu există, acesta ar fi trebuit deja creat în F0.2.1.",
+    "restrictii_anti_halucinatie": [
+      "Nu adăuga în acest task secțiuni YAML funcționale precum 'on:', 'jobs:' sau 'name:'. Acestea vor fi configurate explicit în task-urile F0.2.3, F0.2.4 și următoarele.",
+      "Nu crea alte fișiere de workflow (de ex. 'release.yml', 'deploy-staging.yml', 'deploy-prod.yml') în cadrul acestui task.",
+      "Conținutul maxim permis acum este un comentariu YAML de header, de exemplu: '# CI workflow principal pentru GeniusSuite – configurat în F0.2.3+'. Nu inventa pași, job-uri sau triggere.",
+      "Nu modifica alte fișiere din '.github/workflows/' (dacă există deja). Acest task lucrează exclusiv cu 'ci.yml'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu implementa logică de CI (triggers, job-uri, pași) în acest task. Doar creează fișierul 'ci.yml' și, opțional, un singur comentariu de header.",
+    "validare": "Există fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Conținutul său este fie gol, fie conține doar un comentariu YAML de header, fără chei 'on', 'jobs' sau 'name'.",
+    "outcome": "Fișierul principal de workflow 'ci.yml' este creat și pregătit pentru a fi completat în task-urile următoare (declanșatoare, job 'validate', pași Nx).",
+    "componenta_de_CI_CD": "Acest fișier va deveni pipeline-ul principal de CI pentru PR-uri către 'dev', 'staging' și 'master', dar în această fază reprezintă doar scheletul (containerul) în care vor fi definite ulterior toate validările automate."
+  }
+},
+```
+
+#### F0.2.3
+
+```JSON
+  {
+  "F0.2.3": {
+    "denumire_task": "Definire Declanșatoare (Triggers) pentru 'ci.yml'",
+    "descriere_scurta_task": "Configurează 'ci.yml' să ruleze pe Pull Request-uri către 'master', 'staging' și 'dev'.",
+    "descriere_lunga_si_detaliata_task": "În acest task, configurăm evenimentele GitHub Actions care declanșează workflow-ul de CI definit în 'ci.yml'. Conform strategiei de branching (3 branch-uri: master, staging, dev), pipeline-ul principal de CI trebuie să ruleze automat pentru orice Pull Request deschis către una dintre aceste ramuri. Nu adăugăm încă job-uri sau pași de execuție (lint, test, build); ne concentrăm exclusiv pe secțiunea YAML 'on:' și configurarea evenimentului 'pull_request' cu lista de branch-uri țintă.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' a fost creat. F0.2.2: Fișierul '.github/workflows/ci.yml' există (eventual cu un comentariu de header, fără cheile 'on' sau 'jobs').",
+    "contextul_general_al_aplicatiei": "Alinierea pipeline-ului de CI la guvernanța Git cu 3 branch-uri (master, staging, dev), astfel încât fiecare Pull Request către aceste branch-uri să declanșeze automat validările definite în F0.1 (lint, format, test, build) care vor fi configurate în task-urile F0.2.4+.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Acesta trebuie să conțină, pe lângă eventualul comentariu de header existent, o secțiune YAML validă 'on:' care definește evenimentul 'pull_request' pentru branch-urile 'master', 'staging' și 'dev'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea și nu modifica alte fișiere de workflow în acest task.",
+      "Păstrează eventualul comentariu de header existent (de la F0.2.2), dacă există. Adaugă noua secțiune YAML imediat sub acel comentariu.",
+      "Adaugă SECȚIUNEA 'on' EXACT cu structura de mai jos (indentare cu două spații pentru nivelurile imbricate):",
+      "on:",
+      "  pull_request:",
+      "    branches:",
+      "      - master",
+      "      - staging",
+      "      - dev",
+      "Nu adăuga alte evenimente ('push', 'workflow_dispatch', 'pull_request_target', etc.) în acest task. Acest workflow trebuie să se declanșeze DOAR pe 'pull_request' către branch-urile specificate.",
+      "Nu adăuga în acest moment chei YAML precum 'name:' sau 'jobs:'. Acestea vor fi configurate în task-uri ulterioare (de ex. definirea job-ului 'validate', pașii de Nx, etc.).",
+      "Asigură-te că fișierul final 'ci.yml' este YAML valid (ex. nu există tab-uri, doar spații, nu există caractere ascunse înainte de 'on:').",
+      "Nu schimba numele branch-ului 'master' în 'main' automat. Planul de guvernanță specifică explcit 'master'. Dacă repository-ul real folosește 'main', acest lucru trebuie tratat într-un task separat, nu prin presupuneri aici."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu implementa în acest task job-uri, pași, strategii de matrici sau pași Nx (`nx affected:lint`, `nx test`, etc.). Rămâi strict la definirea declanșatoarelor (secțiunea 'on:').",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține o secțiune YAML validă 'on' cu 'pull_request.branches' setat exact la ['master', 'staging', 'dev'], fără alte evenimente suplimentare. Validarea minimă se poate face vizual sau cu un validator YAML.",
+    "outcome": "'ci.yml' este configurat astfel încât workflow-ul de CI să fie declanșat automat pentru orice Pull Request deschis către branch-urile 'master', 'staging' și 'dev', aliniat cu strategia de guvernanță Git.",
+    "componenta_de_CI_CD": "Acest task definește MOMENTUL în care va rula pipeline-ul de CI: la fiecare Pull Request către branch-urile protejate. Logica efectivă de validare (job-uri și pași) va fi adăugată în task-urile următoare ale Fazei F0.2."
+  }
+},
+```
+
+#### F0.2.4
+
+```JSON
+  {
+  "F0.2.4": {
+    "denumire_task": "Definire Job 'validate' în 'ci.yml'",
+    "descriere_scurta_task": "Adaugă structura de bază pentru job-ul 'validate' în 'ci.yml', cu runner și pasul de checkout.",
+    "descriere_lunga_si_detaliata_task": "În acest task definim primul și principalul job al workflow-ului de CI: 'validate'. Job-ul va rula pe un runner GitHub Actions 'ubuntu-latest' și va conține, pentru moment, doar pasul de checkout al repository-ului folosind 'actions/checkout@v4'. Pașii suplimentari (instalare pnpm, cache, lint, test, build) vor fi adăugați în task-uri ulterioare din Faza F0.2. Scopul acestui task este să introducă secțiunea 'jobs:' și job-ul 'validate' cu o structură minimală, dar validă, fără a implementa încă logica completă de CI.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.1: A fost creat directorul '.github/workflows/'. F0.2.2: A fost creat fișierul 'ci.yml'. F0.2.3: În 'ci.yml' au fost definite declanșatoarele 'on: pull_request' pentru branch-urile 'master', 'staging' și 'dev'.",
+    "contextul_general_al_aplicatiei": "Structurarea pipeline-ului de CI: introducem job-ul 'validate', care va deveni punctul central pentru toate verificările de calitate (lint, test, build) ale monorepo-ului GeniusSuite pe Pull Request-uri către branch-urile protejate.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Acesta conține deja secțiunea 'on:' configurată în F0.2.3. Sub acea secțiune, trebuie adăugată o secțiune YAML 'jobs:' care definește job-ul 'validate' cu runner 'ubuntu-latest' și un singur pas: checkout-ul repository-ului.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea sau modifica alte fișiere workflow în acest task.",
+      "Păstrează intactă secțiunea 'on:' definită în F0.2.3 (pull_request către 'master', 'staging', 'dev'). Nu o altera, nu adăuga alte evenimente.",
+      "Dacă fișierul conține doar un comentariu de header și secțiunea 'on:', adaugă sub acestea secțiunea 'jobs:' cu următoarea structură minimală (folosind spații, nu tab-uri):",
+      "jobs:",
+      "  validate:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Checkout repository",
+      "        uses: actions/checkout@v4",
+      "Asigură-te că indentarea este corectă: 'jobs' la nivel de rădăcină YAML (fără spații înainte), 'validate' la două spații, 'runs-on' și 'steps' la patru spații, iar elementele din 'steps' la șase/opt spații conform exemplului.",
+      "Nu adăuga alți pași în acest moment (nu defini încă instalarea pnpm, cache, nx, pnpm lint/test/build, etc.). Singurul pas permis acum este 'actions/checkout@v4'.",
+      "Nu adăuga alte job-uri (de ex. 'release', 'test-only', 'deploy'). Acest task definește STRICT job-ul 'validate'.",
+      "Nu modifica numele job-ului ('validate') și nu schimba runner-ul ('ubuntu-latest') în acest task.",
+      "Asigură-te că fișierul final rămâne un YAML valid: nu duplica cheile 'jobs:'; dacă există deja o cheie 'jobs' introdusă accidental, aceasta trebuie înlocuită astfel încât să conțină EXACT job-ul 'validate' descris aici (fără alte job-uri inventate)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga alți pași (steps) în afară de 'actions/checkout@v4' și nu introduce logică suplimentară (env, strategy, matrix, timeout). Nu seta nume de workflow ('name:') sau alte metadate în acest task.",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține, pe lângă secțiunea 'on:' definită în F0.2.3, o secțiune 'jobs' cu job-ul 'validate' configurat astfel: 'runs-on: ubuntu-latest' și un singur pas 'Checkout repository' care folosește 'actions/checkout@v4'. Fișierul trece validarea YAML.",
+    "outcome": "Structura de bază a job-ului 'validate' este creată în 'ci.yml': workflow-ul are acum un job principal care rulează pe 'ubuntu-latest' și face checkout al codului din repository, fiind pregătit pentru a primi pași suplimentari (pnpm install, Nx lint/test/build) în task-urile următoare.",
+    "componenta_de_CI_CD": "Reprezintă scheletul job-ului principal de CI. Toate verificările automate (lint, test, build) vor fi atașate ulterior acestui job 'validate', păstrând un singur punct de intrare CI pentru PR-urile către 'master', 'staging' și 'dev'."
+  }
+},
+```
+
+#### F0.2.5
+
+```JSON
+  {
+  "F0.2.5": {
+    "denumire_task": "Adăugare setup Node + pnpm + cache în job-ul 'validate'",
+    "descriere_scurta_task": "Adaugă în 'ci.yml' pașii pentru instalarea Node.js, configurarea pnpm și cache-ul pnpm store.",
+    "descriere_lunga_si_detaliata_task": "În acest task extindem job-ul 'validate' din 'ci.yml' pentru a pregăti mediul de rulare: instalăm versiunea corectă de Node.js (conform stack-ului cu Node 24 LTS), configurăm pnpm folosind acțiunea oficială pnpm/action-setup și adăugăm un pas de cache pentru '~/.pnpm-store' cu actions/cache@v4 bazat pe hash-ul fișierului 'pnpm-lock.yaml'. În acest moment NU rulăm încă 'pnpm install' sau alte comenzi Nx; doar pregătim mediul și cache-ul pentru task-urile următoare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.4: Job-ul 'validate' a fost creat în 'ci.yml' cu pasul de checkout (actions/checkout@v4). F0.1: monorepo-ul este configurat să folosească pnpm ca manager de pachete și Node 24 LTS ca runtime.",
+    "contextul_general_al_aplicatiei": "Configurarea mediului de CI pentru a utiliza Node.js 24 LTS și pnpm cu cache, conform stack-ului definit în F0.1, pentru instalări rapide și consistente ale dependențelor.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml', în secțiunea 'jobs.validate.steps'. Adaugă pașii după pasul existent 'Checkout repository' (actions/checkout@v4).",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea sau modifica alte workflow-uri în acest task.",
+      "Păstrează pasul existent de checkout:",
+      "- name: Checkout repository",
+      "  uses: actions/checkout@v4",
+      "Nu îl șterge și nu îl modifică.",
+      "Imediat DUPĂ pasul de checkout, adaugă ÎN ACEASTĂ ORDINE următorii pași YAML (cu indentare corectă în cadrul 'steps'):",
+      "1) Setup Node.js (versiunea 24.x):",
+      "- name: Setup Node.js",
+      "  uses: actions/setup-node@v4",
+      "  with:",
+      "    node-version: 24.x",
+      "    check-latest: true",
+      "Nu alege alte versiuni (ex. 18.x, 20.x) – respectă stack-ul cu Node 24 LTS.",
+      "2) Setup pnpm:",
+      "- name: Setup pnpm",
+      "  uses: pnpm/action-setup@v2",
+      "  with:",
+      "    version: 8",
+      "Nu inventa altă versiune pnpm; folosește explicit 'version: 8' (conform stack-ului pnpm 8.x).",
+      "3) Setup pnpm cache:",
+      "- name: Setup pnpm cache",
+      "  uses: actions/cache@v4",
+      "  with:",
+      "    path: ~/.pnpm-store",
+      "    key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}",
+      "    restore-keys: |",
+      "      ${{ runner.os }}-pnpm-store-",
+      "Nu modifica 'path' în altceva; pnpm store implicit este '~/.pnpm-store'.",
+      "Nu adăuga ÎNCĂ pasul de instalare a dependențelor (ex. 'pnpm install') sau comenzi Nx (ex. 'nx affected:lint'). Acelea vor fi introduse într-un task separat.",
+      "Asigură-te că toți pașii noi sunt în cadrul aceluiași job 'validate', în array-ul 'steps', și că YAML-ul rămâne valid (nu folosi tab-uri, doar spații).",
+      "Nu adăuga variabile de mediu suplimentare sau alte câmpuri (env, if, timeout-minutes) în acest task.",
+      "Nu schimba numele job-ului ('validate') și nici runner-ul ('runs-on: ubuntu-latest')."
+    ],
+    "restrictii_de_iesire_din_contex": "Rămâi strict la adăugarea pașilor 'Setup Node.js', 'Setup pnpm' și 'Setup pnpm cache' în job-ul 'validate'. Nu introduce pași pentru 'pnpm install', 'pnpm lint', 'pnpm test' sau Nx în acest task.",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține în 'jobs.validate.steps' (în ordine) pasul de checkout, urmat de cei trei pași: 'Setup Node.js' (actions/setup-node@v4 cu node-version: 24.x), 'Setup pnpm' (pnpm/action-setup@v2 cu version: 8) și 'Setup pnpm cache' (actions/cache@v4 cu path: ~/.pnpm-store și key bazat pe hashFiles('**/pnpm-lock.yaml')). YAML-ul este valid.",
+    "outcome": "Agentul de CI este pregătit pentru rularea comenzilor pnpm în job-ul 'validate', cu Node.js 24.x instalat și cu pnpm store cache-uit pentru performanță.",
+    "componenta_de_CI_CD": "Acest task asigură mediul și cache-ul necesare pentru instalarea rapidă a dependențelor și rularea ulterioară a pașilor Nx (lint, test, build) în pipeline-ul de CI."
+  }
+},
+```
+
+#### F0.2.6
+
+```JSON
+  {
+  "F0.2.6": {
+    "denumire_task": "Adăugare Pas 'pnpm install' în Job-ul 'validate'",
+    "descriere_scurta_task": "Adaugă pasul de instalare a dependențelor cu 'pnpm install --frozen-lockfile' în job-ul 'validate' din 'ci.yml'.",
+    "descriere_lunga_si_detaliata_task": "După ce job-ul 'validate' a fost configurat cu checkout, setup Node.js, setup pnpm și cache pentru '~/.pnpm-store', acest task adaugă pasul de instalare a dependențelor monorepo-ului. Folosim comanda 'pnpm install --frozen-lockfile' rulată din directorul rădăcină al proiectului. Opțiunea '--frozen-lockfile' este critică în CI: ea impune ca 'pnpm-lock.yaml' să fie sursa unică de adevăr pentru versiuni, iar pipeline-ul să eșueze dacă lockfile-ul și 'package.json' nu sunt sincronizate. Astfel prevenim instalările nedeterministe sau schimbările de dependențe necomisionate.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.4: job-ul 'validate' a fost definit cu pasul de checkout. F0.2.5: au fost adăugați pașii 'Setup Node.js', 'Setup pnpm' și 'Setup pnpm cache' în 'jobs.validate.steps'.",
+    "contextul_general_al_aplicatiei": "Asigurarea unei instalări deterministe a dependențelor în mediul de CI pentru întregul monorepo GeniusSuite, ca precondiție pentru rularea lint-ului, testelor și build-urilor Nx.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. În job-ul 'validate', în lista 'steps', adaugă un nou pas imediat DUPĂ pasul 'Setup pnpm cache'. Comanda 'pnpm install --frozen-lockfile' va fi executată implicit în directorul de lucru al runner-ului, care este rădăcina repository-ului (echivalent cu '/var/www/GeniusSuite/').",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea și nu modifica alte workflow-uri în acest task.",
+      "Nu modifica pașii existenți 'Checkout repository', 'Setup Node.js', 'Setup pnpm' sau 'Setup pnpm cache'. Aceștia trebuie păstrați exact așa cum au fost definiți în F0.2.4 și F0.2.5.",
+      "În secțiunea 'jobs.validate.steps', adaugă UN NOU pas imediat după 'Setup pnpm cache' cu următoarea structură YAML (respectă indentarea și numele):",
+      "- name: Install dependencies",
+      "  run: pnpm install --frozen-lockfile",
+      "Nu folosi alt nume de pas (ex. 'pnpm install deps') și nu schimba comanda în 'npm install' sau 'yarn install'.",
+      "Nu elimina opțiunea '--frozen-lockfile' și nu o înlocui cu alte flag-uri (ex. '--no-frozen-lockfile' sau '--force'). Această opțiune este esențială pentru determinismul instalării în CI.",
+      "Nu adăuga în acest pas variabile de mediu suplimentare (env), condiții (if) sau alte câmpuri. Pasul trebuie să fie strict un 'run: pnpm install --frozen-lockfile'.",
+      "Nu introduce alte comenzi de instalare (ex. un al doilea pas 'pnpm install' sau 'pnpm install --prod'). Instalarea completă se face O SINGURĂ DATĂ în acest pas.",
+      "Asigură-te că nu există dubluri de pași 'Install dependencies' sau alte instanțe de 'pnpm install' în 'steps'. Dacă există astfel de pași creați anterior, elimină-i în favoarea acestui pas standardizat.",
+      "Nu modifica numele job-ului ('validate') și nici runner-ul ('runs-on: ubuntu-latest') în acest task.",
+      "Verifică la final ca YAML-ul să fie valid (fără tab-uri, doar spații, fără caractere ascunse) și ca secvența logică a pașilor să fie: Checkout → Setup Node → Setup pnpm → Setup pnpm cache → Install dependencies."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga în acest task pași care rulează lint, test sau build (ex. 'pnpm lint', 'pnpm test', 'nx affected:lint', 'nx affected:test', 'nx affected:build'). Task-urile pentru aceste acțiuni vor fi definite ulterior.",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține, în 'jobs.validate.steps', un pas numit exact 'Install dependencies' cu 'run: pnpm install --frozen-lockfile', plasat după 'Setup pnpm cache'. Nu există alte comenzi 'pnpm install' în workflow.",
+    "outcome": "Pipeline-ul de CI instalează determinist toate dependențele monorepo-ului folosind 'pnpm install --frozen-lockfile', pregătind mediul pentru pașii de lint, test și build.",
+    "componenta_de_CI_CD": "Reprezintă pasul de instalare a dependențelor, obligatoriu înainte de orice task de lint, test sau build rulat în job-ul 'validate'."
+  }
+},
+```
+
+#### F0.2.7
+
+```JSON
+  {
+  "F0.2.7": {
+    "denumire_task": "Adăugare pas 'Set Nx SHAs' + validare pas 'Install dependencies' în job-ul 'validate'",
+    "descriere_scurta_task": "Adaugă acțiunea 'nrwl/nx-set-shas@v4' după 'pnpm install --frozen-lockfile' și verifică/completează pasul de instalare a dependențelor în 'ci.yml'.",
+    "descriere_lunga_si_detaliata_task": "Acest task finalizează pregătirea job-ului 'validate' pentru rularea corectă a comenzilor 'nx affected' în CI. În primul rând, confirmă că în job-ul 'validate' există pasul de instalare a dependențelor cu 'pnpm install --frozen-lockfile' (F0.2.6) și, dacă lipsește sau este greșit, îl creează/înlocuiește cu varianta corectă. Apoi adaugă un nou pas 'Set Nx SHAs' care folosește acțiunea 'nrwl/nx-set-shas@v4'. Această acțiune calculează SHA-ul de bază (commit-ul de bază al PR-ului) și SHA-ul de capăt și setează variabilele de mediu 'NX_BASE' și 'NX_HEAD', pe care 'nx affected' le folosește automat. Pentru ca acest pas să funcționeze corect, se presupune că acțiunea 'actions/checkout@v4' este configurată cu 'fetch-depth: 0' (pentru a avea istoricul Git complet).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.4: Job-ul 'validate' a fost creat cu pasul de checkout. F0.2.5: Au fost adăugați pașii 'Setup Node.js', 'Setup pnpm' și 'Setup pnpm cache'. F0.2.6: A fost planificat pasul de instalare a dependențelor cu 'pnpm install --frozen-lockfile' (dar în task-ul original lipsea blocul YAML concret).",
+    "contextul_general_al_aplicatiei": "Pipeline-ul de CI trebuie să ruleze rapid și corect doar proiectele afectate într-un PR folosind 'nx affected'. Pentru asta sunt esențiale atât instalarea deterministă a dependențelor (pnpm + lockfile), cât și calculul corect al SHA-urilor NX_BASE/NX_HEAD prin 'nrwl/nx-set-shas@v4'.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml', în secțiunea 'jobs.validate.steps'. Lucrezi pe workflow-ul principal de CI definit pentru Pull Request-uri către 'master', 'staging' și 'dev'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea și nu modifica alte workflow-uri în acest task.",
+      "Păstrează secțiunea 'on:' definită în F0.2.3 (pull_request către 'master', 'staging', 'dev') EXACT așa cum este. Nu adăuga 'push' sau alte triggere în acest task.",
+      "În secțiunea 'jobs.validate', verifică faptul că pasul de checkout arată astfel (sau echivalent semantic) și, dacă nu, actualizează-l ACUM pentru a avea fetch-depth: 0 (necesar pentru 'nrwl/nx-set-shas'):",
+      "- name: Checkout repository",
+      "  uses: actions/checkout@v4",
+      "  with:",
+      "    fetch-depth: 0",
+      "Nu elimina acest pas și nu schimba numele job-ului ('validate') sau runner-ul ('runs-on: ubuntu-latest').",
+      "În interiorul 'jobs.validate.steps', asigură-te că există pașii de setup din F0.2.5, în această ordine logică: 'Checkout repository' → 'Setup Node.js' → 'Setup pnpm' → 'Setup pnpm cache'. Nu îi modifica în acest task.",
+      "VALIDARE/COMPLETARE F0.2.6 (Install dependencies):",
+      "Verifică dacă există deja un pas cu numele 'Install dependencies'. Dacă lipsește sau dacă execută altceva decât 'pnpm install --frozen-lockfile', rescrie/creează pasul astfel, imediat DUPĂ 'Setup pnpm cache':",
+      "- name: Install dependencies",
+      "  run: pnpm install --frozen-lockfile",
+      "Nu folosi comanda 'pnpm install' fără '--frozen-lockfile' și nu o înlocui cu alte manager-e (npm, yarn).",
+      "Asigură-te că NU există alte instanțe de 'pnpm install' în workflow. Trebuie să existe un singur pas de instalare a dependențelor, acesta.",
+      "ADĂUGARE PAS F0.2.7 – Set Nx SHAs:",
+      "Imediat DUPĂ pasul 'Install dependencies', adaugă un nou pas în 'jobs.validate.steps' cu următorul conținut YAML EXACT:",
+      "- name: Set Nx SHAs",
+      "  uses: nrwl/nx-set-shas@v4",
+      "Nu adăuga câmpuri suplimentare (with:, env:, if:) la acest pas în acest task. Configurația implicita a acțiunii este suficientă pentru PR-uri.",
+      "Nu muta acest pas înainte de instalarea dependențelor și nu îl plasa după eventuale pași viitori de lint/test/build. Ordinea corectă este: checkout → setup Node → setup pnpm → setup pnpm cache → install dependencies → Set Nx SHAs → (pașii Nx afectați, în task-uri ulterioare).",
+      "Verifică la final ca fișierul 'ci.yml' să fie YAML valid (fără tab-uri, doar spații, indentare corectă) și ca în 'jobs.validate.steps' să existe atât pasul 'Install dependencies' cu 'pnpm install --frozen-lockfile', cât și pasul 'Set Nx SHAs' cu 'nrwl/nx-set-shas@v4'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga în acest task pași care rulează Nx (de ex. 'nx affected:lint', 'nx affected:test', 'nx affected:build') sau pași de conectare la Nx Cloud. Acestea vor fi definite în task-urile următoare. Nu modifica alte job-uri sau workflow-uri.",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține în 'jobs.validate.steps' (1) un pas 'Install dependencies' care rulează exact 'pnpm install --frozen-lockfile', plasat după 'Setup pnpm cache', și (2) un pas 'Set Nx SHAs' care folosește 'nrwl/nx-set-shas@v4', plasat imediat după 'Install dependencies'. Pasul de checkout folosește 'actions/checkout@v4' cu 'fetch-depth: 0'. Workflow-ul este YAML-valid.",
+    "outcome": "Job-ul 'validate' din 'ci.yml' are acum atât instalarea deterministă a dependențelor, cât și setarea corectă a SHA-urilor pentru Nx, pregătind pipeline-ul pentru rularea eficientă a comenzilor 'nx affected' în task-urile următoare.",
+    "componenta_de_CI_CD": "Acest task completează infrastructura de bază pentru CI orientat pe monorepo Nx: garantează build-uri deterministe (prin 'pnpm install --frozen-lockfile') și permite rularea 'nx affected' cu baze de comparație corecte (prin 'nrwl/nx-set-shas@v4'), reducând semnificativ timpul de execuție al pipeline-ului pe Pull Request-uri."
+  }
+},
+```
+
+#### F0.2.8
+
+```JSON
+  {
+  "F0.2.8": {
+    "denumire_task": "Conectare la Nx Cloud (Remote Cache) în job-ul 'validate'",
+    "descriere_scurta_task": "Adaugă pasul de conectare la Nx Cloud în 'ci.yml' după 'Set Nx SHAs'.",
+    "descriere_lunga_si_detaliata_task": "În acest task conectăm pipeline-ul de CI la Nx Cloud (sau alt remote cache compatibil) pentru a beneficia de caching distribuit între rulări. Presupunem că monorepo-ul a fost deja conectat la Nx Cloud la nivel de proiect (de ex. prin 'nx connect' sau în timpul 'nx init' din F0.1), astfel încât pachetul 'nx-cloud' și configurația necesară există deja în 'package.json' și 'nx.json'. În job-ul 'validate' din 'ci.yml', după pasul 'Set Nx SHAs' (care setează NX_BASE și NX_HEAD), adăugăm un pas 'Connect to Nx Cloud' care rulează 'pnpm exec nx-cloud start-ci-run' și folosește secretul 'NX_CLOUD_AUTH_TOKEN' definit în setările repository-ului GitHub. Acest pas trebuie să fie executat înainte de orice comandă 'nx affected:*' pentru ca acestea să poată citi/scrie în cache-ul la distanță.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.4: Job-ul 'validate' a fost creat cu checkout. F0.2.5: Au fost adăugați pașii 'Setup Node.js', 'Setup pnpm' și 'Setup pnpm cache'. F0.2.6: A fost adăugat pasul 'Install dependencies' cu 'pnpm install --frozen-lockfile'. F0.2.7: A fost adăugat pasul 'Set Nx SHAs' care setează NX_BASE și NX_HEAD prin 'nrwl/nx-set-shas@v4'.",
+    "contextul_general_al_aplicatiei": "Faza F0.2 urmărește să construiască un pipeline de CI rapid și incremental folosind capabilitățile Nx (particularly 'nx affected'). Remote caching-ul Nx Cloud folosește SHA-urile (NX_BASE/NX_HEAD) pentru a reutiliza rezultatele de lint/test/build între rulări, reducând semnificativ timpul de execuție al pipeline-ului.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. În job-ul 'validate', în lista 'steps', adaugă noul pas imediat DUPĂ pasul 'Set Nx SHAs' și ÎNAINTE de pașii care vor rula 'nx affected:lint', 'nx affected:test', 'nx affected:build' (care vor fi definiți în F0.2.9+).",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea și nu modifica alte workflow-uri în acest task.",
+      "Păstrează toți pașii existenți din 'jobs.validate.steps' (Checkout, Setup Node, Setup pnpm, Setup pnpm cache, Install dependencies, Set Nx SHAs) EXACT cum au fost definiți în F0.2.4 – F0.2.7. Nu le redenumi, nu le reordona.",
+      "Verifică faptul că pasul 'Set Nx SHAs' există și are forma:",
+      "- name: Set Nx SHAs",
+      "  uses: nrwl/nx-set-shas@v4",
+      "Dacă lipsește sau este diferit, corectează-l conform task-ului F0.2.7 înainte de a continua.",
+      "Imediat DUPĂ pasul 'Set Nx SHAs', adaugă următorul pas YAML (cu indentare corectă în cadrul 'steps'):",
+      "- name: Connect to Nx Cloud",
+      "  run: pnpm exec nx-cloud start-ci-run",
+      "  env:",
+      "    NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}",
+      "Nu schimba numele pasului ('Connect to Nx Cloud') și nu folosi altă comandă (de ex. 'npx nx-cloud', 'nx connect', 'nx-cloud start-ci-run' fără 'pnpm exec').",
+      "NU scrie token-ul Nx Cloud direct în fișier. Singura sursă permisă este secretul GitHub 'NX_CLOUD_AUTH_TOKEN' referențiat prin 'secrets.NX_CLOUD_AUTH_TOKEN'.",
+      "Nu adăuga câmpuri suplimentare în acest pas (de ex. 'if:', 'timeout-minutes:', 'working-directory:'), cu excepția cazului în care sunt introduse explicit într-un task viitor. Aici păstrăm pasul minim și clar.",
+      "Asigură-te că acest pas este PLASAT înaintea oricărui pas care va rula comenzi Nx (ex. 'nx affected:lint', 'nx affected:test', 'nx affected:build'), astfel încât run-ul Nx Cloud să fie deja pornit.",
+      "Presupunem că secretul 'NX_CLOUD_AUTH_TOKEN' a fost creat manual în GitHub (Settings → Secrets and variables → Actions). Nu încerca să creezi sau să modifici secretul din acest workflow.",
+      "La final, verifică că fișierul 'ci.yml' este YAML-valid (fără tab-uri, doar spații, fără caractere suplimentare) și că structura logică a pașilor în 'jobs.validate.steps' este: Checkout → Setup Node → Setup pnpm → Setup pnpm cache → Install dependencies → Set Nx SHAs → Connect to Nx Cloud → (pași Nx future)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga în acest task pași care rulează efectiv 'nx affected:lint', 'nx affected:test', 'nx affected:build' sau alte comenzi Nx. Aceștia vor fi definiți în task-urile următoare. Nu modifica alte job-uri sau workflow-uri și nu introduce alte variabile de mediu în afară de 'NX_CLOUD_AUTH_TOKEN' pentru acest pas.",
+    "validare": "Fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml' conține în 'jobs.validate.steps' un pas numit exact 'Connect to Nx Cloud' care rulează 'pnpm exec nx-cloud start-ci-run' și setează 'NX_CLOUD_AUTH_TOKEN' din 'secrets.NX_CLOUD_AUTH_TOKEN', plasat imediat după pasul 'Set Nx SHAs'. La rularea pipeline-ului, job-ul 'validate' apare în dashboard-ul Nx Cloud (presupunând că secretul este configurat corect).",
+    "outcome": "Job-ul 'validate' este conectat la Nx Cloud și este pregătit să folosească remote caching pentru toate comenzile Nx ulterioare, reducând considerabil timpul de execuție al pipeline-ului de CI.",
+    "componenta_de_CI_CD": "Acest pas activează remote cache-ul Nx Cloud în pipeline-ul de CI, permițând reutilizarea rezultatelor de lint/test/build între rulări și integrând în mod practic configurațiile de caching definite în 'nx.json' (targetDefaults) în F0.1."
+  }
+},
+```
+
+#### F0.2.9
+
+```JSON
+  {
+  "F0.2.9": {
+    "denumire_task": "Adăugare Pași de Validare (Format, Lint, Test, Build) în 'ci.yml'",
+    "descriere_scurta_task": "Adaugă în job-ul 'validate' rularea 'pnpm exec nx affected' pentru 'format:check', 'lint', 'test' și 'build'.",
+    "descriere_lunga_si_detaliata_task": "Acest task finalizează job-ul 'validate' din 'ci.yml' prin adăugarea pașilor de validare efectivă a codului pentru Pull Request-uri. După ce SHAs-urile Nx au fost setate (F0.2.7) și conectarea la Nx Cloud a fost realizată (F0.2.8), rulăm în mod incremental comenzi 'pnpm exec nx affected' pentru țintele 'format:check', 'lint', 'test' și 'build'. Astfel, numai proiectele afectate de schimbările din PR sunt verificate, folosind remote cache-ul Nx Cloud pentru performanță maximă. În mod deliberat NU folosim script-urile globale din 'package.json' (ex. 'pnpm lint'), deoarece acestea invocă 'nx affected:lint --all' și ar rula inutil pe întregul monorepo.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.4: Job-ul 'validate' a fost creat. F0.2.5: Au fost adăugați pașii de setup Node, pnpm și cache. F0.2.6: A fost adăugat pasul 'Install dependencies' cu 'pnpm install --frozen-lockfile'. F0.2.7: A fost adăugat pasul 'Set Nx SHAs' cu 'nrwl/nx-set-shas@v4'. F0.2.8: A fost adăugat pasul 'Connect to Nx Cloud' cu 'pnpm exec nx-cloud start-ci-run'.",
+    "contextul_general_al_aplicatiei": "Faza F0.2 definește pipeline-ul de CI pentru PR-uri pe monorepo-ul GeniusSuite. Miezul acestui pipeline este rularea validărilor Nx doar pe proiectele afectate (affected), pentru a minimiza timpul de execuție și a maximiza feedback-ul relevat dezvoltatorilor, folosind cache-ul Nx Cloud și configurările de caching din 'nx.json'.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. În job-ul 'validate', în lista 'steps', adaugă patru pași noi imediat DUPĂ pasul existent 'Connect to Nx Cloud' și ÎNAINTE de orice pași suplimentari (dacă vor exista în viitor). Fiecare pas va apela 'pnpm exec nx affected' cu o țintă diferită: 'format:check', 'lint', 'test' și 'build'.",
+    "restrictii_anti_halucinatie": [
+      "Lucrează EXCLUSIV pe fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'. Nu crea și nu modifica alte workflow-uri.",
+      "Nu modifica pașii existenți din 'jobs.validate.steps' (Checkout, Setup Node.js, Setup pnpm, Setup pnpm cache, Install dependencies, Set Nx SHAs, Connect to Nx Cloud). Acest task doar ADAUGĂ pași noi după 'Connect to Nx Cloud'.",
+      "Identifică pasul existent:",
+      "- name: Connect to Nx Cloud",
+      "  run: pnpm exec nx-cloud start-ci-run",
+      "  env:",
+      "    NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}",
+      "Toți pașii noi trebuie adăugați IMEDIAT DUPĂ acest pas.",
+      "Adaugă, în această ordine, următorii pași YAML în 'jobs.validate.steps' (respectă indentarea corectă, spații nu tab-uri):",
+      "- name: Check formatting (affected)",
+      "  run: pnpm exec nx affected -t format:check",
+      "",
+      "- name: Lint affected projects",
+      "  run: pnpm exec nx affected -t lint",
+      "",
+      "- name: Test affected projects",
+      "  run: pnpm exec nx affected -t test",
+      "",
+      "- name: Build affected projects",
+      "  run: pnpm exec nx affected -t build",
+      "Nu schimba prefixul 'pnpm exec'; nu folosi 'npx', 'yarn' sau 'nx' direct.",
+      "Nu folosi script-urile din 'package.json' ('pnpm lint', 'pnpm test', etc.) în acest workflow de PR, deoarece în F0.1.43 'pnpm lint' a fost mapat la 'nx affected:lint --all', ceea ce ar rula pe toate proiectele, nu doar pe cele afectate.",
+      "Nu adăuga opțiunea '--all' la niciuna dintre comenzile 'nx affected'. Comenzile trebuie să se bazeze pe variabilele NX_BASE și NX_HEAD setate de 'nrwl/nx-set-shas'.",
+      "Nu adăuga alte ținte (targets) în acest task (ex. 'e2e', 'storybook') și nu modifica numele țintelor ('format:check', 'lint', 'test', 'build').",
+      "Nu adăuga câmpuri suplimentare în acești pași (ex. 'env:', 'if:', 'timeout-minutes:') în acest task. Păstrează pașii simpli și determinist executabili.",
+      "Asigură-te că fișierul final rămâne YAML-valid (fără tab-uri, fără caractere suplimentare) și că ordinea pașilor în 'jobs.validate.steps' este logică: Checkout → Setup Node → Setup pnpm → Setup pnpm cache → Install dependencies → Set Nx SHAs → Connect to Nx Cloud → Check formatting (affected) → Lint affected projects → Test affected projects → Build affected projects.",
+      "Dacă există deja pași similari (ex. pași vechi care r-ulau 'pnpm lint' sau 'pnpm test'), aceștia trebuie eliminați pentru a evita dublarea logicii și pentru a forța utilizarea exclusivă a 'pnpm exec nx affected'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu transforma acest job într-un matrix job (nu adăuga 'strategy.matrix'). Nu adăuga job-uri noi (test-only, build-only) în acest task. Validarea se face într-un singur job 'validate' cu pași secvențiali. Nu modifica triggerele 'on:' sau alte workflow-uri.",
+    "validare": "În '/var/www/GeniusSuite/.github/workflows/ci.yml', secțiunea 'jobs.validate.steps' conține, după 'Connect to Nx Cloud', exact patru pași noi cu numele 'Check formatting (affected)', 'Lint affected projects', 'Test affected projects' și 'Build affected projects', fiecare rulând respectiv 'pnpm exec nx affected -t format:check', 'pnpm exec nx affected -t lint', 'pnpm exec nx affected -t test' și 'pnpm exec nx affected -t build'. La rularea unui PR cu modificări, pipeline-ul eșuează dacă oricare dintre aceste comenzi eșuează.",
+    "outcome": "Pipeline-ul 'ci.yml' validează complet formatarea, linting-ul, testele și build-ul DOAR pentru proiectele afectate de schimbări, folosind Nx + Nx Cloud, oferind feedback rapid și relevant pentru fiecare Pull Request.",
+    "componenta_de_CI_CD": "Acești pași reprezintă miezul validării CI: combină Nx 'affected' cu remote caching-ul Nx Cloud pentru a executa doar ceea ce este necesar, reducând în mod semnificativ timpul de rulare al pipeline-ului pe PR-uri și asigurând în același timp calitatea codului și a build-urilor."
+  }
+},
+```
+
+#### F0.2.10
+
+```JSON
+  {
+  "F0.2.10": {
+    "denumire_task": "Creare Fișier Workflow 'release.yml'",
+    "descriere_scurta_task": "Creează fișierul 'release.yml' pentru publicarea pachetelor.",
+    "descriere_lunga_si_detaliata_task": "Creăm un al doilea fișier workflow, 'release.yml', în directorul standard '.github/workflows/'. Acest workflow va fi responsabil pentru partea de CD: versionare semantică și publicarea pachetelor. În acest task definim doar scheletul fișierului YAML (un nume de workflow și o structură minimă 'on' + 'jobs' validă). Declanșatoarele concrete (ex. 'push' pe 'master') și job-urile efective de release (semantic-release, publish) vor fi configurate în task-urile următoare, pentru a păstra atomicitatea și pentru a evita amestecarea responsabilităților în același task.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' există. F0.2.2-F0.2.9: Pipeline-ul de CI ('ci.yml') pentru PR-uri a fost creat și completat.",
+    "contextul_general_al_aplicatiei": "Separarea clară între pipeline-ul de verificare (CI, în 'ci.yml') și pipeline-ul de publicare/versiune (CD, în 'release.yml'), conform strategiei de Git branching (master, staging, dev) și obiectivelor de automatizare a release-urilor.",
+    "contextualizarea_directoarelor_si_cailor": "Lucrează în rădăcina repository-ului '/var/www/GeniusSuite/'. Creează fișierul '/var/www/GeniusSuite/.github/workflows/release.yml' cu un conținut YAML minim valid, astfel încât GitHub Actions să îl recunoască drept workflow, chiar dacă deocamdată nu definește încă logica de release.",
+    "restrictii_anti_halucinatie": [
+      "Nu modifica fișierul existent '.github/workflows/ci.yml' în acest task. Acest task se referă STRICT la 'release.yml'.",
+      "Dacă directorul '.github/workflows/' nu există, nu îl crea aici; el a fost deja creat în F0.2.1. Presupune că există.",
+      "Creează fișierul '.github/workflows/release.yml' doar dacă nu există. Dacă există deja, actualizează-l pentru a corespunde scheletului descris mai jos, fără a adăuga logică de release suplimentară în acest task.",
+      "Conținutul inițial al fișierului trebuie să fie un YAML minim valid, de forma:",
+      "name: Release",
+      "on:",
+      "  workflow_dispatch:",
+      "jobs: {}",
+      "Nu adăuga încă evenimente 'push' sau 'tags' în secțiunea 'on'. Acestea vor fi configurate în task-urile următoare (de exemplu, pentru 'push' pe branch-ul 'master').",
+      "Nu adăuga încă job-uri reale (steps, runs-on etc.). 'jobs: {}' este suficient în acest moment ca placeholder valid.",
+      "Nu adăuga logică pentru 'semantic-release', 'npm publish' sau alte unelte de release în acest task. Acestea vor fi implementate în pași ulteriori.",
+      "Asigură-te că fișierul 'release.yml' este YAML-valid (fără tab-uri, doar spații) și NU conține alte chei în afara 'name', 'on' și 'jobs' în această fază.",
+      "Nu copia conținut din 'ci.yml' în 'release.yml'. Cele două workflow-uri au responsabilități distincte (CI vs CD)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu configura în acest task declanșatoarele finale pentru release (ex. 'on: push: branches: [\"master\"]') și nu defineiți job-uri de versionare sau publicare. Aceste aspecte vor fi tratate în task-urile F0.2.x următoare.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/.github/workflows/release.yml' și faptul că acesta conține un YAML minim valid cu cheile 'name', 'on.workflow_dispatch' și 'jobs: {}'.",
+    "outcome": "Fișierul 'release.yml' există în '.github/workflows/' și reprezintă scheletul workflow-ului de release, pregătit pentru a fi completat cu declanșatoare și job-uri de publicare în task-urile următoare.",
+    "componenta_de_CI_CD": "Acest fișier va găzdui pipeline-ul de CD (release semantic și publicarea pachetelor), separat de pipeline-ul de CI ('ci.yml'), permițând configurarea independentă a fluxurilor de verificare și release."
+  }
+},
+```
+
+#### F0.2.11
+
+```JSON
+  {
+  "F0.2.11": {
+    "denumire_task": "Instalare '@changesets/cli'",
+    "descriere_scurta_task": "Instalează '@changesets/cli' ca dependență de dezvoltare la rădăcina monorepo-ului.",
+    "descriere_lunga_si_detaliata_task": "Pentru a gestiona versionarea independentă a pachetelor (conform structurii din Capitolul 2: shared/*, cp/*, vettify.app etc.), vom folosi Changesets. '@changesets/cli' oferă un flux modern pentru monorepo-uri, permițând definirea de changeset-uri explicite pentru fiecare modificare și calcularea versiunilor fără a depinde de formatul mesajelor de commit (spre deosebire de semantic-release). În acest task instalăm doar CLI-ul la rădăcină, ca devDependency, folosind pnpm, fără a inițializa încă configurația Changesets.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.51: Fundația F0.1 este comisionată pe branch-ul 'dev'. F0.2.1 - F0.2.10: Infrastructura de CI/CD (ci.yml, release.yml) a început să fie definită. Următoarele task-uri vor integra Changesets în pipeline-ul de release.",
+    "contextul_general_al_aplicatiei": "Monorepo-ul GeniusSuite conține mai multe biblioteci shared/* și aplicații. Avem nevoie de un mecanism care să poată versiona independent pachetele și să genereze changelog-uri corecte, fără să ne bazăm strict pe formatul mesajelor de commit. Changesets este un standard de facto pentru astfel de monorepo-uri.",
+    "contextualizarea_directoarelor_si_cailor": "Comanda se execută în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Aceasta va modifica fișierul '/var/www/GeniusSuite/package.json', adăugând '@changesets/cli' în 'devDependencies' și actualizând fișierul 'pnpm-lock.yaml'.",
+    "restrictii_anti_halucinatie": [
+      "Execută comanda EXCLUSIV din '/var/www/GeniusSuite/'.",
+      "Folosește pnpm ca manager de pachete. Comanda corectă este:",
+      "pnpm add -D @changesets/cli",
+      "Nu folosi 'npm install', 'yarn add' sau 'npx'.",
+      "Nu instala alte pachete din ecosistemul Changesets în acest task (ex. '@changesets/changelog-github', '@changesets/apply-release-plan'). Doar '@changesets/cli'.",
+      "Nu modifica alte câmpuri din 'package.json' în afară de adăugarea dependenței '@changesets/cli' (și actualizarea automată a versiunilor/lockfile-ului făcute de pnpm).",
+      "Nu rula încă 'pnpm changeset init' sau alte comenzi Changesets. Inițializarea configurării Changesets va fi tratată într-un task separat.",
+      "După instalare, verifică că '@changesets/cli' apare la 'devDependencies' și că nu există duplicări (de ex. aceeași dependență atât la 'dependencies', cât și la 'devDependencies')."
+    ],
+    "restrictii_de_iesire_din_contex": "Acest task NU configurează workflow-ul de release și nu creează fișiere Changesets (de ex. '.changeset/config.json'). Se ocupă strict de instalarea '@changesets/cli' la rădăcină.",
+    "validare": "Fișierul '/var/www/GeniusSuite/package.json' conține '@changesets/cli' în secțiunea 'devDependencies'. Comanda 'pnpm changeset --help' rulat în '/var/www/GeniusSuite/' funcționează fără erori.",
+    "outcome": "CLI-ul Changesets este instalat la rădăcina monorepo-ului și pregătit pentru a fi inițializat și integrat în pipeline-ul de release ('release.yml') în task-urile următoare.",
+    "componenta_de_CI_CD": "Asigură dependența de bază pentru fluxul de release: workflows-urile de CD (definite în 'release.yml') vor putea ulterior să ruleze comenzi Changesets (de ex. 'pnpm changeset version', 'pnpm changeset publish') pentru versionare și publicare controlată a pachetelor."
+  }
+},
+```
+
+#### F0.2.12
+
+```JSON
+  {
+  "F0.2.12": {
+    "denumire_task": "Inițializare 'changesets'",
+    "descriere_scurta_task": "Rulează 'pnpm exec changeset init' pentru a crea directorul '.changeset' și configurația de bază.",
+    "descriere_lunga_si_detaliata_task": "Rulăm comanda de inițializare Changesets la rădăcina monorepo-ului. Aceasta va crea directorul '.changeset/', fișierul de configurare '.changeset/config.json' și un '.changeset/README.md' explicativ. Acest pas configurează structura de bază pentru versionarea pe pachete și pentru generarea de changeset-uri individuale. Nu modificăm încă manual fișierele generate; folosim configurația implicită furnizată de '@changesets/cli', urmând să o ajustăm în task-uri ulterioare dacă e nevoie.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.11: '@changesets/cli' este instalat ca devDependency la rădăcină. F0.2.10: 'release.yml' (scheletul workflow-ului de release) există.",
+    "contextul_general_al_aplicatiei": "Inițierea configurației Changesets, care va fi folosită ulterior pentru versionarea și publicarea pachetelor 'shared/*' și, eventual, a aplicațiilor, în cadrul pipeline-ului de release ('release.yml').",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzile în directorul rădăcină al monorepo-ului: '/var/www/GeniusSuite/'. Comanda va crea directorul '/var/www/GeniusSuite/.changeset/' și fișierele implicite în interiorul lui.",
+    "restrictii_anti_halucinatie": [
+      "Execută comanda EXCLUSIV din '/var/www/GeniusSuite/'.",
+      "Folosește pnpm și CLI-ul instalat local. Comanda corectă este:",
+      "pnpm exec changeset init",
+      "Nu folosi 'npx changeset init', 'yarn changeset init' sau 'changeset init' direct.",
+      "Dacă directorul '.changeset/' există deja și conține un 'config.json' valid, NU rula din nou 'changeset init' în acest task (pentru a evita suprascrierea). În acest caz, marchează task-ul ca deja satisfăcut.",
+      "Nu modifica manual conținutul '.changeset/config.json' sau '.changeset/README.md' în acest task. Orice ajustări de configurație se fac în task-uri separate.",
+      "Nu adăuga, nu șterge și nu redenumi alte fișiere din repository în acest task; modificările trebuie să se limiteze la crearea structurii '.changeset/'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu crea încă changeset-uri individuale (fișiere '*.md' în '.changeset/'). Nu integra încă Changesets în workflow-ul 'release.yml'.",
+    "validare": "Verifică existența directorului '/var/www/GeniusSuite/.changeset/' și a fișierului '/var/www/GeniusSuite/.changeset/config.json'. Opțional, execută 'pnpm exec changeset status' în '/var/www/GeniusSuite/' pentru a verifica că inițializarea a reușit (ar trebui să raporteze 'No unreleased changesets').",
+    "outcome": "Configurația de bază Changesets este inițializată în monorepo, pregătind terenul pentru definirea de changeset-uri și integrarea cu workflow-ul de release.",
+    "componenta_de_CI_CD": "Deși acest task nu modifică încă workflow-urile de GitHub Actions, el introduce infrastructura necesară pentru ca pipeline-ul de release ('release.yml') să poată folosi Changesets pentru calcularea versiunilor și publicare."
+  }
+},
+```
+
+#### F0.2.13
+
+```JSON
+  {
+  "F0.2.13": {
+    "denumire_task": "Configurare completă 'changesets' (config.json + changelog GitHub)",
+    "descriere_scurta_task": "Instalează '@changesets/changelog-github' și configurează '.changeset/config.json' cu 'baseBranch', 'access' și generatorul de changelog pentru GitHub.",
+    "descriere_lunga_si_detaliata_task": "Acest task finalizează configurarea 'changesets' pentru monorepo-ul GeniusSuite. În primul rând, instalăm pachetul '@changesets/changelog-github', care va genera intrări de changelog cu link-uri către commit-uri, PR-uri și useri GitHub. Apoi, modificăm fișierul '.changeset/config.json' generat de 'pnpm exec changeset init' pentru a-l alinia la strategia de Git și de publicare: setăm 'baseBranch' la 'master' (branch-ul principal de release), 'access' la 'public' (pachetele pot fi publicate pe un registry public), configurăm 'updateInternalDependencies' la 'patch' și definim 'changelog' astfel încât să folosească '@changesets/changelog-github' cu repository-ul corect. Păstrăm 'commit: false' pentru ca workflow-ul 'release.yml' să controleze explicit commit-urile de versiune.",
+    "directorul_directoarele": [
+      "/",
+      ".changeset/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.11: '@changesets/cli' este instalat. F0.2.12: 'pnpm exec changeset init' a creat directorul '.changeset/' și fișierul 'config.json'.",
+    "contextul_general_al_aplicatiei": "Configurarea 'changesets' astfel încât să funcționeze corect cu fluxul Git (master/staging/dev) și cu GitHub (changelog cu link-uri către PR-uri și commit-uri), pregătind pipeline-ul de release bazat pe changeset-uri.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzile în directorul rădăcină '/var/www/GeniusSuite/'. Fișierul de configurare țintă este '/var/www/GeniusSuite/.changeset/config.json'.",
+    "restrictii_anti_halucinatie": [
+      "1) Lucrează DOAR în repository-ul existent, la calea '/var/www/GeniusSuite/'. Nu crea un proiect nou, nu rula 'git init' și nu modifica structura de directoare în afara celor menționate.",
+      "2) Instalează generatorul de changelog GitHub ca dependență de dezvoltare la rădăcină, folosind EXACT comanda:",
+      "   pnpm add -D @changesets/changelog-github",
+      "   Nu folosi 'npm' sau 'yarn'. Nu instala alte pachete '@changesets/*' în acest task.",
+      "3) Deschide fișierul '.changeset/config.json' existent și suprascrie-i conținutul cu un obiect JSON VALID care să aibă cel puțin următoarea structură:",
+      "   {",
+      "     \"$schema\": \"https://unpkg.com/@changesets/config/schema.json\",",
+      "     \"changelog\": [",
+      "       \"@changesets/changelog-github\",",
+      "       { \"repo\": \"GITHUB_USERNAME/GeniusSuite\" }",
+      "     ],",
+      "     \"commit\": false,",
+      "     \"fixed\": [],",
+      "     \"linked\": [],",
+      "     \"access\": \"public\",",
+      "     \"baseBranch\": \"master\",",
+      "     \"updateInternalDependencies\": \"patch\",",
+      "     \"ignore\": []",
+      "   }",
+      "4) Nu schimba cheia 'commit': trebuie să rămână 'false'. Nu o seta la 'true' și nu o elimina.",
+      "5) Nu inventa alte chei necunoscute în config ('changelog-github-bot', 'cli-github' etc.). Folosește DOAR câmpurile listate mai sus, plus câmpuri deja generate de 'changeset init' dacă există și nu intră în conflict.",
+      "6) Nu modifica numele branch-ului de bază: trebuie să fie EXACT 'master', aliniat cu strategia Git a proiectului.",
+      "7) Nu adăuga token-uri sau secrete în fișierul de configurare. Autentificarea GitHub se face din workflow-urile GitHub Actions prin 'secrets.GITHUB_TOKEN', nu din 'config.json'."
+    ],
+    "restrictii_de_iesire_din_contex": "Acest task se limitează la instalarea '@changesets/changelog-github' și modificarea fișierului '.changeset/config.json'. Nu crea workflow-uri noi și nu modifica 'release.yml' sau alte fișiere CI/CD în acest task.",
+    "validare": "1) În 'package.json' de la rădăcină, în secțiunea 'devDependencies', trebuie să existe intrarea '@changesets/changelog-github'. 2) Fișierul '.changeset/config.json' trebuie să fie JSON valid și să conțină: 'baseBranch': 'master', 'access': 'public', 'updateInternalDependencies': 'patch', 'commit': false, 'changelog' configurat cu '@changesets/changelog-github' și 'repo': 'GITHUB_USERNAME/GeniusSuite'. 3) Rularea 'pnpm exec changeset status' NU trebuie să dea erori de configurare.",
+    "outcome": "Monorepo-ul GeniusSuite are 'changesets' complet configurat: config.json este valid, aliniat cu strategia Git și de publicare, iar generatorul de changelog pentru GitHub este instalat și referențiat corect.",
+    "componenta_de_CI_CD": "Această configurație va fi folosită ulterior de workflow-ul 'release.yml' pentru a genera changelog-uri corecte, a calcula versiunile pachetelor și a publica release-uri bazate pe changeset-uri."
+  }
+},
+```
+
+#### F0.2.14
+
+```JSON
+  {
+  "F0.2.14": {
+    "denumire_task": "Configurare Bot 'changesets' pentru PR-uri",
+    "descriere_scurta_task": "Configurează workflow-ul 'changeset-bot.yml' care verifică și comentează dacă lipsesc fișiere '.changeset' în PR-uri.",
+    "descriere_lunga_si_detaliata_task": "Configurăm un workflow GitHub Actions dedicat (changeset-bot.yml) care rulează pe fiecare Pull Request către branch-urile principale. Jobul verifică dacă PR-ul modifică pachete din monorepo (ex. 'shared/*', 'cp/*', 'vettify.app/*'). Dacă există modificări de cod dar nu există fișiere '.changeset/*.md' (în afară de README), workflow-ul adaugă automat un comentariu explicativ pe PR și marchează job-ul ca eșuat. Comentariul îl ghidează pe dezvoltator să ruleze 'pnpm exec changeset' și să comită fișierul generat. Pentru comentarii mai avansate, se poate instala și aplicația oficială 'changesets-bot' din GitHub Marketplace, dar acest task se bazează doar pe '@changesets/cli' instalat în F0.2.11.",
+    "directorul_directoarele": [
+      "/",
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.11: '@changesets/cli' este instalat. F0.2.12: '.changeset/' este inițializat. F0.2.13: '.changeset/config.json' este configurat.",
+    "contextul_general_al_aplicatiei": "Impunerea disciplinei de versionare: orice modificare de pachet trebuie însoțită de un fișier '.changeset', altfel PR-ul este blocat și autorul primește un feedback clar.",
+    "contextualizarea_directoarelor_si_cailor": "Nu se mai instalează pachete suplimentare Changesets. Se creează fișierul '/var/www/GeniusSuite/.github/workflows/changeset-bot.yml'.",
+    "restrictii_anti_halucinatie": [
+      "NU instala pachetul inexistent '@changesets/cli-github'. Folosește doar '@changesets/cli' instalat în F0.2.11.",
+      "Dacă se dorește comentariu suplimentar din partea aplicației oficiale, un maintainer poate instala manual GitHub App-ul 'changesets-bot' pe repository. Acest lucru nu se automatizează din workflow.",
+      "Creează fișierul '.github/workflows/changeset-bot.yml' cu următorul conținut YAML (adaptat pentru pnpm):",
+      "name: Changeset Bot",
+      "",
+      "on:",
+      "  pull_request:",
+      "    branches:",
+      "      - master",
+      "      - staging",
+      "      - dev",
+      "",
+      "jobs:",
+      "  changeset-check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Checkout repository",
+      "        uses: actions/checkout@v4",
+      "        with:",
+      "          fetch-depth: 0",
+      "",
+      "      - name: Setup Node.js",
+      "        uses: actions/setup-node@v4",
+      "        with:",
+      "          node-version: 24",
+      "",
+      "      - name: Setup pnpm",
+      "        uses: pnpm/action-setup@v2",
+      "        with:",
+      "          version: 8",
+      "",
+      "      - name: Install dependencies",
+      "        run: pnpm install --frozen-lockfile",
+      "",
+      "      - name: Detect changed packages",
+      "        id: changed-files",
+      "        run: |",
+      "          BASE_BRANCH=${GITHUB_BASE_REF:-master}",
+      "          git fetch origin \"$BASE_BRANCH\" --depth=50",
+      "          changed_files=$(git diff --name-only \"origin/$BASE_BRANCH\"...HEAD | grep -E '^(shared/|cp/|vettify\\.app/)' || true)",
+      "          if [ -n \"$changed_files\" ]; then",
+      "            echo \"has_package_changes=true\" >> $GITHUB_OUTPUT",
+      "          else",
+      "            echo \"has_package_changes=false\" >> $GITHUB_OUTPUT",
+      "          fi",
+      "",
+      "      - name: Check for changeset files",
+      "        id: changeset-check",
+      "        run: |",
+      "          if [ -d \".changeset\" ]; then",
+      "            count=$(find .changeset -maxdepth 1 -name '*.md' ! -name 'README.md' | wc -l)",
+      "          else",
+      "            count=0",
+      "          fi",
+      "          if [ \"$count\" -eq 0 ]; then",
+      "            echo \"has_changesets=false\" >> $GITHUB_OUTPUT",
+      "          else",
+      "            echo \"has_changesets=true\" >> $GITHUB_OUTPUT",
+      "          fi",
+      "",
+      "      - name: Comment when changesets are missing",
+      "        if: steps.changed-files.outputs.has_package_changes == 'true' && steps.changeset-check.outputs.has_changesets == 'false'",
+      "        uses: actions/github-script@v7",
+      "        with:",
+      "          script: |",
+      "            const { context, github } = require('@actions/github');",
+      "            const { owner, repo } = context.repo;",
+      "            const prNumber = context.payload.pull_request.number;",
+      "            const body = [",
+      "              '## Changesets',",
+      "              '',",
+      "              'Am detectat modificări în pachetele monorepo-ului, dar niciun fișier `.changeset`.',",
+      "              'Te rog rulează `pnpm exec changeset` în local, alege versiunea potrivită și comite fișierul generat în acest PR.',",
+      "              '',",
+      "              'Fără changeset, modificarea nu va fi inclusă corect în release-uri.'",
+      "            ].join('\\n');",
+      "            await github.rest.issues.createComment({",
+      "              owner,",
+      "              repo,",
+      "              issue_number: prNumber,",
+      "              body",
+      "            });",
+      "",
+      "      - name: Fail if package changes have no changeset",
+      "        if: steps.changed-files.outputs.has_package_changes == 'true' && steps.changeset-check.outputs.has_changesets == 'false'",
+      "        run: |",
+      "          echo \"Pachet modificat fără fișier .changeset. Vedeți comentariul automat pentru instrucțiuni.\"",
+      "          exit 1",
+      "",
+      "Nu modifica alte workflow-uri în acest task.",
+      "Nu adăuga alte secrete; 'GITHUB_TOKEN' implicit oferit de GitHub Actions este suficient pentru 'actions/github-script'."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica 'ci.yml' sau 'release.yml' în acest task. Acesta adaugă doar un workflow nou, 'changeset-bot.yml'.",
+    "validare": "Fișierul '.github/workflows/changeset-bot.yml' există. Pe un PR care modifică pachete (ex. în 'shared/ui-design-system') fără niciun fișier '.changeset/*.md', job-ul 'changeset-check' eșuează și apare un comentariu automat pe PR cu instrucțiuni de adăugare a unui changeset.",
+    "outcome": "Orice PR care modifică pachete în monorepo este obligat să includă un fișier '.changeset'; în caz contrar, PR-ul este blocat și autorul este notificat clar printr-un comentariu automat.",
+    "componenta_de_CI_CD": "Componentă CI suplimentară, complementară lui 'ci.yml': asigură disciplina de versionare și previne PR-uri care modifică pachete fără changeset-uri corespunzătoare."
+  }
+},
+```
+
+#### F0.2.15
+
+```JSON
+  {
+  "F0.2.15": {
+    "denumire_task": "Configurare Workflow 'release.yml' (Triggers și Job 'publish')",
+    "descriere_scurta_task": "Configurează 'release.yml' să ruleze pe 'push' la 'master' și definește job-ul 'publish'.",
+    "descriere_lunga_si_detaliata_task": "Configurăm fișierul 'release.yml'. Acesta se va declanșa doar la push pe 'master'. Definim un singur job, 'publish', care va fi responsabil de rularea validărilor finale, versionarea și publicarea pachetelor. În acest task creăm doar scheletul job-ului; pașii efectivi de validare și publicare vor fi adăugați în F0.2.16 și F0.2.17.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.10: Fișierul 'release.yml' există.",
+    "contextul_general_al_aplicatiei": "Automatizarea publicării pachetelor la push pe 'master', separat de pipeline-ul de CI.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/release.yml'.",
+    "restrictii_anti_halucinatie": [
+      "Modifică fișierul '.github/workflows/release.yml' astfel încât să conțină următorul schelet minimal:",
+      "name: Release Packages",
+      "",
+      "on:",
+      "  push:",
+      "    branches:",
+      "      - master",
+      "",
+      "jobs:",
+      "  publish:",
+      "    name: Publish Packages",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Pipeline skeleton",
+      "        run: echo 'Release pipeline skeleton – steps vor fi adăugate în F0.2.16 și F0.2.17'"
+    ],
+    "restrictii_de_iesire_din_contex": "Secretul 'GH_PAT_TOKEN' (un Personal Access Token cu permisiuni de 'write' pe repository și, dacă este cazul, pe registry-ul de pachete) trebuie creat și adăugat în setările GitHub ale repository-ului, dar nu îl folosi încă în acest task. Nu adăuga pașii de changesets sau publish până la F0.2.16 și F0.2.17.",
+    "validare": "'/.github/workflows/release.yml' conține blocul 'on: push: branches: [master]' și job-ul 'publish' cu un step placeholder valid.",
+    "outcome": "Job-ul 'publish' este definit ca schelet și gata să fie completat cu pașii de versionare și publicare în task-urile următoare.",
+    "componenta_de_CI_CD": "Reprezintă scheletul pipeline-ului de CD care va publica pachetele la push pe 'master'."
+  }
+},
+```
+
+#### F0.2.16
+
+```JSON
+  {
+  "F0.2.16": {
+    "denumire_task": "Adăugare Pași de Validare în 'release.yml'",
+    "descriere_scurta_task": "Completează job-ul 'publish' din 'release.yml' cu pași de setup și validare 'nx affected' (format, lint, test, build).",
+    "descriere_lunga_si_detaliata_task": "Înainte de a publica pachetele, trebuie să ne asigurăm că merge-ul în 'master' este valid. Completăm job-ul 'publish' din 'release.yml' cu pașii necesari: checkout, configurare Node.js și pnpm, cache pentru pnpm, instalare dependențe și rularea validărilor 'nx affected' (format:check, lint, test, build). Într-un workflow de tip 'push' pe 'master', 'nx affected' va compara commit-ul curent cu commit-ul precedent de pe master pentru a determina proiectele afectate.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.15: 'release.yml' există și definește scheletul job-ului 'publish' (fără pași concreți).",
+    "contextul_general_al_aplicatiei": "Asigurarea integrității branch-ului 'master' înainte de a rula pașii de versionare și publicare.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/release.yml', completând job-ul 'publish' cu pașii de setup și validare.",
+    "restrictii_anti_halucinatie": [
+      "Înlocuiește conținutul fișierului '.github/workflows/release.yml' cu următorul conținut complet:",
+      "name: Release Packages",
+      "",
+      "on:",
+      "  push:",
+      "    branches:",
+      "      - master",
+      "",
+      "jobs:",
+      "  publish:",
+      "    name: Publish Packages",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Checkout repository",
+      "        uses: actions/checkout@v4",
+      "        with:",
+      "          fetch-depth: 0",
+      "",
+      "      - name: Setup Node.js",
+      "        uses: actions/setup-node@v4",
+      "        with:",
+      "          node-version: 24",
+      "",
+      "      - name: Setup pnpm",
+      "        uses: pnpm/action-setup@v2",
+      "        with:",
+      "          version: 8",
+      "",
+      "      - name: Setup pnpm cache",
+      "        uses: actions/cache@v4",
+      "        with:",
+      "          path: ~/.pnpm-store",
+      "          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}",
+      "          restore-keys: |",
+      "            ${{ runner.os }}-pnpm-store-",
+      "",
+      "      - name: Install dependencies",
+      "        run: pnpm install --frozen-lockfile",
+      "",
+      "      - name: Check formatting (affected)",
+      "        run: pnpm exec nx affected -t format:check",
+      "",
+      "      - name: Lint affected projects",
+      "        run: pnpm exec nx affected -t lint",
+      "",
+      "      - name: Test affected projects",
+      "        run: pnpm exec nx affected -t test",
+      "",
+      "      - name: Build affected projects",
+      "        run: pnpm exec nx affected -t build",
+      "",
+      "      # Pașii de versionare și publicare (changesets) vor fi adăugați în F0.2.17."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga încă pașii de versionare/publicare 'changesets'. Aceștia vor fi tratați în F0.2.17, după ce validările 'nx affected' trec cu succes. Nu folosi încă secretul 'GH_PAT_TOKEN' în acest task.",
+    "validare": "Fișierul '.github/workflows/release.yml' conține job-ul 'publish' cu pașii: checkout, setup Node.js, setup pnpm, cache pnpm, 'pnpm install --frozen-lockfile' și cele patru comenzi 'pnpm exec nx affected' pentru 'format:check', 'lint', 'test' și 'build'.",
+    "outcome": "Pipeline-ul de release validează codul pe 'master' (format, lint, test, build) înainte de orice pas de versionare și publicare.",
+    "componenta_de_CI_CD": "Reprezintă poarta de siguranță din pipeline-ul de CD: dacă orice pas 'nx affected' eșuează, publicarea nu va fi executată."
+  }
+},
+```
+
+#### F0.2.17
+
+```JSON
+  {
+  "F0.2.17": {
+    "denumire_task": "Adăugare Pași de Versionare și Publicare (Changesets) în 'release.yml'",
+    "descriere_scurta_task": "Adaugă pașii de versionare și publicare folosind 'changesets/action@v1' în job-ul 'publish' din 'release.yml'.",
+    "descriere_lunga_si_detaliata_task": "După ce validările 'nx affected' (format:check, lint, test, build) trec cu succes pe branch-ul 'master' (F0.2.16), completăm job-ul 'publish' din 'release.yml' cu pașii de versionare și publicare. Folosim 'changesets/action@v1' pentru a rula 'pnpm exec changeset version' (care actualizează versiunile și changelog-urile) și 'pnpm -r publish' (pentru a publica toate pachetele afectate). Înainte de a rula acțiunea, configurăm identitatea Git pentru commit-ul automat. Acțiunea folosește secretele 'GH_PAT_TOKEN' (pentru push/PR) și 'NPM_TOKEN' (pentru publicarea în registry).",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.15: 'release.yml' definește scheletul job-ului 'publish'. F0.2.16: job-ul 'publish' conține deja pașii de checkout, setup Node/pnpm, cache, instalare dependențe și validările 'nx affected'.",
+    "contextul_general_al_aplicatiei": "Finalizarea pipeline-ului de CD: după ce codul de pe 'master' este validat, se rulează versionarea și publicarea pachetelor.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/release.yml', adăugând pașii de versionare și publicare la finalul job-ului 'publish', după pașii 'nx affected'.",
+    "restrictii_anti_halucinatie": [
+      "În fișierul '.github/workflows/release.yml', în job-ul 'publish', adaugă URMĂTORII pași DUPĂ pașii de validare ('Check formatting', 'Lint affected projects', 'Test affected projects', 'Build affected projects'):",
+      "",
+      "- name: Configure Git user",
+      "  run: |",
+      "    git config user.name \"github-actions[bot]\"",
+      "    git config user.email \"41898282+github-actions[bot]@users.noreply.github.com\"",
+      "",
+      "- name: Create Release Pull Request or Publish",
+      "  uses: changesets/action@v1",
+      "  with:",
+      "    version: pnpm exec changeset version",
+      "    publish: pnpm -r publish --access public --no-git-checks",
+      "  env:",
+      "    GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }}",
+      "    NPM_TOKEN: ${{ secrets.NPM_TOKEN }}",
+      "",
+      "Nu dubla pașii de 'checkout', 'setup-node', 'setup pnpm', 'cache' sau 'pnpm install' în acest task; aceștia există deja din F0.2.16.",
+      "Asigură-te că secretul 'GH_PAT_TOKEN' are permisiuni de 'repo write' și 'packages:write', iar 'NPM_TOKEN' are permisiuni de publicare în registry-ul configurat (npmjs.com sau registry privat)."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica pașii de validare 'nx affected' adăugați în F0.2.16. Acest task doar adaugă pașii de versionare/publicare la finalul job-ului 'publish'. Nu adăuga aici pași de Docker (aceștia sunt tratați în F0.2.18).",
+    "validare": "Fișierul '.github/workflows/release.yml' conține, în job-ul 'publish', după pașii 'nx affected', un pas 'Configure Git user' urmat de un pas 'Create Release Pull Request or Publish' care folosește 'changesets/action@v1' cu 'version: pnpm exec changeset version' și 'publish: pnpm -r publish --access public --no-git-checks', plus variabilele de mediu 'GITHUB_TOKEN' și 'NPM_TOKEN'.",
+    "outcome": "Pipeline-ul de release este complet: după validarea branch-ului 'master', versiunile pachetelor sunt actualizate prin Changesets, se creează commit-ul de release și pachetele sunt publicate în registry.",
+    "componenta_de_CI_CD": "Reprezintă partea finală a pipeline-ului de CD: automatizează versionarea și publicarea pachetelor odată ce toate validările au trecut."
+  }
+},
+```
+
+#### F0.2.18
+
+```JSON
+  {
+  "F0.2.18": {
+    "denumire_task": "Creare Șablon 'Dockerfile.base' (Multi-stage)",
+    "descriere_scurta_task": "Creează un 'Dockerfile.base' multi-stage reutilizabil pentru aplicațiile Node.js 24.",
+    "descriere_lunga_si_detaliata_task": "Creăm un Dockerfile de bază în directorul 'scripts/'. Acesta va fi un șablon multi-stage pentru aplicațiile Node.js 24 din monorepo-ul Nx + pnpm. Stage-ul 'base' pornește de la imaginea 'node:24-alpine', configurează Corepack și pnpm. Stage-ul 'builder' copiază lockfile-urile și fișierele de workspace, rulează 'pnpm install --frozen-lockfile' și apoi 'pnpm exec nx build' pentru aplicația țintă (specificată prin build-arg APP_NAME). Stage-ul 'runner' pornește tot de la 'node:24-alpine', setează 'NODE_ENV=production' și copiază doar artefactele de build ale aplicației în imaginea finală. Acest fișier este un șablon reutilizabil; fiecare aplicație își poate defini propriul Dockerfile care îl extinde sau îl copiază și setează APP_NAME corespunzător.",
+    "directorul_directoarele": [
+      "scripts/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.1.9: Directorul 'scripts/' există. F0.1.16: Tipurile pentru Node.js 24 sunt instalate. Stack-ul proiectului folosește Node.js 24 LTS.",
+    "contextul_general_al_aplicatiei": "Standardizarea containerizării pentru toate aplicațiile (archify.app, vettify.app, etc.) folosind un șablon comun, aliniat la Node.js 24.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/scripts/Dockerfile.base'.",
+    "restrictii_anti_halcinatie": [
+      "Creează fișierul 'scripts/Dockerfile.base' cu următorul conținut exact:",
+      "# syntax=docker/dockerfile:1",
+      "",
+      "# Șablon multi-stage pentru aplicații Node.js 24 în monorepo Nx + pnpm",
+      "ARG NODE_VERSION=24-alpine",
+      "ARG APP_NAME",
+      "",
+      "FROM node:${NODE_VERSION} AS base",
+      "WORKDIR /app",
+      "",
+      "ENV PNPM_HOME=/pnpm",
+      "ENV PATH=\"$PNPM_HOME:$PATH\"",
+      "RUN corepack enable",
+      "",
+      "FROM base AS builder",
+      "",
+      "# Copiem fișierele de lock și de workspace pentru a instala dependențele",
+      "COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./",
+      "RUN pnpm install --frozen-lockfile",
+      "",
+      "# Copiem restul monorepo-ului pentru a permite build-ul Nx",
+      "COPY . .",
+      "",
+      "# Construim doar aplicația țintă folosind Nx; APP_NAME va fi trecut ca build-arg",
+      "RUN pnpm exec nx build ${APP_NAME}",
+      "",
+      "FROM node:${NODE_VERSION} AS runner",
+      "WORKDIR /app",
+      "ENV NODE_ENV=production",
+      "",
+      "# Copiem artefactele de build ale aplicației în imaginea finală",
+      "COPY --from=builder /app/dist/apps/${APP_NAME} ./dist",
+      "",
+      "# Punct de intrare implicit (pentru aplicații Node tip backend Nest/Express).",
+      "# Aplicațiile individuale pot suprascrie CMD în propriile Dockerfile-uri.",
+      "CMD [\"node\", \"dist/main.js\"]"
+    ],
+    "restrictii_de_iesire_din_contex": "Acesta este un fișier de bază/șablon. Nu este menit să fie construit direct. Aplicațiile individuale fie vor copia acest fișier, fie vor defini Dockerfile-uri proprii care folosesc aceeași structură și trec APP_NAME ca build-arg.",
+    "validare": "Fișierul '/var/www/GeniusSuite/scripts/Dockerfile.base' există și conținutul său corespunde exact cu șablonul definit în 'restrictii_anti_halcinatie'.",
+    "outcome": "Un șablon Dockerfile multi-stage standardizat, aliniat la Node.js 24, este disponibil pentru toate aplicațiile din monorepo.",
+    "componenta_de_CI_CD": "Fundația pentru toți pașii de 'docker-build' (de ex. ținta Nx 'docker-build' din F0.2.19 și pipeline-urile de deploy din F0.2.20/F0.2.22)."
+  }
+},
+```
+
+#### F0.2.19
+
+```JSON
+  {
+  "F0.2.19": {
+    "denumire_task": "Adăugare Țintă (Target) 'docker-build' în 'nx.json'",
+    "descriere_scurta_task": "Adaugă o țintă implicită 'docker-build' în 'targetDefaults' din 'nx.json'.",
+    "descriere_lunga_si_detaliata_task": "Extindem configurația 'targetDefaults' din 'nx.json' (inițial definită în F0.1.13) cu o nouă intrare numită 'docker-build'. Această intrare nu definește executorul sau comanda (acestea vor fi configurate la nivel de proiect), ci doar comportamentul implicit: că 'docker-build' depinde de 'build', este cache-uit și folosește aceleași input-uri ca și celelalte ținte ('default' și '^default'). Astfel, atunci când aplicațiile vor avea o țintă 'docker-build' definită, vom putea folosi 'nx affected -t docker-build' în pipeline-uri pentru a construi imagini Docker doar pentru aplicațiile afectate.",
     "directorul_directoarele": [
       "/"
     ],
-    "contextul_taskurilor_anterioare": "F0.1: Fundația monorepo (tooling, nx, pnpm) este completă și comisionată pe branch-ul 'dev'.",
-    "contextul_general_al_aplicatiei": "Inițierea Fazei F0.2 (CI/CD) prin crearea infrastructurii de fișiere pentru pipeline-uri.",
-    "contextualizarea_directoarelor_si_cailor": "Comanda 'mkdir -p /var/www/GeniusSuite/.github/workflows' va crea directoarele necesare.",
-    "restrictii_anti_halcinatie":,
-    "restrictii_de_iesire_din_contex": "Nu crea alte fișiere sau directoare.",
-    "validare": "Verifică existența directorului '/var/www/GeniusSuite/.github/workflows'.",
-    "outcome": "Directorul pentru stocarea fișierelor de workflow GitHub Actions este creat.",
-    "componenta_de_CI_DI": "Acesta este directorul standard pentru toate pipeline-urile de CI/CD GitHub Actions."
+    "contextul_taskurilor_anterioare": "F0.1.13: 'nx.json' și 'targetDefaults' există (build/lint/test). F0.2.18: 'scripts/Dockerfile.base' a fost creat.",
+    "contextul_general_al_aplicatiei": "Integrarea build-urilor Docker în graful de task-uri Nx, cu suport pentru 'nx affected -t docker-build' și caching (inclusiv Nx Cloud).",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
+    "restrictii_anti_halcinatie": [
+      "Deschide fișierul 'nx.json' de la rădăcină ('/var/www/GeniusSuite/nx.json').",
+      "Găsește cheia de top-level 'targetDefaults'. Nu șterge și nu modifica intrările existente (de ex. 'build', 'lint', 'test').",
+      "În interiorul obiectului 'targetDefaults', adaugă o nouă intrare pentru 'docker-build' cu următorul conținut:",
+      "",
+      "\"docker-build\": {",
+      "  \"dependsOn\": [\"build\"],",
+      "  \"cache\": true,",
+      "  \"inputs\": [\"default\", \"^default\"]",
+      "}",
+      "",
+      "Asigură-te că sintaxa JSON este validă: adaugă virgule doar acolo unde este necesar (de exemplu, între intrările 'build', 'lint', 'test' și noua intrare 'docker-build').",
+      "Nu încerca să definești executorul sau comanda Docker aici; acestea vor fi configurate la nivel de proiect/target specific (de ex. în 'project.json' pentru aplicații), iar 'targetDefaults' doar definește comportamentul comun (depinde de 'build', cache/inputs)."
+    ],
+    "restrictii_de_iesire_din_contex": "Acest task extinde doar 'targetDefaults'; nu creează încă ținte 'docker-build' specifice aplicațiilor și nu modifică alte chei din 'nx.json'.",
+    "validare": "'nx.json' conține cheia 'targetDefaults.docker-build' cu câmpurile 'dependsOn', 'cache' și 'inputs' setate exact ca în 'restrictii_anti_halcinatie'.",
+    "outcome": "Nx este conștient de ținta implicită 'docker-build' (cu dependență de 'build', caching activat și input-uri corecte), permițând folosirea 'nx affected -t docker-build' în pipeline-urile de deploy.",
+    "componenta_de_CI_CD": "Pregătește integrarea build-urilor Docker cu Nx și CI (de ex. în job-urile de deploy care vor rula 'nx affected -t docker-build')."
   }
-}
-F0.2.2
+},
+```
+
+#### F0.2.20
+
+```JSON
   {
-    "F0.2.2": {
-      "denumire_task": "Creare Fișier Workflow CI Principal ('ci.yml')",
-      "descriere_scurta_task": "Creează fișierul 'ci.yml' pentru validarea Pull Request-urilor.",
-      "descriere_lunga_si_detaliata_task": "Creăm fișierul principal de workflow, 'ci.yml'. Acest pipeline va fi responsabil pentru validarea calității codului (lint, test, build) pe fiecare Pull Request deschis către branch-urile 'dev', 'staging' și 'master'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' a fost creat.",
-      "contextul_general_al_aplicatiei": "Faza F0.2 automatizează validările definite în F0.1. Acest fișier va conține logica de CI pentru PR-uri.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.github/workflows/ci.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu crea alte fișiere workflow (de ex. 'release.yml').",
-      "validare": "Verifică existența fișierului '.github/workflows/ci.yml'.",
-      "outcome": "Fișierul 'ci.yml' este creat.",
-      "componenta_de_CI_DI": "Acest fișier va defini pipeline-ul principal de validare (CI)."
-    }
-  },
-F0.2.3
+  "F0.2.20": {
+    "denumire_task": "Creare Fișier Workflow 'deploy-staging.yml'",
+    "descriere_scurta_task": "Creează 'deploy-staging.yml' pentru build și push al imaginilor de staging.",
+    "descriere_lunga_si_detaliata_task": "Creăm un al treilea fișier workflow GitHub Actions. Acesta va fi responsabil pentru construirea imaginilor Docker pentru aplicațiile afectate și publicarea lor în container registry (de ex. GHCR) cu tag-ul 'staging'. Acest pipeline se declanșează la push pe branch-ul 'staging'. În acest task definim doar scheletul workflow-ului: nume, trigger și un job placeholder; pașii reali de build & push vor fi adăugați în F0.2.21.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' există. F0.2.19: Ținta 'docker-build' este definită în 'nx.json'.",
+    "contextul_general_al_aplicatiei": "Definirea pipeline-ului de CD pentru mediul de staging, conform strategiei de branching (master, staging, dev).",
+    "contextualizarea_directoarelor_si_cailor": "Creează sau suprascrie fișierul '/var/www/GeniusSuite/.github/workflows/deploy-staging.yml'.",
+    "restrictii_anti_halcinatie": [
+      "Creează sau suprascrie fișierul '.github/workflows/deploy-staging.yml' cu următorul conținut YAML minimal, valid:",
+      "",
+      "name: Deploy to Staging",
+      "",
+      "on:",
+      "  push:",
+      "    branches:",
+      "      - staging",
+      "",
+      "jobs:",
+      "  docker-deploy-staging:",
+      "    name: Docker Build & Push (Staging)",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Placeholder",
+      "        run: echo \"Skeleton deploy-staging.yml - pașii reali de build & push se adaugă în F0.2.21\"",
+      "",
+      "Nu adăuga în acest task pași de login la registry, build Docker sau 'nx affected -t docker-build'. Toți acești pași vor fi definiți explicit în F0.2.21."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga încă pași de build, login sau deploy în acest workflow. Acest task trebuie să furnizeze doar scheletul valid al fișierului 'deploy-staging.yml'.",
+    "validare": "Fișierul '.github/workflows/deploy-staging.yml' există, iar în UI-ul GitHub Actions workflow-ul 'Deploy to Staging' apare ca workflow valid, declanșat de push pe branch-ul 'staging'.",
+    "outcome": "Scheletul pipeline-ului de deploy pentru staging este creat și valid, pregătit pentru a fi completat cu pași de build & push în F0.2.21.",
+    "componenta_de_CI_CD": "Definește pipeline-ul de deploy pentru staging și îl conectează la strategia de branching (push pe 'staging')."
+  }
+},
+```
+
+#### F0.2.21
+
+```JSON
   {
-    "F0.2.3": {
-      "denumire_task": "Definire Declanșatoare (Triggers) pentru 'ci.yml'",
-      "descriere_scurta_task": "Configurează 'ci.yml' să ruleze pe Pull Request-uri către 'master', 'staging' și 'dev'.",
-      "descriere_lunga_si_detaliata_task": "Edităm 'ci.yml' pentru a defini evenimentele care îl declanșează. Conform strategiei de branching, acest pipeline trebuie să ruleze la orice Pull Request deschis către branch-urile principale.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.2: Fișierul 'ci.yml' a fost creat.",
-      "contextul_general_al_aplicatiei": "Alinierea CI-ului la strategia de guvernanță Git (master, staging, dev).",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '.github/workflows/ci.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu adăuga triggere 'push' în acest fișier. Pipeline-urile de push vor fi separate (de ex. 'release.yml').",
-      "validare": "Conținutul 'ci.yml' reflectă triggerele specificate.",
-      "outcome": "'ci.yml' este configurat să ruleze doar pe PR-uri către branch-urile protejate.",
-      "componenta_de_CI_DI": "Definește momentul execuției pipeline-ului de CI."
-    }
-  },
-F0.2.4
+  "F0.2.21": {
+    "denumire_task": "Completare Workflow 'deploy-staging.yml' (Build & Push)",
+    "descriere_scurta_task": "Adaugă pașii de build și push Docker în 'deploy-staging.yml'.",
+    "descriere_lunga_si_detaliata_task": "Completăm workflow-ul de staging. Adăugăm pașii necesari pentru: checkout, setup pnpm, install, setup Docker Buildx, login la GHCR și, cel mai important, rularea 'nx affected -t docker-build'. Vom seta baza comparației la 'origin/master' pentru a compara corect branch-ul 'staging' cu 'master'. Imaginile vor fi tag-uite cu 'staging' prin opțiunea '--tag-suffix=staging'.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.19: Ținta 'docker-build' este definită în 'nx.json'. F0.2.20: Workflow-ul 'deploy-staging.yml' există deja cu scheletul (name/on/jobs).",
+    "contextul_general_al_aplicatiei": "Automatizarea creării și publicării imaginilor Docker de staging (Continuous Deployment către mediul de staging) folosind graful Nx.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/deploy-staging.yml'. Poți înlocui complet conținutul existent cu cel de mai jos pentru claritate.",
+    "restrictii_anti_halucinatie": [
+      "Înlocuiește conținutul fișierului '.github/workflows/deploy-staging.yml' cu YAML-ul complet de mai jos:",
+      "",
+      "name: Deploy to Staging",
+      "",
+      "on:",
+      "  push:",
+      "    branches:",
+      "      - staging",
+      "",
+      "permissions:",
+      "  contents: read",
+      "  packages: write",
+      "",
+      "jobs:",
+      "  docker-deploy-staging:",
+      "    name: Docker Build & Push (Staging)",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Checkout repository",
+      "        uses: actions/checkout@v4",
+      "        with:",
+      "          fetch-depth: 0  # necesar pentru a putea compara cu origin/master",
+      "",
+      "      - name: Setup Node.js",
+      "        uses: actions/setup-node@v4",
+      "        with:",
+      "          node-version: 24",
+      "",
+      "      - name: Setup pnpm",
+      "        uses: pnpm/action-setup@v2",
+      "        with:",
+      "          version: 8",
+      "",
+      "      - name: Setup pnpm cache",
+      "        uses: actions/cache@v4",
+      "        with:",
+      "          path: ~/.pnpm-store",
+      "          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}",
+      "          restore-keys: |",
+      "            ${{ runner.os }}-pnpm-store-",
+      "",
+      "      - name: Install dependencies",
+      "        run: pnpm install --frozen-lockfile",
+      "",
+      "      - name: Setup Docker Buildx",
+      "        uses: docker/setup-buildx-action@v3",
+      "",
+      "      - name: Login to GHCR",
+      "        uses: docker/login-action@v3",
+      "        with:",
+      "          registry: ghcr.io",
+      "          username: ${{ github.actor }}",
+      "          password: ${{ secrets.GITHUB_TOKEN }}",
+      "",
+      "      - name: Build & push Docker images for affected apps",
+      "        env:",
+      "          DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}",
+      "        run: |",
+      "          pnpm exec nx affected -t docker-build --base=origin/master --head=HEAD -- --push --tag-with-ref --tag-suffix=staging",
+      "",
+      "Presupunem că ținta 'docker-build' din 'nx.json' (și/sau din 'project.json'-urile aplicațiilor) este configurată să citească variabila de mediu `DOCKER_REGISTRY` și să proceseze argumentele `--push`, `--tag-with-ref` și `--tag-suffix` transmise după `--`.",
+      "Nu adăuga alți pași suplimentari în acest task (de ex. deploy pe Kubernetes sau alte medii). Acestea ar trebui tratate în task-uri separate, dacă vor exista."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu modifica trigger-ul 'on.push.branches: [staging]'. Acest workflow trebuie să ruleze exclusiv la push pe branch-ul 'staging'. Nu adăuga aici logică de deploy în producție.",
+    "validare": "Fă un push într-un branch 'staging' (sau un test simplu). În GitHub Actions, workflow-ul 'Deploy to Staging' trebuie să ruleze, să construiască și să încerce să publice imaginile Docker pentru proiectele afectate. Log-ul pasului 'Build & push Docker images for affected apps' trebuie să arate execuția comenzii 'nx affected -t docker-build'.",
+    "outcome": "Pipeline-ul 'deploy-staging.yml' este complet și funcțional: la fiecare push pe 'staging', construiește și publică imaginile Docker doar pentru aplicațiile afectate, folosind Nx.",
+    "componenta_de_CI_CD": "Pas cheie în CD (Continuous Deployment) către staging, bazat pe Nx affected + Docker Buildx + GHCR."
+  }
+},
+```
+
+#### F0.2.22
+
+```JSON
   {
-    "F0.2.4": {
-      "denumire_task": "Definire Job 'validate' în 'ci.yml'",
-      "descriere_scurta_task": "Adaugă structura de bază pentru job-ul 'validate' în 'ci.yml'.",
-      "descriere_lunga_si_detaliata_task": "Definim primul și principalul job al pipeline-ului de CI: 'validate'. Acest job va rula pe un agent 'ubuntu-latest' și va conține toți pașii necesari pentru checkout, instalare, lint, test și build.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.3: Au fost definite triggerele 'ci.yml'.",
-      "contextul_general_al_aplicatiei": "Structurarea pipeline-ului de CI.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '.github/workflows/ci.yml'.",
-      "restrictii_anti_halcinatie":"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga alți pași (steps) în afară de 'actions/checkout@v4'.",
-      "validare": "'ci.yml' conține definiția job-ului 'validate' cu pasul de checkout.",
-      "outcome": "Structura de bază a job-ului 'validate' este creată.",
-      "componenta_de_CI_DI": "Reprezintă scheletul job-ului de CI."
-    }
-  },
-F0.2.5
+  "F0.2.22": {
+    "denumire_task": "Creare Fișier Workflow 'deploy-prod.yml'",
+    "descriere_scurta_task": "Creează 'deploy-prod.yml' pentru build și push al imaginilor de producție.",
+    "descriere_lunga_si_detaliata_task": "Creăm fișierul final de workflow. Acesta va fi responsabil pentru construirea imaginilor Docker de producție. Un model robust este declanșarea acestuia 'on: release: types: [published]', adică după ce 'release.yml' a creat cu succes o nouă versiune (tag Git). În acest task definim doar scheletul workflow-ului: nume, trigger și un job de bază cu checkout; pașii de build & push Docker vor fi adăugați în F0.2.23.",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.17: Pipeline-ul 'release.yml' este definit și creează release-uri/tag-uri. F0.2.18–F0.2.21: există ținta 'docker-build' și pipeline-ul de staging.",
+    "contextul_general_al_aplicatiei": "Definirea pipeline-ului de CD pentru producție, declanșat de un release oficial pe GitHub.",
+    "contextualizarea_directoarelor_si_cailor": "Creează sau suprascrie fișierul '/var/www/GeniusSuite/.github/workflows/deploy-prod.yml'.",
+    "restrictii_anti_halucinatie": [
+      "Conținutul fișierului '.github/workflows/deploy-prod.yml' trebuie setat la următorul YAML minimal (schelet):",
+      "",
+      "name: Deploy to Production",
+      "",
+      "on:",
+      "  release:",
+      "    types: [published]",
+      "",
+      "permissions:",
+      "  contents: read",
+      "  packages: write",
+      "",
+      "jobs:",
+      "  docker-deploy-prod:",
+      "    name: Docker Build & Push (Production)",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - name: Checkout repository",
+      "        uses: actions/checkout@v4",
+      "        with:",
+      "          fetch-depth: 0  # pentru a avea istoric complet când vom adăuga pașii reali în F0.2.23",
+      "",
+      "Nu adăuga încă pași de setup Node/pnpm, Docker Buildx, login sau 'nx affected -t docker-build' în acest task; aceia vor fi tratați explicit în F0.2.23."
+    ],
+    "restrictii_de_iesire_din_contex": "Acest workflow trebuie să fie declanșat DOAR pe 'release.published'. Nu adăuga triggere de 'push' sau 'pull_request' aici. Nu adăuga încă pași de build/push imagini Docker.",
+    "validare": "Fișierul '.github/workflows/deploy-prod.yml' există în repository și, în interfața GitHub Actions, workflow-ul 'Deploy to Production' apare listat ca workflow care se declanșează pe evenimentul 'Release · published'.",
+    "outcome": "Scheletul pipeline-ului de deploy pentru producție este creat: există un workflow GitHub Actions declanșat la publicarea unui release.",
+    "componenta_de_CI_CD": "Definește structura de bază a pipeline-ului de deploy pentru producție; F0.2.23 va adăuga logica de build & push."
+  }
+},
+```
+
+#### F0.2.23
+
+```JSON
   {
-    "F0.2.5": {
-      "denumire_task": "Adăugare 'pnpm/action-setup' în Job-ul 'validate'",
-      "descriere_scurta_task": "Adaugă pasul de instalare 'pnpm' în 'ci.yml'.",
-      "descriere_lunga_si_detaliata_task": "Pentru a putea rula comenzi 'pnpm' (conform F0.1), trebuie să instalăm 'pnpm' pe agentul de CI. Folosim acțiunea oficială 'pnpm/action-setup'. Acest pas include și configurarea cache-ului pentru 'pnpm store'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.4: Job-ul 'validate' a fost creat cu pasul de checkout.",
-      "contextul_general_al_aplicatiei": "Configurarea mediului de CI pentru a utiliza managerul de pachete 'pnpm'.[1]",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/ci.yml', adăugând pași noi în job-ul 'validate' după 'checkout'.",
-      "restrictii_anti_halcinatie":",
-        "",
-        "- name: Setup pnpm",
-        "  uses: pnpm/action-setup@v2",
-        "  with:",
-        "    version: 8 # Sau cea mai recentă versiune pnpm",
-        "",
-        "- name: Setup pnpm Cache",
-        "  uses: actions/cache@v4",
-        "  with:",
-        "    path: \"~/.pnpm-store\"",
-        "    key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}",
-        "    restore-keys: |",
-        "      ${{ runner.os }}-pnpm-store-",
-        ""
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga 'pnpm install' încă. Acesta va fi un pas separat.",
-      "validare": "'ci.yml' conține pașii pentru 'setup-node', 'setup-pnpm' și 'cache'.",
-      "outcome": "Agentul de CI este configurat să folosească 'pnpm' și să cache-uiască store-ul 'pnpm'.",
-      "componenta_de_CI_DI": "Esențial pentru performanța instalării dependențelor."
-    }
-  },
-F0.2.6
-  {
-    "F0.2.6": {
-      "denumire_task": "Adăugare Pas 'pnpm install' în Job-ul 'validate'",
-      "descriere_scurta_task": "Adaugă pasul de instalare a dependențelor în 'ci.yml'.",
-      "descriere_lunga_si_detaliata_task": "După configurarea 'pnpm' și a cache-ului, rulăm 'pnpm install --frozen-lockfile'. Folosirea '--frozen-lockfile' este cea mai bună practică în CI pentru a asigura că se instalează exact versiunile din 'pnpm-lock.yaml', prevenind instalări nedeterministe.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.5: 'pnpm' și cache-ul său sunt configurate în 'ci.yml'.",
-      "contextul_general_al_aplicatiei": "Instalarea dependențelor monorepo-ului.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/ci.yml', adăugând un pas nou în job-ul 'validate' după 'Setup pnpm Cache'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu folosi 'pnpm install' simplu.",
-      "validare": "'ci.yml' conține pasul 'Install Dependencies'.",
-      "outcome": "Pipeline-ul de CI instalează corect dependențele proiectului.",
-      "componenta_de_CI_DI": "Pas obligatoriu înainte de orice task de lint, test sau build."
-    }
-  },
-F0.2.7
-  {
-    "F0.2.7": {
-      "denumire_task": "Adăugare Pas 'nrwl/nx-set-shas' în Job-ul 'validate'",
-      "descriere_scurta_task": "Adaugă acțiunea 'nrwl/nx-set-shas' pentru a seta SHAs-urile pentru 'nx affected'.",
-      "descriere_lunga_si_detaliata_task": "Acest pas este critic pentru rularea corectă a comenzilor 'nx affected' în CI pe Pull Requests. Acțiunea 'nrwl/nx-set-shas@v4' calculează automat SHA-ul de bază (punctul de merge cu branch-ul destinație) și SHA-ul de capăt (ultimul commit al PR-ului). Setează variabilele de mediu `NX_BASE` și `NX_HEAD` pe care `nx affected` le folosește automat.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.6: Dependențele sunt instalate în 'ci.yml'.",
-      "contextul_general_al_aplicatiei": "Utilizarea 'nx affected' este pilonul central al acestui pipeline de CI pentru a economisi timp.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/ci.yml', adăugând un pas nou în job-ul 'validate' după 'Install Dependencies'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu adăuga alte configurații la acest pas.",
-      "validare": "Log-ul pasului 'Set Nx SHAs' din GitHub Actions ar trebui să indice SHA-urile corecte.",
-      "outcome": "Job-ul 'validate' este acum capabil să determine corect proiectele afectate.",
-      "componenta_de_CI_DI": "Configurare fundamentală pentru 'nx affected' în CI."
-    }
-  },
-F0.2.8
-  {
-    "F0.2.8": {
-      "denumire_task": "Conectare la Nx Cloud (Remote Cache)",
-      "descriere_scurta_task": "Adaugă pasul de conectare la Nx Cloud pentru remote caching.",
-      "descriere_lunga_si_detaliata_task": "Pentru a accelera pipeline-ul, ne conectăm la Nx Cloud (sau alt remote cache). Acest pas, 'nx-cloud start-ci-run', este de obicei rulat înainte de task-urile 'affected'. Acest lucru presupune că 'nx' a fost conectat la Nx Cloud (un pas care se face de obicei local prin 'nx connect' sau a fost făcut în F0.1.12 'nx init'). Vom adăuga și token-ul ca secret.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.7: SHAs-urile Nx sunt setate.",
-      "contextul_general_al_aplicatiei": "Accelerarea CI/CD prin utilizarea remote caching-ului. F0.1.13 a configurat 'targetDefaults' pentru cache.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/ci.yml', adăugând un pas nou în job-ul 'validate' după 'Set Nx SHAs'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Acest task presupune că secretul 'NX_CLOUD_AUTH_TOKEN' va fi adăugat în setările repository-ului GitHub. Nu adăuga token-ul direct în fișier.",
-      "validare": "Run-ul de CI va apărea în dashboard-ul Nx Cloud.",
-      "outcome": "Pipeline-ul de CI este conectat la Nx Cloud, permițând cache-ul distribuit.",
-      "componenta_de_CI_DI": "Pas de optimizare a performanței CI."
-    }
-  },
-F0.2.9
-  {
-    "F0.2.9": {
-      "denumire_task": "Adăugare Pași de Validare (Format, Lint, Test, Build) în 'ci.yml'",
-      "descriere_scurta_task": "Adaugă rularea 'nx affected' pentru 'format:check', 'lint', 'test' și 'build'.",
-      "descriere_lunga_si_detaliata_task": "Acesta este miezul job-ului 'validate'. Adăugăm pașii care rulează script-urile definite în F0.1, dar folosind 'nx affected'. Vom rula 'format:check', 'lint', 'test' și 'build' în paralel (Nx gestionează paralelizarea) pentru toate proiectele afectate de PR.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.8: Nx Cloud este conectat și F0.2.7 SHAs-urile sunt setate.",
-      "contextul_general_al_aplicatiei": "Validarea calității codului și a funcționalității înainte de merge.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/ci.yml', adăugând pași noi în job-ul 'validate' după 'Connect to Nx Cloud'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Folosește 'pnpm exec nx affected'. Nu rula 'pnpm lint' sau 'pnpm test' direct, deoarece F0.1 a mapat 'pnpm lint' la 'nx affected:lint --all', ceea ce nu este dorit într-un PR.",
-      "validare": "Pipeline-ul de CI va eșua dacă oricare dintre acești pași eșuează pe un proiect afectat.",
-      "outcome": "Pipeline-ul 'ci.yml' validează complet formatarea, linting-ul, testele și build-ul proiectelor afectate.",
-      "componenta_de_CI_DI": "Miezul validării CI."
-    }
-  },
-F0.2.10
-  {
-    "F0.2.10": {
-      "denumire_task": "Creare Fișier Workflow 'release.yml'",
-      "descriere_scurta_task": "Creează fișierul 'release.yml' pentru publicarea pachetelor.",
-      "descriere_lunga_si_detaliata_task": "Creăm un al doilea fișier workflow, 'release.yml'. Acesta va fi responsabil pentru versionarea semantică și publicarea pachetelor. Acest pipeline va rula doar pe push-uri către 'master'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' există.",
-      "contextul_general_al_aplicatiei": "Automatizarea procesului de release (CD).",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.github/workflows/release.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu modifica 'ci.yml'.",
-      "validare": "Verifică existența fișierului '.github/workflows/release.yml'.",
-      "outcome": "Fișierul 'release.yml' este creat.",
-      "componenta_de_CI_DI": "Acest fișier va defini pipeline-ul de publicare a pachetelor."
-    }
-  },
-F0.2.11
-  {
-    "F0.2.11": {
-      "denumire_task": "Instalare '@changesets/cli'",
-      "descriere_scurta_task": "Instalează '@changesets/cli' ca dependență de dezvoltare la rădăcină.",
-      "descriere_lunga_si_detaliata_task": "Pentru a gestiona versionarea independentă a pachetelor (conform  Cap. 2), vom folosi 'changesets'. Acesta este un instrument preferat în monorepo-uri, în locul 'semantic-release', deoarece decuplează versionarea de mesajele de commit. Instalăm pachetul CLI la rădăcina monorepo-ului.",
-      "directorul_directoarele": [
-        "/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.1.51: Fundația F0.1 este comisionată.",
-      "contextul_general_al_aplicatiei": "Pregătirea pentru versionarea semantică a pachetelor 'shared/*' și a aplicațiilor.",
-      "contextualizarea_directoarelor_si_cailor": "Execută comanda în '/var/www/GeniusSuite/'. Va modifica 'package.json' de la rădăcină.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu instala alte pachete 'changesets' (cum ar fi `@changesets/cli-github`) încă.",
-      "validare": "Verifică 'package.json' pentru a vedea '@changesets/cli' în 'devDependencies'.",
-      "outcome": "CLI-ul 'changesets' este instalat.",
-      "componenta_de_CI_DI": "Dependență de bază pentru pipeline-ul de release."
-    }
-  },
-F0.2.12
-  {
-    "F0.2.12": {
-      "denumire_task": "Inițializare 'changesets'",
-      "descriere_scurta_task": "Rulează 'pnpm changeset init' pentru a crea directorul '.changeset'.",
-      "descriere_lunga_si_detaliata_task": "Rulăm comanda de inițializare 'changesets'. Aceasta va crea directorul '.changeset' și fișierul de configurare 'config.json', precum și un 'README.md' explicativ în acel director.",
-      "directorul_directoarele": [
-        "/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.11: '@changesets/cli' este instalat.",
-      "contextul_general_al_aplicatiei": "Configurarea inițială a 'changesets'.",
-      "contextualizarea_directoarelor_si_cailor": "Execută comanda în '/var/www/GeniusSuite/'. Va crea directorul '.changeset/'.",
-      "restrictii_anti_halcinatie": [
-        "Execută comanda: 'pnpm exec changeset init'"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu modifica manual fișierele generate în acest pas.",
-      "validare": "Verifică existența directorului '.changeset/' și a fișierului '.changeset/config.json'.",
-      "outcome": "Configurația de bază 'changesets' este creată.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.2.13
-  {
-    "F0.2.13": {
-      "denumire_task": "Configurare '.changeset/config.json'",
-      "descriere_scurta_task": "Configurează 'config.json' pentru 'changesets' cu 'baseBranch' și 'access'.",
-      "descriere_lunga_si_detaliata_task": "Modificăm fișierul de configurare 'changesets' pentru a-l alinia la proiectul nostru. Setăm 'baseBranch' la 'master' (conform F0.1) și 'access' la 'public' (presupunând că pachetele 'shared/*' vor fi publice, deși 'restricted' ar fi valabil pentru un registry privat). De asemenea, legăm repository-ul GitHub.",
-      "directorul_directoarele": [
-        ".changeset/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.12: '.changeset/config.json' a fost creat.",
-      "contextul_general_al_aplicatiei": "Configurarea fină a 'changesets' pentru a se potrivi cu fluxul Git și permisiunile pachetelor.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.changeset/config.json'.",
-      "restrictii_anti_halcinatie":,",
-        "  \"linked\":,",
-        "  \"access\": \"public\",",
-        "  \"baseBranch\": \"master\",",
-        "  \"updateInternalDependencies\": \"patch\",",
-        "  \"ignore\":,",
-        "  \"repository\": \"https://github.com/GITHUB_USERNAME/GeniusSuite\"",
-        "}"
-      ],
-      "restrictii_de_iesire_din_contex": "Nu schimba 'commit': false. Vom gestiona comisionarea manual în pipeline.",
-      "validare": "Fișierul '.changeset/config.json' este actualizat.",
-      "outcome": "'changesets' este configurat pentru 'master' și publicare.",
-      "componenta_de_CI_DI": "N/A"
-    }
-  },
-F0.2.14
-  {
-    "F0.2.14": {
-      "denumire_task": "Instalare Bot 'changesets' (GitHub Action)",
-      "descriere_scurta_task": "Instalează '@changesets/cli-github' și adaugă workflow-ul bot-ului.",
-      "descriere_lunga_si_detaliata_task": "Instalăm pachetul '@changesets/cli-github'. Apoi, creăm un nou fișier workflow, 'changeset-bot.yml'. Acest bot va rula pe PR-uri și va adăuga un comentariu dacă un PR modifică pachete, dar nu include un fișier '.changeset'.",
-      "directorul_directoarele": [
-        "/",
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.13: 'changesets' este configurat.",
-      "contextul_general_al_aplicatiei": "Impunerea disciplinei de versionare pe PR-uri.",
-      "contextualizarea_directoarelor_si_cailor": "Rulează 'pnpm add' la rădăcină. Creează fișierul '.github/workflows/changeset-bot.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Secretul 'GITHUB_TOKEN' este furnizat automat de GitHub.",
-      "validare": "Pe un PR viitor care modifică un pachet (de ex. în 'shared/ui-design-system') fără un fișier.changeset, bot-ul va comenta.",
-      "outcome": "Un bot automatizat validează prezența fișierelor de versionare pe PR-uri.",
-      "componenta_de_CI_DI": "O componentă de validare CI suplimentară."
-    }
-  },
-F0.2.15
-  {
-    "F0.2.15": {
-      "denumire_task": "Configurare Workflow 'release.yml' (Triggers și Job 'publish')",
-      "descriere_scurta_task": "Configurează 'release.yml' să ruleze pe 'push' la 'master' și definește job-ul 'publish'.",
-      "descriere_lunga_si_detaliata_task": "Configurăm fișierul 'release.yml'. Acesta se va declanșa *doar* la push pe 'master'. Definim un singur job, 'publish', care va fi responsabil de rularea validărilor finale, versionarea și publicarea pachetelor.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.10: Fișierul 'release.yml' există.",
-      "contextul_general_al_aplicatiei": "Automatizarea publicării pachetelor pe 'master'.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '.github/workflows/release.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Secretul 'GH_PAT_TOKEN' (un Personal Access Token cu drepturi de 'write' pe repository) trebuie creat și adăugat în setările GitHub. Nu adăuga pașii 'changeset' încă.",
-      "validare": "'release.yml' conține structura de bază a job-ului 'publish'.",
-      "outcome": "Job-ul 'publish' este pregătit pentru pașii de versionare.",
-      "componenta_de_CI_DI": "Scheletul pipeline-ului de CD."
-    }
-  },
-F0.2.16
-  {
-    "F0.2.16": {
-      "denumire_task": "Adăugare Pași de Validare în 'release.yml'",
-      "descriere_scurta_task": "Adaugă pașii 'nx affected' (lint, test, build) în 'release.yml'.",
-      "descriere_lunga_si_detaliata_task": "Înainte de a publica, trebuie să ne asigurăm că merge-ul în 'master' este valid. Re-rulăm validările (lint, test, build) folosind 'nx affected'. De data aceasta, 'nx affected' va compara 'master' cu commit-ul anterior ('master~1' sau 'origin/master~1').",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.15: Job-ul 'publish' din 'release.yml' este configurat cu instalarea.",
-      "contextul_general_al_aplicatiei": "Asigurarea integrității branch-ului 'master' înainte de publicare.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/release.yml', adăugând pași noi în job-ul 'publish' după 'Install Dependencies'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Acești pași sunt o replică a celor din 'ci.yml' pentru a garanta starea 'master'.",
-      "validare": "'release.yml' conține pașii de validare 'affected'.",
-      "outcome": "Pipeline-ul de release validează codul înainte de a încerca să publice.",
-      "componenta_de_CI_DI": "Pas de siguranță în pipeline-ul de CD."
-    }
-  },
-F0.2.17
-  {
-    "F0.2.17": {
-      "denumire_task": "Adăugare Pași 'changeset version' și 'publish' în 'release.yml'",
-      "descriere_scurta_task": "Adaugă pașii 'changeset version' și 'pnpm publish' în 'release.yml'.",
-      "descriere_lunga_si_detaliata_task": "Acesta este pasul de publicare. Mai întâi, rulăm 'pnpm changeset version'. Această comandă consumă fișierele.changeset (dacă există), actualizează 'package.json'-urile pachetelor afectate, generează 'CHANGELOG.md' și șterge fișierele.changeset. Apoi, rulăm 'pnpm publish -r', care publică doar pachetele ce au o versiune nouă în registry (NPM sau GHCR).",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.16: Job-ul 'publish' din 'release.yml' este validat.",
-      "contextul_general_al_aplicatiei": "Publicarea efectivă a pachetelor 'shared/*' și a altor pachete versionate.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică '.github/workflows/release.yml', adăugând pași noi la finalul job-ului 'publish'.",
-      "restrictii_anti_halcinatie":@users.noreply.github.com\"",
-        "",
-        "- name: Create Release Pull Request or Version",
-        "  id: changesets",
-        "  uses: changesets/action@v1",
-        "  with:",
-        "    version: pnpm exec changeset version",
-        "    publish: pnpm exec pnpm publish -r --no-git-checks",
-        "    commit: \"chore(release): version packages\"",
-        "    title: \"chore(release): version packages\"",
-        "  env:",
-        "    GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }}",
-        "    NPM_TOKEN: ${{ secrets.NPM_TOKEN }} # Secretul pentru publicare în registry",
-        ""
-      ],
-      "restrictii_de_iesire_din_contex": "Acest pas necesită 'NPM_TOKEN' (pentru publicare pe npmjs.org) sau 'GITHUB_TOKEN' (pentru publicare pe GHCR, dar 'NPM_TOKEN' este convenția 'changesets/action' pentru registry). 'GH_PAT_TOKEN' este necesar pentru a comisiona înapoi.",
-      "validare": "Când un PR cu un changeset esteS_merguit în 'master', acest job va rula, va crea un commit nou de versionare și va publica pachetele.",
-      "outcome": "Pipeline-ul 'release.yml' automatizează complet versionarea și publicarea pachetelor.",
-      "componenta_de_CI_DI": "Miezul componentei de CD (Continuous Delivery) pentru pachete."
-    }
-  },
-F0.2.18
-  {
-    "F0.2.18": {
-      "denumire_task": "Creare Șablon 'Dockerfile.base' (Multi-stage)",
-      "descriere_scurta_task": "Creează un 'Dockerfile.base' multi-stage reutilizabil pentru aplicațiile Node.js 24.",
-      "descriere_lunga_si_detaliata_task": "Creăm un Dockerfile de bază în directorul 'scripts/'. Acesta va fi un șablon multi-stage. 'builder' stage va folosi imaginea 'node:20-alpine' (sau 24, dar 20 e mai comună în CI) pentru a instala dependențele pnpm și a construi artefactele. 'runner' stage va folosi o imagine 'node:20-alpine' slim, va copia doar artefactele de build și 'node_modules' de producție, pentru o imagine finală mică și securizată.",
-      "directorul_directoarele": [
-        "scripts/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.1.9: Directorul 'scripts/' există.",
-      "contextul_general_al_aplicatiei": "Standardizarea containerizării pentru toate aplicațiile (archify.app, vettify.app, etc.).",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/scripts/Dockerfile.base'.",
-      "restrictii_anti_halcinatie":"
-      ],
-      "restrictii_de_iesire_din_contex": "Acesta este un fișier de bază/șablon. Nu este menit să fie construit direct.",
-      "validare": "Fișierul 'scripts/Dockerfile.base' există.",
-      "outcome": "Un șablon Dockerfile multi-stage standardizat este disponibil.",
-      "componenta_de_CI_DI": "Fundația pentru toți pașii de 'docker-build'."
-    }
-  },
-F0.2.19
-  {
-    "F0.2.19": {
-      "denumire_task": "Adăugare Țintă (Target) 'docker-build' în 'nx.json'",
-      "descriere_scurta_task": "Adaugă o țintă 'docker-build' în 'targetDefaults' din 'nx.json'.",
-      "descriere_lunga_si_detaliata_task": "Adăugăm o nouă țintă implicită în 'nx.json' numită 'docker-build'. Această țintă va rula comanda 'docker buildx build'. Acest lucru ne va permite să rulăm 'nx affected -t docker-build' pentru a construi imagini doar pentru aplicațiile afectate.",
-      "directorul_directoarele": [
-        "/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.1.13: 'nx.json' și 'targetDefaults' există.",
-      "contextul_general_al_aplicatiei": "Integrarea build-urilor Docker în graful de task-uri Nx.",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/nx.json'.",
-      "restrictii_anti_halcinatie":,",
-        "  \"inputs\":",
-        "}"
-      ],
-      "restrictii_de_iesire_din_contex": "Acesta definește doar ținta; nu creează Dockerfile-urile specifice aplicațiilor încă.",
-      "validare": "'nx.json' conține 'targetDefaults.docker-build'.",
-      "outcome": "Nx este acum conștient de ținta 'docker-build' și de dependențele sale.",
-      "componenta_de_CI_DI": "Permite rularea 'nx affected -t docker-build' în pipeline."
-    }
-  },
-F0.2.20
-  {
-    "F0.2.20": {
-      "denumire_task": "Creare Fișier Workflow 'deploy-staging.yml'",
-      "descriere_scurta_task": "Creează 'deploy-staging.yml' pentru build și push al imaginilor de staging.",
-      "descriere_lunga_si_detaliata_task": "Creăm un al treilea fișier workflow. Acesta va fi responsabil pentru construirea imaginilor Docker pentru aplicațiile afectate și publicarea lor în container registry (GHCR) cu tag-ul 'staging'. Acest pipeline se declanșează la push pe branch-ul 'staging'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.1: Directorul '.github/workflows/' există. F0.2.19: Ținta 'docker-build' este definită.",
-      "contextul_general_al_aplicatiei": "Definirea pipeline-ului de CD pentru mediul de staging, conform strategiei de branching.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.github/workflows/deploy-staging.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_de_iesire_din_contex": "Nu adăuga pașii de build sau login încă.",
-      "validare": "Fișierul 'deploy-staging.yml' există.",
-      "outcome": "Scheletul pipeline-ului de deploy pentru staging este creat.",
-      "componenta_de_CI_DI": "Definește pipeline-ul de deploy pentru staging."
-    }
-  },
-F0.2.21
-  {
-    "F0.2.21": {
-      "denumire_task": "Completare Workflow 'deploy-staging.yml' (Build & Push)",
-      "descriere_scurta_task": "Adaugă pașii de build și push Docker în 'deploy-staging.yml'.",
-      "descriere_lunga_si_detaliata_task": "Completăm workflow-ul de staging. Adăugăm pașii necesari pentru: checkout, setup pnpm, install, setup Docker Buildx, login la GHCR și, cel mai important, rularea 'nx affected -t docker-build'. Vom seta 'base' la 'master' pentru a compara corect branch-ul 'staging' cu 'master'. Imaginile vor fi tag-uite cu 'staging'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.20: Fișierul 'deploy-staging.yml' a fost creat.",
-      "contextul_general_al_aplicatiei": "Automatizarea creării artefactelor de staging (imagini Docker).",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '.github/workflows/deploy-staging.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_anti_halcinatie": "Presupunem că ținta 'docker-build' din 'nx.json' (și/sau 'project.json'-ul aplicațiilor) va fi configurată să citească `DOCKER_REGISTRY`, `--push`, `--tag-with-ref` și `--tag-suffix`.",
-      "validare": "La un push pe 'staging', pipeline-ul rulează și publică imaginile afectate pe GHCR cu tag-ul 'staging'.",
-      "outcome": "Pipeline-ul de build pentru staging este complet și funcțional.",
-      "componenta_de_CI_DI": "Pas cheie în CD (Continuous Deployment) către staging."
-    }
-  },
-F0.2.22
-  {
-    "F0.2.22": {
-      "denumire_task": "Creare Fișier Workflow 'deploy-prod.yml'",
-      "descriere_scurta_task": "Creează 'deploy-prod.yml' pentru build și push al imaginilor de producție.",
-      "descriere_lunga_si_detaliata_task": "Creăm fișierul final de workflow. Acesta va fi responsabil pentru construirea imaginilor Docker de producție. Un model robust este declanșarea acestuia 'on: release: types: [published]', adică *după* ce 'release.yml' a creat cu succes o nouă versiune (tag Git).",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.17: Pipeline-ul 'release.yml' este definit.",
-      "contextul_general_al_aplicatiei": "Definirea pipeline-ului de CD pentru producție, declanșat de un release oficial.",
-      "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/.github/workflows/deploy-prod.yml'.",
-      "restrictii_anti_halcinatie":",
-        "",
-        "jobs:",
-        "  build-and-push-prod:",
-        "    name: Build and Push Production Images",
-        "    runs-on: ubuntu-latest",
-        "    steps:",
-        "      - name: Checkout Repository",
-        "        uses: actions/checkout@v4",
-        "        with:",
-        "          fetch-depth: 0",
-        ""
-      ],
-      "restrictii_de_iesire_din_contex": "Nu adăuga pașii de build sau login încă.",
-      "validare": "Fișierul 'deploy-prod.yml' există.",
-      "outcome": "Scheletul pipeline-ului de deploy pentru producție este creat.",
-      "componenta_de_CI_DI": "Definește pipeline-ul de deploy pentru producție."
-    }
-  },
-F0.2.23
-  {
-    "F0.2.23": {
-      "denumire_task": "Completare Workflow 'deploy-prod.yml' (Build & Push)",
-      "descriere_scurta_task": "Adaugă pașii de build și push Docker în 'deploy-prod.yml' tag-uite cu versiunea.",
-      "descriere_lunga_si_detaliata_task": "Completăm workflow-ul de producție. Este similar cu cel de staging, dar cu o diferență cheie: imaginile vor fi tag-uite cu versiunea Git a release-ului (de ex. 'v1.2.3'). Acest tag este disponibil în contextul 'github.ref_name'.",
-      "directorul_directoarele": [
-        ".github/workflows/"
-      ],
-      "contextul_taskurilor_anterioare": "F0.2.22: Fișierul 'deploy-prod.yml' a fost creat.",
-      "contextul_general_al_aplicatiei": "Automatizarea creării artefactelor de producție (imagini Docker).",
-      "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '.github/workflows/deploy-prod.yml'.",
-      "restrictii_anti_halcinatie":,
-      "restrictii_anti_halcinatie": "Folosește `github.ref_name` pentru a obține tag-ul de release (ex. 'v1.2.3').",
-      "validare": "La publicarea unui release, pipeline-ul rulează și publică imaginile afectate pe GHCR cu tag-ul de versiune.",
-      "outcome": "Pipeline-ul de build pentru producție este complet și funcțional.",
-      "componenta_de_CI_DI": "Pas cheie în CD (Continuous Deployment) către producție."
-    }
-  },
-F0.2.24
+  "F0.2.23": {
+    "denumire_task": "Completare Workflow 'deploy-prod.yml' (Build & Push)",
+    "descriere_scurta_task": "Adaugă pașii de build și push Docker în 'deploy-prod.yml', tag-uite cu versiunea release-ului.",
+    "descriere_lunga_si_detaliata_task": "Completăm workflow-ul de producție definit în F0.2.22. Workflow-ul este declanșat pe evenimentul 'release.published' și trebuie să construiască și să publice imagini Docker pentru aplicațiile afectate, folosind ținta Nx 'docker-build'. Diferența cheie față de staging este tag-ul: imaginile vor fi tag-uite cu versiunea Git a release-ului (ex. 'v1.2.3'), disponibilă în 'github.ref_name'. Presupunem același contract ca în F0.2.21: ținta 'docker-build' citește DOCKER_REGISTRY și DOCKER_TAG (sau derivă tag-ul din contextul Git).",
+    "directorul_directoarele": [
+      ".github/workflows/"
+    ],
+    "contextul_taskurilor_anterioare": "F0.2.18: 'Dockerfile.base' există. F0.2.19: Ținta 'docker-build' este definită în 'nx.json'. F0.2.20–F0.2.21: Pipeline-ul de staging este complet. F0.2.22: 'deploy-prod.yml' există cu trigger-ul 'on: release: types: [published]' și job-ul 'docker-deploy-prod' care face checkout.",
+    "contextul_general_al_aplicatiei": "Automatizarea creării artefactelor de producție (imagini Docker) aliniate cu release-urile oficiale (tag-uri Git).",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul '/var/www/GeniusSuite/.github/workflows/deploy-prod.yml', completând job-ul 'docker-deploy-prod' cu pașii de setup și rulare 'nx affected -t docker-build'.",
+    "restrictii_anti_halucinatie": [
+      "În fișierul '.github/workflows/deploy-prod.yml' există deja scheletul definit în F0.2.22:",
+      "  name: Deploy to Production",
+      "  ",
+      "  on:",
+      "    release:",
+      "      types: [published]",
+      "  ",
+      "  permissions:",
+      "    contents: read",
+      "    packages: write",
+      "  ",
+      "  jobs:",
+      "    docker-deploy-prod:",
+      "      name: Docker Build & Push (Production)",
+      "      runs-on: ubuntu-latest",
+      "      steps:",
+      "        - name: Checkout repository",
+      "          uses: actions/checkout@v4",
+      "          with:",
+      "            fetch-depth: 0",
+      "",
+      "În acest task ADĂUGĂ pașii NOI în cadrul job-ului 'docker-deploy-prod', DUPĂ pasul 'Checkout repository':",
+      "",
+      "      - name: Setup Node.js",
+      "        uses: actions/setup-node@v4",
+      "        with:",
+      "          node-version: 24",
+      "          cache: pnpm",
+      "",
+      "      - name: Setup pnpm",
+      "        uses: pnpm/action-setup@v2",
+      "        with:",
+      "          version: 8",
+      "",
+      "      - name: Setup pnpm cache",
+      "        uses: actions/cache@v4",
+      "        with:",
+      "          path: ~/.pnpm-store",
+      "          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}",
+      "          restore-keys: |",
+      "            ${{ runner.os }}-pnpm-store-",
+      "",
+      "      - name: Install dependencies",
+      "        run: pnpm install --frozen-lockfile",
+      "",
+      "      - name: Set up Docker Buildx",
+      "        uses: docker/setup-buildx-action@v3",
+      "",
+      "      - name: Log in to GitHub Container Registry",
+      "        uses: docker/login-action@v3",
+      "        with:",
+      "          registry: ghcr.io",
+      "          username: ${{ github.actor }}",
+      "          password: ${{ secrets.GITHUB_TOKEN }}",
+      "",
+      "      - name: Build & push Docker images (production)",
+      "        run: pnpm exec nx affected -t docker-build",
+      "        env:",
+      "          DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}",
+      "          DOCKER_TAG: ${{ github.ref_name }}",
+      "",
+      "Presupunem că ținta 'docker-build' (definită în 'nx.json' și/sau 'project.json') folosește DOCKER_REGISTRY și DOCKER_TAG pentru a construi și a împinge imaginile (de ex. nume_serve:DOCKER_TAG) și setează intern '--push'.",
+      "Nu modifica blocul 'on:' sau numele job-ului; doar completează steps.",
+      "Nu folosi un tag hardcodat (ex. 'latest' sau 'prod'); folosește exclusiv '${{ github.ref_name }}' ca semantic version (ex. 'v1.2.3')."
+    ],
+    "restrictii_de_iesire_din_contex": "Nu adăuga triggere suplimentare ('push', 'pull_request') în acest workflow. Acesta trebuie să ruleze DOAR pe 'release.published'. Nu suprascrie pașii definiți în F0.2.22 (checkout).",
+    "validare": "Creează un release GitHub cu tag (ex. 'v1.2.3') pe 'master'. Verifică în GitHub Actions că workflow-ul 'Deploy to Production' pornește, rulează pașii de setup și 'pnpm exec nx affected -t docker-build', iar în GHCR apar imaginile pentru proiectele afectate tag-uite cu 'v1.2.3'.",
+    "outcome": "Pipeline-ul de producție este complet: la fiecare release publicat, imaginile Docker pentru aplicațiile afectate sunt construite și împinse în GHCR cu tag-ul versiunii release-ului.",
+    "componenta_de_CI_CD": "Pas cheie în CD (Continuous Deployment) către producție, legând direct release-urile semantice de imaginile Docker publicate."
+  }
+},
+```
+
+#### F0.2.24
+
+```JSON
   {
     "F0.2.24": {
       "denumire_task": "Comisionare Artefacte F0.2 pe Branch-ul 'dev' și Creare PR/MR",
@@ -6746,11 +7397,11 @@ F0.2.24
       "contextul_taskurilor_anterioare": "F0.2.1 - F0.2.23: Toate fișierele de configurare CI/CD au fost create și modificate.",
       "contextul_general_al_aplicatiei": "Finalizarea Fazei F0.2 și pregătirea pentru revizuirea infrastructurii de CI/CD.",
       "contextualizarea_directoarelor_si_cailor": "Comenzi Git executate la rădăcina '/var/www/GeniusSuite/'.",
-      "restrictii_anti_halcinatie":,
+      "restrictii_anti_halucinatie":,
       "restrictii_de_iesire_din_contex": "Nu face push. Doar comisionează local pe 'dev' și generează descrierea PR/MR.",
       "validare": "Execută 'git log -1'. Commit-ul trebuie să fie vizibil pe branch-ul 'dev'.",
       "outcome": "Toate artefactele F0.2 sunt comisionate local pe 'dev'.",
-      "componenta_de_CI_DI": "Acest commit, odată împins și transformat în PR, va declanșa *pentru prima dată* pipeline-ul 'ci.yml'.",
+      "componenta_de_CI_CD": "Acest commit, odată împins și transformat în PR, va declanșa *pentru prima dată* pipeline-ul 'ci.yml'.",
       "PR_MR": {
         "sursa_branch": "dev",
         "destinatie_branch": "master",
@@ -6759,8 +7410,11 @@ F0.2.24
       }
     }
   }
-F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază.
-F0.3.1
+```
+
+### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază.
+
+#### F0.3.1
 {
   "F0.3.1": {
     "denumire_task": "Creare Subdirector 'telemetry' pentru Observabilitate",
@@ -6776,7 +7430,7 @@ F0.3.1
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga conținut în `telemetry/` încă; acest task se limitează strict la crearea directorului.",
     "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/telemetry/` pe disc.",
     "outcome": "Directorul `telemetry/` a fost creat în structura proiectului, pregătit pentru a găzdui codul de observabilitate.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.2
   "F0.3.2": {
@@ -6793,7 +7447,7 @@ F0.3.2
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare suplimentare în afara celor specificate; respectă exact lista indicată.",
     "validare": "Verifică faptul că toate cele 6 directoare (`ingestion/`, `parsers/`, `processors/`, `retention/`, `sinks/`, `dashboards/`) există sub `shared/observability/logs/`.",
     "outcome": "Structura de directoare pentru gestionarea logurilor centralizate este creată cu succes, conform planificării arhitecturale.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.3
   "F0.3.3": {
@@ -6810,7 +7464,7 @@ F0.3.3
     "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare în afara celor specificate; respectăm strict calea indicată.",
     "validare": "Verifică existența directoarelor `exporters/`, `recorders/`, `rules/` și `dashboards/` în `shared/observability/metrics/`.",
     "outcome": "Structura de directoare pentru metrici este creată, pregătind terenul pentru configurarea colectării și vizualizării metricilor.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.4
   "F0.3.4": {
@@ -6827,7 +7481,7 @@ F0.3.4
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu presupune conținutul configurațiilor Prometheus în avans; nu inventa job-uri de scrap sau alerte la acest pas.",
     "validare": "Verifică existența directorului gol `/var/www/GeniusSuite/shared/observability/prometheus/`.",
     "outcome": "Directorul `prometheus/` este disponibil în structura de proiect, pregătit pentru a găzdui configurațiile Prometheus.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.5
   "F0.3.5": {
@@ -6844,7 +7498,7 @@ F0.3.5
     "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga alte directoare în afara celor specificate; respectăm strict calea indicată.",
     "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/grafana/dashboards/` în proiect.",
     "outcome": "Directorul pentru stocarea dashboard-urilor Grafana este creat, permițând versionarea panourilor de monitorizare în cod.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.6
   "F0.3.6": {
@@ -6861,7 +7515,7 @@ F0.3.6
     "restrictii_de_iesire_din context_sau_de_inventare_de_sub_taskuri": "Nu executa configurări sau inițializări ale acestor pachete în acest pas; doar asigură-te că sunt disponibile ca dependențe.",
     "validare": "Verifică în `package.json` prezența noilor pachete la secțiunea de dependențe/devDependencies. Asigură-te că instalarea a fost finalizată cu succes (ieșirea comenzii pnpm nu conține erori).",
     "outcome": "Dependențele necesare observabilității sunt instalate în proiect, pregătite pentru a fi utilizate în codul de instrumentare.",
-    "componenta_de_CI_DI": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."
+    "componenta_de_CI_CD": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."
   },
 F0.3.7
   "F0.3.7": {
@@ -6878,7 +7532,7 @@ F0.3.7
     "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Limitează-te la configurări standard OpenTelemetry. Nu iniția aici conexiuni la baze de date sau alte servicii - doar setup-ul de tracing.",
     "validare": "Asigură-te că modulul compilează (comanda `pnpm build` trebuie să reușească). Poți verifica output-ul prin adăugarea temporară a unui `console.log` în modul și rularea unei aplicații pentru a vedea că inițializarea se execută (de exemplu, pornind un serviciu în mod dev și observând că nu apar erori de OTEL).",
     "outcome": "Fișierul `otel.ts` este implementat, permițând fiecărui serviciu al suitei să inițializeze trasabilitatea distribuită la pornire printr-un simplu import.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.8
   "F0.3.8": {
@@ -6895,7 +7549,7 @@ F0.3.8
     "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Nu iniția aici scrierea efectivă către Loki sau altceva - acest modul doar formatează și scrie la stdout. Expedierea către Loki va fi gestionată de pipeline-ul de loguri (Promtail/OTEL Collector).",
     "validare": "Asigură-te că, la rularea unui serviciu, logurile apar în consolă în format JSON corect. De exemplu, pornește un serviciu și verifică că mesajele de log conțin câmpurile așteptate (`level`, `msg`, eventual `traceId`).",
     "outcome": "Fișierul `pino.ts` este implementat, furnizând un logger standardizat pentru toate modulele, facilitând agregarea logurilor în sistemul de observabilitate.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.9
   "F0.3.9": {
@@ -6912,7 +7566,7 @@ F0.3.9
     "restrictii_de_iesire_din context_sau de inventare de sub_taskuri": "Nu deschide un port separat pentru metrici - folosește serverul existent al aplicației. Nu modifica configurații globale în afara înregistrării metricilor.",
     "validare": "Pornește un serviciu (ex. suite-admin) în modul dev după integrare și accesează ruta `/metrics`. Ar trebui să vezi un output text cu metricile default (ex. `process_cpu_user_seconds_total`, etc.), semn că modulul funcționează.",
     "outcome": "Fișierul `prometheus.ts` este implementat, oferind mecanismul necesar ca toate aplicațiile să expună metricile pentru Prometheus.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.10
   "F0.3.10": {
@@ -6929,7 +7583,7 @@ F0.3.10
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Exportă doar entități reale, existente. Nu crea exporturi pentru module neimplementate sau inexistente.",
     "validare": "Verifică compilarea proiectului (`pnpm build`). Orice eroare legată de module nelocate indică un export greșit. De asemenea, testează un import într-un serviciu, asigurându-te că intellisense vede funcțiile exportate.",
     "outcome": "Pachetul `@genius-suite/observability` are un punct unic de acces (`index.ts`) care expune modulele de tracere, logare și metrici, gata de a fi utilizat de aplicații.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.11
   "F0.3.11": {
@@ -6946,7 +7600,7 @@ F0.3.11
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu crea încă fișiere pentru alte profiluri (staging/prod) – ne concentrăm doar pe dev acum. Nu include aplicațiile propriu-zise în acest compose, doar stack-ul de observabilitate.",
     "validare": "Verifică că fișierul `compose.dev.yml` există și este recunoscut ca YAML valid (poți rula `docker compose -f shared/observability/compose/compose.dev.yml config` pentru a verifica că nu sunt erori).",
     "outcome": "Fișierul de orchestrare `compose.dev.yml` a fost creat, pregătit pentru definirea serviciilor de observabilitate în mediul de dezvoltare.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.12
   "F0.3.12": {
@@ -6963,7 +7617,7 @@ F0.3.12
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Limitează-te la definirea rețelei. Nu atașa încă serviciile la rețea în acest pas - acest lucru se va face la definirea fiecărui serviciu.",
     "validare": "Rulează `docker compose -f shared/observability/compose/compose.dev.yml config` și verifică existența secțiunii networks și a rețelei `observability`. Nu trebuie raportate erori de sintaxă.",
     "outcome": "Rețeaua Docker `observability` este definită în config-ul Compose dev, gata să fie folosită de serviciile de observabilitate și de aplicațiile monitorizate.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.13
   "F0.3.13": {
@@ -6980,7 +7634,7 @@ F0.3.13
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Menține configurația cât mai simplă, doar elementele necesare pentru skeleton. Nu inventa alți exporteri/receivere în afară de cele discutate (OTLP input, Tempo output).",
     "validare": "Poți valida sintaxa rulând containerul OTEL Collector local cu acest fișier (comanda `otelcol --dry-run -c otel-collector-config.yml` în interiorul imaginii) sau, odată integrat în Compose, verificând logs la pornirea containerului OTEL (nu trebuie să apară erori de config).",
     "outcome": "Fișierul de configurare pentru OpenTelemetry Collector este creat, definind pipeline-ul de bază pentru preluarea trasabilității și transmiterea către Tempo.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
 F0.3.14
   "F0.3.14": {
@@ -6997,7 +7651,7 @@ F0.3.14
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu modifica fișierul de config OTEL în acest pas - presupunem că este corect. Nu activa încă colectarea de metrici prin acest colector, focusul e doar pe trasabilitate (conform config-ului minimal).",
     "validare": "Rulare `docker compose -f shared/observability/compose/compose.dev.yml up -d otel-collector` și verifică log-urile: containerul ar trebui să pornească fără erori de configurare (mesaj de tip \"Everything is ready\" de la otelcol).",
     "outcome": "Serviciul Docker `otel-collector` este definit în configurația de dezvoltare, folosind config-ul specific, și se alătură rețelei de observabilitate.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.15": {
     "denumire_task": "Creare Configurație Prometheus (`prometheus.yml`)",
@@ -7013,7 +7667,7 @@ F0.3.14
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu defini alerte complexe sau reguli de înregistrare la acest pas, doar include fișierul de rules pentru Traefik dacă e cazul. Nu activa scrap-ul pentru metrici de sistem (node_exporter etc.) în acest config skeleton.",
     "validare": "Poți valida fișierul rulând containerul Prometheus cu acest config (vom face în task-ul următor), sau folosind un validator online de config Prometheus. Asigură-te că indentarea YAML este corectă și că fișierul `traefik.rules.yml` referit există (va fi creat în alt task).",
     "outcome": "Fișierul de configurare `prometheus.yml` este pregătit, specificând scrapping-ul metricilor pentru toate aplicațiile și componentele relevante ale suitei.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.16": {
     "denumire_task": "Adăugare Serviciu Prometheus în `compose.dev.yml`",
@@ -7029,7 +7683,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu configura în plus autentificare sau alte flag-uri avansate Prometheus (ex. remote_write etc.) în skeleton. Rămânem la setup-ul minimal descris.",
     "validare": "Pornește local doar serviciul Prometheus din Compose (`docker compose -f ... up -d prometheus`) după ce toate serviciile sunt integrate, și vizitează `http://localhost:9090/targets`. Ar trebui să vezi lista de job-uri definite (chiar dacă unele ținte pot fi inactive până la pornirea aplicațiilor).",
     "outcome": "Serviciul Prometheus este definit în configurația Docker Compose, configurat să își încarce setările și să colecteze metricile din suita GeniusERP.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.17": {
     "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
@@ -7045,7 +7699,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu schimba porturile standard în acest config fără motiv. Nu seta credențiale sau alte câmpuri (toate serviciile noastre rulează fără autentificare intern în modul dev).",
     "validare": "Va fi validată la pornirea containerului Grafana (dacă fișierul are erori, Grafana va loga mesaje de eroare în container). Poți verifica vizual că fișierul este corect formatat YAML și conține toate cele 3 data source-uri așteptate.",
     "outcome": "Fișierul de provisioning pentru sursele de date Grafana este creat, permițând configurarea automată a conexiunilor către Prometheus, Loki și Tempo la startul Grafana.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.18": {
     "denumire_task": "Creare Configurație Provisionare Dashboard-uri Grafana",
@@ -7061,7 +7715,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu plasa path-ul către altă locație - menținem convenția standard. Nu adăuga opțiuni avansate (ex: filtrare după tag) atâta timp cât avem doar câteva dashboard-uri generice.",
     "validare": "Similar cu datasources, validarea are loc la pornirea Grafana: dacă configul are erori, apar în log. După pornire, verifică în UI Grafana la Settings -> Provisioning -> Dashboard că provider-ul 'Genius Suite Dashboards' apare și indică calea corectă.",
     "outcome": "Fișierul de provisioning al dashboard-urilor este creat, instructând Grafana să preia automat definițiile din cod pentru panourile de monitorizare.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.19": {
     "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml`",
@@ -7077,7 +7731,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Păstrează config-ul clar: un singur user admin default, fără LDAP sau alte integrări. Nu modifica portul web implicit (3000) pentru Grafana în dev.",
     "validare": "După pornire, accesează `http://localhost:3000` cu user-ul/parola specificate (admin/admin) și verifică: sursele de date (meniul Configuration -> Data Sources) ar trebui să arate Prometheus, Loki, Tempo preconfigurate; iar în lista de dashboard-uri să apară panoul Traefik (după ce-l vom adăuga).",
     "outcome": "Serviciul Grafana este adăugat și configurat complet în docker-compose dev, pregătit să afișeze metricile și logurile colectate, fără configurații manuale post-lansare.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.20": {
     "denumire_task": "Creare Configurație Promtail pentru Colectarea Logurilor",
@@ -7093,7 +7747,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu include încă parser-ul Traefik direct aici; vom folosi un pipeline stage separat dacă e nevoie, după cum vom defini în `logs/parsers/traefik.json` ulterior. Menține config-ul general și cât mai simplu.",
     "validare": "Validarea completă va fi la rularea containerului Promtail. Ca verificare preliminară, asigură-te că sintaxa YAML este corectă și că fiecare secțiune este bine indentată. Poți testa config-ul prin rularea locală a promtail (dacă ai instalat) cu flag de dry-run, dar în mod uzual doar pornirea containerului ne va confirma.",
     "outcome": "Fișierul de configurare pentru Promtail este creat, permițând agentului de loguri să culeagă automat logurile containerelor și să le transmită către Loki.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.21": {
     "denumire_task": "Adăugare Serviciu Loki în `compose.dev.yml`",
@@ -7109,7 +7763,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu seta autentificare sau multi-tenancy în config-ul Loki la acest pas - skeletonul e single-tenant dev. Nu uita volumul de date, altfel la restart logurile se pierd (în dev nu e grav, dar preferăm persistență minimă).",
     "validare": "După pornire, verifică rapid starea: accesează `http://localhost:3100/metrics` (Loki expune metrici) - dacă primești un răspuns text, containerul rulează. Grafana va raporta status-ul sursei Loki ca up dacă totul e ok.",
     "outcome": "Serviciul Loki este configurat și integrat în orchestrarea dev, gata să primească logurile colectate de la aplicații.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.22": {
     "denumire_task": "Adăugare Serviciu Promtail (Agent de Loguri) în `compose.dev.yml`",
@@ -7125,7 +7779,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu definești restart policy speciale sau alte constrângeri, nu sunt necesare în dev. Nu conecta promtail la alte rețele inutile (doar observability).",
     "validare": "Pornește tot stack-ul Observability (toate serviciile din compose.dev.yml). Verifică logurile containerului Promtail (`docker compose logs promtail`): ar trebui să vezi linii care indică ce containere a descoperit și confirmarea trimiterii logurilor către Loki (cod 204 de succes). În Grafana, accesează Loki via explore și verifică dacă apar intrări de log.",
     "outcome": "Serviciul Promtail este integrat, colectând logurile din toate containerele suitei și direcționându-le către Loki, finalizând setup-ul de log management al skeleton-ului de observabilitate.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.23": {
     "denumire_task": "Creare Reguli de Alertă Prometheus pentru Traefik (`traefik.rules.yml`)",
@@ -7141,7 +7795,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu încerca să configurezi acum Alertmanager sau rute de notificare pentru aceste alerte - doar definim regula în Prometheus. Nu inventa metrici inexistente (folosim `traefik_service_requests_total` care e metrică reală în Traefik cu plugin Prom).",
     "validare": "Deschide UI Prometheus (sau Grafana Alerts view) după ce Traefik va fi integrat (F0.4) și generează o situație de test (ex. simulează cereri eronate) pentru a vedea alerta. Pentru acum, validează că Prometheus a încărcat grupa de reguli (în UI Prometheus la /rules, grupa traefik_alerts ar trebui să apară ca 'inactive').",
     "outcome": "Fișierul de reguli de alertare `traefik.rules.yml` este creat și integrat, conținând o regulă exemplificativă de monitorizare a Traefik.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.24": {
     "denumire_task": "Creare Dashboard Grafana pentru Traefik (`traefik.json`)",
@@ -7157,7 +7811,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Folosește exclusiv metricile reale expuse de Traefik. Nu presupune existența altor metrici decât cele standard (requests_total, open_connections etc.).",
     "validare": "După pornire Grafana, verifică existența dashboard-ului 'Traefik Overview'. Deschide-l și asigură-te că panourile afișează date (dacă Traefik nu e încă integrat, pot apărea goale sau erori de query, ceea ce e normal până la F0.4). Cel puțin, Grafana ar trebui să recunoască sursa Prometheus și sintaxa query-urilor fără erori majore.",
     "outcome": "Dashboard-ul Traefik de bază este creat și versionat în cod, urmând a fi încărcat automat în Grafana pentru vizualizarea metricilor Traefik.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.25": {
     "denumire_task": "Creare Configurație Parser Log Traefik (`traefik.json` în parsers)",
@@ -7173,7 +7827,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu forța aplicarea acestui parser în config-ul promtail fără a-l fi testat. E mai mult o plasare a fișierului ca piesă a puzzle-ului; integrarea exactă poate urma în faza Traefik (F0.4).",
     "validare": "Acest fișier în sine nu poate fi validat runtime până nu e referit de Promtail. Verifică că e JSON valid (parsabil). Ulterior, când Traefik va genera loguri, se poate actualiza config-ul Promtail să folosească acest parser și testa că logurile sunt etichetate/parseate corect (ex. consultați Loki pentru câmpuri extrase).",
     "outcome": "Fișierul de parser pentru logurile Traefik este creat, pregătit pentru a fi folosit de agentul de loguri în vederea interpretării corecte și sigure a logurilor Traefik.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.26": {
     "denumire_task": "Creare Script de Validare Observabilitate (`validate.sh`)",
@@ -7189,7 +7843,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu asuma credențiale speciale (Grafana API utilizat fără auth sau cu admin/admin dacă necesar). În dev, asta e acceptabil, dar notează dacă e necesar să trimită auth la curl (ex: --user admin:admin).",
     "validare": "Rulează manual scriptul pe mașina de dev: `bash shared/observability/scripts/validate.sh`. Ar trebui să vezi mesaje de succes pentru fiecare componentă (sau ieșire silent dacă totul e ok) și codul de ieșire 0. În caz de probleme, scriptul va raporta ce nu a pornit sau ce endpoint nu a răspuns.",
     "outcome": "Scriptul de validare `validate.sh` este creat. Rularea lui va porni și verifica rapid starea componentelor cheie ale observabilității, asigurându-ne că integrarea skeleton este funcțională.",
-    "componenta_de_CI_DI": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."
+    "componenta_de_CI_CD": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."
   },
   "F0.3.27": {
     "denumire_task": "Integră Observabilitate în suite-shell (Cod)",
@@ -7206,7 +7860,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu inițializa observabilitatea în alte locuri decât la startup (nu în fiecare request individual, de exemplu). Nu adăuga endpoint-uri sau config suplimentare neplanificate (ex: nu definești /metrics dacă deja era definit altundeva).",
     "validare": "Pornește local serviciul suite-shell (mod dev) și verifică: \n- Accesând `http://localhost:{port}/metrics` primești textul cu metricile default și eventual custom.\n- Logurile afișate în consolă apar în format JSON (conțin câmpuri structurale, ex. `level`, `msg`, `traceId`).\n- Inițiind o operație în suite-shell (ex. un API call), observă în consolă că nu apar erori de observabilitate; eventual poți verifica în Tempo sau în logs după implementarea completă că datele apar.",
     "outcome": "Aplicația suite-shell are observabilitatea activată: expune metrici, își formatează logurile JSON cu identificatori de corelație și transmite trasabilitatea către colectorul central.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.28": {
     "denumire_task": "Actualizare Docker Compose pentru suite-shell",
@@ -7222,7 +7876,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu adăuga port mapping sau alte servicii noi în acest Compose - modificările țin strict de observabilitate. Nu seta variabile de mediu inutile (ex: nu definim aici `OTEL_LOG_LEVEL` sau altele, dacă nu e necesar).",
     "validare": "Dacă rulezi `docker compose up -d suite-shell` (în contextul orchestrării care include rețeaua observability), execută `docker inspect suite-shell` și verifică în output că rețeaua observability apare la Networks. De asemenea, poți intra în container (`docker compose exec suite-shell printenv`) și verifica prezența variabilelor `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Totul trebuie să fie setat corect.",
     "outcome": "Configurația Docker Compose pentru suite-shell este actualizată: containerul este conectat la rețeaua de observabilitate și configurat să comunice cu colectorul OTEL.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.29": {
     "denumire_task": "Integră Observabilitate în suite-admin (Cod)",
@@ -7239,7 +7893,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația suite-admin local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația suite-admin a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.30": {
     "denumire_task": "Actualizare Docker Compose pentru suite-admin",
@@ -7255,7 +7909,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul suite-admin împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul suite-admin apare ca atașat. De asemenea, rulează `docker compose exec suite-admin env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs suite-admin` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru suite-admin a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.31": {
     "denumire_task": "Integră Observabilitate în suite-login (Cod)",
@@ -7272,7 +7926,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația suite-login local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația suite-login a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.32": {
     "denumire_task": "Actualizare Docker Compose pentru suite-login",
@@ -7305,7 +7959,7 @@ F0.3.14
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația identity local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația identity a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.34": {
     "denumire_task": "Actualizare Docker Compose pentru identity",
@@ -7321,7 +7975,7 @@ F0.3.14
     "restrictii_de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul identity împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul identity apare listat. De asemenea, rulează `docker compose exec identity env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs identity` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru identity a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.35": {
     "denumire_task": "Integră Observabilitate în licensing (Cod)",
@@ -7338,7 +7992,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația licensing local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația licensing a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.36": {
     "denumire_task": "Actualizare Docker Compose pentru licensing",
@@ -7437,7 +8091,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația archify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația archify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.42": {
     "denumire_task": "Actualizare Docker Compose pentru archify.app",
@@ -7453,7 +8107,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul archify.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul archify.app apare listat. De asemenea, rulează `docker compose exec archify.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs archify.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru archify.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.43": {
     "denumire_task": "Integră Observabilitate în cerniq.app (Cod)",
@@ -7470,7 +8124,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația cerniq.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația cerniq.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.44": {
     "denumire_task": "Actualizare Docker Compose pentru cerniq.app",
@@ -7486,7 +8140,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul cerniq.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul cerniq.app apare listat. De asemenea, rulează `docker compose exec cerniq.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs cerniq.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru cerniq.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.45": {
     "denumire_task": "Integră Observabilitate în flowxify.app (Cod)",
@@ -7503,7 +8157,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația flowxify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația flowxify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.46": {
     "denumire_task": "Actualizare Docker Compose pentru flowxify.app",
@@ -7519,7 +8173,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul flowxify.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul flowxify.app apare listat. De asemenea, rulează `docker compose exec flowxify.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs flowxify.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru flowxify.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.47": {
     "denumire_task": "Integră Observabilitate în i-wms.app (Cod)",
@@ -7536,7 +8190,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația i-wms.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația i-wms.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.48": {
     "denumire_task": "Actualizare Docker Compose pentru i-wms.app",
@@ -7569,7 +8223,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația mercantiq.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația mercantiq.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.50": {
     "denumire_task": "Actualizare Docker Compose pentru mercantiq.app",
@@ -7585,7 +8239,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul mercantiq.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul mercantiq.app apare listat. De asemenea, rulează `docker compose exec mercantiq.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs mercantiq.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru mercantiq.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.51": {
     "denumire_task": "Integră Observabilitate în numeriqo.app (Cod)",
@@ -7602,7 +8256,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația numeriqo.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația numeriqo.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.52": {
     "denumire_task": "Actualizare Docker Compose pentru numeriqo.app",
@@ -7618,7 +8272,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul numeriqo.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul numeriqo.app apare listat. De asemenea, rulează `docker compose exec numeriqo.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs numeriqo.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru numeriqo.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.53": {
     "denumire_task": "Integră Observabilitate în triggerra.app (Cod)",
@@ -7635,7 +8289,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația triggerra.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația triggerra.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.54": {
     "denumire_task": "Actualizare Docker Compose pentru triggerra.app",
@@ -7651,7 +8305,7 @@ F0.3.14
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul triggerra.app împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul triggerra.app apare listat. De asemenea, rulează `docker compose exec triggerra.app env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs triggerra.app` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru triggerra.app a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_DI": "N/A"
+    "componenta_de_CI_CD": "N/A"
   },
   "F0.3.55": {
     "denumire_task": "Integră Observabilitate în vettify.app (Cod)",
@@ -7668,7 +8322,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu presupune existența unor infrastructuri suplimentare specifice pentru vettify.app față de ce este definit pentru restul suitei. Nu crea sub-taskuri noi, directoare noi sau alte aplicații; limitează-te strict la integrarea layer-ului de observabilitate în codul vettify.app, urmând pattern-ul deja implementat în aplicațiile din Control Plane.",
     "validare": "Rulează local vettify.app în modul de dezvoltare. Verifică: 1) că endpoint-ul de sănătate existent continuă să răspundă corect; 2) că ruta \"/metrics\" răspunde cu un payload în format text Prometheus (content-type \"text/plain; version=0.0.4\"); 3) că în loguri apar mesaje JSON structurate (Pino) cu câmpuri standard (timestamp, level, msg, service); 4) că, având stack-ul de observabilitate din compose pornit, apare cel puțin un trace sau un log etichetat cu \"service.name=vettify.app\" în Grafana/Loki/Tempo. Dacă oricare dintre pași eșuează, ajustează configurarea până când toate verificările trec.",
     "outcome": "Aplicația vettify.app este instrumentată la același nivel cu restul aplicațiilor suitei: loguri structurate, metrici de bază accesibile prin \"/metrics\" și trace-uri trimise prin OTEL către stack-ul de observabilitate, folosind convențiile standardizate definite în shared/observability.",
-    "componenta_de_CI_DI": "Toate modificările se fac pe branch-ul \"dev\". După ce testele locale și verificările de observabilitate trec, creează un commit cu un mesaj descriptiv (de ex. \"feat(observability): add OTEL, metrics and structured logging to vettify.app\") și împinge branch-ul. Deschide un Pull Request/Merge Request din \"dev\" către \"staging\", asigurându-te că pipeline-ul CI existent rulează testele și, după introducerea F0.3.64, scriptul standard de validare a observabilității. După validare pe \"staging\" și QA minim, modificările pot fi promovate către \"master\" printr-un PR separat, cu același set de verificări CI verzi."
+    "componenta_de_CI_CD": "Toate modificările se fac pe branch-ul \"dev\". După ce testele locale și verificările de observabilitate trec, creează un commit cu un mesaj descriptiv (de ex. \"feat(observability): add OTEL, metrics and structured logging to vettify.app\") și împinge branch-ul. Deschide un Pull Request/Merge Request din \"dev\" către \"staging\", asigurându-te că pipeline-ul CI existent rulează testele și, după introducerea F0.3.64, scriptul standard de validare a observabilității. După validare pe \"staging\" și QA minim, modificările pot fi promovate către \"master\" printr-un PR separat, cu același set de verificări CI verzi."
   },
   "F0.3.56": {
     "denumire_task": "Actualizează Docker Compose pentru vettify.app cu Observabilitate",
@@ -7684,7 +8338,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea profiluri noi de compose sau fișiere adiționale; lucrează strict în fișierele deja definite pentru vettify.app. Nu introduce alte servicii (de ex. baze de date, cache-uri) ca parte a acestui task; scopul este doar integrarea cu observability. Nu inventa pași suplimentari în afara actualizării configurației compose.",
     "validare": "Pornește local stack-ul de observabilitate și serviciul vettify.app folosind \"docker compose up\" cu profilul de dezvoltare. 1) Verifică în UI-ul Prometheus că ținta vettify.app apare în lista de targets și are status UP; 2) verifică printr-un request HTTP direct (curl sau browser) că \"/metrics\" este accesibil din afara containerului și răspunde corect; 3) verifică în Grafana că există metrici cu labeluri de tip \"service=vettify.app\" sau \"service_name=vettify.app\" în dashboard-ul generic. Dacă apar erori de rețea sau variabile OTEL lipsă, ajustează fișierele de compose până când toate verificările sunt verzi.",
     "outcome": "Containerul vettify.app este complet integrat cu stack-ul de observabilitate atunci când este rulat prin Docker Compose, folosind aceleași rețele și variabile standardizate, permițând colectarea unificată a metricilor și a trace-urilor alături de restul aplicațiilor GeniusSuite.",
-    "componenta_de_CI_DI": "După actualizarea fișierelor de compose, rulează local \"docker compose config\" pentru a valida sintaxa. Commit-ul cu modificări se face pe branch-ul \"dev\" cu un mesaj clar (de ex. \"chore(observability): wire vettify.app compose to observability stack\"). Asigură-te că pipeline-ul CI include (sau va include ulterior, în F0.3.64) un pas de verificare a fișierelor Docker Compose și că acest pas este verde înainte de a deschide un PR/MR din \"dev\" către \"staging\". După ce modificările sunt verificate pe \"staging\" și nu afectează alte servicii, ele pot fi promovate către \"master\" în cadrul PR-ului final de fază."
+    "componenta_de_CI_CD": "După actualizarea fișierelor de compose, rulează local \"docker compose config\" pentru a valida sintaxa. Commit-ul cu modificări se face pe branch-ul \"dev\" cu un mesaj clar (de ex. \"chore(observability): wire vettify.app compose to observability stack\"). Asigură-te că pipeline-ul CI include (sau va include ulterior, în F0.3.64) un pas de verificare a fișierelor Docker Compose și că acest pas este verde înainte de a deschide un PR/MR din \"dev\" către \"staging\". După ce modificările sunt verificate pe \"staging\" și nu afectează alte servicii, ele pot fi promovate către \"master\" în cadrul PR-ului final de fază."
   },
   "F0.3.57": {
     "denumire_task": "Creează scriptul shared/observability/scripts/install.sh (skeleton)",
@@ -7700,7 +8354,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea directoare noi în afara celor deja definite în shared/observability. Nu inventa alte scripturi; \"install.sh\" este singura țintă a acestui task. Nu modifica fișierele de compose sau de configurare OTEL în cadrul acestui task; acestea sunt gestionate în alte taskuri F0.3.",
     "validare": "Rulează din rădăcina repo-ului comanda \"bash shared/observability/scripts/install.sh --help\" și verifică faptul că scriptul afișează un mesaj de ajutor clar, cu parametrii acceptați (de ex. dev, staging, prod) și cu mențiunea că pentru F0.3 este suportat doar modul dev. Verifică faptul că, apelat cu \"dev\", scriptul nu returnează erori de execuție și că se limitează la pașii definiți (validatează precondițiile, eventual pornește sau sugerează pornirea stack-ului de observabilitate).",
     "outcome": "Există un script \"shared/observability/scripts/install.sh\" clar, documentat minimal, care poate fi folosit ca entrypoint pentru bootstrap-ul stack-ului de observabilitate în mediul local, pregătit pentru extindere în fazele ulterioare.",
-    "componenta_de_CI_DI": "Deocamdată, scriptul nu este încă integrat în CI; în F0.3.64 va fi definit explicit un job CI care rulează scriptul de validare. În acest task, doar asigură-te că scriptul este executabil (chmod +x) și că poate fi rulat manual de pe branch-ul \"dev\". Modificarea trebuie comisă pe \"dev\" cu un mesaj clar (de ex. \"chore(observability): add install.sh skeleton for observability stack\"), urmând a fi inclusă în PR-ul final de fază F0.3."
+    "componenta_de_CI_CD": "Deocamdată, scriptul nu este încă integrat în CI; în F0.3.64 va fi definit explicit un job CI care rulează scriptul de validare. În acest task, doar asigură-te că scriptul este executabil (chmod +x) și că poate fi rulat manual de pe branch-ul \"dev\". Modificarea trebuie comisă pe \"dev\" cu un mesaj clar (de ex. \"chore(observability): add install.sh skeleton for observability stack\"), urmând a fi inclusă în PR-ul final de fază F0.3."
   },
   "F0.3.58": {
     "denumire_task": "Creează scriptul shared/observability/scripts/validate.sh (standard validare observabilitate)",
@@ -7716,7 +8370,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica fișierele de compose, configurațiile OTEL sau codul aplicațiilor în cadrul acestui task; focusul este exclusiv pe scriptul de validare. Nu inventa sub-taskuri noi; scriptul trebuie să rămână atomic și clar, astfel încât să poată fi invocat direct din CI.",
     "validare": "Rulează manual (din rădăcina repo-ului) comanda \"bash shared/observability/scripts/validate.sh\" cu stack-ul de observabilitate și cel puțin o aplicație (ex. CP) pornite. Verifică: 1) că scriptul afișează pașii pe care îi execută; 2) că face cel puțin un HTTP check către \"/metrics\" și returnează HTTP 200; 3) că exit code este 0 în condiții normale și nenul dacă endpoint-ul nu răspunde sau răspunde cu cod de eroare. Ajustează scriptul până când comportamentul este determinist și reproductibil.",
     "outcome": "Există un script standard \"shared/observability/scripts/validate.sh\" care poate fi folosit atât local, cât și în pipeline-ul CI, pentru a valida că stack-ul de observabilitate de bază funcționează și că cel puțin o aplicație instrumentată raportează metrici.",
-    "componenta_de_CI_DI": "Acest script este gândit pentru a fi integrat în pipeline-ul CI ca job de validare a observabilității (vezi F0.3.64). În acest task, asigură-te doar că scriptul este determinist și returnează coduri de exit corecte, astfel încât job-ul CI să poată eșua sau trece în mod clar. Commit-ul se face pe branch-ul \"dev\" (de ex. mesaj \"chore(observability): add validate.sh as observability validation standard\") și va fi inclus în PR-ul de fază F0.3."
+    "componenta_de_CI_CD": "Acest script este gândit pentru a fi integrat în pipeline-ul CI ca job de validare a observabilității (vezi F0.3.64). În acest task, asigură-te doar că scriptul este determinist și returnează coduri de exit corecte, astfel încât job-ul CI să poată eșua sau trece în mod clar. Commit-ul se face pe branch-ul \"dev\" (de ex. mesaj \"chore(observability): add validate.sh as observability validation standard\") și va fi inclus în PR-ul de fază F0.3."
   },
   "F0.3.59": {
     "denumire_task": "Creează scriptul shared/observability/scripts/smoke.sh (smoke tests observabilitate)",
@@ -7732,7 +8386,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica configurațiile aplicațiilor sau fișierele de compose în cadrul acestui task. Nu inventa sub-taskuri suplimentare; smoke.sh este o componentă izolată care se bazează pe infrastructura deja existentă.",
     "validare": "Cu câteva servicii pornite (ex. CP + una-două aplicații stand-alone), rulează \"bash shared/observability/scripts/smoke.sh\" și verifică: 1) că scriptul raportează în mod clar fiecare endpoint testat și rezultatul; 2) că exit code este 0 când toate endpoint-urile răspund cu HTTP 200 (sau codurile așteptate); 3) că în caz de eșec pentru un endpoint, scriptul marchează FAIL și returnează un exit code nenul. Ajustează lista minimă de endpoint-uri astfel încât scriptul să fie reprezentativ dar rapid.",
     "outcome": "Există un script \"shared/observability/scripts/smoke.sh\" care rulează un set minim de smoke tests pe endpoint-uri critice și pe \"/metrics\", ajutând la validarea rapidă a sănătății sistemului după modificări sau deploy.",
-    "componenta_de_CI_DI": "În această fază, smoke.sh poate fi folosit manual sau inclus opțional în pipeline-uri dedicate de QA. Integrarea lui formală în CI/CD complet (ca gate obligatoriu) poate fi planificată în faze ulterioare (F0.8). Commit-ul se face pe branch-ul \"dev\" (ex. \"chore(observability): add smoke.sh for observability smoke tests\") și scriptul va fi inclus în PR-ul de fază F0.3."
+    "componenta_de_CI_CD": "În această fază, smoke.sh poate fi folosit manual sau inclus opțional în pipeline-uri dedicate de QA. Integrarea lui formală în CI/CD complet (ca gate obligatoriu) poate fi planificată în faze ulterioare (F0.8). Commit-ul se face pe branch-ul \"dev\" (ex. \"chore(observability): add smoke.sh for observability smoke tests\") și scriptul va fi inclus în PR-ul de fază F0.3."
   },
   "F0.3.60": {
     "denumire_task": "Creează README pentru shared/observability/scripts (usage & convenții)",
@@ -7748,7 +8402,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în afara acestui README în cadrul acestui task. Nu modifica scripturile pentru a se potrivi documentației; mai degrabă ajustează documentația pentru a reflecta exact comportamentul existent sau actualizează scripturile într-un task dedicat, dacă este nevoie.",
     "validare": "Deschide README-ul și verifică dacă un dezvoltator fără context poate urma pașii pentru: 1) a porni stack-ul de observabilitate în modul dev; 2) a rula validate.sh; 3) a rula smoke.sh. Verifică corespondența dintre exemplele din README și comportamentul real al scripturilor (comenzile trebuie să funcționeze exact așa cum sunt scrise). Ajustează formulările pentru claritate.",
     "outcome": "Există un README coerent pentru scripturile de observabilitate care standardizează modul de utilizare și pregătește integrarea lor în CI/CD și în procesele operaționale.",
-    "componenta_de_CI_DI": "README-ul nu introduce logică nouă în CI/CD, dar devine referința atunci când se configurează joburile CI (ex. în F0.3.64). Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add README for observability scripts\"), iar documentația va fi verificată și în cadrul PR-ului final de fază."
+    "componenta_de_CI_CD": "README-ul nu introduce logică nouă în CI/CD, dar devine referința atunci când se configurează joburile CI (ex. în F0.3.64). Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add README for observability scripts\"), iar documentația va fi verificată și în cadrul PR-ului final de fază."
   },
   "F0.3.61": {
     "denumire_task": "Creează shared/observability/docs/architecture.md (arhitectura Observabilității)",
@@ -7764,7 +8418,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în afara architecture.md în cadrul acestui task. Nu modifica cod sau configurații doar pentru a se potrivi descrierii; dacă există discrepanțe majore, acestea trebuie adresate într-un task separat.",
     "validare": "Citește documentul din perspectiva unui dezvoltator sau DevOps nou în proiect: poate înțelege rapid ce componente există, cum curg datele de observabilitate și cum se pornește stack-ul? Verifică faptul că toate rutele și fișierele menționate există efectiv în repo și că numele lor sunt exacte. Ajustează documentul pentru claritate și acuratețe.",
     "outcome": "Există un document architecture.md în shared/observability/docs care descrie arhitectura Observabilității pentru faza F0.3 și servește drept bază pentru extinderi ulterioare.",
-    "componenta_de_CI_DI": "Documentul nu adaugă logică de CI/CD, dar poate fi referențiat în descrierea PR-ului final de fază F0.3 ca parte din documentația obligatorie. Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add architecture overview for observability skeleton\") și este verificat în review-ul de cod."
+    "componenta_de_CI_CD": "Documentul nu adaugă logică de CI/CD, dar poate fi referențiat în descrierea PR-ului final de fază F0.3 ca parte din documentația obligatorie. Commit-ul se face pe branch-ul \"dev\" (de ex. \"docs(observability): add architecture overview for observability skeleton\") și este verificat în review-ul de cod."
   },
   "F0.3.62": {
     "denumire_task": "Creează shared/observability/docs/how-to-add-app.md (guideline integrare nouă aplicație)",
@@ -7780,8 +8434,8 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în acest task și nu modifica codul aplicațiilor existente doar pentru a se potrivi perfect cu ghidul; dacă se observă diferențe majore, acestea se pot adresa în taskuri separate.",
     "validare": "Verifică ghidul practic: simulează integrarea unei aplicații noi urmând exclusiv pașii din how-to-add-app.md și confirmă că, în principiu, se poate ajunge la o integrare completă a observabilității (cod, config, compose, validare). Asigură-te că toate referințele de fișiere și comenzi sunt corecte.",
     "outcome": "Există un ghid clar how-to-add-app.md pentru integrarea noilor aplicații în Observabilitate, reducând efortul de onboarding și crescând consistența implementărilor.",
-    "componenta_de_CI_DI": "Documentul poate fi folosit ca referință obligatorie pentru viitoarele PR-uri care introduc aplicații noi (link în template-ul de PR). Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): add how-to-add-app guideline\") și este verificat în cadrul PR-ului de fază.",
-    "componenta_de_CI_DI_note": "Câmp auxiliar opțional dacă vrei să separi clar partea de PR/template; poate fi ignorat de parser dacă nu este folosit."
+    "componenta_de_CI_CD": "Documentul poate fi folosit ca referință obligatorie pentru viitoarele PR-uri care introduc aplicații noi (link în template-ul de PR). Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): add how-to-add-app guideline\") și este verificat în cadrul PR-ului de fază.",
+    "componenta_de_CI_CD_note": "Câmp auxiliar opțional dacă vrei să separi clar partea de PR/template; poate fi ignorat de parser dacă nu este folosit."
   },
   "F0.3.63": {
     "denumire_task": "Creează shared/observability/docs/dashboards.md și runbooks.md (documentație dashboards & runbooks)",
@@ -7797,7 +8451,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte documente în acest task. Nu modifica configurații Grafana/Prometheus/Loki; scopul este doar documentarea stării curente.",
     "validare": "Verifică faptul că pentru fiecare dashboard documentat există un corespondent real în configurarea Grafana (sau în fișierele din repo) și că runbook-urile corespund unor scenarii reale posibile (ex. aplicația nu mai trimite metrici). Ajustează descrierile pentru a fi pragmatice și ușor de urmat.",
     "outcome": "Există documente dashboards.md și runbooks.md care descriu modul de utilizare a dashboard-urilor și pașii de reacție la probleme de observabilitate în faza F0.3.",
-    "componenta_de_CI_DI": "Aceste documente nu afectează direct CI/CD, dar pot fi menționate în descrierile PR-urilor și în playbook-urile echipei de operațiuni. Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): document dashboards and runbooks for F0.3 skeleton\") și este inclus în PR-ul final de fază."
+    "componenta_de_CI_CD": "Aceste documente nu afectează direct CI/CD, dar pot fi menționate în descrierile PR-urilor și în playbook-urile echipei de operațiuni. Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): document dashboards and runbooks for F0.3 skeleton\") și este inclus în PR-ul final de fază."
   },
   "F0.3.64": {
     "denumire_task": "Integrează shared/observability/scripts/validate.sh în pipeline-ul CI (dev/staging)",
@@ -7815,7 +8469,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea fișiere noi de pipeline complet diferite de structura deja existentă; extinde pipeline-ul actual. Nu inventa alte job-uri sau stage-uri complicate; job-ul observability-validate trebuie să fie atomic și clar.",
     "validare": "Deschide un PR/MR de test către branch-ul \"dev\" care modifică un fișier nesemnificativ și verifică: 1) că job-ul observability-validate apare în pipeline; 2) că acesta rulează scriptul validate.sh; 3) că, în condiții normale, job-ul trece cu succes. Simulează și un eșec (de ex. modificând temporar scriptul pentru a returna exit code nenul) pentru a verifica faptul că pipeline-ul marchează PR/MR-ul ca failed și nu permite merge-ul până la remediere.",
     "outcome": "Pipeline-ul CI include un job observability-validate care rulează validate.sh pe branch-urile dev și staging, transformând observabilitatea într-o condiție automată de trecere pentru PR/MR.",
-    "componenta_de_CI_DI": "Job-ul observability-validate este acum parte integrantă din CI. Orice PR/MR către dev și staging trebuie să treacă acest job înainte de merge. Modificările de configurare CI se fac pe branch-ul \"dev\" (ex. commit \"ci(observability): run validate.sh in CI pipeline\"), sunt revizuite în cadrul unui PR către \"staging\" și, după verificare, sunt propagate către \"master\" odată cu restul livrabilelor F0.3."
+    "componenta_de_CI_CD": "Job-ul observability-validate este acum parte integrantă din CI. Orice PR/MR către dev și staging trebuie să treacă acest job înainte de merge. Modificările de configurare CI se fac pe branch-ul \"dev\" (ex. commit \"ci(observability): run validate.sh in CI pipeline\"), sunt revizuite în cadrul unui PR către \"staging\" și, după verificare, sunt propagate către \"master\" odată cu restul livrabilelor F0.3."
   },
   "F0.3.65": {
     "denumire_task": "PR/MR final pentru F0.3 Observabilitate (dev → staging → master)",
@@ -7831,7 +8485,7 @@ F0.3.14
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte branch-uri în afara celor necesare pentru fluxul dev → staging → master. Nu inventa sub-taskuri suplimentare; toate modificările de cod/config ar trebui să fie deja acoperite de taskurile F0.3.1–F0.3.64.",
     "validare": "Asigură-te că: 1) toate job-urile CI legate de PR (inclusiv observability-validate) sunt verzi; 2) cel puțin un reviewer tehnic a aprobat PR-ul către staging; 3) pe staging, scripturile validate.sh și smoke.sh trec și se pot vizualiza dashboards-urile de bază; 4) PR-ul către master este aprobat conform procesului echipei și merge-ul se face fără conflicte.",
     "outcome": "Faza F0.3 Observabilitate (skeleton) este complet integrată în branch-ul master, cu un istoric clar de PR-uri și o descriere detaliată a schimbărilor, gata pentru a fi folosită ca fundație în fazele următoare (F0.4, F0.8 etc.).",
-    "componenta_de_CI_DI": "Acest task este strict legat de fluxul de CI/CD: PR/MR din \"dev\" către \"staging\" și apoi către \"master\". CI trebuie să ruleze automat pe fiecare PR, incluzând job-ul observability-validate și restul verificărilor definite în F0.2. Nu se face merge manual (fără PR) în branch-urile staging sau master; toate actualizările Observabilității skeleton trebuie să treacă prin aceste PR-uri cu CI verde."
+    "componenta_de_CI_CD": "Acest task este strict legat de fluxul de CI/CD: PR/MR din \"dev\" către \"staging\" și apoi către \"master\". CI trebuie să ruleze automat pe fiecare PR, incluzând job-ul observability-validate și restul verificărilor definite în F0.2. Nu se face merge manual (fără PR) în branch-urile staging sau master; toate actualizările Observabilității skeleton trebuie să treacă prin aceste PR-uri cu CI verde."
   }
 
 F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing.

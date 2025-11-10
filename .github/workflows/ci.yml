@@ -1,3 +1,5 @@
+name: CI Validation
+
 # CI workflow principal pentru GeniusSuite – configurat în F0.2.3+
 on:
   pull_request:
@@ -34,6 +36,7 @@ jobs:
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v4
       - name: Connect to Nx Cloud
+        if: ${{ secrets.NX_CLOUD_AUTH_TOKEN != '' }}
         run: pnpm exec nx-cloud start-ci-run
         env:
           NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}

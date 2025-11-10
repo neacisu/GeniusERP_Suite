@@ -1,0 +1,232 @@
+name: Auto-create PR staging → master
+
+# Acest workflow creează MANUAL un PR staging → master
+# IMPORTANT: Acest PR nu va fi NICIODATĂ merge-uit automat!
+
+on:
+  workflow_dispatch:  # Trigger MANUAL prin GitHub UI
+    inputs:
+      reason:
+        description: 'Motivul pentru crearea PR-ului către production'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    name: Create PR staging → master (MANUAL)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: staging
+
+      - name: Verifică dacă staging este ahead de master
+        id: check-commits
+        run: |
+          git fetch origin master:master
+          COMMITS_AHEAD=$(git rev-list --count master..staging)
+          echo "commits_ahead=$COMMITS_AHEAD" >> $GITHUB_OUTPUT
+
+          if [ "$COMMITS_AHEAD" -gt 0 ]; then
+            echo "✅ Staging este ahead cu $COMMITS_AHEAD commit-uri față de master"
+            echo "has_new_commits=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Staging și master sunt sincronizate. Nu este necesară crearea unui PR."
+            echo "has_new_commits=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Verifică dacă există PR deschis
+        id: check-pr
+        run: |
+          PR_COUNT=$(gh pr list --base master --head staging --state open --json number --jq length)
+          echo "pr_count=$PR_COUNT" >> $GITHUB_OUTPUT
+
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "✅ PR staging → master deja există"
+            PR_NUMBER=$(gh pr list --base master --head staging --state open --json number --jq '.[0].number')
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Nu există PR staging → master"
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extrage changesets
+        id: changesets
+        if: steps.check-pr.outputs.pr_exists == 'false'
+        run: |
+          # Extrage lista de changesets din staging
+          if [ -d ".changeset" ]; then
+            CHANGESETS=$(find .changeset -maxdepth 1 -name '*.md' ! -name 'README.md' -exec basename {} \; | head -10)
+            if [ -n "$CHANGESETS" ]; then
+              echo "has_changesets=true" >> $GITHUB_OUTPUT
+              echo "changesets<<EOF" >> $GITHUB_OUTPUT
+              echo "$CHANGESETS" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+            else
+              echo "has_changesets=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generează PR body
+        id: pr-body
+        if: steps.check-pr.outputs.pr_exists == 'false' && steps.check-commits.outputs.has_new_commits == 'true'
+        run: |
+          # Generează lista detaliată de commit-uri
+          COMMITS=$(git log master..staging --pretty=format:"- %s (%h) - %an" --no-merges | head -30)
+          TOTAL_COMMITS=$(git rev-list --count master..staging --no-merges)
+          
+          # Calculează statistici
+          FILES_CHANGED=$(git diff --stat master...staging | tail -1)
+          
+          cat << 'EOF' > pr_body.md
+          ## 🚀 Release Production
+
+          Acest PR promovează schimbările din `staging` către `master` pentru deployment în **PRODUCTION**.
+
+          ### ⚠️ IMPORTANT - CITEȘTE CU ATENȚIE
+
+          - ✅ Acest PR a fost creat **MANUAL** prin workflow automation
+          - ❌ Acest PR **NU va fi merge-uit automat** - necesită aprobare manuală
+          - 🔍 **Review obligatoriu** de la cel puțin un maintainer
+          - 🧪 **Testare completă în staging** este OBLIGATORIE înainte de aprobare
+
+          ### 📋 Pre-merge Checklist
+
+          - [ ] ✅ Toate schimbările au fost testate în **staging**
+          - [ ] ✅ Testare funcțională completă efectuată
+          - [ ] ✅ Testare de regresie efectuată (dacă aplicabil)
+          - [ ] ✅ Testare de performanță efectuată (dacă aplicabil)
+          - [ ] ✅ Documentația este actualizată
+          - [ ] ✅ CHANGELOG.md este corect generat
+          - [ ] ✅ Migrările de bază de date sunt testate
+          - [ ] ✅ Rollback plan este pregătit
+          - [ ] ✅ Monitoring și alerting sunt configurate
+          - [ ] ✅ Stakeholders sunt notificați
+
+          EOF
+
+          # Adaugă motivul
+          echo "### 🎯 Motivul Release-ului" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "${{ github.event.inputs.reason }}" >> pr_body.md
+          echo "" >> pr_body.md
+
+          # Adaugă changesets dacă există
+          if [ "${{ steps.changesets.outputs.has_changesets }}" == "true" ]; then
+            echo "### 📦 Changesets Detectate" >> pr_body.md
+            echo "" >> pr_body.md
+            echo "\`\`\`" >> pr_body.md
+            echo "${{ steps.changesets.outputs.changesets }}" >> pr_body.md
+            echo "\`\`\`" >> pr_body.md
+            echo "" >> pr_body.md
+          fi
+
+          # Adaugă statistici
+          echo "### 📊 Statistici" >> pr_body.md
+          echo "" >> pr_body.md
+          echo "- 📝 Commit-uri: **$TOTAL_COMMITS**" >> pr_body.md
+          echo "- 📁 Fișiere modificate: \`$FILES_CHANGED\`" >> pr_body.md
+          echo "" >> pr_body.md
+
+          # Adaugă lista de commit-uri
+          echo "### 📝 Commit-uri Incluse" >> pr_body.md
+          echo "" >> pr_body.md
+          if [ "$TOTAL_COMMITS" -le 30 ]; then
+            echo "$COMMITS" >> pr_body.md
+          else
+            echo "$COMMITS" >> pr_body.md
+            echo "" >> pr_body.md
+            echo "... și alte $((TOTAL_COMMITS - 30)) commit-uri. Vezi istoricul complet în tab-ul Commits." >> pr_body.md
+          fi
+          echo "" >> pr_body.md
+
+          # Adaugă instrucțiuni de deployment
+          cat << 'EOF' >> pr_body.md
+
+          ### 🚀 Deployment Steps (După Merge)
+
+          1. **Merge acest PR** → Triggere workflow `release.yml`
+          2. **Verifică release-ul** → Changesets vor versiona automat pachetele
+          3. **Creează GitHub Release** → Triggere workflow `deploy-prod.yml`
+          4. **Monitorizează deployment** → Verifică GHCR și logs
+          5. **Smoke testing** → Validează aplicațiile în production
+          6. **Notifică echipa** → Comunică release-ul
+
+          ### 🔄 Rollback Plan
+
+          Dacă ceva nu funcționează corect după deployment:
+
+          ```bash
+          # Revert merge commit-ul
+          git revert -m 1 <merge_commit_sha>
+          git push origin master
+
+          # SAU deploy release-ul anterior
+          gh release view --json tagName
+          # Apoi re-deploy imaginea Docker cu tag-ul anterior
+          ```
+
+          ---
+
+          **⚠️ REMINDER**: Acest PR necesită **aprobare manuală explicită**. Nu va fi merge-uit automat.
+
+          **Creat de**: @${{ github.actor }}  
+          **Data**: $(date +"%Y-%m-%d %H:%M:%S UTC")
+          EOF
+
+      - name: Creează Pull Request
+        if: steps.check-pr.outputs.pr_exists == 'false' && steps.check-commits.outputs.has_new_commits == 'true'
+        run: |
+          gh pr create \
+            --base master \
+            --head staging \
+            --title "🚀 Release Production: staging → master" \
+            --body-file pr_body.md \
+            --label "production-release" \
+            --label "requires-review" \
+            --reviewer @${{ github.actor }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Adaugă comentariu dacă PR deja există
+        if: steps.check-pr.outputs.pr_exists == 'true'
+        run: |
+          gh pr comment ${{ steps.check-pr.outputs.pr_number }} \
+            --body "♻️ **Workflow re-rulat**
+
+          Un utilizator a încercat să creeze din nou PR-ul staging → master, dar acesta deja există.
+
+          **Motiv furnizat**: ${{ github.event.inputs.reason }}
+
+          **Rugăminte**: Te rog revizuiește acest PR existent și merge-uiește-l când ești gata pentru production release.
+
+          **Creat de**: @${{ github.actor }}  
+          **Data**: $(date +"%Y-%m-%d %H:%M:%S UTC")"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check-pr.outputs.pr_exists }}" == "true" ]; then
+            echo "✅ PR staging → master deja există (PR #${{ steps.check-pr.outputs.pr_number }})"
+            echo "📝 Comentariu adăugat la PR-ul existent"
+          else
+            echo "✅ PR staging → master a fost creat cu succes!"
+            echo "🔗 Verifică PR-ul: https://github.com/${{ github.repository }}/pulls"
+          fi
+          echo ""
+          echo "⚠️ IMPORTANT: Acest PR necesită aprobare manuală și NU va fi merge-uit automat!"
+

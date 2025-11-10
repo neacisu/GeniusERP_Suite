@@ -97,6 +97,129 @@ Accesează la `https://geniuserp.app` (portal public) sau `https://app.geniuserp
 - **Testare:** Unit (Jest), integration, e2e (Playwright), load (k6), security (ZAP/Semgrep).
 - **Linting:** ESLint, Prettier, TypeScript strict.
 
+## CI/CD Pipeline
+
+### Strategia de Branching
+
+Proiectul folosește **git-flow** cu 3 branch-uri principale:
+
+- **`dev`** – Development (integrare continuă, PR-uri de feature)
+- **`staging`** – Pre-production (testare QA, UAT)
+- **`master`** – Production (releases stabile)
+
+### Workflow-uri GitHub Actions
+
+#### 1. **CI Validation** (`.github/workflows/ci.yml`)
+
+**Trigger**: Pull Requests către `master`, `staging`, `dev`  
+**Scope**: Validare automată a codului
+
+**Pași**:
+- ✅ Format check (Prettier)
+- ✅ Lint (ESLint)
+- ✅ Test (Jest)
+- ✅ Build (Nx affected)
+- ✅ Nx Cloud (opțional, pentru remote caching)
+
+**Status**: Pipeline-ul va eșua dacă oricare din verificări nu trece.
+
+#### 2. **Changeset Bot** (`.github/workflows/changeset-bot.yml`)
+
+**Trigger**: Pull Requests către `master`, `staging`, `dev`  
+**Scope**: Validare changesets pentru versionare semantică
+
+**Comportament**:
+- Detectează modificări în pachete (`shared/*`, `cp/*`, aplicații)
+- Cere adăugarea unui changeset prin comentariu automat
+- Eșuează PR-ul dacă lipsește changeset
+
+**Cum să adaugi changeset**:
+```bash
+pnpm exec changeset
+# Urmează instrucțiunile interactive
+git add .changeset/
+git commit -m "chore: add changeset"
+```
+
+#### 3. **Release Packages** (`.github/workflows/release.yml`)
+
+**Trigger**: Push pe `master`  
+**Scope**: Versionare automată și publicare pachete
+
+**Pași**:
+- Validare cod (lint, test, build)
+- Calcul versiuni noi (changesets)
+- Actualizare `package.json` și `CHANGELOG.md`
+- Publicare pe npm registry
+- Creare commit de release
+
+#### 4. **Deploy Staging** (`.github/workflows/deploy-staging.yml`)
+
+**Trigger**: Push pe `staging`  
+**Scope**: Build și publish imagini Docker pentru staging
+
+**Output**: Imagini tag-uite cu `staging` pe GHCR
+
+#### 5. **Deploy Production** (`.github/workflows/deploy-prod.yml`)
+
+**Trigger**: Release publicat pe GitHub  
+**Scope**: Build și publish imagini Docker pentru production
+
+**Output**: Imagini tag-uite cu versiunea release-ului (ex: `v1.0.0`)
+
+### Secretele Necesare
+
+Pentru funcționarea completă a pipeline-urilor, configurează următoarele secrete în GitHub:
+
+| Secret | Scop | Obligatoriu |
+|--------|------|-------------|
+| `NX_CLOUD_AUTH_TOKEN` | Remote caching Nx Cloud | ❌ Opțional |
+| `GH_PAT_TOKEN` | Creare PR-uri și release-uri | ✅ Da |
+| `NPM_TOKEN` | Publicare pachete pe npm | ✅ Da |
+
+**Documentație**: Vezi [`.github/SECRETS_CHECKLIST.md`](.github/SECRETS_CHECKLIST.md) pentru detalii complete.
+
+### Ghiduri
+
+- **[Testare CI/CD](.github/CI_TESTING_GUIDE.md)** – Cum să testezi pipeline-urile
+- **[Configurare Nx Cloud](.github/NX_CLOUD_SETUP.md)** – Setup remote caching (opțional)
+- **[Checklist Secrete](.github/SECRETS_CHECKLIST.md)** – Configurare token-uri GitHub
+
+### Flow de Dezvoltare Recomandat
+
+1. **Feature Development**:
+   ```bash
+   git checkout dev
+   git checkout -b feature/my-feature
+   # Dezvoltă feature-ul
+   git commit -m "feat: add new feature"
+   pnpm exec changeset  # Adaugă changeset pentru pachete modificate
+   git push origin feature/my-feature
+   ```
+
+2. **Pull Request către `dev`**:
+   - CI Validation rulează automat
+   - Changeset Bot verifică prezența changesets
+   - După aprobare, merge în `dev`
+
+3. **Promovare la Staging**:
+   ```bash
+   git checkout staging
+   git merge dev
+   git push origin staging
+   # Deploy Staging se declanșează automat
+   ```
+
+4. **Release Production**:
+   ```bash
+   # După testare în staging
+   git checkout master
+   git merge staging
+   git push origin master
+   # Release workflow creează versiuni și publică pachete
+   # Apoi creează un release GitHub pentru deploy production
+   ```
+
 ## Contribuții
 
 1. Fork repo-ul.
