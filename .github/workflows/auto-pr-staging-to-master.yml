@@ -197,7 +197,7 @@ jobs:
             --body-file pr_body.md \
             --label "production-release" \
             --label "requires-review" \
-            --reviewer @${{ github.actor }}
+            --reviewer ${{ github.actor }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
