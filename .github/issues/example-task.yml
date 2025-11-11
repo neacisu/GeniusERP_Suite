@@ -1,0 +1,35 @@
+title: "F0.1.1 - Setup Repository GitHub"
+body: |
+  ## 📝 Descriere
+  Creare repository GeniusERP_Suite pe GitHub cu structura de bază și configurațiile esențiale.
+
+  ## 🎯 Scop
+  Asigurați că avem un repository GitHub complet configurat pentru dezvoltarea GeniusERP Suite.
+
+  ## 📋 Livrabile / Definiția 'Done'
+  - [ ] Repository `GeniusERP_Suite` creat pe GitHub
+  - [ ] README.md adăugat cu descriere proiect
+  - [ ] .gitignore configurat pentru Node.js/TypeScript
+  - [ ] Branch protection rules configurate
+  - [ ] Topics adăugate (genius-suite, erp, monorepo, nx)
+  - [ ] Repository setat ca private până la lansare
+
+  ## 🔗 Dependențe
+  - Parent: F0.1 - Inițializare Infrastructură
+
+  ## 🧪 Testare
+  - Verificare că repository-ul este accesibil
+  - Testare clone repository
+  - Verificare că toate fișierele esențiale sunt prezente
+
+  ## 📚 Referințe
+  - Capitolul 17.1 din GeniusERP Suite Plan v1.0.5
+  - [GitHub Docs - Creating repositories](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)
+
+  ## ⏰ Estimare
+  2-3 ore
+
+  ## 🎭 Prioritate
+  🔥 Critical
+labels: ["task", "infrastructure", "github", "setup", "critical"]
+assignees: ["neacisu"]
