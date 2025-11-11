@@ -26,14 +26,8 @@
       "inputs": ["default", "^default"],
       "outputs": ["{projectRoot}/coverage"]
     },
-    "format:check": {
-      "cache": true
-    },
-    "docker-build": {
-      "cache": true,
-      "dependsOn": ["build"],
-      "inputs": ["default", "^default"]
-    }
-  },
-  "nxCloudId": "691268eb369b28a97cc96512"
+    "format:check": { "cache": true },
+    "docker-build": { "cache": true, "dependsOn": ["build"], "inputs": ["default", "^default"] }
+    # TODO: add NX Cloud configuration & nxCloudId '691268eb369b28a97cc96512' when we have more projects
+  }
 }
