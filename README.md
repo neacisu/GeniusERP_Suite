@@ -229,6 +229,18 @@ Pentru funcționarea completă a pipeline-urilor, configurează următoarele sec
 
 Vezi `scripts/README.md` pentru tooling complet.
 
+## CI/CD Pipeline
+
+GeniusSuite folosește GitHub Actions pentru CI/CD complet automatizat:
+
+- **Branch Strategy:** `dev` → `staging` → `master`
+- **Auto PR:** dev→staging (semi-automat cu label `ready-for-staging`)
+- **Nx Cloud:** Dezactivat temporar până la adăugarea primelor proiecte reale
+  - **nxCloudId:** TODO:`691268eb369b28a97cc96512` (păstrat pentru reactivare)
+  - **Reactivare:** Adaugă `nxCloudId` în `nx.json` și decomentează în CI workflow când ai apps/libs
+
+Workflow-uri: `.github/workflows/` - CI validation, auto-PR, deploy staging/prod.
+
 ## Licență
 
 Proprietate privată – contactați echipa pentru licențiere.
