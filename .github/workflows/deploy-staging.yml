@@ -58,10 +58,11 @@ jobs:
       - name: Check for Nx projects
         id: check-projects
         run: |
-          # Count Nx projects using jq
-          PROJECT_COUNT=$(pnpm exec nx show projects --json 2>/dev/null | jq length 2>/dev/null || echo "0")
           echo "project_count=$PROJECT_COUNT" >> $GITHUB_OUTPUT
           if [ "$PROJECT_COUNT" -gt 0 ]; then
+            echo "✅ Found $PROJECT_COUNT Nx projects"
+          PROJECT_COUNT=$(pnpm exec nx show projects --json 2>/dev/null | jq length 2>/dev/null || echo "0")
+          echo "project_count=$PROJECT_COUNT" >> $GITHUB_OUTPUT
             echo "✅ Found $PROJECT_COUNT Nx projects - proceeding with Docker build"
             echo "has_projects=true" >> $GITHUB_OUTPUT
           else
