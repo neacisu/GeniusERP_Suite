@@ -1,0 +1,20 @@
+name: "Inițiativă / Sub-fază (Tracker)"
+description: "Un tracker de nivel înalt pentru o Sub-fază (de ex. F0.1)"
+body:
+  - type: textarea
+    id: obiectiv
+    attributes:
+      label: "Obiectivul Inițiativei"
+      description: "Care este scopul principal al acestei sub-faze?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterii-acceptare
+    attributes:
+      label: "Criterii de Acceptare"
+      description: "Cum știm că această sub-fază este finalizată?"
+    validations:
+      required: true
+
+labels: [epic-tracker]
