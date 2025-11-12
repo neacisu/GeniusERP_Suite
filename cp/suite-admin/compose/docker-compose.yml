@@ -3,8 +3,8 @@ version: '3.8'
 services:
   suite-admin:
     build:
-      context: ..
-      dockerfile: Dockerfile
+      context: ../../..
+      dockerfile: cp/suite-admin/Dockerfile
     ports:
       - "3002:3002"
     environment:

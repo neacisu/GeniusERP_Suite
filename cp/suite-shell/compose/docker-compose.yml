@@ -3,10 +3,10 @@ version: '3.8'
 services:
   suite-shell:
     build:
-      context: ..
-      dockerfile: Dockerfile
+      context: ../../..
+      dockerfile: cp/suite-shell/Dockerfile
     ports:
-      - "3000:3000"
+      - "3001:3001"
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
       - OTEL_SERVICE_NAME=suite-shell

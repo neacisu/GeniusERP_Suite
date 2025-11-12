@@ -37,8 +37,8 @@ COPY --from=builder /app/cp/suite-login ./cp/suite-login
 EXPOSE 3003
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3003/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3003/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 # Start application directly with ts-node from source
 CMD ["node", "-r", "ts-node/register", "cp/suite-login/src/main.ts"]

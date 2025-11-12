@@ -1,5 +1,5 @@
-import { FastifyRequest, FastifyReply } from 'fastify';
 import fastify from 'fastify';
+import type { FastifyRequest, FastifyReply } from 'fastify';
 import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
