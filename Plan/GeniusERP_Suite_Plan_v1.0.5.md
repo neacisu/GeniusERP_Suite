@@ -7783,19 +7783,24 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.14": {
     "denumire_task": "Adăugare Serviciu OTEL Collector în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `otel-collector` în fișierul de Compose dev, folosind imaginea OpenTelemetry Collector și fișierul de configurare creat.",
-    "descriere_lunga si_detaliata_task": "Introducem în `shared/observability/compose/compose.dev.yml` primul serviciu: OTEL Collector. Vom adăuga sub secțiunea `services:` un serviciu numit, de exemplu, `otel-collector`, cu următoarele atribute:\n- **Image**: Folosește imaginea oficială OpenTelemetry Collector (ex. `otel/opentelemetry-collector:latest` sau o versiune fixă compatibilă).\n- **Volumes**: Montează fișierul de configurare `otel-collector-config.yml` în container, de ex.: `- ./shared/observability/otel-collector-config.yml:/etc/otel-collector-config.yml:ro`.\n- **Command**: Specifică comanda de start a colectorului pentru a folosi config-ul montat (ex.: `--config=/etc/otel-collector-config.yml`).\n- **Ports**: Expune porturile necesare dacă vrei să accesezi colectorul extern (poate nu e necesar în dev; OTEL colectează date de la celelalte containere direct prin rețeaua Docker). Totuși, asigură-te că porturile 4317 (gRPC) și 4318 (HTTP) sunt disponibile pentru celelalte containere (prin rețeaua `observability`).\n- **Networks**: Atașează serviciul la rețeaua `observability` definită la F0.3.12.\nAstfel configurat, OTEL Collector-ul va porni în container și va asculta pe porturile specifice pentru date OTLP de la aplicații.",
+    "descriere_lunga_si_detaliata_task": "Introducem în `shared/observability/compose/profiles/compose.dev.yml` primul serviciu din stack-ul de observabilitate: OTEL Collector. Vom adăuga sub secțiunea `services:` un serviciu numit `otel-collector`, cu următoarele atribute:\n- **Image**: imaginea oficială OpenTelemetry Collector (ex. `otel/opentelemetry-collector:latest` sau o versiune fixă compatibilă).\n- **Volumes**: montează fișierul de configurare `shared/observability/otel-config/otel-collector-config.yml` în container, de ex.: `- ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro` (cale relativă față de `compose/profiles/`).\n- **Command**: comanda de start a colectorului pentru a folosi config-ul montat (ex.: `--config=/etc/otel-collector-config.yml`).\n- **Ports**: nu este obligatoriu să expunem porturi către exterior în dev; celelalte containere îl vor accesa prin rețeaua `observability`, dar dacă e nevoie se pot expune 4317/4318.\n- **Networks**: atașează serviciul la rețeaua `observability` definită la F0.3.12.\nAstfel configurat, OTEL Collector-ul va porni în container și va asculta pe porturile OTLP pentru datele trimise de aplicații.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.13: Fișierul de config pentru colector este gata. Acum definim containerul OTEL Collector în orchestrare folosindu-l.",
-    "contextul_general_al_aplicatiei": "Collectorul OTEL reprezintă punctul central al pipeline-ului de trasabilitate. Prin includerea lui în Docker Compose, ne asigurăm că la rularea mediului de dev (`docker compose up`) acesta va porni împreună cu celelalte componente, conform cerinței de a avea Traefik+observability lansate cu o singură comandă:contentReference[oaicite:19]{index=19}.",
-    "contextualizarea_directoarelor_si_cailor": "Deschide `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă:\n```yaml\n  otel-collector:\n    image: otel/opentelemetry-collector:latest\n    command: [\"--config=/etc/otel-collector-config.yml\"]\n    volumes:\n      - ../../otel-collector-config.yml:/etc/otel-collector-config.yml:ro\n    networks:\n      - observability\n```\nNotă: se folosește calea relativă potrivită (presupunând că `compose.dev.yml` se află în `shared/observability/compose/`, mergem două niveluri în sus pentru a monta config-ul din `shared/observability/`). Nu expunem porturi în mod explicit aici, deoarece celelalte containere îl vor accesa prin rețeaua internă Docker.",
-    "restrictii_anti_halucinatie": "Nu adăuga environment variables inutile; configurarea se face prin fișier, deci nu defini variabile OTEL în acest container. Nu include încă dependințe `depends_on` către alte servicii (collectorul poate porni independent de celelalte).",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu modifica fișierul de config OTEL în acest pas - presupunem că este corect. Nu activa încă colectarea de metrici prin acest colector, focusul e doar pe trasabilitate (conform config-ului minimal).",
-    "validare": "Rulare `docker compose -f shared/observability/compose/compose.dev.yml up -d otel-collector` și verifică log-urile: containerul ar trebui să pornească fără erori de configurare (mesaj de tip \"Everything is ready\" de la otelcol).",
-    "outcome": "Serviciul Docker `otel-collector` este definit în configurația de dezvoltare, folosind config-ul specific, și se alătură rețelei de observabilitate.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.11: Fișierul `shared/observability/compose/profiles/compose.dev.yml` există (schelet). F0.3.12: Rețeaua `observability` este definită în același fișier. F0.3.13: Fișierul de config pentru colector există în `shared/observability/otel-config/otel-collector-config.yml`.",
+    "contextul_general_al_aplicatiei": "Collectorul OTEL reprezintă punctul central al pipeline-ului de trasabilitate. Prin includerea lui în Docker Compose (profilul dev), ne asigurăm că la rularea mediului de dev (`docker compose up`) acesta va porni împreună cu celelalte componente, conform cerinței de a avea Traefik + observability lansate cu o singură comandă.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și, sub cheia existentă `services:`, adaugă:\n```yaml\n  otel-collector:\n    image: otel/opentelemetry-collector:latest\n    command: [\"--config=/etc/otel-collector-config.yml\"]\n    volumes:\n      - ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro\n    networks:\n      - observability\n```\nCalea `../../otel-config/otel-collector-config.yml` este relativă la directorul fișierului `compose.dev.yml` (`shared/observability/compose/profiles/`) și ajunge în `shared/observability/otel-config/`.",
+    "restrictii_anti_halucinatie": [
+      "Nu adăuga environment variables inutile; configurarea se face prin fișierul YAML montat.",
+      "Nu adăuga încă `depends_on` către alte servicii; collectorul poate porni independent.",
+      "Nu modifica în acest pas fișierul de config OTEL; presupunem că este valid (F0.3.13)."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu activa aici colectarea de metrici sau loguri prin collector; focusul acestui serviciu rămâne trasabilitatea, conform config-ului minimal curent.",
+    "validare": "Rulează `docker compose -f shared/observability/compose/profiles/compose.dev.yml up -d otel-collector` și verifică log-urile containerului: OTEL Collector trebuie să pornească fără erori de configurare (ex. mesaj tipic de inițializare reușită).",
+    "outcome": "Serviciul Docker `otel-collector` este definit în configurația de dezvoltare (profil dev), folosind config-ul din `otel-config/` și este atașat la rețeaua de observabilitate.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.15
@@ -7842,7 +7847,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.17
 
+```JSON
+  {
   "F0.3.17": {
     "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
     "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/grafana/` (ex. `datasources.yml`).",
@@ -7857,8 +7865,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu schimba porturile standard în acest config fără motiv. Nu seta credențiale sau alte câmpuri (toate serviciile noastre rulează fără autentificare intern în modul dev).",
     "validare": "Va fi validată la pornirea containerului Grafana (dacă fișierul are erori, Grafana va loga mesaje de eroare în container). Poți verifica vizual că fișierul este corect formatat YAML și conține toate cele 3 data source-uri așteptate.",
     "outcome": "Fișierul de provisioning pentru sursele de date Grafana este creat, permițând configurarea automată a conexiunilor către Prometheus, Loki și Tempo la startul Grafana.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.18": {
     "denumire_task": "Creare Configurație Provisionare Dashboard-uri Grafana",
     "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana (ex. `dashboards.yml`) care indică încărcarea automată a dashboard-urilor JSON din directorul `grafana/dashboards/`.",

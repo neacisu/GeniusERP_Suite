@@ -1,6 +1,13 @@
 version: '3.9'
 
-services: {}
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    networks:
+      - observability
 
 networks:
   observability:
