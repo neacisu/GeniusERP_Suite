@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  suite-login:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: genius-suite-login
+    restart: always
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: suite-login
+      NODE_ENV: production
+    ports:
+      - "3003:3003"
+    networks:
+      - observability
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  observability:
+    external: true
+    name: geniuserp_observability
