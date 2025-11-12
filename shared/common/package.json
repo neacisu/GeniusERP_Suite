@@ -11,6 +11,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "pino": "10.1.0"
+    "pino": "^10.1.0"
   }
 }

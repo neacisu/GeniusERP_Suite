@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  ai-hub:
+    build:
+      context: ../../../
+      dockerfile: cp/ai-hub/Dockerfile
+    container_name: genius-suite-ai-hub
+    ports:
+      - "3007:3007"
+    environment:
+      - NODE_ENV=production
+      - PORT=3007
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-ai-hub}
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_METRICS_EXPORTER=prometheus
+      - PROMETHEUS_METRICS_PORT=9090
+      - LOG_LEVEL=info
+    networks:
+      - observability
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  observability:
+    external: true
+    name: ${GS_OBS_NET:-observability}
