@@ -8108,21 +8108,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.28": {
-    "denumire_task": "Actualizare Docker Compose pentru suite-shell",
-    "descriere_scurta_task": "Modifică configurația Docker Compose a modulului suite-shell pentru a se integra cu observabilitatea: atașează-l la rețeaua `observability` și setează variabile de mediu OTEL.",
-    "descriere_lunga si_detaliata_task": "În fișierul Docker Compose al aplicației **suite-shell** (ex. `cp/suite-shell/compose/docker-compose.yml`), realizăm următoarele modificări:\n- **Rețea**: Adăugăm serviciul (containerul) suite-shell ca membru al rețelei `observability` (pe lângă rețeaua internă existentă). Astfel, containerul va putea comunica cu OTEL Collector, Prometheus etc. (Exemplu: sub `services:`, la definiția containerului, în lista de networks adăugăm `observability`).\n- **Environment**: Introducem variabilele de mediu necesare pentru agentul OTEL din aplicație:\n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` pentru a direcționa exportul de trace-uri (și metrici, dacă ar fi cazul) către colector.\n  - `OTEL_SERVICE_NAME=suite-shell` pentru a identifica unic serviciul în sistemul de observabilitate.\n- **Depends_on** (opțional): Putem adăuga `depends_on: [\"otel-collector\"]` la serviciul suite-shell, asigurând că atunci când orchestrăm local, colectorul pornește înainte (prevenind mesaje de eroare la inițializare). Acest pas este opțional deoarece biblioteca OTEL va retrimite datele și după start dacă colectorul apare cu întârziere.\nDupă aceste schimbări, când containerul suite-shell este lansat alături de stack-ul de observabilitate, va putea trimite telemetria cu succes.",
+    "denumire_task": "Actualizare Docker Compose pentru suite-shell (integrare observability)",
+    "descriere_scurta_task": "Modifică configurația Docker Compose a modulului suite-shell pentru a se integra cu observabilitatea: atașează serviciul la rețeaua `observability` (externală `geniuserp_observability`) și setează variabilele de mediu OTEL.",
+    "descriere_lunga_si_detaliata_task": "În fișierul Docker Compose al aplicației **suite-shell** (`cp/suite-shell/compose/docker-compose.yml`), conectăm containerul la stack-ul de observabilitate și configurăm SDK-ul OTEL din cod (din F0.3.27 corectat):\n- **Rețea observability**:\n  - Sub serviciul `suite-shell`, adaugă rețeaua logică `observability` în lista de `networks`, pe lângă rețelele deja existente.\n  - La nivel de fișier (`networks:`), definește rețeaua `observability` ca rețea externă care referă network-ul creat de stack-ul comun de observabilitate:\n    ```yaml\n    networks:\n      observability:\n        external: true\n        name: geniuserp_observability\n    ```\n  Astfel, containerul `suite-shell` va partaja aceeași rețea Docker cu serviciul `otel-collector` definit în `shared/observability/compose/profiles/compose.dev.yml`.\n- **Variabile de mediu OTEL**:\n  - În secțiunea `environment:` a serviciului `suite-shell`, adaugă:\n    ```yaml\n    - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n    - OTEL_SERVICE_NAME=suite-shell\n    ```\n  - `OTEL_EXPORTER_OTLP_ENDPOINT` indică SDK-ului OTEL din aplicație că trebuie să trimită trace-urile (și eventual alte semnale) prin OTLP HTTP către serviciul `otel-collector` din aceeași rețea Docker.\n  - `OTEL_SERVICE_NAME` setează numele serviciului raportat în sistemul de observabilitate (Tempo/Prometheus/Grafana), și trebuie să corespundă cu cel folosit în `initTracing` / `initMetrics`.\n- **Dependență opțională**:\n  - Opțional, poți adăuga `depends_on:` cu `otel-collector` pentru a porni mai întâi colectorul atunci când rulezi un orchestrator comun (nu este obligatoriu, dar poate reduce zgomotul de erori la startup).\nDupă aceste modificări, `suite-shell` va putea să trimită telemetrie către OTEL Collector atunci când este orchestrat împreună cu stack-ul de observabilitate.",
     "directorul_directoarele": [
       "cp/suite-shell/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.27: Codul suite-shell a fost instrumentat pentru observabilitate. Acum ajustăm configurarea containerului pentru a-l conecta la stack-ul de observabilitate.",
-    "contextul_general_al_aplicatiei": "Guvernanța rețelelor Docker cere ca serviciile ce comunică să fie pe aceeași rețea. Prin adăugarea suite-shell în rețeaua `observability`, ne asigurăm că datele de telemetrie ajung la destinație. Setarea variabilelor de mediu oferă flexibilitate configurării agentului OTEL din interiorul containerului (poate fi ajustată per mediu de deploy).",
-    "contextualizarea_directoarelor si_cailor": "Deschide fișierul `cp/suite-shell/compose/docker-compose.yml`. Sub definiția serviciului, în secțiunea `networks:`, adaugă `observability` (asigură-te că există definită rețeaua observability la nivel de orchestrare global). În secțiunea `environment:`, adaugă liniile:\n```yaml\n- OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n- OTEL_SERVICE_NAME=suite-shell\n```\nSalvează modificările. Dacă containerul are deja o secțiune de environment, doar inserează aceste chei. Verifică că indentarea YAML este corectă și că suite-shell figurează acum sub lista de rețele conectate.",
-    "restrictii_anti_halucinatie": "Nu elimina rețele existente (ex: `internal` sau `default`) ale serviciului, doar adaugă pe cea nouă. Nu modifica alte setări (volume, porturi) care nu țin de observabilitate.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu adăuga port mapping sau alte servicii noi în acest Compose - modificările țin strict de observabilitate. Nu seta variabile de mediu inutile (ex: nu definim aici `OTEL_LOG_LEVEL` sau altele, dacă nu e necesar).",
-    "validare": "Dacă rulezi `docker compose up -d suite-shell` (în contextul orchestrării care include rețeaua observability), execută `docker inspect suite-shell` și verifică în output că rețeaua observability apare la Networks. De asemenea, poți intra în container (`docker compose exec suite-shell printenv`) și verifica prezența variabilelor `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Totul trebuie să fie setat corect.",
-    "outcome": "Configurația Docker Compose pentru suite-shell este actualizată: containerul este conectat la rețeaua de observabilitate și configurat să comunice cu colectorul OTEL.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.12 și F0.3.14 corectate: rețeaua `observability` (name: `geniuserp_observability`) și serviciul `otel-collector` sunt definite în `shared/observability/compose/profiles/compose.dev.yml`. F0.3.27 corectat: codul suite-shell folosește `@genius-suite/observability` pentru tracing/metrici și `@genius-suite/common` pentru logging.",
+    "contextul_general_al_aplicatiei": "Fiecare serviciu al suitei trebuie conectat la stack-ul comun de observabilitate printr-o rețea partajată și variabile de mediu OTEL. Pentru `suite-shell`, acest lucru se face la nivel de `docker-compose.yml` specific modulului, fără a încălca arhitectura de rețele și compoziția hibridă descrisă în plan (compose per app + compose comun de observabilitate).",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `cp/suite-shell/compose/docker-compose.yml` și:\n1. Găsește definiția serviciului principal (ex. `suite-shell:` sau numele echivalent).\n2. În secțiunea `environment:` a serviciului, adaugă liniile:\n   ```yaml\n   - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n   - OTEL_SERVICE_NAME=suite-shell\n   ```\n   (dacă `environment` este în format map în loc de listă, folosește chei: `OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318` etc.).\n3. În secțiunea `networks:` a serviciului, adaugă `observability` pe lângă rețelele deja prezente, de exemplu:\n   ```yaml\n   services:\n     suite-shell:\n       networks:\n         - internal\n         - observability\n   ```\n4. La finalul fișierului (sau în blocul global `networks:`), adaugă definiția:\n   ```yaml\n   networks:\n     observability:\n       external: true\n       name: geniuserp_observability\n   ```\n   Dacă există deja o secțiune `networks:`, doar adaugă acolo intrarea `observability` fără a altera celelalte rețele.",
+    "restrictii_anti_halucinatie": "Nu elimina rețele existente ale serviciului (ex. `internal`, `default`), doar adaugă `observability`. Nu schimba port mapping-uri, volume sau alte setări ale serviciului care nu țin de observabilitate. Nu seta alte variabile OTEL în afara celor specificate, dacă nu există cerințe explicite.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea rețeaua `observability` ca rețea nouă locală; trebuie definită ca `external` indicând `geniuserp_observability`, care este creată de stack-ul comun de observabilitate. Nu adăuga servicii noi în acest fișier Compose.",
+    "validare": "După modificare, rulează `docker compose -f cp/suite-shell/compose/docker-compose.yml config` pentru a verifica sintaxa. Apoi, într-un context în care rețeaua `geniuserp_observability` există deja, pornește containerul suite-shell și rulează `docker inspect suite-shell` pentru a verifica că este conectat la rețeaua `geniuserp_observability`. În interiorul containerului (`docker exec`), rulează `printenv` și confirmă că `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME` sunt setate corect.",
+    "outcome": "Configurația Docker Compose pentru suite-shell este actualizată: containerul este conectat la rețeaua de observabilitate (externală `geniuserp_observability`) și are variabilele de mediu OTEL setate pentru a trimite telemetria către OTEL Collector.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.29
@@ -8170,7 +8171,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.31
 
+```JSON
+  {
   "F0.3.31": {
     "denumire_task": "Integră Observabilitate în suite-login (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația suite-login pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8186,8 +8190,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația suite-login local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația suite-login a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.32": {
     "denumire_task": "Actualizare Docker Compose pentru suite-login",
     "descriere_scurta_task": "Conectează containerul suite-login la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
