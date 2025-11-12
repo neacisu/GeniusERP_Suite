@@ -8039,20 +8039,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.25": {
     "denumire_task": "Creare Configurație Parser Log Traefik (`traefik.json` în parsers)",
-    "descriere_scurta_task": "Adaugă un fișier JSON de configurare a parser-ului de loguri Traefik în `shared/observability/logs/parsers/traefik.json` pentru a decoda și curăța logurile de acces Traefik (format text) înainte de trimiterea în Loki.",
-    "descriere_lunga si_detaliata_task": "Deoarece Traefik va produce loguri de acces (request-uri) într-un format specific (common log format sau JSON dacă e configurat), definim un parser care să structureze aceste loguri. În `shared/observability/logs/parsers/traefik.json` vom pune definiția unui pipeline Promtail personalizat pentru logurile Traefik. De exemplu, dacă Traefik e setat să logheze în JSON, putem specifica:\n```json\n{\n  \"pipeline_stages\": [\n    { \"json\": { \" expressions\": {\"ClientIP\": \"ClientHost\", \"Path\": \"RequestPath\", \"Status\": \"StatusCode\"} } },\n    { \"timestamp\": { \"source\": \"StartUTC\", \"format\": \"2006-01-02T15:04:05.999Z\" } },\n    { \"metrics\": [ { \"type\": \"Counter\", \"name\": \"traefik_http_count\", \"help\": \"HTTP Requests\", \"match\": \"StatusCode>=200\" } ] }\n  ]\n}\n```\n(Acesta e un exemplu fictiv simplificat.) Scopul este să extragem câmpurile importante (IP client, cale, cod status, eventual durata) și să putem filtra/masca PII. De asemenea, putem elimina sau anonimiza anumite câmpuri (ex. IP-ul client, dacă dorim, pentru confidențialitate). Promtail va putea încorpora acest parser dacă configurăm un job special pentru Traefik. În config-ul nostru promtail (F0.3.20) am tratat uniform logurile, dar putem extinde ulterior să aplicăm acest parser pe intrările provenite de la containerul Traefik. Pentru skeleton, definim fișierul ca referință, chiar dacă nu e încă referit explicit în config, indicând intenția de a procesa logurile Traefik corespunzător.",
+    "descriere_scurta_task": "Adaugă un fișier JSON de configurare a parser-ului de loguri Traefik în `shared/observability/logs/parsers/traefik.json` pentru a documenta și structura pașii de parsare a logurilor Traefik înainte de trimiterea în Loki (prin Promtail).",
+    "descriere_lunga_si_detaliata_task": "Pentru logurile de acces Traefik dorim o procesare separată, astfel încât informațiile să fie structurate și eventualele date sensibile (ex. IP client) să poată fi mascate sau eliminate. Conform arhitecturii, fișierele de parsare pentru loguri sunt stocate în `shared/observability/logs/parsers/`. În fișierul `traefik.json` vom defini un schelet de configurare pentru pașii de parsare (pipeline) pe care îi vom integra ulterior în configurația Promtail.\n\nExemplu de conținut al fișierului (schelet JSON, inspirat de pipeline-urile Promtail):\n```json\n{\n  \"pipeline_stages\": [\n    {\n      \"json\": {\n        \"expressions\": {\n          \"client_ip\": \"ClientHost\",\n          \"path\": \"RequestPath\",\n          \"status\": \"StatusCode\"\n        }\n      }\n    },\n    {\n      \"timestamp\": {\n        \"source\": \"StartUTC\",\n        \"format\": \"2006-01-02T15:04:05.999Z\"\n      }\n    },\n    {\n      \"labels\": {\n        \"status\": \"StatusCode\",\n        \"path\": \"RequestPath\"\n      }\n    }\n  ]\n}\n```\nAcesta este un exemplu de schelet: presupune că Traefik este configurat să emită loguri în format JSON și arată ce câmpuri intenționăm să extragem (IP client, path, cod status) și cum pot fi folosite la etichetare. În faze ulterioare, pașii din acest schelet vor fi copiați/adaptați în configurația efectivă a Promtail (F0.3.20) într-un job dedicat pentru Traefik. În acest task ne limităm la a versiona schema/șablonul de parser pentru logurile Traefik în directorul corect (`logs/parsers/`).",
     "directorul_directoarele": [
       "shared/observability/logs/parsers/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.23: Avem monitorizare Traefik prin metrici. Acum pregătim și partea de loguri Traefik, pentru a putea eventual corela evenimentele.",
-    "contextul_general_al_aplicatiei": "Logurile de acces Traefik pot conține date sensibile (IP-uri clienți, URL-uri). Definind un parser, ne asigurăm că atunci când vom agrega logurile, putem elimina/masca PII (cum e cerut de politici) și structura informația pentru căutare facilă. Acest pas este conform cu nota din plan privind redactarea PII și trimiterea logurilor la observability:contentReference[oaicite:28]{index=28}.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/parsers/traefik.json`. Include obiectul JSON ce descrie pașii de procesare. De exemplu, dacă folosim log JSON nativ Traefik, definim stagii care să parcurgă câmpurile JSON. Dacă ar fi text (CLF), am defini un regex stage aici. Pentru skeleton, putem lăsa un comentariu în JSON (sau documentație separată) indicând ce face parserul (nu efectiv în JSON, ci ca README).",
-    "restrictii_anti_halucinatie": "Nu complica excesiv parserul. Nu introduce 10 stagii de curățare inutilă; un parse JSON sau regex plus eventual redactarea unui câmp e suficient aici.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu forța aplicarea acestui parser în config-ul promtail fără a-l fi testat. E mai mult o plasare a fișierului ca piesă a puzzle-ului; integrarea exactă poate urma în faza Traefik (F0.4).",
-    "validare": "Acest fișier în sine nu poate fi validat runtime până nu e referit de Promtail. Verifică că e JSON valid (parsabil). Ulterior, când Traefik va genera loguri, se poate actualiza config-ul Promtail să folosească acest parser și testa că logurile sunt etichetate/parseate corect (ex. consultați Loki pentru câmpuri extrase).",
-    "outcome": "Fișierul de parser pentru logurile Traefik este creat, pregătit pentru a fi folosit de agentul de loguri în vederea interpretării corecte și sigure a logurilor Traefik.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.2: A fost creată structura de directoare pentru loguri, inclusiv `logs/parsers/`. F0.3.20: Configurația principală Promtail definește ingestia logurilor containerelor. Acum adăugăm un parser dedicat pentru logurile Traefik, care va fi integrat ulterior în config-ul Promtail.",
+    "contextul_general_al_aplicatiei": "Logurile de acces Traefik pot conține date sensibile (IP-uri clienți, URL-uri). Definind un parser dedicat, avem un loc central unde documentăm pașii de procesare (parsare, etichetare, eventual redactare PII) pentru logurile Traefik, aliniat cu planul de redactare PII și trimitere a logurilor către observability.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/parsers/traefik.json`. Inserează un obiect JSON valid cu o cheie de top `pipeline_stages`, care descrie pașii de parsare intenționați pentru logurile Traefik (de exemplu, parsare JSON, extragerea câmpurilor importante, normalizarea timestamp-ului și transformarea unor câmpuri în etichete). Acest fișier funcționează ca șablon/schemă pentru pașii ce vor fi integrați ulterior în fișierul de configurare Promtail (`promtail-config.yml`). Confirmă că JSON-ul este valid (fără virgule lipsă sau chei invalide).",
+    "restrictii_anti_halucinatie": "Nu complica excesiv parserul: un parse JSON (sau regex, dacă Traefik ar scrie text) plus câteva transformări simple sunt suficiente pentru skeleton. Nu descrie aici features Promtail care nu există; limitează-te la stagii standard (json, timestamp, labels etc.).",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica în acest task fișierul `promtail-config.yml`; integrarea concretă a parserului va fi făcută ulterior când Traefik va fi adăugat în orchestrare. Nu crea alte fișiere de parsare suplimentare (ex. pentru alte servicii) în acest pas.",
+    "validare": "Verifică faptul că fișierul `traefik.json` este JSON valid (poate fi deschis în orice editor/linter JSON fără erori). În fazele ulterioare, când pașii vor fi copiați în config-ul Promtail, se va valida că Promtail pornește fără erori și că logurile Traefik sunt parse-ate corect în Loki.",
+    "outcome": "Fișierul de parser pentru logurile Traefik (`shared/observability/logs/parsers/traefik.json`) este creat și versionat, documentând schema de parsare intenționată pentru logurile Traefik și pregătind terenul pentru integrarea sa în pipeline-ul Promtail.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.26
@@ -8100,7 +8101,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.28
 
+```JSON
+  {
   "F0.3.28": {
     "denumire_task": "Actualizare Docker Compose pentru suite-shell",
     "descriere_scurta_task": "Modifică configurația Docker Compose a modulului suite-shell pentru a se integra cu observabilitatea: atașează-l la rețeaua `observability` și setează variabile de mediu OTEL.",
@@ -8115,8 +8119,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu adăuga port mapping sau alte servicii noi în acest Compose - modificările țin strict de observabilitate. Nu seta variabile de mediu inutile (ex: nu definim aici `OTEL_LOG_LEVEL` sau altele, dacă nu e necesar).",
     "validare": "Dacă rulezi `docker compose up -d suite-shell` (în contextul orchestrării care include rețeaua observability), execută `docker inspect suite-shell` și verifică în output că rețeaua observability apare la Networks. De asemenea, poți intra în container (`docker compose exec suite-shell printenv`) și verifica prezența variabilelor `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Totul trebuie să fie setat corect.",
     "outcome": "Configurația Docker Compose pentru suite-shell este actualizată: containerul este conectat la rețeaua de observabilitate și configurat să comunice cu colectorul OTEL.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.29": {
     "denumire_task": "Integră Observabilitate în suite-admin (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația suite-admin pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
