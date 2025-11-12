@@ -7855,20 +7855,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.17": {
     "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
-    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/grafana/` (ex. `datasources.yml`).",
-    "descriere_lunga_si_detaliata_task": "Pentru ca instanța Grafana să cunoască automat sursele de date (Prometheus pentru metrici, Loki pentru loguri, Tempo pentru trace-uri), vom folosi mecanismul de provisioning. Creăm un fișier YAML (ex. `datasources.yml`) sub directorul `shared/observability/grafana/`, cu conținut de forma:\n```yaml\napiVersion: 1\ndatasources:\n  - name: Prometheus\n    type: prometheus\n    url: http://prometheus:9090\n    access: proxy\n    isDefault: true\n  - name: Loki\n    type: loki\n    url: http://loki:3100\n    access: proxy\n  - name: Tempo\n    type: tempo\n    url: http://tempo:3100\n    access: proxy\n```\nAcest exemplu definește 3 surse: Prometheus, Loki și Tempo, indicând Grafanei cum să le acceseze (prin DNS-ul serviciilor respective în rețeaua Docker). Notăm că Tempo folosește același port ca Loki în modul single-binary (3100) fiind configurat astfel implicit; dacă e alt port, vom ajusta. Flagul `isDefault: true` face ca Prometheus să fie sursa implicită pentru panel-urile de grafice. Acest fișier va fi montat în containerul Grafana la pornire, asigurând configurarea automată a surselor de date.",
+    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/dashboards/grafana/` (ex. `datasources.yml`).",
+    "descriere_lunga_si_detaliata_task": "Pentru ca instanța Grafana să cunoască automat sursele de date (Prometheus pentru metrici, Loki pentru loguri, Tempo pentru trace-uri), vom folosi mecanismul de provisioning. Creăm un fișier YAML (`datasources.yml`) sub directorul `shared/observability/dashboards/grafana/`, cu conținut de forma:\n```yaml\napiVersion: 1\ndatasources:\n  - name: Prometheus\n    type: prometheus\n    url: http://prometheus:9090\n    access: proxy\n    isDefault: true\n  - name: Loki\n    type: loki\n    url: http://loki:3100\n    access: proxy\n  - name: Tempo\n    type: tempo\n    url: http://tempo:3100\n    access: proxy\n```\nAcest exemplu definește 3 surse: Prometheus, Loki și Tempo, indicând Grafanei cum să le acceseze (prin DNS-ul serviciilor respective în rețeaua Docker). Flagul `isDefault: true` face ca Prometheus să fie sursa implicită pentru panel-urile de grafice. Acest fișier va fi montat în containerul Grafana la pornire, asigurând configurarea automată a surselor de date.",
     "directorul_directoarele": [
-      "shared/observability/grafana/"
+      "shared/observability/dashboards/grafana/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.5: A fost creat directorul pentru Grafana dashboards. Acum ne ocupăm de configurarea automată a datelor sursă (Prom, Loki, Tempo) pentru Grafana.",
-    "contextul_general_al_aplicatiei": "Provisionarea surselor de date elimină necesitatea configurării manuale post-deploy a Grafana. În modul skeleton dev, definim sursele esențiale conform stack-ului planificat de observabilitate (Prometheus, Loki, Tempo).",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/datasources.yml` cu conținutul de mai sus. Asigură-te că URL-urile corespund numelor de servicii pe care le vom folosi în Compose (de ex. `prometheus` pentru serviciul Prometheus). Păstrează fișierul într-o substructură pe care o vom monta în container (Grafana are convenția de a citi config-urile de datasource din `/etc/grafana/provisioning/datasources/`).",
-    "restrictii_anti_halucinatie": "Nu crea mai multe datasources decât este cazul. Nu adăuga date source pentru baze de date sau altele care nu fac parte din observabilitate (ex: nu definim un datasource pentru PostgreSQL aici).",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu schimba porturile standard în acest config fără motiv. Nu seta credențiale sau alte câmpuri (toate serviciile noastre rulează fără autentificare intern în modul dev).",
-    "validare": "Va fi validată la pornirea containerului Grafana (dacă fișierul are erori, Grafana va loga mesaje de eroare în container). Poți verifica vizual că fișierul este corect formatat YAML și conține toate cele 3 data source-uri așteptate.",
-    "outcome": "Fișierul de provisioning pentru sursele de date Grafana este creat, permițând configurarea automată a conexiunilor către Prometheus, Loki și Tempo la startul Grafana.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.1.6: Structura de bază `shared/observability/dashboards/` este definită în arhitectură. F0.3.2–F0.3.3: Structura pentru logs și metrics este creată; acum pregătim provisioning-ul pentru Grafana.",
+    "contextul_general_al_aplicatiei": "Provisionarea surselor de date elimină necesitatea configurării manuale post-deploy a Grafana. În modul skeleton dev, definim sursele esențiale conform stack-ului de observabilitate (Prometheus, Loki, Tempo).",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/dashboards/grafana/datasources.yml` cu conținutul de mai sus. Acest fișier va fi ulterior montat în containerul Grafana în `/etc/grafana/provisioning/datasources/datasources.yml` de către serviciul definit în Compose.",
+    "restrictii_anti_halucinatie": "Nu crea mai multe datasources decât este cazul. Nu adăuga data source-uri pentru baze de date sau alte sisteme care nu fac parte din stack-ul de observabilitate (ex: PostgreSQL).",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu schimba porturile standard în acest config fără motiv. Nu seta credențiale sau alte câmpuri avansate; în modul dev serviciile rulează fără autentificare internă.",
+    "validare": "Fișierul va fi validat la pornirea containerului Grafana (dacă are erori, Grafana va loga mesaje de eroare). Poți verifica vizual că fișierul este YAML valid și conține cele 3 data source-uri așteptate.",
+    "outcome": "Fișierul de provisioning pentru sursele de date Grafana este creat în locația arhitectural corectă, permițând configurarea automată a conexiunilor către Prometheus, Loki și Tempo la startul Grafana.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.18
@@ -7915,7 +7916,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.20
 
+```JSON
+  {
   "F0.3.20": {
     "denumire_task": "Creare Configurație Promtail pentru Colectarea Logurilor",
     "descriere_scurta_task": "Adaugă fișierul de configurare Promtail (agent Loki) în `shared/observability/logs/ingestion/` (ex. `promtail-config.yml`), pentru a defini ce loguri să fie trimise către Loki.",
@@ -7930,8 +7934,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu include încă parser-ul Traefik direct aici; vom folosi un pipeline stage separat dacă e nevoie, după cum vom defini în `logs/parsers/traefik.json` ulterior. Menține config-ul general și cât mai simplu.",
     "validare": "Validarea completă va fi la rularea containerului Promtail. Ca verificare preliminară, asigură-te că sintaxa YAML este corectă și că fiecare secțiune este bine indentată. Poți testa config-ul prin rularea locală a promtail (dacă ai instalat) cu flag de dry-run, dar în mod uzual doar pornirea containerului ne va confirma.",
     "outcome": "Fișierul de configurare pentru Promtail este creat, permițând agentului de loguri să culeagă automat logurile containerelor și să le transmită către Loki.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
   "F0.3.21": {
     "denumire_task": "Adăugare Serviciu Loki în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `loki` (Grafana Loki) în Compose dev, pentru stocarea centralizată a logurilor, incluzând un volum de date pentru persistență temporară.",
