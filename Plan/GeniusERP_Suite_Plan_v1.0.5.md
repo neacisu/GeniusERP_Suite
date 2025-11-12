@@ -8155,21 +8155,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.30": {
-    "denumire_task": "Actualizare Docker Compose pentru suite-admin",
-    "descriere_scurta task": "Conectează containerul suite-admin la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
-    "descriere_lunga si_detaliata_task": "În `cp/suite-admin/compose/docker-compose.yml`, modificăm serviciul suite-admin astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=suite-admin` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul suite-admin împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "denumire_task": "Actualizare Docker Compose pentru suite-admin (observabilitate)",
+    "descriere_scurta_task": "Conectează containerul suite-admin la ecosistemul de observabilitate: îl atașează la rețeaua `observability` (geniuserp_observability) și setează variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga_si_detaliata_task": "În fișierul Docker Compose al aplicației **suite-admin** (`cp/suite-admin/compose/docker-compose.yml`), integrăm serviciul cu stack-ul de observabilitate deja definit în `shared/observability/compose/profiles/compose.dev.yml`. Facem două lucruri principale:\n- **Rețea**: adăugăm serviciul `suite-admin` în rețeaua logică `observability`, care mapează în Docker pe network-ul `geniuserp_observability` creat de stack-ul de observabilitate. Astfel, containerul poate rezolva DNS-ul `otel-collector`, `prometheus`, `loki`, etc.\n- **Environment OTEL**: adăugăm variabilele de mediu necesare SDK-ului OTEL din cod (instrumentat la F0.3.29 corectat):\n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` – endpoint-ul HTTP OTLP al collector-ului din stack-ul de observabilitate.\n  - `OTEL_SERVICE_NAME=suite-admin` – numele serviciului așa cum va apărea în Tempo/Prometheus/Grafana.\nOpțional, dacă acest compose este folosit împreună cu observability într-un singur proiect Compose, se poate folosi `depends_on` pentru `otel-collector`, dar în scenariul cu rețea externă e suficient ca rețeaua să existe. Rezultatul: când suite-admin este lansat împreună cu stack-ul de observabilitate, are conectivitate de rețea și configurația necesară pentru a trimite trace-uri și a fi corelat în observability.",
     "directorul_directoarele": [
       "cp/suite-admin/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.29: Codul suite-admin este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
-    "contextul_general_al_aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, suite-admin devine parte integrantă a ecosistemului de monitorizare.",
-    "contextualizarea_directoarelor si_cailor": "Deschide `cp/suite-admin/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
-    "restrictii_anti_halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
-    "validare": "În contextul orchestrării dev, pornește serviciul suite-admin împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul suite-admin apare ca atașat. De asemenea, rulează `docker compose exec suite-admin env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs suite-admin` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
-    "outcome": "Docker Compose-ul pentru suite-admin a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.29 (corectat): codul suite-admin este instrumentat pentru observabilitate (traces, metrici, loguri), folosind logger-ul din `@genius-suite/common` și tracing/metrici din `@genius-suite/observability`. F0.3.12 și F0.3.14 (corectate): rețeaua `observability` / `geniuserp_observability` și serviciul `otel-collector` au fost definite în `shared/observability/compose/profiles/compose.dev.yml`.",
+    "contextul_general_al_aplicatiei": "Arhitectura prevede un model Docker Compose hibrid, în care stack-ul de observabilitate expune o rețea comună `geniuserp_observability`, iar aplicațiile (inclusiv suite-admin) se alipesc acestei rețele și își configurează OTEL prin variabile de mediu. Astfel, toate serviciile pot trimite telemetrie către același colector și pot fi vizualizate unitar.",
+    "contextualizarea_directoarelor_si_cailor": "1. Deschide fișierul `cp/suite-admin/compose/docker-compose.yml`.\n2. Identifică serviciul `suite-admin` (sau numele real al serviciului pentru această aplicație) sub secțiunea `services:`.\n3. În definiția serviciului, asigură-te că există o secțiune `environment:` și adaugă:\n   ```yaml\n   services:\n     suite-admin:\n       # ... configurări existente (image, ports, volumes etc.)\n       environment:\n         - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n         - OTEL_SERVICE_NAME=suite-admin\n       networks:\n         - observability\n   ```\n   Dacă `environment` sau `networks` există deja, inserează doar liniile noi, fără a șterge restul.\n4. Dacă fișierul nu definește încă rețeaua `observability` la nivel de top, adaugă la final:\n   ```yaml\n   networks:\n     observability:\n       external: true\n       name: geniuserp_observability\n   ```\n   Aceasta spune Docker Compose că rețeaua este creată și deținută de stack-ul de observabilitate, iar acest compose doar o folosește.\n5. Salvează fișierul, păstrând indentarea YAML corectă.",
+    "restrictii_anti_halucinatie": "Nu redenumi rețeaua Docker (`observability` / `geniuserp_observability`) și nu modifica numele serviciului `otel-collector` – acestea trebuie să rămână consistente cu stack-ul de observabilitate. Nu adăuga alte variabile OTEL în afară de cele planificate aici, decât dacă sunt introduse explicit în alte task-uri.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica porturile, volumele sau alte setări ale serviciului suite-admin – acest task se ocupă exclusiv de rețea și variabilele de mediu de observabilitate. Nu declara rețeaua `observability` ca non-external; proprietarul acesteia este stack-ul de observabilitate din `shared/observability/compose/profiles/compose.dev.yml`.",
+    "validare": "Într-un mediu unde stack-ul de observabilitate a creat deja rețeaua `geniuserp_observability`, rulează `docker compose` pentru suite-admin (sau orchestratorul global). Apoi:\n- Execută `docker network inspect geniuserp_observability` și verifică faptul că containerul suite-admin apare în lista de `Containers`.\n- Rulează `docker compose exec suite-admin env` și confirmă existența variabilelor `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME` cu valorile așteptate.\nDacă stack-ul de observabilitate este funcțional și codul din F0.3.29 este implementat, ar trebui ca trace-urile suite-admin să apară în Tempo și să fie vizibile în Grafana.",
+    "outcome": "Docker Compose-ul pentru suite-admin este actualizat astfel încât containerul să fie conectat la rețeaua de observabilitate `geniuserp_observability` și să aibă configurate variabilele OTEL necesare pentru a trimite telemetrie către colector.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.31
@@ -8217,7 +8218,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.33
 
+```JSON
+  {
   "F0.3.33": {
     "denumire_task": "Integră Observabilitate în identity (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația identity pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8233,8 +8237,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația identity local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația identity a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.34": {
     "denumire_task": "Actualizare Docker Compose pentru identity",
     "descriere_scurta task": "Conectează containerul identity la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
