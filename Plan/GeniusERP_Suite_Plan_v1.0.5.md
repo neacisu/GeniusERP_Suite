@@ -7925,19 +7925,20 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.20": {
     "denumire_task": "Creare Configurație Promtail pentru Colectarea Logurilor",
     "descriere_scurta_task": "Adaugă fișierul de configurare Promtail (agent Loki) în `shared/observability/logs/ingestion/` (ex. `promtail-config.yml`), pentru a defini ce loguri să fie trimise către Loki.",
-    "descriere_lunga si_detaliata_task": "În vederea colectării logurilor containerelor și trimiterii lor către Loki, vom folosi Promtail, agentul de loguri pentru Loki. Creăm un fișier `promtail-config.yml` sub `shared/observability/logs/ingestion/`, care să conțină configurația necesară. Configurația va specifica:\n- **scrape_configs**: definim job-uri pentru colectarea logurilor. Un job generic poate prelua logurile tuturor containerelor din rețeaua noastră `observability` (sau toate containerele, filtrând după etichete Docker). Exemplu de config relevant:\n```yaml\nserver:\n  http_listen_port: 9080\npositions:\n  filename: /tmp/positions.yaml\nclients:\n  - url: http://loki:3100/loki/api/v1/push\nscrape_configs:\n  - job_name: all-containers\n    docker_sd_configs:\n      - host: unix:///var/run/docker.sock\n        network: geniuserp_observability\n    relabel_configs:\n      - source_labels: [__docker_container_image]\n        action: keep\n        regex: .*\n    pipeline_stages:\n      - json:\n          expressions:\n            level: level\n            msg: message\n            trace: traceId\n      - labeldrop: [\"__address__\"]\n```\nAcest config instructează Promtail să descopere automat toate containerele din rețeaua `geniuserp_observability` (numele rețelei definit la F0.3.12) via Docker socket, să preia logurile lor (Promtail va citi stream-ul de log al fiecărui container) și să le trimită la Loki. Stadiile de pipeline includ un parser JSON (presupunând că logurile sunt JSON, ex. cele generate de Pino), extrăgând câmpurile standard (level, message, traceId) ca etichete sau mesaje. Se elimină etichete implicite inutile (`__address__`). Vom putea adăuga parse-stage specific pentru Traefik (format diferit) folosind `parsers/traefik.json` separat în alt task.",
+    "descriere_lunga_si_detaliata_task": "În vederea colectării logurilor containerelor și trimiterii lor către Loki, vom folosi Promtail, agentul de loguri pentru Loki. Creăm un fișier `promtail-config.yml` sub `shared/observability/logs/ingestion/`, care să conțină configurația necesară. Configurația va specifica:\n- scrape_configs: definim job-uri pentru colectarea logurilor. Un job generic poate prelua logurile tuturor containerelor din rețeaua noastră `observability` (sau toate containerele, filtrând după etichete Docker). Exemplu de config relevant:\n\nserver:\n  http_listen_port: 9080\npositions:\n  filename: /tmp/positions.yaml\nclients:\n  - url: http://loki:3100/loki/api/v1/push\nscrape_configs:\n  - job_name: all-containers\n    docker_sd_configs:\n      - host: unix:///var/run/docker.sock\n        network: geniuserp_observability\n    relabel_configs:\n      - source_labels: [__docker_container_image]\n        action: keep\n        regex: .*\n    pipeline_stages:\n      - json:\n          expressions:\n            level: level\n            msg: message\n            trace: traceId\n      - labeldrop: [\"__address__\"]\n\nAcest config instruiește Promtail să descopere automat toate containerele din rețeaua `geniuserp_observability` (numele rețelei definit la F0.3.12) via Docker socket, să preia logurile lor (Promtail va citi stream-ul de log al fiecărui container) și să le trimită la Loki. Stadiile de pipeline includ un parser JSON (presupunând că logurile sunt JSON, de exemplu cele generate de Pino), extrăgând câmpurile standard (level, message, traceId) ca etichete sau mesaje. Se elimină etichete implicite inutile (`__address__`). Vom putea adăuga parse-stage specific pentru Traefik (format diferit) folosind `parsers/traefik.json` separat, în alt task.",
     "directorul_directoarele": [
       "shared/observability/logs/ingestion/"
     ],
     "contextul_taskurilor_anterioare": "F0.3.2: Structura de directoare pentru loguri a fost creată. Acum completăm fișierul principal de config pentru ingestia de loguri (Promtail).",
-    "contextul_general_al_aplicatiei": "Loki necesită un agent de loguri pentru a primi date; Promtail este soluția standard. Configurând Promtail acum, asigurăm colectarea centralizată a logurilor generate de toate aplicațiile și componentele, îndeplinind obiectivul 'loguri colectate unitar în Loki':contentReference[oaicite:24]{index=24}.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/ingestion/promtail-config.yml` cu conținutul exemplificat mai sus. Verifică să folosești numele corect al rețelei Docker (dacă la F0.3.12 s-a dat un alt nume, reflectă-l aici). Asigură-te că URL-ul Loki (`http://loki:3100`) corespunde numelui serviciului pe care îl vom defini. Prin configurarea stage-ului `json`, presupunem că logurile majorității serviciilor sunt deja în format JSON (așa cum asigurăm prin Pino).",
+    "contextul_general_al_aplicatiei": "Loki necesită un agent de loguri pentru a primi date; Promtail este soluția standard. Configurând Promtail acum, asigurăm colectarea centralizată a logurilor generate de toate aplicațiile și componentele, îndeplinind obiectivul „loguri colectate unitar în Loki”.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/logs/ingestion/promtail-config.yml` cu conținutul exemplificat mai sus. Verifică să folosești numele corect al rețelei Docker (dacă la F0.3.12 s-a dat un alt nume, reflectă-l aici). Asigură-te că URL-ul Loki (`http://loki:3100`) corespunde numelui serviciului pe care îl vom defini. Prin configurarea stage-ului `json`, presupunem că logurile majorității serviciilor sunt deja în format JSON (așa cum asigurăm prin Pino).",
     "restrictii_anti_halucinatie": "Nu adăuga configuri de Promtail pentru surse inexistente (ex: nu definim file_sd dacă nu folosim fișiere). Nu trimite loguri către altă destinație decât Loki.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu include încă parser-ul Traefik direct aici; vom folosi un pipeline stage separat dacă e nevoie, după cum vom defini în `logs/parsers/traefik.json` ulterior. Menține config-ul general și cât mai simplu.",
-    "validare": "Validarea completă va fi la rularea containerului Promtail. Ca verificare preliminară, asigură-te că sintaxa YAML este corectă și că fiecare secțiune este bine indentată. Poți testa config-ul prin rularea locală a promtail (dacă ai instalat) cu flag de dry-run, dar în mod uzual doar pornirea containerului ne va confirma.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu include încă parser-ul Traefik direct aici; vom folosi un pipeline stage separat dacă e nevoie, după cum vom defini în `logs/parsers/traefik.json` ulterior. Menține config-ul general și cât mai simplu.",
+    "validare": "Validarea completă va fi la rularea containerului Promtail. Ca verificare preliminară, asigură-te că sintaxa YAML este corectă și că fiecare secțiune este bine indentată. Poți testa config-ul prin rularea locală a Promtail (dacă este instalat) cu flag de dry-run, dar în mod uzual doar pornirea containerului ne va confirma.",
     "outcome": "Fișierul de configurare pentru Promtail este creat, permițând agentului de loguri să culeagă automat logurile containerelor și să le transmită către Loki.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.21
@@ -7984,7 +7985,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.23
 
+```JSON
+  {
   "F0.3.23": {
     "denumire_task": "Creare Reguli de Alertă Prometheus pentru Traefik (`traefik.rules.yml`)",
     "descriere_scurta_task": "Adaugă un fișier de reguli Prometheus în `shared/observability/prometheus/traefik.rules.yml` cu o regulă exemplificativă de alertă pentru Traefik (ex. rată ridicată de erori 5xx).",
@@ -7999,8 +8003,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu încerca să configurezi acum Alertmanager sau rute de notificare pentru aceste alerte - doar definim regula în Prometheus. Nu inventa metrici inexistente (folosim `traefik_service_requests_total` care e metrică reală în Traefik cu plugin Prom).",
     "validare": "Deschide UI Prometheus (sau Grafana Alerts view) după ce Traefik va fi integrat (F0.4) și generează o situație de test (ex. simulează cereri eronate) pentru a vedea alerta. Pentru acum, validează că Prometheus a încărcat grupa de reguli (în UI Prometheus la /rules, grupa traefik_alerts ar trebui să apară ca 'inactive').",
     "outcome": "Fișierul de reguli de alertare `traefik.rules.yml` este creat și integrat, conținând o regulă exemplificativă de monitorizare a Traefik.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.24": {
     "denumire_task": "Creare Dashboard Grafana pentru Traefik (`traefik.json`)",
     "descriere_scurta_task": "Adaugă un fișier JSON în `shared/observability/grafana/dashboards/traefik.json` care definește un dashboard Grafana de bază pentru Traefik (metrice de trafic și erori).",
