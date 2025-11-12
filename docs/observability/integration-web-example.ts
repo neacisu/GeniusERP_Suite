@@ -11,5 +11,5 @@
 // provider.register();
 
 // For logging, use the shared logger (though it's Node.js focused)
-// import { createLogger } from '@genius-suite/observability';
+// import { createLogger } from '../../shared/observability';
 // const logger = createLogger();
