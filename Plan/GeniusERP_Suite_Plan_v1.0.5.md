@@ -7993,20 +7993,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.23": {
     "denumire_task": "Creare Reguli de Alertă Prometheus pentru Traefik (`traefik.rules.yml`)",
-    "descriere_scurta_task": "Adaugă un fișier de reguli Prometheus în `shared/observability/prometheus/traefik.rules.yml` cu o regulă exemplificativă de alertă pentru Traefik (ex. rată ridicată de erori 5xx).",
-    "descriere_lunga si_detaliata_task": "Pentru a demonstra capacitatea de alertare (chiar dacă minimală în skeleton), definim un set de reguli pentru Traefik, ale cărui metrici vor fi colectate. Creăm fișierul `shared/observability/prometheus/traefik.rules.yml` cu conținut YAML pentru o alertă simplă, de exemplu:\n```yaml\ngroups:\n- name: traefik_alerts\n  rules:\n  - alert: TraefikHighErrorRate\n    expr: sum(rate(traefik_service_requests_total{code=~\"5..\"}[5m])) by (service) > 0.1\n    for: 2m\n    labels:\n      severity: warning\n    annotations:\n      summary: \"Rată mare de erori 5xx pe serviciul {{ $labels.service }}\"\n      description: \"Traefik raportează >10% request-uri cu erori 5xx în ultimele 5 minute.\"\n```\nAceastă regulă (exemplificativă) alertează dacă mai mult de 10% din cererile prin Traefik au cod 5xx în medie pe 5 minute, timp de 2 minute continuu. Am setat severitatea ca 'warning'. Acest fișier va fi încărcat de Prometheus (inclus în `prometheus.yml` la `rule_files`). Deși nu avem acum un alertmanager configurat (acesta va veni în faze ulterioare), putem vedea starea alertelor în UI Prometheus/Grafana.",
+    "descriere_scurta_task": "Adaugă un fișier de reguli Prometheus în `shared/observability/metrics/rules/traefik.rules.yml` cu o regulă exemplificativă de alertă pentru Traefik (ex. rată ridicată de erori 5xx).",
+    "descriere_lunga_si_detaliata_task": "Pentru a demonstra capacitatea de alertare (chiar dacă minimală în skeleton), definim un set de reguli pentru Traefik, ale cărui metrici vor fi colectate de Prometheus. Conform arhitecturii, toate regulile Prometheus sunt stocate în `shared/observability/metrics/rules/`. Creăm fișierul `traefik.rules.yml` în acest director, cu un grup de reguli simplu pentru Traefik, de exemplu:\n```yaml\ngroups:\n- name: traefik_alerts\n  rules:\n  - alert: TraefikHighErrorRate\n    expr: sum(rate(traefik_service_requests_total{code=~\"5..\"}[5m])) by (service) > 0.1\n    for: 2m\n    labels:\n      severity: warning\n    annotations:\n      summary: \"Rată mare de erori 5xx pe serviciul {{ $labels.service }}\"\n      description: \"Traefik raportează >10% request-uri cu erori 5xx în ultimele 5 minute.\"\n```\nAceastă regulă (exemplificativă) alertează dacă mai mult de 10% din cererile prin Traefik au cod 5xx în medie pe 5 minute, timp de 2 minute continuu. Severitatea este setată la `warning`. Fișierul va fi încărcat de Prometheus prin secțiunea `rule_files` din `prometheus.yml`.",
     "directorul_directoarele": [
-      "shared/observability/prometheus/"
+      "shared/observability/metrics/rules/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.15: Configul Prometheus include referință către `traefik.rules.yml`. Acum creăm efectiv acest fișier conform planului de a avea dashboarduri și metrici de bază pentru Traefik incluse:contentReference[oaicite:26]{index=26}.",
-    "contextul_general_al_aplicatiei": "Traefik, ca reverse-proxy, este critic pentru suită și merită monitorizat special. Definirea unei alerte de exemplu ilustrează cum vom gestiona și alte alerte în viitor, asigurând capacitatea de a detecta condiții anormale (ex. erori) chiar din faza incipientă.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/prometheus/traefik.rules.yml` și inserează definițiile de mai sus. Verifică sintaxa YAML a regulilor (indentarea sub `rules:`). Fișierul va fi încărcat automat de serviciul Prometheus la pornire, așa că asigură-te că este accesibil (montat) - noi l-am listat în `prometheus.yml` deci montarea volumului `prometheus/` în container îl va include implicit.",
-    "restrictii_anti_halucinatie": "Nu defini zeci de alerte; ne limităm la una de exemplu. Nu forța condiții prea stricte de alertare (ex: 0.1 rate e doar exemplu, nu optimizăm acum pragul).",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu încerca să configurezi acum Alertmanager sau rute de notificare pentru aceste alerte - doar definim regula în Prometheus. Nu inventa metrici inexistente (folosim `traefik_service_requests_total` care e metrică reală în Traefik cu plugin Prom).",
-    "validare": "Deschide UI Prometheus (sau Grafana Alerts view) după ce Traefik va fi integrat (F0.4) și generează o situație de test (ex. simulează cereri eronate) pentru a vedea alerta. Pentru acum, validează că Prometheus a încărcat grupa de reguli (în UI Prometheus la /rules, grupa traefik_alerts ar trebui să apară ca 'inactive').",
-    "outcome": "Fișierul de reguli de alertare `traefik.rules.yml` este creat și integrat, conținând o regulă exemplificativă de monitorizare a Traefik.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.3: A fost creat directorul `shared/observability/metrics/rules/` pentru regulile Prometheus. F0.3.15: Configul Prometheus (`prometheus.yml`) include referință către fișierul de reguli pentru Traefik, care acum este implementat în locația corectă.",
+    "contextul_general_al_aplicatiei": "Traefik, ca reverse-proxy, este critic pentru suită și merită monitorizat special. Definirea unei alerte de exemplu ilustrează cum vom gestiona și alte alerte în viitor, asigurând capacitatea de a detecta condiții anormale (ex. erori 5xx persistente) chiar din faza incipientă a sistemului.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/metrics/rules/traefik.rules.yml` și inserează conținutul YAML de mai sus. Asigură-te că fișierul `prometheus.yml` folosit de serviciul Prometheus include acest fișier în secțiunea `rule_files` (ex.: `rule_files: ['traefik.rules.yml']` sau calea relativă corespunzătoare modului în care este montat directorul de reguli în container). Verifică atent indentarea YAML (în special sub cheile `groups:` și `rules:`).",
+    "restrictii_anti_halucinatie": "Nu defini mai multe alerte decât este cazul în acest skeleton; ne limităm la o regulă exemplificativă. Nu inventa metrici inexistente – folosește numai metrici reale expuse de Traefik (ex. `traefik_service_requests_total`).",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu configura în acest task Alertmanager sau rute de notificare; acest fișier definește doar regulile în Prometheus. Nu muta sau redenumi directorul `metrics/rules/` – acesta este directorul canonic pentru regulile Prometheus conform arhitecturii.",
+    "validare": "După ce Prometheus pornește cu acest fișier inclus, deschide UI-ul Prometheus și verifică secțiunea `/rules` pentru a confirma că grupul `traefik_alerts` este încărcat și apare cu starea `inactive` (în absența unei condiții de alertă). Orice eroare de parsare YAML va fi vizibilă în logurile containerului Prometheus.",
+    "outcome": "Fișierul de reguli de alertare `traefik.rules.yml` este creat în `shared/observability/metrics/rules/` și integrat în configurația Prometheus, conținând o regulă exemplificativă de monitorizare a erorilor 5xx din Traefik.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.24
@@ -8053,7 +8054,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.26
 
+```JSON
+  {
   "F0.3.26": {
     "denumire_task": "Creare Script de Validare Observabilitate (`validate.sh`)",
     "descriere_scurta_task": "Adaugă un script `validate.sh` în `shared/observability/scripts/` care pornește componentele de observabilitate și execută verificări de bază (servicii up, endpoint-uri accesibile).",
@@ -8068,8 +8072,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu asuma credențiale speciale (Grafana API utilizat fără auth sau cu admin/admin dacă necesar). În dev, asta e acceptabil, dar notează dacă e necesar să trimită auth la curl (ex: --user admin:admin).",
     "validare": "Rulează manual scriptul pe mașina de dev: `bash shared/observability/scripts/validate.sh`. Ar trebui să vezi mesaje de succes pentru fiecare componentă (sau ieșire silent dacă totul e ok) și codul de ieșire 0. În caz de probleme, scriptul va raporta ce nu a pornit sau ce endpoint nu a răspuns.",
     "outcome": "Scriptul de validare `validate.sh` este creat. Rularea lui va porni și verifica rapid starea componentelor cheie ale observabilității, asigurându-ne că integrarea skeleton este funcțională.",
-    "componenta_de_CI_CD": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."
+    "componenta_de_CI_CD": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."}
   },
+```
+
+
   "F0.3.27": {
     "denumire_task": "Integră Observabilitate în suite-shell (Cod)",
     "descriere_scurta_task": "Importă și inițializează modulul de observabilitate (`@genius-suite/observability`) în codul aplicației suite-shell, activând tracing-ul, metricile și logarea structurată.",
