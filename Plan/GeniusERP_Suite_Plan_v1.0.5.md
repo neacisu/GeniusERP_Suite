@@ -8016,20 +8016,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.24": {
     "denumire_task": "Creare Dashboard Grafana pentru Traefik (`traefik.json`)",
-    "descriere_scurta_task": "Adaugă un fișier JSON în `shared/observability/grafana/dashboards/traefik.json` care definește un dashboard Grafana de bază pentru Traefik (metrice de trafic și erori).",
-    "descriere_lunga si_detaliata_task": "Pentru a verifica vizual metricile și starea Traefik, creăm un dashboard Grafana minimal. Fișierul `traefik.json` va conține un obiect JSON conform schema Grafana, cu panouri precum:\n- Un graph/time-series pentru rata de cereri prin Traefik, defalcate pe cod de status (200, 400, 500), folosind metrica Prometheus `rate(traefik_service_requests_total[1m])` grupată pe cod.\n- Un panel gauge sau singlestat pentru numărul curent de instance active (metrica `traefik_service_open_connections` dacă disponibilă).\n- Un graph pentru latenta medie a request-urilor (dacă Traefik expune histograme, ex. `traefik_service_request_duration_seconds`).\nDashboard-ul va avea titlul 'Traefik Overview' și va fi setat să folosească sursa de date Prometheus implicită. Acest JSON poate fi generat prin Grafana (făcând export) sau scris manual. Pentru skeleton, putem folosi un exemplu existent adaptat. Important: plasăm fișierul în directorul `grafana/dashboards/` și ne asigurăm că provisioning-ul definit la F0.3.18 îl va încărca. Astfel, la pornire, vom avea în Grafana un dashboard predefinit pentru Traefik, îndeplinind cerința de 'dashboards de bază':contentReference[oaicite:27]{index=27}.",
+    "descriere_scurta_task": "Adaugă un fișier JSON în `shared/observability/metrics/dashboards/traefik.json` care definește un dashboard Grafana de bază pentru Traefik (metrice de trafic și erori), aliniat cu structura arhitecturală a metrice-lor.",
+    "descriere_lunga_si_detaliata_task": "Pentru a verifica vizual metricile și starea Traefik, creăm un dashboard Grafana minimal, bazat pe metrici Prometheus. Conform arhitecturii, dashboard-urile bazate pe metrici sunt stocate în `shared/observability/metrics/dashboards/`. Fișierul `traefik.json` va conține un obiect JSON conform schema Grafana, cu panouri precum:\n- Un time-series pentru rata de request-uri prin Traefik, defalcate pe cod de status (200, 4xx, 5xx), folosind metrica `rate(traefik_service_requests_total[1m])` grupată pe `code` sau `service`.\n- Un panel de tip `stat` (sau gauge) pentru numărul curent de conexiuni deschise, folosind o metrică de tip `traefik_service_open_connections` (dacă este disponibilă).\n- Opțional, un graf pentru latența medie a request-urilor (dacă Traefik expune histograme de tip `traefik_service_request_duration_seconds`).\nDashboard-ul va avea titlul „Traefik Overview” și va fi setat să folosească sursa de date Prometheus implicită. JSON-ul poate fi generat inițial prin Grafana (export) și apoi salvat aici. Important: fișierul este plasat în `metrics/dashboards/` pentru a respecta arhitectura, iar provisioning-ul Grafana (corectat la F0.3.18/F0.3.19) va monta acest director în container și va încărca dashboard-ul automat.",
     "directorul_directoarele": [
-      "shared/observability/grafana/dashboards/"
+      "shared/observability/metrics/dashboards/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.18: Grafana este setat să importe automat dashboard-urile din acest director. Acum furnizăm conținutul pentru un astfel de dashboard (Traefik).",
-    "contextul_general_al_aplicatiei": "Traefik fiind frontiera de intrare în sistem, este util să avem vizibilitate rapidă asupra sănătății sale: trafic, erori, latențe. Acest dashboard va fi folosit de dev și ops pentru a observa comportamentul Traefik în timp real.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/dashboards/traefik.json`. Inserează structura JSON completă a dashboard-ului. De exemplu, poți folosi un templating minimal:\n```json\n{\n  \"title\": \"Traefik Overview\",\n  \"panels\": [\n     { \"type\": \"timeseries\", \"title\": \"Request Rate by Status\", ... metric queries on traefik_service_requests_total ... },\n     { \"type\": \"stat\", \"title\": \"Active Connections\", ... query traefik_service_open_connections ... }\n  ],\n  \"time\": {\"from\": \"now-5m\", \"to\": \"now\"},\n  \"datasource\": \"Prometheus\"\n}\n```\n(Nota: Se inserează configurația completă Grafana; aici e abstractizat.) Asigură-te că fișierul este valid JSON (poți verifica prin deschiderea într-un editor cu highlighting sau un linter JSON).",
-    "restrictii_anti_halucinatie": "Nu defini un dashboard extrem de complex; păstrează 2-3 panouri relevante. Nu folosi variabile sau template-uri avansate - skeleton-ul poate avea totul fix pentru simplitate.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Folosește exclusiv metricile reale expuse de Traefik. Nu presupune existența altor metrici decât cele standard (requests_total, open_connections etc.).",
-    "validare": "După pornire Grafana, verifică existența dashboard-ului 'Traefik Overview'. Deschide-l și asigură-te că panourile afișează date (dacă Traefik nu e încă integrat, pot apărea goale sau erori de query, ceea ce e normal până la F0.4). Cel puțin, Grafana ar trebui să recunoască sursa Prometheus și sintaxa query-urilor fără erori majore.",
-    "outcome": "Dashboard-ul Traefik de bază este creat și versionat în cod, urmând a fi încărcat automat în Grafana pentru vizualizarea metricilor Traefik.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.3: A fost creat directorul `shared/observability/metrics/dashboards/` pentru dashboard-uri bazate pe metrici. F0.3.15: Configurația Prometheus definește job-ul pentru Traefik. F0.3.18 și F0.3.19: Provisioning-ul și serviciul Grafana (corectate) sunt pregătite să încarce dashboard-urile din directorul de dashboards de metrici.",
+    "contextul_general_al_aplicatiei": "Traefik este frontiera de intrare în sistem și trebuie monitorizat prin metrici runtime (trafic, erori, latențe). Un dashboard Grafana de bază pentru Traefik oferă echipei de dev/ops vizibilitate imediată asupra stării gateway-ului, folosind metricile colectate de Prometheus și afișate prin Grafana.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/metrics/dashboards/traefik.json`. Inserează structura JSON completă a dashboard-ului Grafana, de tipul:\n```json\n{\n  \"title\": \"Traefik Overview\",\n  \"panels\": [\n    {\n      \"type\": \"timeseries\",\n      \"title\": \"Request Rate by Status\",\n      \"targets\": [\n        {\n          \"expr\": \"sum by (code) (rate(traefik_service_requests_total[1m]))\",\n          \"legendFormat\": \"{{code}}\"\n        }\n      ]\n    },\n    {\n      \"type\": \"stat\",\n      \"title\": \"Active Connections\",\n      \"targets\": [\n        {\n          \"expr\": \"sum(traefik_service_open_connections)\"\n        }\n      ]\n    }\n  ],\n  \"time\": { \"from\": \"now-5m\", \"to\": \"now\" },\n  \"uid\": \"traefik-overview\",\n  \"schemaVersion\": 36\n}\n```\n(Structura exactă poate fi adaptată sau exportată dintr-un dashboard creat manual în Grafana, important este să fie JSON valid și să folosească metricile reale expuse de Traefik.) Asigură-te că provisioning-ul Grafana (fișierul `dashboards.yml` și serviciul din Compose) montează directorul `shared/observability/metrics/dashboards/` în container la calea folosită în providerul Grafana pentru dashboards.",
+    "restrictii_anti_halucinatie": "Nu defini un dashboard excesiv de complex; păstrează 2–3 panouri relevante pentru skeleton. Nu inventa metrici — folosește numai metrici reale expuse de Traefik (ex.: `traefik_service_requests_total`, `traefik_service_open_connections`). Asigură-te că JSON-ul este sintactic valid.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu muta dashboard-ul în alte directoare (ex. `shared/observability/grafana/`); acest task trebuie să rămână aliniat cu `metrics/dashboards/`. Nu adăuga logică de provisioning aici – aceasta este gestionată de fișierul `dashboards.yml` și de serviciul Grafana din Compose.",
+    "validare": "Pornește stack-ul de observabilitate. În UI Grafana, verifică în lista de dashboard-uri existența „Traefik Overview”. Deschide dashboard-ul și confirmă că panourile execută query-uri valide (chiar dacă datele pot fi încă limitate până la integrarea completă Traefik). Orice eroare de parsare va fi vizibilă în logurile Grafana la pornire.",
+    "outcome": "Dashboard-ul Traefik de bază este creat și versionat în `shared/observability/metrics/dashboards/traefik.json`, gata să fie încărcat automat de Grafana și să ofere vizibilitate asupra metricilor Traefik.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.25
@@ -8076,7 +8077,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.27
 
+```JSON
+  {
   "F0.3.27": {
     "denumire_task": "Integră Observabilitate în suite-shell (Cod)",
     "descriere_scurta_task": "Importă și inițializează modulul de observabilitate (`@genius-suite/observability`) în codul aplicației suite-shell, activând tracing-ul, metricile și logarea structurată.",
@@ -8092,8 +8096,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu inițializa observabilitatea în alte locuri decât la startup (nu în fiecare request individual, de exemplu). Nu adăuga endpoint-uri sau config suplimentare neplanificate (ex: nu definești /metrics dacă deja era definit altundeva).",
     "validare": "Pornește local serviciul suite-shell (mod dev) și verifică: \n- Accesând `http://localhost:{port}/metrics` primești textul cu metricile default și eventual custom.\n- Logurile afișate în consolă apar în format JSON (conțin câmpuri structurale, ex. `level`, `msg`, `traceId`).\n- Inițiind o operație în suite-shell (ex. un API call), observă în consolă că nu apar erori de observabilitate; eventual poți verifica în Tempo sau în logs după implementarea completă că datele apar.",
     "outcome": "Aplicația suite-shell are observabilitatea activată: expune metrici, își formatează logurile JSON cu identificatori de corelație și transmite trasabilitatea către colectorul central.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.28": {
     "denumire_task": "Actualizare Docker Compose pentru suite-shell",
     "descriere_scurta_task": "Modifică configurația Docker Compose a modulului suite-shell pentru a se integra cu observabilitatea: atașează-l la rețeaua `observability` și setează variabile de mediu OTEL.",
