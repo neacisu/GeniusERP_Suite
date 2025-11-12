@@ -8062,20 +8062,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.26": {
     "denumire_task": "Creare Script de Validare Observabilitate (`validate.sh`)",
-    "descriere_scurta_task": "Adaugă un script `validate.sh` în `shared/observability/scripts/` care pornește componentele de observabilitate și execută verificări de bază (servicii up, endpoint-uri accesibile).",
-    "descriere_lunga si_detaliata_task": "Pentru a facilita testarea integrării observabilității, creăm un script Bash de validare automată. `shared/observability/scripts/validate.sh` va efectua pași precum:\n- Pornirea stack-ului de observabilitate (dacă nu e deja pornit) folosind Docker Compose: `docker compose -f compose.dev.yml up -d` (presupunând că ne aflăm în rădăcina proiectului sau script-ul schimbă directorul curent).\n- Așteptarea câtorva secunde pentru ca serviciile să fie up, apoi interogarea fiecărui serviciu:\n  - Execuție `docker compose exec prometheus wget -qO- localhost:9090/-/ready` pentru readiness Prometheus (cod 200 așteptat).\n  - Execuție `curl -f http://localhost:3000/api/health` pentru Grafana (ar trebui să întoarcă `{\"database\": \"ok\"}` cu status 200 dacă e up).\n  - Eventual `docker compose exec loki wget -qO- localhost:3100/ready` pentru Loki, și similar pentru Tempo (Tempo are /metrics sau /ready endpoint default?).\n- Verificarea prezenței datelor: de exemplu, scriptul poate interoga API-ul Prometheus pentru o metrică generică (ex. `up{job=\"prometheus\"}`) ca să se asigure că Prom scrape-uiește ceva; sau Grafana API pentru lista de datasource-uri.\nScript-ul va ieși cu cod de eroare !=0 dacă vreo verificare eșuează, facilitând integrarea în pipeline-uri CI/QA. Rolul lui e să confirme că serviciile de observabilitate sunt integrate corect (comunică, datele de bază sunt accesibile).",
+    "descriere_scurta_task": "Adaugă un script `validate.sh` în `shared/observability/scripts/` care pornește stack-ul de observabilitate (din `compose/profiles/compose.dev.yml`) și execută verificări de bază (servicii up, endpoint-uri accesibile).",
+    "descriere_lunga_si_detaliata_task": "Pentru a facilita testarea integrării observabilității, creăm un script Bash de validare automată. În `shared/observability/scripts/validate.sh` vom implementa pași precum:\n- Determină directorul scriptului și mută working dir în `shared/observability/`, de ex.:\n  - `cd \"$(dirname \"$0\")/..\"` (astfel toate căile devin relative la `shared/observability/`).\n- Pornește stack-ul de observabilitate folosind Docker Compose profilul de dev: `docker compose -f compose/profiles/compose.dev.yml up -d`.\n- Așteaptă câteva secunde pentru ca serviciile să fie up (ex. un `sleep 10`).\n- Execută verificări de sănătate pentru componentele principale:\n  - `curl -f http://localhost:9090/-/ready` pentru Prometheus.\n  - `curl -f http://localhost:3000/api/health` pentru Grafana (autentificare basic `admin:admin` dacă este necesară, de ex. `curl -f -u admin:admin ...`).\n  - `curl -f http://localhost:3100/metrics` pentru Loki (doar să răspundă).\n  - opțional, un request către endpoint-ul OTEL Collector (ex. `curl -f http://localhost:4318/v1/traces` doar ca health check simplu).\n- Pentru fiecare verificare, afișează un mesaj clar (`echo \"[OK] ...\"` / `[FAIL] ...`) și, dacă una din ele eșuează, script-ul iese cu `exit 1`.\n- Dacă toate verificările trec, script-ul iese cu cod 0.\nScriptul nu oprește stack-ul; rolul lui este strict de validare. Va fi folosit ulterior și în pipeline-urile CI pentru a verifica rapid că stack-ul de observabilitate este funcțional după modificări.",
     "directorul_directoarele": [
       "shared/observability/scripts/"
     ],
-    "contextul_taskurilor_anterioare": "Toate serviciile și configurațiile au fost definite (F0.3.11 - F0.3.25). Acum oferim un mijloc automat de a verifica că ansamblul funcționează.",
-    "contextul_general_al_aplicatiei": "Scripturile de validare reduc muncă manuală și se aliniază practicilor DevOps (testare automată a mediului). Acest script se poate rula la finalul setării locale sau chiar integrat în CI (pipeline dev) pentru a asigura că observabilitatea nu este ruptă de viitoare modificări.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul executabil `/var/www/GeniusSuite/shared/observability/scripts/validate.sh`. Populează-l cu comenzi Bash ca cele descrise (folosind `curl` și `docker compose`). Adaugă mesaje informative (echo) și folosește `exit 1` dacă o verificare eșuează. Asigură-te că scriptul poate fi rulat independent (de ex, dacă are nevoie, setează `DOCKER_CONTEXT` sau folderul potrivit). Include în script și verificarea pornirii containerelor (ex: `docker compose ps` și grep după 'healthy' sau 'running').",
-    "restrictii_anti_halucinatie": "Nu adăuga verificări complicate (ex: query complexe Grafana); menține-l simplu. Nu șterge date, nu opri containere în acest script - doar verifică starea.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu asuma credențiale speciale (Grafana API utilizat fără auth sau cu admin/admin dacă necesar). În dev, asta e acceptabil, dar notează dacă e necesar să trimită auth la curl (ex: --user admin:admin).",
-    "validare": "Rulează manual scriptul pe mașina de dev: `bash shared/observability/scripts/validate.sh`. Ar trebui să vezi mesaje de succes pentru fiecare componentă (sau ieșire silent dacă totul e ok) și codul de ieșire 0. În caz de probleme, scriptul va raporta ce nu a pornit sau ce endpoint nu a răspuns.",
-    "outcome": "Scriptul de validare `validate.sh` este creat. Rularea lui va porni și verifica rapid starea componentelor cheie ale observabilității, asigurându-ne că integrarea skeleton este funcțională.",
-    "componenta_de_CI_CD": "Acest script poate fi integrat într-un job de pipeline (ex. 'validate-observability') care să ruleze după build/deploy pe mediu de test."}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.11–F0.3.25: Stack-ul de observabilitate (OTEL Collector, Prometheus, Grafana, Loki, Promtail etc.) este definit în `shared/observability/compose/profiles/compose.dev.yml`, iar configurațiile lor (otel-config, prometheus.yml, provisioning Grafana, promtail-config) sunt plasate în directoarele dedicate.",
+    "contextul_general_al_aplicatiei": "Scripturile de validare reduc munca manuală și se aliniază practicilor DevOps: pot fi rulate local de dezvoltatori și, ulterior, integrate în CI pentru a verifica că observabilitatea nu este ruptă de modificări ulterioare ale codului sau ale configurațiilor Docker.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul executabil `/var/www/GeniusSuite/shared/observability/scripts/validate.sh`. Asigură-te că:\n- Primele linii setează `set -euo pipefail` pentru un comportament robust al scriptului.\n- Se face `cd` în `shared/observability/` relativ la locația scriptului.\n- Comanda de pornire folosește fișierul corect, conform arhitecturii: `docker compose -f compose/profiles/compose.dev.yml up -d`.\n- Verificările folosesc `curl -f` (sau `docker compose exec ...` pentru health intern) și evaluează codul de exit. La prima verificare eșuată, script-ul iese cu `exit 1`.\n- La final, dacă toate verificările trec, se afișează un mesaj de succes (ex. `echo \"Observability stack: OK\"`) și scriptul iese cu `exit 0`.\nNu presupune o altă locație pentru `compose.dev.yml` decât `compose/profiles/compose.dev.yml`; dacă fișierul nu există, scriptul ar trebui să raporteze clar eroarea.",
+    "restrictii_anti_halucinatie": "Nu adăuga verificări complexe sau dependente de business logic (ex: query-uri Prometheus complicate sau API-uri specifice aplicațiilor). Menține-te la health checks simple (readiness/health endpoints). Nu șterge sau recrea volume de date din acest script.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica sau genera fișiere de config din `validate.sh`; el doar consumă configurațiile existente. Nu introduce logica de deploy sau de teardown aici (oprirea stack-ului poate fi făcută manual sau într-un script separat, ex. `stop.sh`).",
+    "validare": "Rulează manual scriptul pe maşina de dezvoltare: `bash shared/observability/scripts/validate.sh`. Dacă Docker Compose și configurațiile asociate sunt corecte, scriptul trebuie să se termine cu cod de ieșire 0 și mesaje de succes pentru fiecare componentă. În caz contrar, trebuie să raporteze clar care serviciu sau endpoint nu a răspuns.",
+    "outcome": "Scriptul de validare `validate.sh` este creat în `shared/observability/scripts/`, permițând rularea rapidă a unui health-check automat pentru stack-ul de observabilitate bazat pe `compose/profiles/compose.dev.yml`.",
+    "componenta_de_CI_CD": "Scriptul poate fi folosit într-un job de pipeline (ex. `validate-observability`) care rulează după build/deploy pe un mediu de test, eșuând pipeline-ul dacă stack-ul de observabilitate nu pornește sau nu răspunde la health checks."
+  }
+},
 ```
 
 #### F0.3.27
@@ -8123,7 +8124,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.29
 
+```JSON
+  {
   "F0.3.29": {
     "denumire_task": "Integră Observabilitate în suite-admin (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația suite-admin pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8139,8 +8143,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația suite-admin local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația suite-admin a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.30": {
     "denumire_task": "Actualizare Docker Compose pentru suite-admin",
     "descriere_scurta task": "Conectează containerul suite-admin la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
