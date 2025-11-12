@@ -7793,6 +7793,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.15
+
+```JSON
+  {
   "F0.3.15": {
     "denumire_task": "Creare Configurație Prometheus (`prometheus.yml`)",
     "descriere_scurta_task": "Adaugă fișierul `prometheus.yml` în `shared/observability/prometheus/` cu job-urile de scrap pentru metricile expuse de suite.",
@@ -7807,8 +7811,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu defini alerte complexe sau reguli de înregistrare la acest pas, doar include fișierul de rules pentru Traefik dacă e cazul. Nu activa scrap-ul pentru metrici de sistem (node_exporter etc.) în acest config skeleton.",
     "validare": "Poți valida fișierul rulând containerul Prometheus cu acest config (vom face în task-ul următor), sau folosind un validator online de config Prometheus. Asigură-te că indentarea YAML este corectă și că fișierul `traefik.rules.yml` referit există (va fi creat în alt task).",
     "outcome": "Fișierul de configurare `prometheus.yml` este pregătit, specificând scrapping-ul metricilor pentru toate aplicațiile și componentele relevante ale suitei.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.16": {
     "denumire_task": "Adăugare Serviciu Prometheus în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `prometheus` în fișierul Compose dev, folosind imaginea oficială și montând configurația `prometheus.yml` generată.",
