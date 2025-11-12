@@ -1,39 +1,44 @@
-# Builder stage
+# Build stage
 FROM node:24-alpine AS builder
 
 WORKDIR /app
 
 # Copy workspace files
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY cp/suite-login cp/suite-login
-COPY libs libs
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy source
+COPY shared ./shared
+COPY cp/suite-login ./cp/suite-login
 
 # Install dependencies
 RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-# Build suite-login
-RUN cd cp/suite-login && pnpm run build
+# Build shared libraries first
+RUN cd shared/observability && pnpm run build
+RUN cd shared/common && pnpm run build
 
-# Runtime stage
+# Build TypeScript for suite-login
+RUN pnpm --filter @genius-suite/cp-suite-login run build
+
+# Runtime stage  
 FROM node:24-alpine
 
 WORKDIR /app
 
-# Copy pnpm configuration
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+# Install pnpm globally
+RUN npm install -g pnpm
 
-# Copy node_modules from builder
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/cp/suite-login/dist cp/suite-login/dist
-COPY --from=builder /app/cp/suite-login/node_modules cp/suite-login/node_modules
-COPY --from=builder /app/libs libs
+# Copy entire workspace
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/shared ./shared
+COPY --from=builder /app/cp/suite-login ./cp/suite-login
 
-WORKDIR /app/cp/suite-login
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3003/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
-
+# Expose metrics and app port
 EXPOSE 3003
 
-CMD ["node", "dist/main.js"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3003/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+
+# Start application directly with ts-node from source
+CMD ["node", "-r", "ts-node/register", "cp/suite-login/src/main.ts"]

@@ -3,8 +3,8 @@ version: '3.9'
 services:
   suite-login:
     build:
-      context: ..
-      dockerfile: Dockerfile
+      context: ../../../
+      dockerfile: cp/suite-login/Dockerfile
     container_name: genius-suite-login
     restart: always
     environment:
