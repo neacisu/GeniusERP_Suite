@@ -7579,21 +7579,36 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.7": {
-    "denumire_task": "Implementare Modul de Tracing în `telemetry/otel.ts`",
-    "descriere_scurta_task": "Implementează fișierul `otel.ts` în `shared/observability/telemetry/` pentru inițializarea OpenTelemetry (traces) la pornirea aplicațiilor.",
-    "descriere_lunga_si_detaliata_task": "Se creează modulul central de configurare a trasabilității distribuite folosind OpenTelemetry. În `shared/observability/telemetry/otel.ts` vom scrie codul care:\n- Configurează un `NodeSDK` OpenTelemetry cu resurse implicite (ex. `service.name` setat dinamic la numele aplicației) și cu exporter OTLP către colectorul OTEL (URL-ul va fi preluat din variabila de mediu `OTEL_EXPORTER_OTLP_ENDPOINT`, de ex. `http://otel-collector:4318`).\n- Activează instrumentările automate (prin `auto-instrumentations-node`) pentru HTTP (și eventual pentru alte componente standard) astfel încât request-urile și interacțiunile I/O să fie capturate fără cod boilerplate în fiecare serviciu.\n- Inițializează tracer-ul global (`trace.setGlobalTracerProvider(...)`) astfel încât toate modulele suitei să trimită trace-urile către colector.\nAcest modul va fi importat și invocat în fiecare serviciu la pornire, asigurând că trasabilitatea (span-uri) este activă peste tot:contentReference[oaicite:9]{index=9}.",
+    "denumire_task": "Implementare Modul de Tracing în `traces/otel.ts`",
+    "descriere_scurta_task": "Implementează fișierul `otel.ts` în `shared/observability/traces/` pentru inițializarea OpenTelemetry (traces) la pornirea aplicațiilor.",
+    "descriere_lunga_si_detaliata_task": "Se creează modulul central de configurare a trasabilității distribuite folosind OpenTelemetry. În `shared/observability/traces/otel.ts` vom scrie codul care:\n- Configurează un `NodeSDK` OpenTelemetry cu resurse implicite (ex. `service.name` setat dinamic la numele aplicației) și cu exporter OTLP către colectorul OTEL (URL-ul va fi preluat din variabila de mediu `OTEL_EXPORTER_OTLP_ENDPOINT`, de ex. `http://otel-collector:4318`).\n- Activează instrumentările automate (prin `@opentelemetry/auto-instrumentations-node`) pentru HTTP (și alte componente standard) astfel încât request-urile și interacțiunile I/O să fie capturate fără cod boilerplate în fiecare serviciu.\n- Inițializează SDK-ul global astfel încât toate modulele suitei să trimită trace-urile către colector.\nAcest modul va fi importat și invocat în fiecare serviciu la pornire, asigurând că trasabilitatea (span-uri) este activă peste tot.",
     "directorul_directoarele": [
-      "shared/observability/telemetry/"
+      "shared/observability/traces/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.6: Pachetele OpenTelemetry necesare (SDK, exporter, instrumentații) sunt instalate. Acum scriem efectiv codul de inițializare a tracer-ului.",
-    "contextul_general_al_aplicatiei": "Implementarea tracing-ului distribuit permite corelarea evenimentelor între microserviciile suitei. Conform arhitecturii, folosim un colector OTEL central:contentReference[oaicite:10]{index=10}, deci fiecare serviciu trebuie să trimită trace-urile către acesta. Modulul `otel.ts` asigură o inițializare consistentă a acestui mecanism în toate aplicațiile.",
-    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/telemetry/otel.ts` (creează-l dacă nu există) și implementează logica descrisă: \n- Importă `NodeSDK` și configurările necesare din pachetele OpenTelemetry.\n- Setează resource-ul implicit cu `service.name` (poate citi dintr-o variabilă de mediu specifică fiecărei aplicații, ex. `OTEL_SERVICE_NAME`).\n- Configurează un TraceExporter de tip OTLP HTTP către `otel-collector:4318`.\n- Apelează `NodeSDK.start()` pentru a porni colectarea trasabilității înainte de pornirea serverului aplicației.",
-    "restrictii_anti_halucinatie": "Nu implementa mai mult decât inițializarea de bază. Nu adăuga instrumentări personalizate specifice aplicațiilor în acest modul (acestea pot fi adăugate ulterior dacă e nevoie).",
-    "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Limitează-te la configurări standard OpenTelemetry. Nu iniția aici conexiuni la baze de date sau alte servicii - doar setup-ul de tracing.",
-    "validare": "Asigură-te că modulul compilează (comanda `pnpm build` trebuie să reușească). Poți verifica output-ul prin adăugarea temporară a unui `console.log` în modul și rularea unei aplicații pentru a vedea că inițializarea se execută (de exemplu, pornind un serviciu în mod dev și observând că nu apar erori de OTEL).",
-    "outcome": "Fișierul `otel.ts` este implementat, permițând fiecărui serviciu al suitei să inițializeze trasabilitatea distribuită la pornire printr-un simplu import.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.2 și F0.3.3: Structurile pentru loguri și metrici sunt create în `shared/observability/logs/` și `shared/observability/metrics/`. F0.3.6: Pachetele OpenTelemetry necesare (SDK, exporter, auto-instrumentations) sunt instalate la rădăcină.",
+    "contextul_general_al_aplicatiei": "Implementarea tracing-ului distribuit permite corelarea evenimentelor între modulele suitei. Conform arhitecturii, folosim un colector OTEL central, deci fiecare serviciu trebuie să trimită trace-urile către acesta printr-o inițializare comună.",
+    "contextualizarea_directoarelor_si_cailor": "Creează/editează fișierul `/var/www/GeniusSuite/shared/observability/traces/otel.ts` și implementează logica descrisă:\n- Importă `NodeSDK` din `@opentelemetry/sdk-node`, `Resource` și `SemanticResourceAttributes` din `@opentelemetry/resources` (dacă este necesar), exporter-ul OTLP HTTP și `getNodeAutoInstrumentations` din `@opentelemetry/auto-instrumentations-node`.\n- Construiește un `Resource` cu `service.name` citit dintr-o variabilă de mediu (ex. `OTEL_SERVICE_NAME`) cu fallback rezonabil.\n- Creează un `NodeSDK` care folosește acest `Resource`, exporter-ul OTLP și auto-instrumentările.\n- Expune o funcție simplă, de ex. `startOtel()` care pornește SDK-ul (și opțional o funcție `shutdownOtel()` pentru oprire grațioasă).",
+    "restrictii_anti_halucinatie": [
+      "Nu plasa fișierul în `shared/observability/telemetry/`. Locația corectă este `shared/observability/traces/otel.ts`.",
+      "Folosește doar pachetele deja instalate în F0.3.6: `@opentelemetry/api`, `@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node`, `@opentelemetry/exporter-trace-otlp-http`.",
+      "Structură minimă (schelet TypeScript) sugerată:",
+      \"import { NodeSDK } from '@opentelemetry/sdk-node';\",
+      \"import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';\",
+      \"import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';\",
+      \"import { Resource } from '@opentelemetry/resources';\",
+      \"import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';\",
+      \"const serviceName = process.env.OTEL_SERVICE_NAME ?? 'genius-suite-service';\",
+      \"const resource = new Resource({ [SemanticResourceAttributes.SERVICE_NAME]: serviceName });\",
+      \"const traceExporter = new OTLPTraceExporter({ url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? 'http://otel-collector:4318/v1/traces' });\",
+      \"export const sdk = new NodeSDK({ resource, traceExporter, instrumentations: [getNodeAutoInstrumentations()] });\",
+      \"export async function startOtel() { await sdk.start(); }\"
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga instrumentări specifice unei aplicații (span-uri custom, logica de business) în acest modul. Aici definim doar setup-ul generic OTEL reutilizabil.",
+    "validare": "Rulează `pnpm build` la rădăcină și asigură-te că nu există erori de tipare sau import. Opțional, pornește unul dintre servicii importând `startOtel()` la bootstrap și verifică în colector/Jaeger/Tempo că apar span-uri.",
+    "outcome": "Fișierul `shared/observability/traces/otel.ts` este implementat și oferă un punct unic de inițializare a tracing-ului distribuit pentru toate serviciile suitei.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.8
@@ -7601,21 +7616,28 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.8": {
-    "denumire_task": "Implementare Modul de Logging în `telemetry/pino.ts`",
-    "descriere_scurta_task": "Implementează fișierul `pino.ts` în `shared/observability/telemetry/` pentru configurarea logger-ului (Pino) uniform în toate serviciile.",
-    "descriere_lunga_si_detaliata_task": "Se creează modulul comun de logging bazat pe Pino, astfel încât toate serviciile să folosească același format de logare. În `shared/observability/telemetry/pino.ts`, implementăm o funcție/utilitar care:\n- Inițializează un logger Pino cu format JSON compact, potrivit pentru agregare în Loki (ex. fără culori sau altă formatare dificil de parsat).\n- Include în fiecare mesaj de log un identificator de corelație (de exemplu ID-ul trace-ului sau al span-ului OTEL curent), ceea ce va permite legarea log-urilor de trace-uri:contentReference[oaicite:11]{index=11}.\n- Expune configurarea astfel încât aplicațiile să poată fie să înlocuiască logger-ul implicit (dacă framework-ul permite, ex. Fastify permite injecția unui instance Pino personalizat), fie să folosească acest logger pentru loguri custom.\nDe asemenea, se poate configura nivelul de logare dinamic (via variabilă de mediu, ex. `LOG_LEVEL`) și activarea prettifier-ului în medii de dev (dar logurile producție rămân JSON pur).",
+    "denumire_task": "Implementare Modul de Logging în `shared/common/logger/pino.ts`",
+    "descriere_scurta_task": "Implementează fișierul `pino.ts` în `shared/common/logger/` pentru configurarea logger-ului (Pino) uniform în toate serviciile.",
+    "descriere_lunga_si_detaliata_task": "Se creează modulul comun de logging bazat pe Pino, astfel încât toate serviciile să folosească același format de logare. În `shared/common/logger/pino.ts` implementăm o funcție/utilitar care:\n- Inițializează un logger Pino cu format JSON compact, potrivit pentru agregare în Loki/ELK (fără culori sau formatare greu de parsat).\n- Include în fiecare mesaj de log un identificator de corelație (de exemplu `traceId` sau `spanId` din contextul OTEL curent), pentru a lega log-urile de trace-uri.\n- Permite configurarea dinamică a nivelului de log (`LOG_LEVEL`) și, opțional, activarea unui prettifier doar în medii de development.\nAcest modul va fi punctul unic de adevăr pentru logging și va fi re-exportat prin `shared/common/logger/index.ts`, conform arhitecturii.",
     "directorul_directoarele": [
-      "shared/observability/telemetry/"
+      "shared/common/logger/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.7: Modulul de tracing OTEL este implementat. Urmează modulul de logging, complementând observabilitatea prin loguri structurate.",
-    "contextul_general_al_aplicatiei": "Logurile consistente și corelate cu trace-urile sunt esențiale pentru depanare. Conform obiectivelor observabilității, toate aplicațiile vor folosi un format uniform de log (JSON) cu date de corelație:contentReference[oaicite:12]{index=12}, iar acest modul asigură implementarea centralizată a acestei cerințe.",
-    "contextualizarea_directoarelor_si cailor": "Creează/editează fișierul `/var/www/GeniusSuite/shared/observability/telemetry/pino.ts`. În acest fișier:\n- Importă biblioteca `pino`.\n- Configurează instanța principală: ex. `const logger = pino({ level: process.env.LOG_LEVEL || 'info', transport: {...} })` pentru dev (optional pretty print) sau simplu JSON pentru prod.\n- Dacă este posibil, interceptează contextul OTEL (folosind, de exemplu, `async_hooks` sau API-ul OTEL) pentru a extrage `traceId` și a-l include ca și câmp în log (ex. `logger.child({ traceId })`).\n- Exportă fie direct logger-ul, fie o funcție `getLogger()` pe care aplicațiile o pot utiliza.",
-    "restrictii_anti_halucinatie": "Nu introduce logică de logare specifică unei aplicații anume (ex: nu scrie aici logica de logare a unei tranzacții financiare). Menține modulul generic și reutilizabil.",
-    "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Nu iniția aici scrierea efectivă către Loki sau altceva - acest modul doar formatează și scrie la stdout. Expedierea către Loki va fi gestionată de pipeline-ul de loguri (Promtail/OTEL Collector).",
-    "validare": "Asigură-te că, la rularea unui serviciu, logurile apar în consolă în format JSON corect. De exemplu, pornește un serviciu și verifică că mesajele de log conțin câmpurile așteptate (`level`, `msg`, eventual `traceId`).",
-    "outcome": "Fișierul `pino.ts` este implementat, furnizând un logger standardizat pentru toate modulele, facilitând agregarea logurilor în sistemul de observabilitate.",
-    "componenta_de_CI_CD": "N/A" }
-  },
+    "contextul_taskurilor_anterioare": "F0.1.x: Structura `shared/common/logger/` (inclusiv `pino.ts`, `formatters.ts`, `index.ts`) este definită în arhitectură. F0.3.6: Pachetul `pino` (și eventual `pino-pretty`) este instalat la rădăcină. F0.3.7: Tracing-ul OTEL este configurat în `shared/observability/traces/otel.ts`, permițând corelarea logurilor cu `traceId`.",
+    "contextul_general_al_aplicatiei": "Logurile consistente și corelate cu trace-urile sunt esențiale pentru depanare. Conform arhitecturii, logger-ul comun trăiește în `shared/common/logger/` și este folosit de toate aplicațiile backend.",
+    "contextualizarea_directoarelor_si_cailor": "Creează/editează fișierul `/var/www/GeniusSuite/shared/common/logger/pino.ts`. În acest fișier:\n- Importă `pino`.\n- Citește `LOG_LEVEL` (cu fallback la `info`) și o variabilă de mediu pentru modul de rulare (ex. `NODE_ENV`).\n- Configurează instanța principală Pino pentru producție să logheze JSON simplu către stdout.\n- Opțional, în mediu de dev, activează prettifier-ul (`pino-pretty`).\n- Integrează contextul OTEL (dacă este disponibil) pentru a atașa `traceId` în log (ex. printr-o funcție helper care creează un `child logger` cu câmpul `traceId`).\n- Exportă fie direct instanța de logger, fie o funcție `createLogger(context?: object)` care atașează metadate suplimentare.",
+    "restrictii_anti_halucinatie": [
+      "Nu plasa fișierul în `shared/observability/telemetry/`. Locația corectă este `shared/common/logger/pino.ts`.",
+      "Nu introduce logică de business în modulul de logging; păstrează-l generic și reutilizabil.",
+      "Nu scrie direct din acest modul către Loki/Promtail/ELK; logger-ul scrie la stdout, iar pipeline-ul de loguri se ocupă de colectare.",
+      "Corelarea cu OTEL trebuie să fie opțională și defensivă: dacă nu există context OTEL, logurile trebuie să funcționeze în continuare fără erori.",
+      "Respectă structura arhitecturală: acest modul este folosit de restul suitei prin `shared/common/logger/index.ts`."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea aici alte fișiere (ex. `formatters.ts`, `index.ts`) – acestea vor fi tratate în task-uri separate. Nu modifică framework-urile (Fastify/Express) la acest pas, doar expune logger-ul.",
+    "validare": "Importă logger-ul într-un mic script de test (ex. `apps/api-gateway/src/main.ts`), loghează câteva mesaje și verifică că apar în consolă în format JSON corect, respectând `LOG_LEVEL`. Opțional, dacă tracing-ul OTEL este activ, verifică apariția câmpului `traceId` în loguri.",
+    "outcome": "Fișierul `shared/common/logger/pino.ts` este implementat și furnizează un logger standardizat pentru toate modulele backend, aliniat cu arhitectura proiectului.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.9
@@ -7623,41 +7645,60 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.9": {
-    "denumire_task": "Implementare Modul de Metrici în `metrics/prometheus.ts`",
-    "descriere_scurta_task": "Implementează fișierul `prometheus.ts` în `shared/observability/metrics/` pentru expunerea metricilor Prometheus în aplicații.",
-    "descriere_lunga_si_detaliata_task": "Pentru a permite colectarea metricilor de către Prometheus, fiecare serviciu va expune un endpoint `/metrics`. În `shared/observability/metrics/prometheus.ts` vom implementa un modul care:\n- Initializează clientul Prometheus (`prom-client`) global, apelând `collectDefaultMetrics()` pentru a aduna metricile de bază Node.js (CPU, memorie, event loop):contentReference[oaicite:13]{index=13}.\n- Furnizează o funcție (sau middleware) care, integrată în serverul web al fiecărei aplicații, răspunde la cereri HTTP pe calea `/metrics` cu metricile în format text (formatul de expunere al Prometheus).\n- Opțional, permite înregistrarea ușoară a unor metrici personalizate (ex. counteri, histograme) prin expunerea obiectelor corespunzătoare din `prom-client`.\nAcest modul va fi importat și utilizat în initializer-ul fiecărui API, asigurând că metricile devin disponibile imediat ce serviciul pornește.",
+    "denumire_task": "Implementare Modul de Metrici în `metrics/recorders/prometheus.ts`",
+    "descriere_scurta_task": "Implementează fișierul `prometheus.ts` în `shared/observability/metrics/recorders/` pentru expunerea metricilor Prometheus în aplicații.",
+    "descriere_lunga_si_detaliata_task": "Pentru a permite colectarea metricilor de către Prometheus, fiecare serviciu va expune un endpoint `/metrics`. În `shared/observability/metrics/recorders/prometheus.ts` implementăm un modul care:\n- Initializează clientul Prometheus (`prom-client`) global, apelând `collectDefaultMetrics()` pentru a aduna metricile de bază Node.js (CPU, memorie, event loop etc.).\n- Furnizează o funcție (sau middleware) care, integrată în serverul web al fiecărei aplicații, răspunde la cereri HTTP pe calea `/metrics` cu metricile în format text (formatul de expunere al Prometheus).\n- Permite înregistrarea ușoară a unor metrici personalizate (ex. counteri, histograme) prin exportarea obiectelor corespunzătoare din `prom-client` (sau helperi pentru a le crea consistent).\nAcest modul va fi importat și utilizat în initializer-ul fiecărui API, astfel încât metricile devin disponibile imediat ce serviciul pornește.",
     "directorul_directoarele": [
-      "shared/observability/metrics/"
+      "shared/observability/metrics/recorders/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.6: Biblioteca `prom-client` este instalată. Putem acum să scriem codul de integrare a metricilor Prometheus în aplicații.",
-    "contextul_general_al_aplicatiei": "Monitorizarea metricilor (CPU, memorie, cereri pe secundă, erori HTTP etc.) este o componentă cheie a observabilității:contentReference[oaicite:14]{index=14}. Acest modul permite suitei să expună metrici într-un mod uniform, fără duplicarea codului în fiecare serviciu.",
-    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/metrics/prometheus.ts`. În el:\n- Importă `prom-client`.\n- Apelează `promClient.collectDefaultMetrics({ prefix: '<prefix_opțional>', register: promClient.register })` pentru a porni colectarea metricilor default.\n- Exportă fie o funcție `initMetrics(server)` care atașează la instanța serverului web ruta `/metrics` (în funcție de framework: pentru Fastify, un handler ce returnează `promClient.register.metrics()` cu content-type text; pentru Express, un middleware similar). Alternativ, exportă direct `promClient.register` și fiecare serviciu îl va folosi la definirea rutei.\n- Asigură-te că modulul este idempotent (să nu înregistreze metrici duplicat dacă e apelat de mai multe ori).",
-    "restrictii_anti_halucinatie": "Nu implementa metrici specifice de business în acest modul (ex: metrici financiare). Se limitează la metricile generice și mecanismul de expunere.",
-    "restrictii_de_iesire_din context_sau de inventare de sub_taskuri": "Nu deschide un port separat pentru metrici - folosește serverul existent al aplicației. Nu modifica configurații globale în afara înregistrării metricilor.",
-    "validare": "Pornește un serviciu (ex. suite-admin) în modul dev după integrare și accesează ruta `/metrics`. Ar trebui să vezi un output text cu metricile default (ex. `process_cpu_user_seconds_total`, etc.), semn că modulul funcționează.",
-    "outcome": "Fișierul `prometheus.ts` este implementat, oferind mecanismul necesar ca toate aplicațiile să expună metricile pentru Prometheus.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.3: A fost creată structura `shared/observability/metrics/` (inclusiv `recorders/`). F0.3.6: Biblioteca `prom-client` este instalată în monorepo.",
+    "contextul_general_al_aplicatiei": "Monitorizarea metricilor (CPU, memorie, RPS, erori HTTP etc.) este o componentă cheie a observabilității. Acest modul oferă un punct unic de integrare cu Prometheus pentru toate serviciile backend.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/metrics/recorders/prometheus.ts`. În el:\n- Importă `prom-client`.\n- Apelează `promClient.collectDefaultMetrics({ register: promClient.register })` (opțional cu un prefix comun pentru suiteă).\n- Exportă un helper (de exemplu `export function registerMetricsRoute(app) { ... }`) care configurează ruta `/metrics` pe serverul folosit (Fastify, Express etc.), răspunzând cu `promClient.register.metrics()` și `Content-Type: text/plain; version=0.0.4`.\n- Exportă și referințe utile (`promClient`, `promClient.register`) pentru definirea de metrici custom în alte module.\n- Asigură-te că inițializarea este idempotentă (nu înregistrează metrici de mai multe ori dacă modulul este importat de mai multe ori).",
+    "restrictii_anti_halucinatie": [
+      "Nu crea fișierul direct în `shared/observability/metrics/`; locația corectă este `shared/observability/metrics/recorders/prometheus.ts`.",
+      "Nu implementa aici metrici de business specifice (financiare, domeniu etc.); acest modul se ocupă de setup-ul generics și mecanismul de expunere.",
+      "Nu porni un server HTTP separat pentru `/metrics`; folosește serverul deja existent al aplicației.",
+      "Fă inițializarea `collectDefaultMetrics` idempotentă (evită înregistrarea dublă a acelorași metrici)."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica alte fișiere de configurare (Prometheus, docker-compose) în acest pas. Nu adăuga rute suplimentare în afara `/metrics`.",
+    "validare": "Integrează modulul într-un serviciu (ex. API-ul principal), pornește serviciul în modul dev și accesează `/metrics`. Ar trebui să vezi un output text cu metricile default (de ex. `process_cpu_user_seconds_total`). Asigură-te că nu apar erori în consola aplicației la import/init.",
+    "outcome": "Fișierul `metrics/recorders/prometheus.ts` este implementat și furnizează un mecanism standardizat pentru ca toate serviciile să expună metrici pentru Prometheus.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
-F0.3.10
+#### F0.3.10
+
+```JSON
+  {
   "F0.3.10": {
     "denumire_task": "Creare Fișier de Export `index.ts` pentru Pachetul Observability",
-    "descriere_scurta_task": "Creează `index.ts` în `shared/observability/` pentru a exporta centralizat funcțiile și clasele din modulele de observabilitate.",
-    "descriere_lunga_si_detaliata_task": "Pentru a facilita importurile din pachetul comun de observabilitate (`@genius-suite/observability`), se adaugă un fișier `index.ts` care re-exportă componentele principale. În acest fișier vom face export explicit la:\n- Funcțiile/utilitarele din `telemetry/otel.ts` (ex. o funcție de inițiere a tracing-ului sau direct execuția modulului dacă e auto-invocat).\n- Funcționalitatea din `telemetry/pino.ts` (ex. instanța de logger sau o funcție de obținere a logger-ului configurat).\n- Funcțiile din `metrics/prometheus.ts` (ex. `initMetrics()` sau registrul de metrici).\nAstfel, celelalte pachete/aplicații pot importa din `@genius-suite/observability` direct, fără a cunoaște structura internă a modulelor.",
+    "descriere_scurta_task": "Creează `index.ts` în `shared/observability/` pentru a exporta centralizat modulele de tracing și metrici.",
+    "descriere_lunga_si_detaliata_task": "Pentru a facilita importurile din pachetul comun de observabilitate (`@genius-suite/observability`), se adaugă un fișier `index.ts` la rădăcina `shared/observability/` care re-exportă componentele principale, din locațiile corecte din punct de vedere arhitectural:\n- Modulul de tracing OpenTelemetry din `traces/otel.ts`.\n- Modulul de metrici Prometheus din `metrics/recorders/prometheus.ts`.\nLogger-ul Pino NU este exportat de aici; el aparține pachetului `shared/common/logger` și va avea propriul său `index.ts` în acel pachet. În urma acestui task, aplicațiile vor putea utiliza importuri de forma `import { initTracing, initMetrics } from '@genius-suite/observability';` fără să cunoască structura internă a directorului.",
     "directorul_directoarele": [
       "shared/observability/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.7, F0.3.8, F0.3.9: Modulele interne (tracing, logging, metrici) au fost implementate. Acum creăm un punct de acces unificat pentru acestea.",
-    "contextul_general_al_aplicatiei": "Standardizarea importurilor crește lizibilitatea și reduce erorile. Conform convenției în monorepo, fiecare librărie are un fișier de intrare (`index.ts`) care definește API-ul public al modulului:contentReference[oaicite:15]{index=15}. Procedăm la fel pentru pachetul de observabilitate.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/index.ts` și adaugă următoarele linii:\n```ts\nexport * from './telemetry/otel';\nexport * from './telemetry/pino';\nexport * from './metrics/prometheus';\n```\nAstfel, când un serviciu va folosi, de exemplu, `import { initMetrics } from '@genius-suite/observability';`, modulul va rezolva automat către implementarea din interiorul pachetului.",
-    "restrictii_anti_halucinatie": "Nu adăuga altă logică în acest fișier în afară de exporturi. Nu transforma modulul în altceva (ex. nu inițializa nimic aici).",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Exportă doar entități reale, existente. Nu crea exporturi pentru module neimplementate sau inexistente.",
-    "validare": "Verifică compilarea proiectului (`pnpm build`). Orice eroare legată de module nelocate indică un export greșit. De asemenea, testează un import într-un serviciu, asigurându-te că intellisense vede funcțiile exportate.",
-    "outcome": "Pachetul `@genius-suite/observability` are un punct unic de acces (`index.ts`) care expune modulele de tracere, logare și metrici, gata de a fi utilizat de aplicații.",
+    "contextul_taskurilor_anterioare": "F0.3.7: Modulul de tracing OTEL a fost implementat în `shared/observability/traces/otel.ts`. F0.3.9: Modulul de metrici Prometheus a fost implementat în `shared/observability/metrics/recorders/prometheus.ts`. F0.3.8: Logger-ul Pino a fost implementat în `shared/common/logger/pino.ts` și nu aparține acestui pachet.",
+    "contextul_general_al_aplicatiei": "Standardizarea importurilor pentru observabilitate crește lizibilitatea și reduce cuplarea la structura internă a directoarelor. Conform convenției monorepo, fiecare librărie are un fișier de intrare (`index.ts`) care definește API-ul public al modulului.",
+    "contextualizarea_directoarelor_si_cailor": "Creează/editează fișierul `/var/www/GeniusSuite/shared/observability/index.ts` și adaugă următorul conținut:\n```ts\nexport * from './traces/otel';\nexport * from './metrics/recorders/prometheus';\n```\nAsigură-te că aceste căi corespund exact fișierelor implementate anterior în F0.3.7 și F0.3.9.",
+    "restrictii_anti_halucinatie": [
+      "Nu exporta logger-ul Pino din acest fișier; el aparține pachetului `shared/common/logger`.",
+      "Nu folosi căi bazate pe directorul `telemetry/`; acesta nu există în arhitectura finală. Folosește doar `./traces/otel` și `./metrics/recorders/prometheus`.",
+      "Nu adăuga logică de inițializare în `index.ts`; acesta este strict un fișier de re-export."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea sau muta alte fișiere în acest task. Presupune că `traces/otel.ts` și `metrics/recorders/prometheus.ts` există deja și doar le re-exportă.",
+    "validare": "Rulează `pnpm build` la rădăcina monorepo-ului și verifică faptul că nu apar erori de tip „Cannot find module './traces/otel'” sau similare. Opțional, într-un serviciu, testează un import de tip `import { initTracing } from '@genius-suite/observability';` pentru a verifica rezolvarea corectă a modulului.",
+    "outcome": "Pachetul `@genius-suite/observability` are un punct unic de acces (`shared/observability/index.ts`) care expune modulele de tracing și metrici din locațiile corecte, aliniat cu arhitectura proiectului.",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.11
+  }
+},
+```
+
+#### F0.3.11
+
+```JSON
+  {
   "F0.3.11": {
     "denumire_task": "Creare Fișier Docker Compose pentru Observabilitate (profil dev)",
     "descriere_scurta_task": "Creează fișierul `compose.dev.yml` în `shared/observability/compose/`, care va defini serviciile stack-ului de observabilitate pentru mediul de dezvoltare.",
@@ -7672,9 +7713,14 @@ F0.3.11
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu crea încă fișiere pentru alte profiluri (staging/prod) – ne concentrăm doar pe dev acum. Nu include aplicațiile propriu-zise în acest compose, doar stack-ul de observabilitate.",
     "validare": "Verifică că fișierul `compose.dev.yml` există și este recunoscut ca YAML valid (poți rula `docker compose -f shared/observability/compose/compose.dev.yml config` pentru a verifica că nu sunt erori).",
     "outcome": "Fișierul de orchestrare `compose.dev.yml` a fost creat, pregătit pentru definirea serviciilor de observabilitate în mediul de dezvoltare.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
-F0.3.12
+```
+
+#### F0.3.12
+
+```JSON
+  {
   "F0.3.12": {
     "denumire_task": "Definire Rețea Docker 'observability' în Compose",
     "descriere_scurta_task": "Adaugă în `compose.dev.yml` definirea unei rețele Docker dedicate observabilității (ex. `observability`) la care vor adera componentele și aplicațiile.",
@@ -7689,9 +7735,14 @@ F0.3.12
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Limitează-te la definirea rețelei. Nu atașa încă serviciile la rețea în acest pas - acest lucru se va face la definirea fiecărui serviciu.",
     "validare": "Rulează `docker compose -f shared/observability/compose/compose.dev.yml config` și verifică existența secțiunii networks și a rețelei `observability`. Nu trebuie raportate erori de sintaxă.",
     "outcome": "Rețeaua Docker `observability` este definită în config-ul Compose dev, gata să fie folosită de serviciile de observabilitate și de aplicațiile monitorizate.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
-F0.3.13
+```
+
+#### F0.3.13
+
+```JSON
+  {
   "F0.3.13": {
     "denumire_task": "Creare Configurație OpenTelemetry Collector (`otel-collector-config.yml`)",
     "descriere_scurta_task": "Adaugă fișierul de configurare pentru OTEL Collector (ex. `otel-collector-config.yml`) în `shared/observability/` pentru definirea pipeline-urilor de loguri și trace-uri.",
@@ -7706,8 +7757,10 @@ F0.3.13
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Menține configurația cât mai simplă, doar elementele necesare pentru skeleton. Nu inventa alți exporteri/receivere în afară de cele discutate (OTLP input, Tempo output).",
     "validare": "Poți valida sintaxa rulând containerul OTEL Collector local cu acest fișier (comanda `otelcol --dry-run -c otel-collector-config.yml` în interiorul imaginii) sau, odată integrat în Compose, verificând logs la pornirea containerului OTEL (nu trebuie să apară erori de config).",
     "outcome": "Fișierul de configurare pentru OpenTelemetry Collector este creat, definind pipeline-ul de bază pentru preluarea trasabilității și transmiterea către Tempo.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
 F0.3.14
   "F0.3.14": {
     "denumire_task": "Adăugare Serviciu OTEL Collector în `compose.dev.yml`",
