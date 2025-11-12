@@ -23,8 +23,8 @@ RUN pnpm install --frozen-lockfile
 # Compile shared libraries
 RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build
 
-# Build the identity service
-RUN cd cp/identity && pnpm run build
+# Build the licensing service
+RUN cd cp/licensing && pnpm run build
 
 # Runtime stage
 FROM node:20-alpine
@@ -43,14 +43,14 @@ RUN pnpm install --frozen-lockfile --production --ignore-scripts
 
 # Copy node_modules and built application from builder
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/cp/identity/dist ./cp/identity/dist
-COPY --from=builder /app/cp/identity/package.json ./cp/identity/package.json
+COPY --from=builder /app/cp/licensing/dist ./cp/licensing/dist
+COPY --from=builder /app/cp/licensing/package.json ./cp/licensing/package.json
 COPY --from=builder /app/shared ./shared
 
-# Install identity service dependencies
-RUN cd cp/identity && pnpm install --frozen-lockfile --production --ignore-scripts
+# Install licensing service dependencies
+RUN cd cp/licensing && pnpm install --frozen-lockfile --production --ignore-scripts
 
-EXPOSE 3004
+EXPOSE 3005
 
 # Start application with compiled JavaScript
-CMD ["node", "cp/identity/dist/cp/identity/src/main.js"]
+CMD ["node", "cp/licensing/dist/cp/licensing/src/main.js"]

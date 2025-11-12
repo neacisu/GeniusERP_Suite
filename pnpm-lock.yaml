@@ -131,6 +131,31 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  cp/licensing:
+    dependencies:
+      '@genius-suite/common':
+        specifier: workspace:*
+        version: link:../../shared/common
+      '@genius-suite/observability':
+        specifier: workspace:*
+        version: link:../../shared/observability
+      fastify:
+        specifier: ^4.0.0
+        version: 4.29.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.25
+      ts-node:
+        specifier: ^10.9.0
+        version: 10.9.2(@types/node@20.19.25)(typescript@5.9.3)
+      tsx:
+        specifier: ^4.0.0
+        version: 4.20.6
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
   cp/suite-admin:
     dependencies:
       '@genius-suite/common':

@@ -8,7 +8,7 @@ services:
       - "4318:4318"  # OTLP HTTP
       - "55679:55679"  # Prometheus metrics
     volumes:
-      - ./configs/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
+      - ./otel-collector-config.yml:/etc/otelcol-contrib/config.yaml
     networks:
       - observability
 
@@ -27,7 +27,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'

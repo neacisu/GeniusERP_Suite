@@ -8245,26 +8245,27 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.3.43
+#### F0.3.34
 
 ```JSON
   {
   "F0.3.34": {
     "denumire_task": "Actualizare Docker Compose pentru identity",
-    "descriere_scurta task": "Conectează containerul identity la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
-    "descriere_lunga si_detaliata_task": "În `cp/identity/compose/docker-compose.yml`, modificăm serviciul identity astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=identity` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul identity împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "descriere_scurta_task": "Conectează containerul identity la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
+    "descriere_lunga_si_detaliata_task": "În `cp/identity/compose/docker-compose.yml` actualizăm serviciul `identity` pentru a trimite telemetrie către OTEL Collector. Adăugăm rețeaua `observability` la serviciu și setăm variabilele de mediu OTEL necesare. Aceasta permite SDK-ului OTEL (inițializat în cod la F0.3.33 corectat) să comunice cu colectorul prin HTTP/OTLP pe portul 4318.",
     "directorul_directoarele": [
       "cp/identity/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.33: Codul identity este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
-    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, identity devine parte integrantă a ecosistemului de monitorizare.",
-    "contextualizarea directoarelor si cailor": "Deschide `cp/identity/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
-    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
-    "restrictii_de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
-    "validare": "În contextul orchestrării dev, pornește serviciul identity împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul identity apare listat. De asemenea, rulează `docker compose exec identity env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs identity` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
-    "outcome": "Docker Compose-ul pentru identity a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.33 (corectat): codul identity inițializează tracing și metrici din `@genius-suite/observability` și folosește logger-ul din `@genius-suite/common`. F0.3.12 (corectat): rețeaua `observability` este definită în orchestrarea globală (profiles).",
+    "contextul_general_al_aplicatiei": "identity este serviciu CP critic; trebuie să emită trace-uri, metrici și loguri corelabile. Conectarea la rețeaua `observability` și setarea variabilelor OTEL aliniază containerul cu stack-ul comun (otel-collector, Prometheus, Loki/Tempo, Grafana).",
+    "contextualizarea_directoarelor_si_cailor": "Deschide `cp/identity/compose/docker-compose.yml` și actualizează serviciul:\n\n```yaml\ nservices:\n  identity:\n    environment:\n      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n      - OTEL_SERVICE_NAME=identity\n    networks:\n      - observability\n    # optional (doar pentru orchestrări locale combinate):\n    # depends_on:\n    #   - otel-collector\n```\n\nNu defini `observability` ca rețea `external` aici; ea este declarată și gestionată în orchestrarea globală din `shared/observability/compose/profiles/compose.dev.yml`. Acest fișier doar face referință la rețea.",
+    "restrictii_anti_halucinatie": "Nu modifica alte secțiuni (ports, volumes etc.). Nu redenumi rețeaua sau serviciul. Nu adăuga alte variabile OTEL în afara celor două necesare aici.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu marca rețeaua ca `external` în acest compose. Nu introduce servicii noi; configurarea collectorului aparține orchestrării globale.",
+    "validare": "Rulează orchestrarea dev completă. Verifică: (1) containerul identity este atașat la `observability` (`docker network inspect <proiect>_observability`), (2) în interiorul containerului există variabilele (`docker compose exec identity env | grep OTEL_`), (3) logul de startup arată endpoint-ul OTLP corect, iar `/metrics` răspunde.",
+    "outcome": "Containerul identity este conectat la rețeaua de observabilitate și configurat prin env să trimită telemetrie către `otel-collector`.",
+    "componenta_de_CI_CD": "Poate fi verificat într-un job de pipeline (smoke) care ridică profile-ul dev și rulează health-checkuri pe `/metrics` și pe colector."
+  }
+},
 ```
 
 
@@ -8273,22 +8274,24 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.35": {
-    "denumire_task": "Integră Observabilitate în licensing (Cod)",
-    "descriere_scurta task": "Instrumentează aplicația licensing pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
-    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **licensing** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `licensing`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că licensing trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "denumire_task": "Integrare Observabilitate în licensing (Cod) — CORECTAT",
+    "descriere_scurta_task": "Instrumentează aplicația cp/licensing: inițializează tracing (OTEL) și metrici (Prometheus) din @genius-suite/observability și folosește logger-ul Pino din @genius-suite/common; expune endpoint-ul /metrics.",
+    "descriere_lunga_si_detaliata_task": "Corectăm importurile conform arhitecturii: logger-ul Pino provine din pachetul comun (@genius-suite/common/logger), iar tracing-ul și metricile din pachetul de observabilitate (@genius-suite/observability). În punctul de intrare al serviciului (ex. cp/licensing/src/main.ts), inițializăm cât mai devreme tracing-ul (initTracing), configurăm logger-ul Pino în server (ex. Fastify) și expunem ruta /metrics folosind registrul Prometheus expus de modulul observability. Notă: variabilele de mediu OTEL (ex. OTEL_SERVICE_NAME, OTEL_EXPORTER_OTLP_ENDPOINT) vor fi setate în task-ul de compose aferent (următorul pas, nu în acesta).",
     "directorul_directoarele": [
       "cp/licensing/",
+      "cp/licensing/src/",
       "cp/licensing/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la licensing.",
-    "contextul_general al aplicatiei": "licensing este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
-    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cp/licensing/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
-    "restrictii_anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
-    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
-    "validare": "Rulează aplicația licensing local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
-    "outcome": "Aplicația licensing a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.7, F0.3.9 și F0.3.10 corectate: exporturile din @genius-suite/observability sunt aliniate pe trasee 'traces/*' și 'metrics/recorders/*'. Logger-ul este în @genius-suite/common/logger. Acest task consumă acele module corectate.",
+    "contextul_general_al_aplicatiei": "licensing este serviciu CP; trebuie monitorizat la fel ca restul: loguri JSON corelabile, trace-uri OTEL, metrici Prometheus. Integrarea la nivel de cod este primul pas; conectarea containerului la rețeaua 'observability' și setarea variabilelor OTEL se face în task-ul de compose dedicat.",
+    "contextualizarea_directoarelor_si_cailor": "1) Deschide 'cp/licensing/src/main.ts' (sau intrarea reală).\n2) Adaugă importurile corecte:\n   import { logger } from '@genius-suite/common/logger';\n   import { initTracing, initMetrics, promRegister } from '@genius-suite/observability';\n3) Inițializează tracing-ul foarte devreme în runtime:\n   initTracing({ serviceName: process.env.OTEL_SERVICE_NAME || 'licensing' });\n4) Creează/actualizează serverul (ex. Fastify) cu logger-ul comun:\n   const app = Fastify({ logger });\n5) Inițializează metricile (registru default prom-client prin observability):\n   await initMetrics();\n6) Expune endpoint-ul '/metrics':\n   app.get('/metrics', async (_req, reply) => {\n     reply.type('text/plain');\n     return promRegister.metrics();\n   });\n7) Pornește serverul în mod obișnuit (listen).",
+    "restrictii_anti_halucinatie": "NU importa logger-ul din '@genius-suite/observability'. NU reimplementa un alt client Prometheus; folosește registrul expus de pachetul de observabilitate. NU introduce configurări OTEL avansate (sampling, processors) în acest task.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "NU modifica configurația containerului aici; variabilele OTEL și rețeaua 'observability' vor fi gestionate în task-ul de Compose al licensing. NU crea directoare noi în afara celor prevăzute de arhitectură.",
+    "validare": "1) Rulează local serviciul (pnpm run dev sau echivalent) cu env minimal: OTEL_SERVICE_NAME=licensing. 2) Accesează 'http://localhost:{port}/metrics' și verifică răspunsul text Prometheus. 3) Verifică în loguri că ieșirea este JSON Pino (chei level, msg, time) și că nu există erori de inițializare OTEL. 4) Opțional, execută un request simplu la o rută și observă că totul funcționează fără erori de observabilitate.",
+    "outcome": "Codul licensing exportă metrici pe /metrics, folosește logger-ul comun Pino și inițializează trasabilitatea OTEL corect, pregătit pentru conectarea la infrastructura de observabilitate.",
+    "componenta_de_CI_CD": "Se poate adăuga un smoke test de componentă care pornește aplicația în mod test și verifică status 200 pe '/metrics' și prezența cheilor de log Pino într-un request."
+  }
+},
 ```
 
 #### F0.3.36
@@ -8313,7 +8316,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.37
 
+```JSON
+  {
   "F0.3.37": {
     "denumire_task": "Integră Observabilitate în analytics-hub (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația analytics-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8329,8 +8335,14 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația analytics-hub local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația analytics-hub a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta de CI/DI": "N/A"
+    "componenta de CI/DI": "N/A"}
   },
+```
+
+#### F0.3.38
+
+```JSON
+  {
   "F0.3.38": {
     "denumire_task": "Actualizare Docker Compose pentru analytics-hub",
     "descriere_scurta_task": "Conectează containerul analytics-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
@@ -8345,8 +8357,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul analytics-hub împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul analytics-hub apare listat. De asemenea, rulează `docker compose exec analytics-hub env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs analytics-hub` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru analytics-hub a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta de CI/DI": "N/A"
+    "componenta de CI/DI": "N/A"}
   },
+```
+
+
   "F0.3.39": {
     "denumire_task": "Integră Observabilitate în ai-hub (Cod)",
     "descriere_scurta task": "Instrumentează aplicația ai-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
