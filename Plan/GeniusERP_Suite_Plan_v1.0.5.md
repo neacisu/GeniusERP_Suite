@@ -7755,20 +7755,25 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.13": {
     "denumire_task": "Creare Configurație OpenTelemetry Collector (`otel-collector-config.yml`)",
-    "descriere_scurta_task": "Adaugă fișierul de configurare pentru OTEL Collector (ex. `otel-collector-config.yml`) în `shared/observability/` pentru definirea pipeline-urilor de loguri și trace-uri.",
-    "descriere_lunga_si_detaliata_task": "Pentru a inițializa OpenTelemetry Collector-ul, avem nevoie de un fișier de configurare YAML care să specifice ce date colectează și unde le trimite. Vom crea fișierul `otel-collector-config.yml` în directorul `shared/observability/`, conținând cel puțin:\n- **Receivere**: configurare pentru a primi date OTLP pe protocol gRPC (port 4317) și HTTP (port 4318) pentru traces (și eventual logs dacă decidem să le trimitem prin collector). Aceste receivere permit primirea span-urilor trimise de serviciile noastre.\n- **Exportere**: configurare pentru a trimite mai departe datele către Tempo (pentru traces) prin OTLP gRPC către adresa `tempo:4317`. Pentru logs, dacă am folosi collector, am defini un exporter Loki, dar în acest skelet vom lăsa logs separat prin Promtail.\n- **Pipeline**: definirea unui pipeline de `traces` care leagă receiver-ul OTLP de exporter-ul Tempo (inclusiv eventual un procesor de tip `batch` pentru optimizare). Astfel, orice trace primit de colector va fi trimis către Tempo pentru stocare.\nConfig-ul poate rămâne minimalist la acest stadiu, urmând să fie extins pe măsură ce adăugăm procesări sau alte tipuri de date.",
+    "descriere_scurta_task": "Adaugă fișierul de configurare pentru OTEL Collector (`otel-collector-config.yml`) în `shared/observability/otel-config/` pentru definirea pipeline-urilor de trace-uri.",
+    "descriere_lunga_si_detaliata_task": "Pentru a inițializa OpenTelemetry Collector-ul, avem nevoie de un fișier de configurare YAML care să specifice ce date colectează și unde le trimite. Vom crea fișierul `otel-collector-config.yml` în directorul `shared/observability/otel-config/`, conținând cel puțin:\n- **Receivere**: configurare pentru a primi date OTLP pe protocol gRPC (port 4317) și HTTP (port 4318) pentru traces. Aceste receivere permit primirea span-urilor trimise de serviciile noastre.\n- **Exportere**: configurare pentru a trimite mai departe datele către Tempo (pentru traces) prin OTLP gRPC către adresa `tempo:4317`.\n- **Procesor**: un procesor `batch` pentru a grupa și optimiza trimiterea datelor.\n- **Pipeline**: definirea unui pipeline de `traces` care leagă receiver-ul OTLP de exporter-ul Tempo (prin procesorul `batch`). Astfel, orice trace primit de colector va fi trimis către Tempo pentru stocare.\nConfig-ul poate rămâne minimalist la acest stadiu, urmând să fie extins pe măsură ce adăugăm procesări sau alte tipuri de date.",
     "directorul_directoarele": [
-      "shared/observability/"
+      "shared/observability/otel-config/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.12: Rețeaua de observabilitate e definită. Acum pregătim configurația necesară primului serviciu din stack: OTEL Collector-ul.",
+    "contextul_taskurilor_anterioare": "F0.3.12: Rețeaua de observabilitate este definită în Compose (profil dev). Acum pregătim configurația necesară primului serviciu din stack: OTEL Collector-ul.",
     "contextul_general_al_aplicatiei": "OpenTelemetry Collector centralizează datele de telemetrie (traces, logs, metrici) și le rutează către backend-urile de stocare (Tempo, Loki, Prometheus etc.). Conform design-ului, Collector-ul va primi trace-urile de la aplicații și le va trimite către Tempo (stack-ul Grafana pentru traces). Această configurație realizează legătura între microservicii și sistemul de stocare a trasabilității.",
-    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/otel-collector-config.yml`. În interior, adaugă conținut YAML, de exemplu:\n```yaml\nreceivers:\n  otlp:\n    protocols:\n      http:\n      grpc:\nexporters:\n  otlp/tempo:\n    endpoint: \"tempo:4317\"\nprocessors:\n  batch:\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp/tempo]\n```\nAceasta configurează minimal colectorul să accepte orice trace pe protocoalele standard OTLP și să le trimită către serviciul Tempo. Asigură-te că indentarea YAML este corectă.",
-    "restrictii_anti_halucinatie": "Nu adăuga configurații inutile sau neplanificate (ex: nu activa deocamdată metrici sau loguri prin collector, deoarece metricile le colectăm direct cu Prometheus, iar logurile prin Promtail).",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Menține configurația cât mai simplă, doar elementele necesare pentru skeleton. Nu inventa alți exporteri/receivere în afară de cele discutate (OTLP input, Tempo output).",
-    "validare": "Poți valida sintaxa rulând containerul OTEL Collector local cu acest fișier (comanda `otelcol --dry-run -c otel-collector-config.yml` în interiorul imaginii) sau, odată integrat în Compose, verificând logs la pornirea containerului OTEL (nu trebuie să apară erori de config).",
-    "outcome": "Fișierul de configurare pentru OpenTelemetry Collector este creat, definind pipeline-ul de bază pentru preluarea trasabilității și transmiterea către Tempo.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/otel-config/otel-collector-config.yml`. În interior, adaugă conținut YAML, de exemplu:\n```yaml\nreceivers:\n  otlp:\n    protocols:\n      http:\n      grpc:\nexporters:\n  otlp/tempo:\n    endpoint: \"tempo:4317\"\nprocessors:\n  batch:\nservice:\n  pipelines:\n    traces:\n      receivers: [otlp]\n      processors: [batch]\n      exporters: [otlp/tempo]\n```\nAceasta configurează minimal colectorul să accepte orice trace pe protocoalele standard OTLP și să le trimită către serviciul Tempo. Asigură-te că indentarea YAML este corectă.",
+    "restrictii_anti_halucinatie": [
+      "Nu activa deocamdată metrici sau loguri prin collector; metricile sunt colectate direct cu Prometheus, iar logurile prin Promtail.",
+      "Nu adăuga alți exporteri sau receivere în afara celor menționate (OTLP input, Tempo output) la acest pas.",
+      "Păstrează config-ul cât mai simplu; extensiile (procesori suplimentari, alți exporteri) vor fi adăugate în task-uri ulterioare dacă este nevoie."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Menține configurația la nivel de skeleton. Nu inventa alte fișiere de config aici (pentru aplicații individuale); acestea vor intra în subfolderele `apps/` conform arhitecturii.",
+    "validare": "Poți valida sintaxa rulând containerul OTEL Collector local cu acest fișier (ex. `otelcol --dry-run -c otel-collector-config.yml` în interiorul imaginii) sau, odată integrat în Compose, verificând log-urile la pornirea containerului OTEL (nu trebuie să apară erori de config).",
+    "outcome": "Fișierul de configurare pentru OpenTelemetry Collector este creat în `shared/observability/otel-config/`, definind pipeline-ul de bază pentru preluarea trasabilității și transmiterea către Tempo.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.14
@@ -7815,7 +7820,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.15
 
+```JSON
+  {
   "F0.3.16": {
     "denumire_task": "Adăugare Serviciu Prometheus în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `prometheus` în fișierul Compose dev, folosind imaginea oficială și montând configurația `prometheus.yml` generată.",
@@ -7830,8 +7838,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu configura în plus autentificare sau alte flag-uri avansate Prometheus (ex. remote_write etc.) în skeleton. Rămânem la setup-ul minimal descris.",
     "validare": "Pornește local doar serviciul Prometheus din Compose (`docker compose -f ... up -d prometheus`) după ce toate serviciile sunt integrate, și vizitează `http://localhost:9090/targets`. Ar trebui să vezi lista de job-uri definite (chiar dacă unele ținte pot fi inactive până la pornirea aplicațiilor).",
     "outcome": "Serviciul Prometheus este definit în configurația Docker Compose, configurat să își încarce setările și să colecteze metricile din suita GeniusERP.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.17": {
     "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
     "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/grafana/` (ex. `datasources.yml`).",
