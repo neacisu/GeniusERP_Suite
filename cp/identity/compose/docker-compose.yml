@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  identity:
+    build:
+      context: ../../..
+      dockerfile: cp/identity/Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=development
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_SERVICE_NAME=identity
+    networks:
+      - observability
+    depends_on:
+      - otel-collector
+
+networks:
+  observability:
+    external: true
+    name: geniuserp_observability
