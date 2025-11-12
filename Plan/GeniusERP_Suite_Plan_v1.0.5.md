@@ -7970,20 +7970,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.22": {
     "denumire_task": "Adăugare Serviciu Promtail (Agent de Loguri) în `compose.dev.yml`",
-    "descriere_scurta_task": "Configurează serviciul Docker `promtail` în Compose dev, montând configurația `promtail-config.yml` și accesul la Docker socket, pentru a trimite logurile containerelor către Loki.",
-    "descriere_lunga si_detaliata_task": "Adăugăm ultimul component al stack-ului de observabilitate: agentul de loguri Promtail. În `compose.dev.yml`, definim serviciul `promtail` astfel:\n- **Image**: `grafana/promtail:latest` (imaginea oficială Promtail compatibilă cu versiunea Loki folosită).\n- **Volumes**: \n  - Montăm configurația noastră: `- ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro`.\n  - Montăm socket-ul Docker al host-ului în container: `- /var/run/docker.sock:/var/run/docker.sock:ro`. Aceasta permite Promtail-ului să descopere containerele și să le citească logurile direct.\n- **Command/Args**: Putem lansa Promtail cu `-config.file=/etc/promtail/promtail-config.yml` pentru a ne asigura că folosește fișierul montat.\n- **Networks**: atașăm `promtail` la rețeaua `observability` (deși Promtail citește logurile de la Docker direct, e nevoie să poată rezolva DNS-ul `loki` pentru a trimite datele, deci trebuie în aceeași rețea).\nNu expunem porturi pentru Promtail, acesta acționând doar ca agent. Prin această configurare, Promtail va porni, va citi config-ul (job-ul all-containers) și se va conecta la Docker socket. Va găsi toate containerele (inclusiv aplicațiile și serviciile de observabilitate) din rețeaua `observability` și va începe să trimită logurile lor către Loki:contentReference[oaicite:25]{index=25}.",
+    "descriere_scurta_task": "Configurează serviciul Docker `promtail` în Compose dev, montând configurația `promtail-config.yml` și Docker socket-ul, pentru a trimite logurile containerelor către Loki.",
+    "descriere_lunga_si_detaliata_task": "Adăugăm ultimul component al stack-ului de observabilitate: agentul de loguri Promtail. În fișierul de profil `compose.dev.yml`, definim serviciul `promtail` astfel:\n- Image: `grafana/promtail:latest` (imaginea oficială Promtail compatibilă cu versiunea Loki folosită).\n- Volumes:\n  - Montăm configurația noastră: `../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro`.\n  - Montăm socket-ul Docker al host-ului în container: `/var/run/docker.sock:/var/run/docker.sock:ro`, pentru ca Promtail să poată descoperi containerele și să le citească logurile.\n- Command/Args: lansăm Promtail cu `-config.file=/etc/promtail/promtail-config.yml` pentru a ne asigura că folosește fișierul montat.\n- Networks: atașăm `promtail` la rețeaua `observability`, astfel încât să poată rezolva DNS-ul `loki` și să trimită datele către `http://loki:3100`.\nNu expunem porturi pentru Promtail, acesta acționând doar ca agent. Prin această configurare, Promtail va porni, va citi config-ul (job-ul `all-containers`) și se va conecta la Docker socket. Va descoperi toate containerele (inclusiv aplicațiile și serviciile de observabilitate) din rețeaua `observability` și va începe să trimită logurile lor către Loki.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.20: Configurația Promtail este scrisă. F0.3.21: Serviciul Loki este disponibil ca țintă. Acum punem Promtail în funcțiune pentru a lega aceste componente.",
+    "contextul_taskurilor_anterioare": "F0.3.20: Configurația Promtail este scrisă în `logs/ingestion/promtail-config.yml`. F0.3.21: Serviciul Loki este disponibil ca țintă. Acum punem Promtail în funcțiune pentru a lega aceste componente.",
     "contextul_general_al_aplicatiei": "Promtail, împreună cu Loki, realizează centralizarea logurilor pentru întreg sistemul, completând implementarea observabilității inițiale (skeleton). Acest pas finalizează pipeline-ul de loguri: aplicațiile -> stdout (Pino JSON) -> Promtail -> Loki -> Grafana.",
-    "contextualizarea_directoarelor si_cailor": "În `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`, adaugă:\n```yaml\n  promtail:\n    image: grafana/promtail:latest\n    command: -config.file=/etc/promtail/promtail-config.yml\n    volumes:\n      - ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n    networks:\n      - observability\n```\nVerifică corectitudinea indentării YAML. Montarea socket-ului Docker necesită ca demonul Docker să ruleze pe host (ceea ce e cazul tipic in dev). Asigură-te că denumirea rețelei din config (geniuserp_observability) corespunde cu cea reală (dacă diferă, ajustează în promtail-config).",
-    "restrictii_anti_halucinatie": "Nu porni Promtail fără a-l lega la Docker sock (altfel nu va culege nimic). Nu monta socket-ul cu permisiuni de scriere, păstrează-l read-only pentru siguranță.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu definești restart policy speciale sau alte constrângeri, nu sunt necesare în dev. Nu conecta promtail la alte rețele inutile (doar observability).",
-    "validare": "Pornește tot stack-ul Observability (toate serviciile din compose.dev.yml). Verifică logurile containerului Promtail (`docker compose logs promtail`): ar trebui să vezi linii care indică ce containere a descoperit și confirmarea trimiterii logurilor către Loki (cod 204 de succes). În Grafana, accesează Loki via explore și verifică dacă apar intrări de log.",
-    "outcome": "Serviciul Promtail este integrat, colectând logurile din toate containerele suitei și direcționându-le către Loki, finalizând setup-ul de log management al skeleton-ului de observabilitate.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și, sub secțiunea `services:` (la același nivel cu `loki`, `prometheus`, `grafana` etc.), adaugă:\n\n  promtail:\n    image: grafana/promtail:latest\n    command: -config.file=/etc/promtail/promtail-config.yml\n    volumes:\n      - ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro\n      - /var/run/docker.sock:/var/run/docker.sock:ro\n    networks:\n      - observability\n\nCalea relativă `../../logs/ingestion/promtail-config.yml` este calculată din directorul `shared/observability/compose/profiles/` către `shared/observability/logs/ingestion/promtail-config.yml` (două niveluri în sus, apoi în jos în `logs/ingestion/`). Verifică indentarea YAML pentru a evita erori de parse.",
+    "restrictii_anti_halucinatie": "Nu porni Promtail fără a monta Docker socket-ul, altfel nu va putea descoperi containerele. Nu monta socket-ul cu permisiuni de scriere – păstrează `:ro` pentru siguranță. Nu adăuga porturi expuse pentru Promtail, nu este necesar.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu defini politici de restart sau constrângeri suplimentare în acest pas; pentru dev este suficient comportamentul implicit. Nu conecta Promtail la alte rețele decât `observability`.",
+    "validare": "Pornește stack-ul de observabilitate cu `docker compose -f shared/observability/compose/profiles/compose.dev.yml up -d promtail loki`. Verifică logurile containerului Promtail (`docker compose -f shared/observability/compose/profiles/compose.dev.yml logs promtail`): ar trebui să vezi mesaje că a citit config-ul și a descoperit containere. În Grafana, în Explore (Loki), ar trebui să apară intrări de log după ce aplicațiile încep să emită loguri.",
+    "outcome": "Serviciul Promtail este integrat în orchestrarea dev, colectând logurile din toate containerele suitei și direcționându-le către Loki, finalizând setup-ul de log management al skeleton-ului de observabilitate.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.23
@@ -8030,7 +8031,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.25
 
+```JSON
+  {
   "F0.3.25": {
     "denumire_task": "Creare Configurație Parser Log Traefik (`traefik.json` în parsers)",
     "descriere_scurta_task": "Adaugă un fișier JSON de configurare a parser-ului de loguri Traefik în `shared/observability/logs/parsers/traefik.json` pentru a decoda și curăța logurile de acces Traefik (format text) înainte de trimiterea în Loki.",
@@ -8045,8 +8049,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu forța aplicarea acestui parser în config-ul promtail fără a-l fi testat. E mai mult o plasare a fișierului ca piesă a puzzle-ului; integrarea exactă poate urma în faza Traefik (F0.4).",
     "validare": "Acest fișier în sine nu poate fi validat runtime până nu e referit de Promtail. Verifică că e JSON valid (parsabil). Ulterior, când Traefik va genera loguri, se poate actualiza config-ul Promtail să folosească acest parser și testa că logurile sunt etichetate/parseate corect (ex. consultați Loki pentru câmpuri extrase).",
     "outcome": "Fișierul de parser pentru logurile Traefik este creat, pregătit pentru a fi folosit de agentul de loguri în vederea interpretării corecte și sigure a logurilor Traefik.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.26": {
     "denumire_task": "Creare Script de Validare Observabilitate (`validate.sh`)",
     "descriere_scurta_task": "Adaugă un script `validate.sh` în `shared/observability/scripts/` care pornește componentele de observabilitate și execută verificări de bază (servicii up, endpoint-uri accesibile).",
