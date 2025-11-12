@@ -7948,19 +7948,20 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.21": {
     "denumire_task": "Adăugare Serviciu Loki în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `loki` (Grafana Loki) în Compose dev, pentru stocarea centralizată a logurilor, incluzând un volum de date pentru persistență temporară.",
-    "descriere_lunga si_detaliata_task": "Adăugăm componenta de log management Grafana Loki ca serviciu în `compose.dev.yml`. Sub secțiunea `services:`, definim serviciul `loki` cu parametri:\n- **Image**: `grafana/loki:latest` (imaginea oficială Loki, mod single-binary care ascultă pe portul 3100 pentru scriere/querie de loguri).\n- **Ports**: putem expune portul 3100 extern dacă vrem să testăm direct interogări (nu neapărat necesar, Grafana va comunica intern cu Loki). Pentru dev, putem totuși expune `3100:3100` ca să avem acces eventual la API-ul Loki.\n- **Volumes**: definește un volum de stocare pentru datele Loki (ex. mount la `/loki` în container) astfel încât logurile să nu fie păstrate doar în memoria containerului. În dev, pot fi stocate și ephemeral, dar vom configura un volum named de ex. `loki_data`.\n- **Command/Config**: Loki vine cu un config implicit pentru single-process mode. Putem să nu montăm un config custom acum, folosim implicitul care stochează date local și are retenție by default destul de mare. Pentru skeleton, acceptăm configurația default (ceea ce stochează logurile local indefinite, fiind dev). Dacă am vrea, am putea monta un fișier minimal de config să limităm retenția (ex. 7 zile), dar nu e necesar in dev skeleton.\n- **Networks**: atașăm `loki` la rețeaua `observability`.\nAcum Promtail (definit în task următor) va putea trimite logurile la `http://loki:3100`. Grafana are deja data source-ul configurat tot către această adresă. Loki nu necesită alte servicii auxiliare în modul de bază (nu folosim Cassandra sau alt storage extern, modul single-binary folosește sistemul de fișiere).",
+    "descriere_lunga_si_detaliata_task": "Adăugăm componenta de log management Grafana Loki ca serviciu în fișierul de profil `compose.dev.yml`. Sub secțiunea `services:` definim serviciul `loki` cu parametri:\n- Image: `grafana/loki:latest` (imaginea oficială Loki, mod single-binary care ascultă pe portul 3100 pentru scriere/query de loguri).\n- Ports: putem expune portul 3100 extern dacă vrem să testăm direct interogări (nu neapărat necesar, Grafana va comunica intern cu Loki). Pentru dev, putem totuși expune `3100:3100` ca să avem acces eventual la API-ul Loki.\n- Volumes: definim un volum de stocare pentru datele Loki (mount la `/loki` în container) astfel încât logurile să nu fie păstrate doar în memoria containerului. În dev pot fi și ephemeral, dar configurăm un volum named, de ex. `loki_data`.\n- Command/Config: Loki vine cu un config implicit pentru single-process mode; pentru skeleton nu montăm un config custom, folosim implicitul.\n- Networks: atașăm `loki` la rețeaua `observability`.\nAstfel, Promtail (definit în taskul următor) va putea trimite logurile la `http://loki:3100`, iar Grafana are deja data source-ul configurat către aceeași adresă.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
     "contextul_taskurilor_anterioare": "F0.3.20: Configul Promtail (agentul de loguri) este pregătit să trimită către Loki. Acum adăugăm efectiv serviciul Loki care să primească și să stocheze logurile.",
-    "contextul general_al_aplicatiei": "Stocarea centralizată a logurilor completează cerința de observabilitate (alături de metrici și trace-uri). Loki va permite interogarea logurilor istorice în Grafana și corelarea cu metrici/traces. Integrarea lui acum asigură că la pornire, suită va avea un loc unde să-și trimită toate logurile.",
-    "contextualizarea_directoarelor si_cailor": "În `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`, adaugă serviciul:\n```yaml\n  loki:\n    image: grafana/loki:latest\n    networks:\n      - observability\n    volumes:\n      - loki_data:/loki\n    ports:\n      - 3100:3100\n```\nIar la finalul fișierului (sau secțiunea volumes globală) adaugă definirea volumului named:\n```yaml\nvolumes:\n  loki_data:\n```\nPentru skeleton, nu personalizăm config-ul Loki (folosește config default intern). Expunerea portului 3100 e opțională, dar utilă pentru debug (ex. se pot face interogări direct).",
-    "restrictii_anti_halucinatie": "Nu configura replici multiple sau microservicii pentru Loki (ingester, querier separate) - rulăm modul all-in-one. Nu adăuga parametri de linie de comandă nejustificați; modul implicit e suficient acum.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu seta autentificare sau multi-tenancy în config-ul Loki la acest pas - skeletonul e single-tenant dev. Nu uita volumul de date, altfel la restart logurile se pierd (în dev nu e grav, dar preferăm persistență minimă).",
-    "validare": "După pornire, verifică rapid starea: accesează `http://localhost:3100/metrics` (Loki expune metrici) - dacă primești un răspuns text, containerul rulează. Grafana va raporta status-ul sursei Loki ca up dacă totul e ok.",
+    "contextul_general_al_aplicatiei": "Stocarea centralizată a logurilor completează cerința de observabilitate (alături de metrici și trace-uri). Loki va permite interogarea logurilor istorice în Grafana și corelarea cu metrici/traces. Integrarea lui acum asigură că la pornire, suita va avea un loc unde să-și trimită toate logurile.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și, sub secțiunea `services:`, adaugă serviciul:\n\n  loki:\n    image: grafana/loki:latest\n    networks:\n      - observability\n    volumes:\n      - loki_data:/loki\n    ports:\n      - 3100:3100\n\nDacă fișierul nu are deja o secțiune globală `volumes:` (la același nivel cu `services:` și `networks:`), adaugă la final:\n\nvolumes:\n  loki_data:\n\nDacă secțiunea `volumes:` există deja (de ex. definită anterior pentru Prometheus sau alte servicii), doar adaugă intrarea `loki_data:` în acea secțiune, fără a o duplica.",
+    "restrictii_anti_halucinatie": "Nu configura replici multiple sau microservicii separate pentru Loki (ingester, querier etc.) – rulăm modul all-in-one. Nu adăuga parametri de linie de comandă nejustificați; modul implicit este suficient în skeleton.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu seta autentificare sau multi-tenancy în config-ul Loki la acest pas – skeletonul este single-tenant dev. Nu uita volumul de date, altfel la restart logurile se pierd (în dev nu e grav, dar persistența minimă e utilă pentru debugging).",
+    "validare": "După integrarea serviciului, rulează `docker compose -f shared/observability/compose/profiles/compose.dev.yml up -d loki`. Accesează `http://localhost:3100/metrics`; dacă primești un răspuns text cu metrici, containerul rulează corect. Ulterior, din Grafana, data source-ul Loki ar trebui să apară ca \"UP\".",
     "outcome": "Serviciul Loki este configurat și integrat în orchestrarea dev, gata să primească logurile colectate de la aplicații.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.22
@@ -8007,7 +8008,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.24
 
+```JSON
+  {
   "F0.3.24": {
     "denumire_task": "Creare Dashboard Grafana pentru Traefik (`traefik.json`)",
     "descriere_scurta_task": "Adaugă un fișier JSON în `shared/observability/grafana/dashboards/traefik.json` care definește un dashboard Grafana de bază pentru Traefik (metrice de trafic și erori).",
@@ -8022,8 +8026,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Folosește exclusiv metricile reale expuse de Traefik. Nu presupune existența altor metrici decât cele standard (requests_total, open_connections etc.).",
     "validare": "După pornire Grafana, verifică existența dashboard-ului 'Traefik Overview'. Deschide-l și asigură-te că panourile afișează date (dacă Traefik nu e încă integrat, pot apărea goale sau erori de query, ceea ce e normal până la F0.4). Cel puțin, Grafana ar trebui să recunoască sursa Prometheus și sintaxa query-urilor fără erori majore.",
     "outcome": "Dashboard-ul Traefik de bază este creat și versionat în cod, urmând a fi încărcat automat în Grafana pentru vizualizarea metricilor Traefik.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.25": {
     "denumire_task": "Creare Configurație Parser Log Traefik (`traefik.json` în parsers)",
     "descriere_scurta_task": "Adaugă un fișier JSON de configurare a parser-ului de loguri Traefik în `shared/observability/logs/parsers/traefik.json` pentru a decoda și curăța logurile de acces Traefik (format text) înainte de trimiterea în Loki.",

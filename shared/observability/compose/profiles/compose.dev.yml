@@ -32,7 +32,19 @@ services:
     ports:
       - 3000:3000
 
+  loki:
+    image: grafana/loki:latest
+    networks:
+      - observability
+    volumes:
+      - loki_data:/loki
+    ports:
+      - 3100:3100
+
 networks:
   observability:
     name: geniuserp_observability
     driver: bridge
+
+volumes:
+  loki_data:
