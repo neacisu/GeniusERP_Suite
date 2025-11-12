@@ -121,6 +121,9 @@ importers:
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.25
+      ts-node:
+        specifier: ^10.9.0
+        version: 10.9.2(@types/node@20.19.25)(typescript@5.9.3)
       tsx:
         specifier: ^4.0.0
         version: 4.20.6

@@ -11,7 +11,11 @@ COPY shared ./shared
 COPY cp ./cp
 
 # Install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Install pnpm
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+
+# Add pnpm to PATH
+ENV PATH="$HOME/.local/share/pnpm:$PATH"
 
 # Compile shared libraries and suite-admin
 RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build && cd ../../cp/suite-admin && pnpm run build
@@ -30,10 +34,6 @@ COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 # Expose API and metrics port
 EXPOSE 3002
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3002/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 # Start application with ts-node for TypeScript resolution
 CMD ["node", "-r", "ts-node/register", "cp/suite-admin/src/main.ts"]

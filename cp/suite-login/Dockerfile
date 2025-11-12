@@ -11,7 +11,11 @@ COPY shared ./shared
 COPY cp/suite-login ./cp/suite-login
 
 # Install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+# Install pnpm
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+
+# Add pnpm to PATH
+ENV PATH="$HOME/.local/share/pnpm:$PATH"
 
 # Build shared libraries first
 RUN cd shared/observability && pnpm run build
@@ -26,7 +30,11 @@ FROM node:24-alpine
 WORKDIR /app
 
 # Install pnpm globally
-RUN npm install -g pnpm
+# Install pnpm
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+
+# Add pnpm to PATH
+ENV PATH="$HOME/.local/share/pnpm:$PATH"
 
 # Copy entire workspace
 COPY --from=builder /app/node_modules ./node_modules
@@ -35,10 +43,6 @@ COPY --from=builder /app/cp/suite-login ./cp/suite-login
 
 # Expose metrics and app port
 EXPOSE 3003
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3003/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})" || exit 1
 
 # Start application directly with ts-node from source
 CMD ["node", "-r", "ts-node/register", "cp/suite-login/src/main.ts"]
