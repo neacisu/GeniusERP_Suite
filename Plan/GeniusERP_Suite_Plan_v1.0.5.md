@@ -7900,21 +7900,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.19": {
-    "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml`",
-    "descriere_scurta_task": "Configurează serviciul Docker `grafana` în Compose dev, montând fișierele de provisioning și folderul de dashboard-uri, și expunând UI-ul Grafana.",
-    "descriere_lunga si_detaliata_task": "Adăugăm serviciul de vizualizare Grafana la orchestrarea dev. În `compose.dev.yml`, sub `services:`, definim `grafana` cu:\n- **Image**: `grafana/grafana-oss:latest` (varianta open-source a Grafana).\n- **Volumes**: \n  - Montează fișierul `datasources.yml` în container la `/etc/grafana/provisioning/datasources/datasources.yml` (să fie citit la pornire).\n  - Montează fișierul `dashboards.yml` la `/etc/grafana/provisioning/dashboards/dashboards.yml`.\n  - Montează directorul local `grafana/dashboards/` în container la `/etc/grafana/provisioning/dashboards` (pentru a livra toate dashboard-urile JSON).\n- **Ports**: expune portul 3000 (interfața web Grafana) către host pentru acces (ex. `- 3000:3000`).\n- **Networks**: atașează la `observability` network.\n- **Environment**: poți seta variabile pentru admin (ex. `GF_SECURITY_ADMIN_USER=admin` și `GF_SECURITY_ADMIN_PASSWORD=admin` pentru credențiale implicite ușoare în dev) și timezone/alte preferințe dacă e cazul.\nCu această configurație, la pornire Grafana va prelua automat sursele de date (prin `datasources.yml`) și panourile (prin `dashboards.yml` și fișierele JSON montate).",
+    "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml` (aliniat cu arhitectura)",
+    "descriere_scurta_task": "Configurează serviciul Docker `grafana` în `shared/observability/compose/profiles/compose.dev.yml`, montând fișierele de provisioning și folderul de dashboard-uri din `shared/observability/dashboards/grafana/`.",
+    "descriere_lunga_si_detaliata_task": "Adăugăm serviciul de vizualizare Grafana la orchestrarea dev. În `shared/observability/compose/profiles/compose.dev.yml`, sub `services:`, definim serviciul `grafana` cu:\n- Image: `grafana/grafana-oss:latest`.\n- Volumes:\n  - Montează `shared/observability/dashboards/grafana/datasources.yml` la `/etc/grafana/provisioning/datasources/datasources.yml`.\n  - Montează `shared/observability/dashboards/grafana/dashboards.yml` la `/etc/grafana/provisioning/dashboards/dashboards.yml`.\n  - Montează directorul `shared/observability/dashboards/grafana/dashboards/` la `/etc/grafana/provisioning/dashboards` (dashboard-urile JSON).\n- Environment: `GF_SECURITY_ADMIN_USER=admin`, `GF_SECURITY_ADMIN_PASSWORD=admin` pentru dev.\n- Networks: atașat la rețeaua `observability`.\n- Ports: expune `3000:3000` pentru acces UI Grafana.\nAstfel, Grafana pornește cu datasources și dashboards provisionate automat, folosind structura de directoare definită în arhitectură.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.17 & F0.3.18: Au fost pregătite fișierele de provisioning pentru surse de date și dashboard-uri. Acum integrăm Grafana ca serviciu folosindu-le.",
-    "contextul_general_al_aplicatiei": "Grafana completează triada observabilității (logs, metrics, traces) oferind UI unificat. Prin adăugarea sa în Compose, realizăm cerința de a avea tot stack-ul (Prometheus, Grafana, etc.) integrat în mediul de dev:contentReference[oaicite:23]{index=23}.",
-    "contextualizarea_directoarelor si_cailor": "Editează `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă:\n```yaml\n  grafana:\n    image: grafana/grafana-oss:latest\n    volumes:\n      - ../../grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro\n      - ../../grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro\n      - ../../grafana/dashboards:/etc/grafana/provisioning/dashboards:ro\n    environment:\n      - GF_SECURITY_ADMIN_USER=admin\n      - GF_SECURITY_ADMIN_PASSWORD=admin\n    networks:\n      - observability\n    ports:\n      - 3000:3000\n```\nAsigură-te că calea relativă pentru volume e corectă (din `compose.dev.yml` către fișierele locale). Setăm utilizatorul admin/admin doar în dev, fiind un mediu controlat.",
-    "restrictii_anti_halucinatie": "Nu uita să montezi și folderul de dashboards pe lângă fișierele YAML, altfel Grafana nu va găsi panourile. Nu adăuga alte servicii Grafana (ex. grafana-image-renderer) în acest task, nu sunt necesare acum.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Păstrează config-ul clar: un singur user admin default, fără LDAP sau alte integrări. Nu modifica portul web implicit (3000) pentru Grafana în dev.",
-    "validare": "După pornire, accesează `http://localhost:3000` cu user-ul/parola specificate (admin/admin) și verifică: sursele de date (meniul Configuration -> Data Sources) ar trebui să arate Prometheus, Loki, Tempo preconfigurate; iar în lista de dashboard-uri să apară panoul Traefik (după ce-l vom adăuga).",
-    "outcome": "Serviciul Grafana este adăugat și configurat complet în docker-compose dev, pregătit să afișeze metricile și logurile colectate, fără configurații manuale post-lansare.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.11-F0.3.12 (corectate): `shared/observability/compose/profiles/compose.dev.yml` există și definește rețeaua `observability`. F0.3.17 și F0.3.18 (corectate): `datasources.yml` și `dashboards.yml` sunt în `shared/observability/dashboards/grafana/`, iar dashboard-urile JSON sunt în `shared/observability/dashboards/grafana/dashboards/`.",
+    "contextul_general_al_aplicatiei": "Grafana este UI-ul unificat pentru metrici (Prometheus), loguri (Loki) și trace-uri (Tempo). În modul dev, vrem să pornim tot stack-ul de observabilitate cu o singură comandă Compose, cu provisioning automat (fără configurare manuală în UI).",
+    "contextualizarea_directoarelor_si_cailor": "Editează fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și, sub secțiunea `services:`, adaugă:\n```yaml\n  grafana:\n    image: grafana/grafana-oss:latest\n    volumes:\n      - ../../dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro\n      - ../../dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro\n      - ../../dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro\n    environment:\n      - GF_SECURITY_ADMIN_USER=admin\n      - GF_SECURITY_ADMIN_PASSWORD=admin\n    networks:\n      - observability\n    ports:\n      - 3000:3000\n```\nCăile relative sunt calculate din `shared/observability/compose/profiles/` către `shared/observability/dashboards/grafana/`.",
+    "restrictii_anti_halucinatie": "Nu monta alte fișiere sau directoare în plus. Nu schimba portul 3000 și nu adăuga integrări avansate (LDAP, OAuth etc.) în acest pas.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte servicii în acest task. Nu modifica structura de directoare față de cea definită în Capitolul 2; folosește exact `dashboards/grafana/` ca sursă pentru provisioning.",
+    "validare": "Rulează `docker compose -f shared/observability/compose/profiles/compose.dev.yml up -d grafana`. Apoi accesează `http://localhost:3000` cu `admin/admin` și verifică:\n- În Configuration -> Data Sources, apar Prometheus, Loki, Tempo.\n- În meniul Dashboards apar dashboard-urile JSON montate.",
+    "outcome": "Serviciul Grafana este definit corect în Compose dev, aliniat cu structura `shared/observability/dashboards/grafana/`, și pornește cu provisioning automat de datasources și dashboards.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.20
@@ -7961,7 +7962,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.22
 
+```JSON
+  {
   "F0.3.22": {
     "denumire_task": "Adăugare Serviciu Promtail (Agent de Loguri) în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `promtail` în Compose dev, montând configurația `promtail-config.yml` și accesul la Docker socket, pentru a trimite logurile containerelor către Loki.",
@@ -7976,8 +7980,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu definești restart policy speciale sau alte constrângeri, nu sunt necesare în dev. Nu conecta promtail la alte rețele inutile (doar observability).",
     "validare": "Pornește tot stack-ul Observability (toate serviciile din compose.dev.yml). Verifică logurile containerului Promtail (`docker compose logs promtail`): ar trebui să vezi linii care indică ce containere a descoperit și confirmarea trimiterii logurilor către Loki (cod 204 de succes). În Grafana, accesează Loki via explore și verifică dacă apar intrări de log.",
     "outcome": "Serviciul Promtail este integrat, colectând logurile din toate containerele suitei și direcționându-le către Loki, finalizând setup-ul de log management al skeleton-ului de observabilitate.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.23": {
     "denumire_task": "Creare Reguli de Alertă Prometheus pentru Traefik (`traefik.rules.yml`)",
     "descriere_scurta_task": "Adaugă un fișier de reguli Prometheus în `shared/observability/prometheus/traefik.rules.yml` cu o regulă exemplificativă de alertă pentru Traefik (ex. rată ridicată de erori 5xx).",
