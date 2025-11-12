@@ -12,5 +12,6 @@ registerMetricsRoute(app);
 // For logging, replace existing logger
 import { createLogger } from '../../shared/observability';
 const appLogger = createLogger();
+appLogger.info('App started with observability enabled');
 
 // Ensure OTEL_SERVICE_NAME and OTEL_EXPORTER_OTLP_ENDPOINT are set in .env
