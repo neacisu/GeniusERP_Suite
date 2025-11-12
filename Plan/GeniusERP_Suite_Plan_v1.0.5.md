@@ -8299,21 +8299,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.36": {
-    "denumire_task": "Actualizare Docker Compose pentru licensing",
-    "descriere_scurta_task": "Conectează containerul licensing la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
-    "descriere_lunga si detaliata_task": "În `cp/licensing/compose/docker-compose.yml`, modificăm serviciul licensing astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=licensing` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul licensing împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
-    "directorul directoarele": [
+    "denumire_task": "Actualizare Docker Compose pentru licensing — CORECTAT",
+    "descriere_scurta_task": "Conectează containerul cp/licensing la observabilitate: adaugă rețeaua externă 'geniuserp_observability' și variabilele OTEL corecte.",
+    "descriere_lunga_si_detaliata_task": "Aplicăm modificările strict în fișierul Compose al aplicației, aliniat cu arhitectura. Atașăm serviciul 'licensing' la rețeaua externă de observabilitate (creată în stack-ul shared) și setăm variabilele de mediu OTEL pentru a puncta către collector. Nu adăugăm 'depends_on' către servicii din alt fișier Compose (nu funcționează cross-project).",
+    "directorul_directoarele": [
       "cp/licensing/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.35: Codul licensing este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
-    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, licensing devine parte integrantă a ecosistemului de monitorizare.",
-    "contextualizarea directoarelor si cailor": "Deschide `cp/licensing/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
-    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
-    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
-    "validare": "În contextul orchestrării dev, pornește serviciul licensing împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul licensing apare listat. De asemenea, rulează `docker compose exec licensing env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs licensing` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
-    "outcome": "Docker Compose-ul pentru licensing a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta de CI DI": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "Prerechizite: F0.3.35 (instrumentare cod licensing) CORECTAT; F0.3.11–F0.3.14 CORECTATE (mutarea compose-ului observability în 'shared/observability/compose/profiles/compose.dev.yml', corectarea volumelor și definirea rețelei externe 'geniuserp_observability').",
+    "contextul_general_al_aplicatiei": "Conectarea containerului la rețeaua de observabilitate și definirea variabilelor OTEL permit aplicației să emită trace-uri/metrici către OTEL Collector și să fie vizibilă în platforma de observabilitate.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide 'cp/licensing/compose/docker-compose.yml' și aplică următoarele:\n\n1) În definiția serviciului (ex. services.licensing):\n   \n   ```yaml\n   services:\n     licensing:\n       environment:\n         - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n         - OTEL_SERVICE_NAME=licensing\n       networks:\n         - observability\n         # ... restul configurării existente rămâne neschimbat\n   ```\n\n2) La finalul fișierului (dacă nu există deja blocul 'networks') adaugă rețeaua externă:\n   \n   ```yaml\n   networks:\n     observability:\n       external: true\n       name: geniuserp_observability\n   ```\n\nObservații: păstrează toate rețelele existente ale serviciului; doar adaugă 'observability'. Nu modifica porturi/volume existente.",
+    "restrictii_anti_halucinatie": "Nu adăuga 'depends_on' către 'otel-collector' (este în alt proiect Compose). Nu redenumi serviciul sau rețeaua. Nu seta alte variabile OTEL neprevăzute.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea o rețea nouă locală numită 'observability'; trebuie folosită rețeaua externă 'geniuserp_observability' definită de stack-ul shared. Nu schimba structura folderelor.",
+    "validare": "1) Validează sintaxa: `docker compose -f cp/licensing/compose/docker-compose.yml config`.\n2) Pornește serviciul în contextul în care rulează și stack-ul observability: `docker compose up -d licensing` (sau orchestratorul tău curent).\n3) Verifică atașarea la rețea: `docker network inspect geniuserp_observability` și confirmă că apare containerul licensing.\n4) Verifică variabilele în container: `docker compose exec licensing printenv | grep OTEL_`.\n5) Verifică rezoluția DNS către collector: `docker compose exec licensing getent hosts otel-collector` (trebuie să returneze o adresă).",
+    "outcome": "Containerul 'licensing' este conectat la rețeaua de observabilitate și are variabilele OTEL setate corect, gata să comunice cu OTEL Collector.",
+    "componenta_de_CI_CD": "Adaugă în pipeline o verificare `docker compose config` pentru cp/licensing și un smoke-test care confirmă prezența rețelei 'geniuserp_observability' în runtime."
+  }
+},
 ```
 
 #### F0.3.37
@@ -8361,7 +8362,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.39
 
+```JSON
+  {
   "F0.3.39": {
     "denumire_task": "Integră Observabilitate în ai-hub (Cod)",
     "descriere_scurta task": "Instrumentează aplicația ai-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8377,8 +8381,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii de iesire din context sau de inventare de sub taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația ai-hub local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația ai-hub a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta de CI/DI": "N/A"
+    "componenta de CI/DI": "N/A"}
   },
+```
+
+
   "F0.3.40": {
     "denumire_task": "Actualizare Docker Compose pentru ai-hub",
     "descriere_scurta task": "Conectează containerul ai-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
