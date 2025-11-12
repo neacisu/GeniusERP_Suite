@@ -7,7 +7,7 @@ async function main() {
   initTracing({ serviceName: 'suite-shell' });
   initMetrics({ serviceName: 'suite-shell' });
 
-  const app = fastify({ logger });
+  const app = fastify({ logger: logger as any });
 
   // Metrics endpoint for Prometheus scraping
   app.get('/metrics', async (request, reply) => {
@@ -17,7 +17,7 @@ async function main() {
 
   // TODO: Add business logic routes here
 
-  await app.listen({ port: 3000, host: '0.0.0.0' });
+  await app.listen({ port: 3001, host: '0.0.0.0' });
 }
 
 main().catch(console.error);
