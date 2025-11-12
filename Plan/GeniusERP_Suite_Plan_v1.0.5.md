@@ -4418,6 +4418,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 }
 ```
+
 #### F0.1.4
 ```json
 {
@@ -7415,92 +7416,145 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază.
 
 #### F0.3.1
-{
+
+```JSON
+  {
   "F0.3.1": {
-    "denumire_task": "Creare Subdirector 'telemetry' pentru Observabilitate",
-    "descriere_scurta_task": "Creează directorul `telemetry/` în `shared/observability/` pentru codul de instrumentare (OpenTelemetry & logging).",
-    "descriere_lunga_si_detaliata_task": "Începem integrarea observabilității prin organizarea structurii de fișiere. Acest task creează subdirectorul `telemetry` în interiorul directorului existent `shared/observability/`, conform planului de arhitectură al suitei:contentReference[oaicite:0]{index=0}. Directorul `telemetry/` va conține cod sursă pentru inițializarea OpenTelemetry (traces) și configurarea logger-ului (Pino) la nivelul întregii suite. Astfel, toate aplicațiile vor putea importa module comune de observabilitate din acest loc.",
+    "denumire_task": "Aliniere structură 'shared/observability' cu arhitectura",
+    "descriere_scurta_task": "Creează (dacă lipsesc) subdirectoarele standard în 'shared/observability' conform planului de arhitectură, fără a introduce 'telemetry' și fără a muta logger-ul.",
+    "descriere_lunga_si_detaliata_task": "Începem Faza F0.3 (Observabilitate) prin alinierea strictă la structura de directoare definită în capitolul de arhitectură. În loc să creăm un director neplanificat 'telemetry', acest task se asigură că subdirectoarele oficiale 'logs/', 'metrics/', 'traces/', 'dashboards/', 'alerts/', 'exporters/', 'otel-config/', 'compose/', 'scripts/' și 'docs/' există sub 'shared/observability/'. Logging-ul (Pino) rămâne în 'shared/common/logger/' conform arhitecturii, iar codul de instrumentare OpenTelemetry (traces, exporters, config) va fi plasat ulterior în subdirectoarele dedicate ('traces/', 'exporters/', 'otel-config/').",
     "directorul_directoarele": [
       "shared/observability/"
     ],
-    "contextul_taskurilor_anterioare": "F0.1.6: Structura de bază a fost creată, inclusiv directorul `shared/observability` gol:contentReference[oaicite:1]{index=1}. Acum adăugăm subdirectoare specifice observabilității.",
-    "contextul_general_al_aplicatiei": "Sub-faza F0.3 presupune implementarea scheletului de observabilitate pentru toate modulele suitei:contentReference[oaicite:2]{index=2}. Pentru a facilita reutilizarea, se centralizează codul de inițializare a telemetriei într-un modul comun (în `shared/observability/`).",
-    "contextualizarea_directoarelor_si_cailor": "Execută comanda `mkdir -p /var/www/GeniusSuite/shared/observability/telemetry` pe mașina de dezvoltare. Acest lucru va crea directorul `telemetry/` la calea specificată.",
-    "restrictii_anti_halucinatie": "Nu crea alte fișiere sau subdirectoare în acest pas - doar creează directorul cerut.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga conținut în `telemetry/` încă; acest task se limitează strict la crearea directorului.",
-    "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/telemetry/` pe disc.",
-    "outcome": "Directorul `telemetry/` a fost creat în structura proiectului, pregătit pentru a găzdui codul de observabilitate.",
+    "contextul_taskurilor_anterioare": "F0.1.6: Structura de bază a fost creată, inclusiv directorul gol 'shared/observability/'. Acum aliniem subdirectoarele exacte la planul de arhitectură înainte de a adăuga cod de observabilitate.",
+    "contextul_general_al_aplicatiei": "Sub-faza F0.3 presupune implementarea scheletului de observabilitate pentru toate modulele. Acest pas garantează că toate directoarele folosite ulterior (logs, metrics, traces, etc.) sunt conforme cu arhitectura și că nu apar directoare ad-hoc precum 'telemetry/'.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda:\n  mkdir -p /var/www/GeniusSuite/shared/observability/{logs,metrics,traces,dashboards,alerts,exporters,otel-config,compose,scripts,docs}",
+    "restrictii_anti_halucinatie": [
+      "NU crea directorul '/var/www/GeniusSuite/shared/observability/telemetry'. Acest director NU există în arhitectura oficială.",
+      "NU muta și NU duplica configurarea logger-ului (Pino). Logger-ul comun rămâne în 'shared/common/logger/'.",
+      "NU crea alte directoare în 'shared/observability/' în afara celor listate explicit: 'logs', 'metrics', 'traces', 'dashboards', 'alerts', 'exporters', 'otel-config', 'compose', 'scripts', 'docs'.",
+      "Nu adăuga fișiere de cod în acest pas. Acest task este doar pentru structură de directoare."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu introduce noi concepte de directoare (ex. 'telemetry') și nu redefini responsabilitățile deja stabilite (ex. nu muta logger-ul din 'shared/common/logger/').",
+    "validare": "Verifică existența directoarelor:\n  /var/www/GeniusSuite/shared/observability/logs/\n  /var/www/GeniusSuite/shared/observability/metrics/\n  /var/www/GeniusSuite/shared/observability/traces/\n  /var/www/GeniusSuite/shared/observability/dashboards/\n  /var/www/GeniusSuite/shared/observability/alerts/\n  /var/www/GeniusSuite/shared/observability/exporters/\n  /var/www/GeniusSuite/shared/observability/otel-config/\n  /var/www/GeniusSuite/shared/observability/compose/\n  /var/www/GeniusSuite/shared/observability/scripts/\n  /var/www/GeniusSuite/shared/observability/docs/\nși absența directorului:\n  /var/www/GeniusSuite/shared/observability/telemetry/",
+    "outcome": "Structura 'shared/observability' este aliniată 1:1 cu arhitectura proiectului, fără directoare neplanificate, pregătită pentru task-urile ulterioare (loguri, metrici, traces, exporters, etc.).",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.2
+  }
+},
+```
+
+#### F0.3.2
+
+```JSON
+  {
   "F0.3.2": {
-    "denumire_task": "Creare Structură pentru Loguri în `shared/observability/logs/`",
-    "descriere_scurta_task": "Creează subdirectoarele de bază pentru loguri: `ingestion/`, `parsers/`, `processors/`, `retention/`, `sinks/` și `dashboards/` în `shared/observability/logs/`.",
-    "descriere_lunga_si_detaliata_task": "Conform planului de arhitectură, componenta de loguri va fi structurată pe mai multe subfoldere pentru a separa preocupările:contentReference[oaicite:3]{index=3}. Acest task creează următoarele subdirectoare sub `shared/observability/logs/`: `ingestion/` (configurații de ingestie loguri, ex. Promtail sau colector OTEL), `parsers/` (șabloane/definiții pentru parsarea logurilor, de ex. formate JSON sau regex pentru Traefik), `processors/` (scripturi sau definiții de procesare a logurilor - ex. filtrare, redacție PII), `retention/` (configurații privind retenția logurilor), `sinks/` (configurații de destinație pentru loguri, ex. Loki) și `dashboards/` (dashboard-uri Grafana legate de loguri). Această separare clară permite gestionarea și extinderea facilă a pipeline-ului de loguri.",
+    "denumire_task": "Creare structură pentru loguri în 'shared/observability/logs/'",
+    "descriere_scurta_task": "Creează subdirectoarele de bază pentru loguri: 'ingestion/', 'parsers/', 'processors/', 'retention/', 'sinks/' și 'dashboards/' în 'shared/observability/logs/'.",
+    "descriere_lunga_si_detaliata_task": "Conform planului de arhitectură, componenta de loguri este structurată pe mai multe subfoldere pentru a separa clar preocupările. Acest task creează următoarele subdirectoare sub 'shared/observability/logs/': 'ingestion/' (configurații de ingestie loguri, ex. Promtail sau colector OTEL), 'parsers/' (șabloane/definiții pentru parsarea logurilor, de ex. formate JSON sau regex pentru Traefik), 'processors/' (scripturi sau definiții de procesare a logurilor – ex. filtrare, redacție PII), 'retention/' (configurații privind retenția logurilor), 'sinks/' (configurații de destinație pentru loguri, ex. Loki) și 'dashboards/' (dashboard-uri Grafana specifice logurilor, distincte de dashboard-urile globale din 'shared/observability/dashboards/'). Această separare clară permite gestionarea și extinderea facilă a pipeline-ului de loguri.",
     "directorul_directoarele": [
       "shared/observability/logs/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.1: A fost creat directorul comun `telemetry/` pentru codul de observabilitate. În continuare, definim structura de directoare pentru componenta de loguri.",
-    "contextul_general_al_aplicatiei": "Logurile aplicațiilor vor fi colectate centralizat (Folosing Loki) și vor fi prelucrate conform necesităților (ex. ștergere date sensibile). Structura creată acum urmărește guvernarea clară a fișierelor de configurare și a definițiilor legate de loguri.",
-    "contextualizarea_directoarelor_si_cailor": "Execută comenzi de tip `mkdir -p` pentru fiecare subdirector necesar, de exemplu:\n- `mkdir -p /var/www/GeniusSuite/shared/observability/logs/ingestion`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/logs/parsers`\n(și repetat pentru `processors`, `retention`, `sinks`, `dashboards`).",
-    "restrictii_anti_halucinatie": "Nu crea fișiere de configurare în aceste directoare în cadrul acestui task, doar directoarele în sine.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare suplimentare în afara celor specificate; respectă exact lista indicată.",
-    "validare": "Verifică faptul că toate cele 6 directoare (`ingestion/`, `parsers/`, `processors/`, `retention/`, `sinks/`, `dashboards/`) există sub `shared/observability/logs/`.",
+    "contextul_taskurilor_anterioare": "F0.3.1: Structura 'shared/observability/' a fost aliniată cu arhitectura (logs/, metrics/, traces/, dashboards/, alerts/, exporters/, otel-config/, compose/, scripts/, docs/). Acum detaliem structura internă pentru componenta de loguri.",
+    "contextul_general_al_aplicatiei": "Logurile aplicațiilor vor fi colectate centralizat (ex. folosind Loki) și vor fi prelucrate conform necesităților (ex. ștergere date sensibile). Structura creată acum urmărește guvernarea clară a fișierelor de configurare și a definițiilor legate de loguri.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzi de tip 'mkdir -p' pentru fiecare subdirector necesar, de exemplu:\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/ingestion\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/parsers\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/processors\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/retention\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/sinks\n- mkdir -p /var/www/GeniusSuite/shared/observability/logs/dashboards",
+    "restrictii_anti_halucinatie": "Nu crea fișiere de configurare în aceste directoare în cadrul acestui task, doar directoarele în sine. Nu crea alte subdirectoare în afara celor specificate explicit.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare suplimentare și nu plasa aici cod de logger (Pino); logger-ul rămâne în 'shared/common/logger/'.",
+    "validare": "Verifică faptul că toate cele 6 directoare ('ingestion/', 'parsers/', 'processors/', 'retention/', 'sinks/', 'dashboards/') există sub 'shared/observability/logs/'.",
     "outcome": "Structura de directoare pentru gestionarea logurilor centralizate este creată cu succes, conform planificării arhitecturale.",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.3
+  }
+},
+```
+
+#### F0.3.3
+
+```JSON
+{
   "F0.3.3": {
-    "denumire_task": "Creare Structură pentru Metrici în `shared/observability/metrics/`",
-    "descriere_scurta_task": "Creează subdirectoarele de bază pentru metrici: `exporters/`, `recorders/`, `rules/` și `dashboards/` în `shared/observability/metrics/`.",
-    "descriere_lunga_si_detaliata_task": "Se pregătește structura pentru componenta de metrici, similar cu cea de loguri. Sub `shared/observability/metrics/` vom crea directoarele: `exporters/` (configurații sau cod pentru exportul metricilor, dacă este cazul, ex. către Prometheus), `recorders/` (cod care generează și înregistrează metrici personalizate în aplicații), `rules/` (reguli de alertare sau de agregare/recording rules pentru Prometheus) și `dashboards/` (dashboard-uri Grafana specifice metricilor). Acest design urmează planul suitei pentru un stack complet de observabilitate (logs/metrics/traces):contentReference[oaicite:4]{index=4}, segregând clar resursele legate de metrici.",
+    "denumire_task": "Creare structură pentru metrici în 'shared/observability/metrics/'",
+    "descriere_scurta_task": "Creează subdirectoarele de bază pentru metrici: 'exporters/', 'recorders/', 'rules/' și 'dashboards/' în 'shared/observability/metrics/'.",
+    "descriere_lunga_si_detaliata_task": "Se pregătește structura pentru componenta de metrici, similar cu cea de loguri. Sub 'shared/observability/metrics/' vom crea directoarele: 'exporters/' (configurații sau cod pentru exportul metricilor, ex. către Prometheus), 'recorders/' (cod care generează și înregistrează metrici personalizate în aplicații), 'rules/' (reguli de alertare sau de agregare/recording rules pentru Prometheus) și 'dashboards/' (dashboard-uri Grafana specifice metricilor, distincte de dashboard-urile globale din 'shared/observability/dashboards/'). Acest design urmează planul suitei pentru un stack complet de observabilitate (logs/metrics/traces), segregând clar resursele legate de metrici.",
     "directorul_directoarele": [
       "shared/observability/metrics/"
     ],
     "contextul_taskurilor_anterioare": "F0.3.2: Structura pentru loguri este creată. Acum definim structura pentru metrici, asigurând paritatea organizării pentru toate componentele observabilității.",
-    "contextul_general_al_aplicatiei": "Metricile aplicațiilor (ex. număr de request-uri, latențe, erori) vor fi colectate în Prometheus și vizualizate în Grafana:contentReference[oaicite:5]{index=5}. Structura creată permite definirea ușoară a oricăror metrici suplimentare și a regulilor de alertare într-un mod centralizat.",
-    "contextualizarea_directoarelor_si_cailor": "Execută comenzi `mkdir -p` pentru a crea subdirectoarele:\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/exporters`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/recorders`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/rules`\n- `mkdir -p /var/www/GeniusSuite/shared/observability/metrics/dashboards`.",
+    "contextul_general_al_aplicatiei": "Metricile aplicațiilor (ex. număr de request-uri, latențe, erori) vor fi colectate în Prometheus și vizualizate în Grafana. Structura creată permite definirea ușoară a metricilor suplimentare și a regulilor de alertare într-un mod centralizat.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comenzi 'mkdir -p' pentru a crea subdirectoarele:\n- mkdir -p /var/www/GeniusSuite/shared/observability/metrics/exporters\n- mkdir -p /var/www/GeniusSuite/shared/observability/metrics/recorders\n- mkdir -p /var/www/GeniusSuite/shared/observability/metrics/rules\n- mkdir -p /var/www/GeniusSuite/shared/observability/metrics/dashboards",
     "restrictii_anti_halucinatie": "Limitează-te la crearea acestor directoare. Nu crea altele sau fișiere de configurare la acest pas.",
-    "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare în afara celor specificate; respectăm strict calea indicată.",
-    "validare": "Verifică existența directoarelor `exporters/`, `recorders/`, `rules/` și `dashboards/` în `shared/observability/metrics/`.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu adăuga subdirectoare în afara celor specificate; nu crea aici cod de observabilitate efectiv (recorders, exporters) încă.",
+    "validare": "Verifică existența directoarelor 'exporters/', 'recorders/', 'rules/' și 'dashboards/' în 'shared/observability/metrics/'.",
     "outcome": "Structura de directoare pentru metrici este creată, pregătind terenul pentru configurarea colectării și vizualizării metricilor.",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.4
+  }
+},
+```
+
+#### F0.3.4
+
+```JSON
+  {
   "F0.3.4": {
-    "denumire_task": "Creare Director Configurații Prometheus",
-    "descriere_scurta_task": "Creează directorul `prometheus/` în `shared/observability/` pentru fișierele de configurare ale Prometheus (config principal și reguli).",
-    "descriere_lunga_si_detaliata_task": "Pentru a centraliza configurarea serviciului Prometheus, adăugăm un director dedicat acestuia. Directorul `shared/observability/prometheus/` va conține fișierul principal de configurare `prometheus.yml` (definind job-urile de scrap și parametrii globali) și eventual fișiere separate de reguli de alertă/înregistrare (ex. `traefik.rules.yml` pentru Traefik):contentReference[oaicite:6]{index=6}. Acest task creează directorul respectiv, urmând ca în pașii ulteriori să populăm configurațiile necesare.",
+    "denumire_task": "Creare fișier de bază 'prometheus.yml' în 'shared/observability/otel-config/'",
+    "descriere_scurta_task": "Creează un fișier minim 'prometheus.yml' în 'shared/observability/otel-config/' pentru configurarea instanței Prometheus.",
+    "descriere_lunga_si_detaliata_task": "În loc să introducem un nou director neprevăzut în arhitectură ('shared/observability/prometheus/'), centralizăm configurarea instanței Prometheus în directorul existent 'shared/observability/otel-config/'. Acest task creează un fișier de bază 'prometheus.yml' cu o structură minimă (global scrape interval + un job placeholder). Reguli de alertare și recording rules pentru Prometheus NU se pun aici, ci în directorul deja definit 'shared/observability/metrics/rules/'.",
     "directorul_directoarele": [
-      "shared/observability/prometheus/"
+      "shared/observability/otel-config/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.3: A fost creată structura pentru metrici în general. Acum avem nevoie de un loc specific pentru configurările instanței Prometheus ce va colecta metricile.",
-    "contextul_general_al_aplicatiei": "Prometheus acționează ca baza de date de metrici pentru întreaga suită. Configurațiile sale trebuie organizate separat pentru a gestiona scraping-ul mai multor servicii și eventual regulile de alertare. Prin crearea acestui director dedicat, facilităm actualizarea și versiunea controlată a configurațiilor Prometheus.",
-    "contextualizarea_directoarelor_si_cailor": "Execută comanda `mkdir -p /var/www/GeniusSuite/shared/observability/prometheus` pentru a crea directorul. Se va lucra în acest director pentru a adăuga fișiere de config (ex. `prometheus.yml`) în taskurile următoare.",
-    "restrictii_anti_halucinatie": "Nu crea încă fișierele de configurare. Acest pas se rezumă la crearea directorului.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu presupune conținutul configurațiilor Prometheus în avans; nu inventa job-uri de scrap sau alerte la acest pas.",
-    "validare": "Verifică existența directorului gol `/var/www/GeniusSuite/shared/observability/prometheus/`.",
-    "outcome": "Directorul `prometheus/` este disponibil în structura de proiect, pregătit pentru a găzdui configurațiile Prometheus.",
+    "contextul_taskurilor_anterioare": "F0.3.2: Structura pentru loguri este creată. F0.3.3: Structura pentru metrici este creată, inclusiv directorul 'metrics/rules/' pentru reguli Prometheus.",
+    "contextul_general_al_aplicatiei": "Prometheus este baza de date de metrici a suitei. 'prometheus.yml' definește job-urile de scrape și parametrii globali, iar regulile (alerte, recording rules) sunt gestionate separat în 'shared/observability/metrics/rules/'.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul '/var/www/GeniusSuite/shared/observability/otel-config/prometheus.yml'.",
+    "restrictii_anti_halucinatie": [
+      "Nu crea directorul 'shared/observability/prometheus/'.",
+      "Creează doar fișierul '/var/www/GeniusSuite/shared/observability/otel-config/prometheus.yml'.",
+      "Conținutul minim recomandat pentru fișier:",
+      "global:",
+      "  scrape_interval: 15s",
+      "",
+      "scrape_configs:",
+      "  - job_name: 'placeholder'",
+      "    static_configs:",
+      "      - targets: ['localhost:9090']",
+      "Nu adăuga aici reguli Prometheus; acestea vor fi definite în 'shared/observability/metrics/rules/'."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de config în acest pas (ex. rules files). Nu modifica încă docker-compose sau alte servicii care vor folosi acest fișier.",
+    "validare": "Verifică existența fișierului '/var/www/GeniusSuite/shared/observability/otel-config/prometheus.yml' și faptul că are structura minimă 'global' + 'scrape_configs'.",
+    "outcome": "Configurația de bază a instanței Prometheus este prezentă în 'shared/observability/otel-config/', aliniată cu arhitectura, iar regulile rămân centralizate în 'metrics/rules/'.",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.5
+  }
+},
+```
+
+#### F0.3.5
+
+```JSON
+  {
   "F0.3.5": {
-    "denumire_task": "Creare Director pentru Dashboard-urile Grafana",
-    "descriere_scurta_task": "Creează structura dedicată pentru dashboard-urile Grafana: directorul `grafana/dashboards/` în `shared/observability/`.",
-    "descriere_lunga_si_detaliata_task": "Pentru a versiona și menține dashboard-urile Grafana în cod, vom stoca definițiile acestora (fișiere JSON) într-un director dedicat. Acest task creează `shared/observability/grafana/dashboards/`, unde vom plasa dashboard-urile de bază (ex. un dashboard pentru Traefik sau altele relevante):contentReference[oaicite:7]{index=7}. Vom putea astfel să provisionăm automat aceste dashboard-uri în containerul Grafana la pornire, asigurând vizibilitatea metricilor și logurilor fără configurare manuală ulterioară.",
+    "denumire_task": "Creare Director pentru Dashboard-urile Grafana de nivel global",
+    "descriere_scurta_task": "Creează structura dedicată pentru dashboard-urile Grafana în `shared/observability/dashboards/grafana/`.",
+    "descriere_lunga_si_detaliata_task": "Pentru a versiona și menține dashboard-urile Grafana în cod, în acord cu arhitectura existentă, stocăm definițiile acestora (fișiere JSON) în subdirectorul `grafana/` din `shared/observability/dashboards/`. Dashboard-urile de nivel global (ex. overview pentru întreaga suită, panouri cross-service) vor fi plasate în `shared/observability/dashboards/grafana/`. Dashboard-urile strict legate de loguri și metrici rămân în directoarele deja definite: `shared/observability/logs/dashboards/` și `shared/observability/metrics/dashboards/`.",
     "directorul_directoarele": [
-      "shared/observability/grafana/dashboards/"
+      "shared/observability/dashboards/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.4: Directorul de config Prometheus a fost creat. În mod similar, avem nevoie de un loc central pentru definițiile de dashboard-uri Grafana, conform practicilor de Infrastructure as Code.",
-    "contextul_general_al_aplicatiei": "Grafana este instrumentul principal de vizualizare pentru metrici, loguri și trace-uri. Păstrarea dashboard-urilor în repozitoriu asigură reproducibilitatea mediului de observabilitate și posibilitatea de a oferi clienților un set de panouri predefinite:contentReference[oaicite:8]{index=8}.",
-    "contextualizarea_directoarelor_si_cailor": "Execută `mkdir -p /var/www/GeniusSuite/shared/observability/grafana/dashboards` pentru a crea ierarhia necesară. Se vor adăuga ulterior fișiere `.json` reprezentând panouri Grafana în acest director.",
-    "restrictii_anti_halucinatie": "Nu crea fișiere JSON de dashboard în acest pas. Ne limităm la crearea structurii de directoare.",
-    "restrictii_de_iesire_din_context_sau de_inventare_de_sub_taskuri": "Nu adăuga alte directoare în afara celor specificate; respectăm strict calea indicată.",
-    "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/grafana/dashboards/` în proiect.",
-    "outcome": "Directorul pentru stocarea dashboard-urilor Grafana este creat, permițând versionarea panourilor de monitorizare în cod.",
+    "contextul_taskurilor_anterioare": "F0.3.2: Structura pentru loguri, inclusiv `logs/dashboards/`, este creată. F0.3.3: Structura pentru metrici, inclusiv `metrics/dashboards/`, este creată. Acum adăugăm locația pentru dashboard-urile Grafana de nivel global conform structurii `shared/observability/dashboards/` definită în arhitectură.",
+    "contextul_general_al_aplicatiei": "Grafana este instrumentul principal de vizualizare pentru metrici, loguri și trace-uri. Păstrarea dashboard-urilor în repozitoriu asigură reproducibilitatea mediului de observabilitate și un set de panouri predefinite pentru întreaga suită.",
+    "contextualizarea_directoarelor_si_cailor": "Execută comanda `mkdir -p /var/www/GeniusSuite/shared/observability/dashboards/grafana` pentru a crea ierarhia necesară.",
+    "restrictii_anti_halucinatie": [
+      "Nu crea directorul `shared/observability/grafana/` la rădăcină.",
+      "Creează DOAR calea `shared/observability/dashboards/grafana/`.",
+      "Nu adăuga încă fișiere JSON de dashboard; acest task se limitează la structură."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea subdirectoare suplimentare în acest pas (ex. `apps/`, `infra/`). Acestea pot fi introduse doar prin task-uri viitoare explicite.",
+    "validare": "Verifică existența directorului `/var/www/GeniusSuite/shared/observability/dashboards/grafana/` în proiect.",
+    "outcome": "Directorul corect pentru stocarea dashboard-urilor Grafana de nivel global este creat, în deplină concordanță cu arhitectura.",
     "componenta_de_CI_CD": "N/A"
-  },
-F0.3.6
+  }
+},
+```
+
+#### F0.3.6
+
+```JSON
+  {
   "F0.3.6": {
     "denumire_task": "Adăugare Dependențe OpenTelemetry și Prometheus Client",
     "descriere_scurta_task": "Instalează pachetele necesare în monorepo pentru observabilitate: OpenTelemetry (tracing), clientul Prometheus (metrici) și logger-ul Pino.",
@@ -7515,9 +7569,14 @@ F0.3.6
     "restrictii_de_iesire_din context_sau_de_inventare_de_sub_taskuri": "Nu executa configurări sau inițializări ale acestor pachete în acest pas; doar asigură-te că sunt disponibile ca dependențe.",
     "validare": "Verifică în `package.json` prezența noilor pachete la secțiunea de dependențe/devDependencies. Asigură-te că instalarea a fost finalizată cu succes (ieșirea comenzii pnpm nu conține erori).",
     "outcome": "Dependențele necesare observabilității sunt instalate în proiect, pregătite pentru a fi utilizate în codul de instrumentare.",
-    "componenta_de_CI_CD": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."
+    "componenta_de_CI_CD": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."}
   },
-F0.3.7
+```
+
+#### F0.3.7
+
+```JSON
+  {
   "F0.3.7": {
     "denumire_task": "Implementare Modul de Tracing în `telemetry/otel.ts`",
     "descriere_scurta_task": "Implementează fișierul `otel.ts` în `shared/observability/telemetry/` pentru inițializarea OpenTelemetry (traces) la pornirea aplicațiilor.",
@@ -7532,8 +7591,10 @@ F0.3.7
     "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Limitează-te la configurări standard OpenTelemetry. Nu iniția aici conexiuni la baze de date sau alte servicii - doar setup-ul de tracing.",
     "validare": "Asigură-te că modulul compilează (comanda `pnpm build` trebuie să reușească). Poți verifica output-ul prin adăugarea temporară a unui `console.log` în modul și rularea unei aplicații pentru a vedea că inițializarea se execută (de exemplu, pornind un serviciu în mod dev și observând că nu apar erori de OTEL).",
     "outcome": "Fișierul `otel.ts` este implementat, permițând fiecărui serviciu al suitei să inițializeze trasabilitatea distribuită la pornire printr-un simplu import.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
 F0.3.8
   "F0.3.8": {
     "denumire_task": "Implementare Modul de Logging în `telemetry/pino.ts`",
