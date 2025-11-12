@@ -8322,22 +8322,24 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.37": {
-    "denumire_task": "Integră Observabilitate în analytics-hub (Cod)",
-    "descriere_scurta_task": "Instrumentează aplicația analytics-hub pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
-    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **analytics-hub** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `analytics-hub`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că analytics-hub trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "denumire_task": "Integră Observabilitate în analytics-hub (Cod) — CORECTAT",
+    "descriere_scurta_task": "Instrumentează cp/analytics-hub: init tracing OTEL, expune /metrics Prometheus și folosește logger-ul din @genius-suite/common (nu din observability).",
+    "descriere_lunga_si_detaliata_task": "Aliniază integrarea la arhitectură: logger-ul provine din pachetul comun, iar tracing/metrics din pachetul de observabilitate pe căile corecte. Modificăm punctul de intrare al serverului (ex. `cp/analytics-hub/src/main.ts` sau `src/index.ts`) astfel:\n\n1) **Logging (corect):**\n   ```ts\n   import { logger } from '@genius-suite/common';\n   // Fastify:\n   const app = fastify({ logger });\n   ```\n\n2) **Tracing (OTEL):**\n   ```ts\n   import { initTracing } from '@genius-suite/observability/traces/otel';\n   await initTracing({ serviceName: process.env.OTEL_SERVICE_NAME || 'analytics-hub' });\n   ```\n\n3) **Metrici Prometheus:**\n   ```ts\n   import { metricsRegistry, initDefaultMetrics } from '@genius-suite/observability/metrics/recorders/prometheus';\n   // registrează metricile default (proces, runtime, event loop etc.)\n   initDefaultMetrics();\n\n   app.get('/metrics', async (_req, reply) => {\n     reply.type('text/plain');\n     return metricsRegistry.metrics();\n   });\n   ```\n\n4) **Ordinea inițializărilor:** pornește tracing **înainte** de a crea conexiuni externe/porni serverul; configurează Fastify cu `logger` din pachetul comun; adaugă ruta `/metrics`;\n\n5) **Config runtime:**\n   - `OTEL_EXPORTER_OTLP_ENDPOINT` (ex. `http://otel-collector:4318`)\n   - `OTEL_SERVICE_NAME=analytics-hub`\n\nAceste modificări asigură loguri JSON consistente, trace-uri OTEL și endpoint de metrici compatibil Prometheus.",
     "directorul_directoarele": [
       "cp/analytics-hub/",
+      "cp/analytics-hub/src/",
       "cp/analytics-hub/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la analytics-hub.",
-    "contextul_general al aplicatiei": "analytics-hub este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
-    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `cp/analytics-hub/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
-    "restrictii anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
-    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
-    "validare": "Rulează aplicația analytics-hub local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
-    "outcome": "Aplicația analytics-hub a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta de CI/DI": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "Necesită corecțiile din F0.3.7 (mutare în `shared/observability/traces/`), F0.3.9 (mutare în `shared/observability/metrics/recorders/`) și F0.3.10 (index care re-exportă corect SAU importuri pe sub-căi ca mai sus). Logger-ul există în `shared/common/logger` și este expus de `@genius-suite/common`.",
+    "contextul_general_al_aplicatiei": "analytics-hub este parte CP și trebuie monitorizat uniform: loguri JSON, trace-uri OTEL, metrici Prometheus. Integrarea corectă previne duplicarea responsabilităților și erori de rezolvare a modulelor.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică fișierul de intrare al serverului (ex. `cp/analytics-hub/src/main.ts`). Dacă proiectul folosește alt nume (ex. `index.ts`), aplică identic acolo. Nu crea un nou pachet pentru logger; importă din `@genius-suite/common`. Pentru observability, importă explicit din sub-căile `traces/otel` și `metrics/recorders/prometheus` pentru a evita ambiguități.",
+    "restrictii_anti_halucinatie": "Nu importa `logger` din `@genius-suite/observability`. Nu adăuga alte endpoint-uri sau sampling OTEL avansat. Nu schimba logica de business.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu muta structura directoarelor aplicației. Nu introduce noi dependențe; folosește cele comune deja planificate.",
+    "validare": "1) Pornește aplicația în dev și verifică că nu apar erori de import pentru observability/common. 2) Accesează `GET /metrics` → trebuie să returneze text Prometheus. 3) Generează trafic pe o rută și confirmă că logurile apar JSON cu câmpurile standard; dacă propagarea contextului OTEL este activă, poți include traceId în formatterele Pino din pachetul comun. 4) Cu stack-ul de observabilitate pornit, confirmă că collector primește trace-uri (ex. prin Tempo/Grafana).",
+    "outcome": "analytics-hub emite corect trace-uri OTEL, expune `/metrics` pentru Prometheus și folosește logger-ul comun, conform arhitecturii.",
+    "componenta_de_CI_CD": "Adaugă un smoke-test care face `GET /metrics` și verifică `Content-Type: text/plain; version=0.0.4`. Rulează linters/build pentru a prinde importuri greșite."
+  }
+},
 ```
 
 #### F0.3.38
@@ -8385,7 +8387,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.40
 
+```JSON
+  {
   "F0.3.40": {
     "denumire_task": "Actualizare Docker Compose pentru ai-hub",
     "descriere_scurta task": "Conectează containerul ai-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
@@ -8400,8 +8405,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul ai-hub împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul ai-hub apare listat. De asemenea, rulează `docker compose exec ai-hub env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs ai-hub` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru ai-hub a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta de CI DI": "N/A"
+    "componenta de CI DI": "N/A"}
   },
+```
+
+
   "F0.3.41": {
     "denumire_task": "Integră Observabilitate în archify.app (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația archify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
