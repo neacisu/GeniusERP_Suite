@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
@@ -10,7 +10,7 @@ async function main() {
   const app = fastify({ logger: logger as any });
 
   // Metrics endpoint for Prometheus scraping
-  app.get('/metrics', async (request, reply) => {
+  app.get('/metrics', async (request: FastifyRequest, reply: FastifyReply) => {
     const body = await metricsHandler();
     reply.type('text/plain').send(body);
   });
