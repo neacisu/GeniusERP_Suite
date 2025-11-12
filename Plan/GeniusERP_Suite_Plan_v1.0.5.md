@@ -8178,22 +8178,24 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.31": {
-    "denumire_task": "Integră Observabilitate în suite-login (Cod)",
-    "descriere_scurta_task": "Instrumentează aplicația suite-login pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
-    "descriere_lunga si_detaliata_task": "Pentru aplicația stand-alone **suite-login** (parte a Control Plane), adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `suite-login`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că suite-login trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "denumire_task": "Integrare Observabilitate în suite-login (Cod)",
+    "descriere_scurta_task": "Instrumentează aplicația suite-login pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire, folosind `@genius-suite/common` și `@genius-suite/observability`.",
+    "descriere_lunga_si_detaliata_task": "Pentru aplicația stand-alone **suite-login** (parte a Control Plane), integrăm observabilitatea la nivel de cod, în conformitate cu arhitectura:\n- **Logging (Pino)**: Logger-ul este definit în pachetul comun `shared/common/logger/` și expus prin `@genius-suite/common`. În punctul de intrare al aplicației (ex. `cp/suite-login/src/main.ts` sau `src/index.ts`), importă `logger` din `@genius-suite/common` și configurează framework-ul (ex. Fastify) să îl folosească: `const app = fastify({ logger })`. Astfel, toate logurile sunt JSON uniforme și pregătite pentru a fi colectate de Promtail/Loki.\n- **Tracing (OTEL)**: Funcționalitatea de tracing este definită în `shared/observability/traces/otel.ts` și expusă prin pachetul `@genius-suite/observability` (via `index.ts` corectat). Importă `initTracing` (sau funcția echivalentă) din `@genius-suite/observability` și apeleaz-o cât mai devreme în punctul de intrare (înainte de creare server): `initTracing()`; aceasta va configura OTEL SDK (Http/Grpc OTLP) și va folosi `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME` din variabile de mediu.\n- **Metrici (Prometheus)**: Exporterul de metrici este definit în `shared/observability/metrics/recorders/prometheus.ts` și expus tot prin `@genius-suite/observability`. Importă registrul/handler-ul (ex. `metricsRegister` sau `createMetricsHandler`) și expune un endpoint HTTP `/metrics` care întoarce conținut `text/plain` generat de `prom-client`. Pentru Fastify, de exemplu: `app.get('/metrics', async (req, reply) => { reply.type('text/plain'); reply.send(await metricsRegister.metrics()); });`.\n- **Numele serviciului**: Asigură-te că aplicația folosește numele `suite-login` pentru resource-ul OTEL, fie prin variabila de mediu `OTEL_SERVICE_NAME=suite-login` (setată în compose, vezi task-ul de compose aferent), fie prin configurarea explicită în `initTracing`.\nDupă aceste modificări, suite-login va emite loguri JSON structurate, va expune metrici Prometheus pe `/metrics` și va genera trace-uri OTEL trimise către colectorul configurat.",
     "directorul_directoarele": [
       "cp/suite-login/",
+      "cp/suite-login/src/",
       "cp/suite-login/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la suite-login.",
-    "contextul_general_al_aplicatiei": "suite-login este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
-    "contextualizarea_directoarelor si_cailor": "Deschide fișierul principal al serverului în `cp/suite-login/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
-    "restrictii_anti_halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
-    "validare": "Rulează aplicația suite-login local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
-    "outcome": "Aplicația suite-login a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.7 și F0.3.9 (corectate): au definit implementările de tracing (traces/otel.ts) și metrici (metrics/recorders/prometheus.ts) în `shared/observability/`. F0.3.10 (corectat): a expus o interfață publică clară în `@genius-suite/observability` pentru tracing și metrici. Pachetul `@genius-suite/common` expune logger-ul Pino din `shared/common/logger/`. Acum consumăm aceste facilități în aplicația suite-login.",
+    "contextul_general_al_aplicatiei": "suite-login este unul dintre serviciile importante din Control Plane și trebuie monitorizat consistent cu restul suitei. Prin integrarea logging-ului comun și a bibliotecii de observabilitate, asigurăm coerență la nivel de loguri, metrici și trace-uri, în conformitate cu arhitectura definită în Capitolul 2.",
+    "contextualizarea_directoarelor_si_cailor": "1. Deschide fișierul de intrare al serverului din `cp/suite-login/` (ex.: `cp/suite-login/src/main.ts` sau `src/index.ts`).\n2. Adaugă importurile corecte, de exemplu:\n   ```ts\n   import { logger } from '@genius-suite/common';\n   import { initTracing, metricsRegister } from '@genius-suite/observability';\n   ```\n3. Apelează tracing-ul cât mai devreme:\n   ```ts\n   initTracing();\n   ```\n4. Creează instanța serverului (ex. Fastify) folosind logger-ul comun:\n   ```ts\n   const app = fastify({ logger });\n   ```\n5. Adaugă ruta `/metrics` care expune metricile din Prometheus client:\n   ```ts\n   app.get('/metrics', async (_request, reply) => {\n     const body = await metricsRegister.metrics();\n     reply.type('text/plain').send(body);\n   });\n   ```\n6. Asigură-te că nu există un alt endpoint `/metrics` conflictual. Dacă există, înlocuiește-l cu cel bazat pe registrul comun.\n7. Verifică faptul că numele serviciului este controlat prin `OTEL_SERVICE_NAME` (setat în compose în task-ul dedicat suite-login) sau configurat explicit în `initTracing`.",
+    "restrictii_anti_halucinatie": "Nu importa logger-ul din `@genius-suite/observability`; folosește exclusiv `@genius-suite/common` pentru Pino, conform arhitecturii. Nu introduce un al doilea client Prometheus; utilizează doar infrastructura expusă de `@genius-suite/observability`. Nu modifica logica de business existentă, doar înfășoară serverul cu capabilități de observabilitate.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu muta fișierele în alte directoare decât cele planificate (codul suite-login rămâne sub `cp/suite-login/`). Nu adăuga configurări OTEL avansate (sampling, exporters suplimentari) în acest pas; skeleton-ul rămâne minimal. Nu schimba semnătura publică a API-ului suite-login.",
+    "validare": "1. Rulează aplicația local (ex.: `pnpm run dev` în `cp/suite-login`).\n2. Verifică în consolă că logurile apar în format JSON structurat (câmpuri `level`, `msg`, eventual `traceId`).\n3. Accesează `http://localhost:{PORT}/metrics` și confirmă că răspunsul este `text/plain` cu metrici Prometheus valide.\n4. După ce stack-ul de observabilitate este pornit și variabilele OTEL sunt setate corect în compose, verifică în Tempo/ Grafana că trace-urile pentru serviciul `suite-login` apar cu numele configurat.",
+    "outcome": "Aplicația suite-login este instrumentată corect pentru observabilitate: folosește logger-ul comun din `@genius-suite/common`, expune metrici Prometheus prin librăria din `@genius-suite/observability` și trimite trace-uri OTEL către colector, respectând structura și responsabilitățile arhitecturale.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.32
@@ -8241,7 +8243,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.43
 
+```JSON
+  {
   "F0.3.34": {
     "denumire_task": "Actualizare Docker Compose pentru identity",
     "descriere_scurta task": "Conectează containerul identity la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
@@ -8256,8 +8261,12 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
     "validare": "În contextul orchestrării dev, pornește serviciul identity împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul identity apare listat. De asemenea, rulează `docker compose exec identity env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs identity` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
     "outcome": "Docker Compose-ul pentru identity a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
+
   "F0.3.35": {
     "denumire_task": "Integră Observabilitate în licensing (Cod)",
     "descriere_scurta task": "Instrumentează aplicația licensing pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
