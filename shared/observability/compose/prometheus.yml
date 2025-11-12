@@ -1,0 +1,30 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'genius_applications'
+    static_configs:
+      - targets:
+          - 'archify.app:3000'
+          - 'flowxify.app:3000'
+          - 'i-wms.app:3000'
+          - 'mercantiq.app:3000'
+          - 'numeriqo.app:3000'
+          - 'triggerra.app:3000'
+          - 'vettify.app:3000'
+          - 'suite-admin:3000'
+          - 'suite-login:3000'
+          - 'identity:3000'
+          - 'licensing:3000'
+          - 'analytics-hub:3000'
+          - 'ai-hub:3000'
+
+  - job_name: 'traefik'
+    metrics_path: /metrics
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - 'traefik:9100'
+
+rule_files:
+  - rules/traefik.rules.yml

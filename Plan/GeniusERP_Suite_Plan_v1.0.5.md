@@ -7809,20 +7809,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.15": {
     "denumire_task": "Creare Configurație Prometheus (`prometheus.yml`)",
-    "descriere_scurta_task": "Adaugă fișierul `prometheus.yml` în `shared/observability/prometheus/` cu job-urile de scrap pentru metricile expuse de suite.",
-    "descriere_lunga si_detaliata_task": "Se pregătește configurarea serverului Prometheus, definind ce ținte (aplicații) să monitorizeze. În `shared/observability/prometheus/prometheus.yml`, vom specifica cel puțin următoarele:\n- Un job global (ex. `genius-apps`) care include toate serviciile suitei ce expun metrici. Vom lista ca **static_configs** adresele containerelor pentru fiecare aplicație, pe portul pe care expun metricile (de exemplu, dacă convenim portul 3000 pentru API-urile back-end, atunci țintele pot fi `archify.app:3000`, `flowxify.app:3000`, etc., respectiv numele de servicii din Compose-ul orchestrator care vor fi definite în F0.4). În contextul dev, putem folosi numele serviciilor (sau aliasuri) în rețeaua `observability`.\n- Un job pentru propriile componente de observabilitate dacă e cazul (ex. putem adăuga un job `otel-collector` pentru a scrapa metricile colectorului la portul său intern 8888, deși nu e critic acum; și un job pentru Traefik, care va fi configurat în F0.4 să expună metrici Prometheus:contentReference[oaicite:20]{index=20}).\n- Setări globale de scrape interval (ex. `scrape_interval: 15s` pentru dev) și eventual `evaluation_interval` pentru reguli.\nDe asemenea, includem referințe către eventualele fișiere de rules (ex. includerea fișierului `traefik.rules.yml` din același director, dacă definim reguli de alertă pentru Traefik). Această configurare va permite ca, odată ce toate serviciile sunt pornite, Prometheus să colecteze date despre CPU, memorie, număr de request-uri etc. de la fiecare.",
+    "descriere_scurta_task": "Adaugă fișierul `prometheus.yml` în `shared/observability/compose/` cu job-urile de scrap pentru metricile expuse de suite.",
+    "descriere_lunga_si_detaliata_task": "Se pregătește configurarea serverului Prometheus, definind ce ținte (aplicații) să monitorizeze. În `shared/observability/compose/prometheus.yml` vom specifica cel puțin:\n- Setări globale (ex. `scrape_interval: 15s` și, opțional, `evaluation_interval`).\n- Un job global (ex. `genius_applications`) care include toate serviciile suitei ce expun metrici. Vom lista ca **static_configs** adresele containerelor pentru fiecare aplicație, pe portul pe care expun metricile (de exemplu, 3000 pentru API-urile back-end: `archify.app:3000`, `flowxify.app:3000`, etc. – numele de servicii definite ulterior în Compose-ul orchestrator din F0.4).\n- Un job pentru Traefik (ex. `traefik`) care va scrapa endpoint-ul de metrici expus de acesta (configurat în F0.4).\n- Secțiunea `rule_files`, care va include fișiere de reguli (de ex. `rules/traefik.rules.yml`). Fișierul de reguli efectiv (`traefik.rules.yml`) va fi stocat, conform arhitecturii, în `shared/observability/metrics/rules/` și va fi montat în container astfel încât promQL să îl vadă ca `rules/traefik.rules.yml`.\n\nAcest fișier de configurare va fi folosit de containerul Prometheus definit în `compose/profiles/compose.dev.yml` (F0.3.16), printr-un volum montat în `/etc/prometheus/`.",
     "directorul_directoarele": [
-      "shared/observability/prometheus/"
+      "shared/observability/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.4: Directorul de config Prometheus a fost creat. Acum scriem configurația efectivă pentru a putea rula containerul Prometheus cu aceste setări.",
-    "contextul_general_al_aplicatiei": "Prometheus va fi sursa unică de adevăr pentru metricile runtime ale suitei. Configurându-l corespunzător încă din faza skeleton, ne asigurăm că fiecare serviciu este monitorizat. Acest pas se aliniază cerinței de a avea dashboarduri de bază disponibile în Grafana, bazate pe metricile colectate:contentReference[oaicite:21]{index=21}.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/prometheus/prometheus.yml` cu conținut exemplificativ:\n```yaml\nglobal:\n  scrape_interval: 15s\nscrape_configs:\n  - job_name: 'genius_applications'\n    static_configs:\n      - targets: ['archify.app:3000','flowxify.app:3000','i-wms.app:3000', 'mercantiq.app:3000', 'numeriqo.app:3000', 'triggerra.app:3000', 'vettify.app:3000', 'suite-admin:3000', 'suite-login:3000', 'identity:3000', 'licensing:3000', 'analytics-hub:3000', 'ai-hub:3000']\n  - job_name: 'traefik'\n    static_configs:\n      - targets: ['traefik:9100']\n    metrics_path: /metrics\n    scrape_interval: 5s\nrule_files:\n  - traefik.rules.yml\n```\nLista de ținte include fiecare serviciu al suitei cu numele DNS al containerului (aceste nume vor fi definite când vom scrie Compose-ul orchestrator în F0.4). Pentru Traefik am presupus un endpoint de metrici la 9100 (va fi configurat ulterior). Include `rule_files` către fișierul de reguli Traefik (creat în alt task).",
-    "restrictii_anti_halucinatie": "Nu listăm servicii care nu există; folosește doar numele cunoscute ale aplicațiilor (conform structurii / planului). Dacă unele module nu au metrici (ex. frontend-uri pure), le putem omite sau vom adăuga când vor exista metrici relevante.",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu defini alerte complexe sau reguli de înregistrare la acest pas, doar include fișierul de rules pentru Traefik dacă e cazul. Nu activa scrap-ul pentru metrici de sistem (node_exporter etc.) în acest config skeleton.",
-    "validare": "Poți valida fișierul rulând containerul Prometheus cu acest config (vom face în task-ul următor), sau folosind un validator online de config Prometheus. Asigură-te că indentarea YAML este corectă și că fișierul `traefik.rules.yml` referit există (va fi creat în alt task).",
-    "outcome": "Fișierul de configurare `prometheus.yml` este pregătit, specificând scrapping-ul metricilor pentru toate aplicațiile și componentele relevante ale suitei.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.3: A fost creat directorul `shared/observability/metrics/rules/` pentru rules Prometheus. F0.3.11–F0.3.14: A fost definit scheletul `compose.dev.yml`, rețeaua `observability` și serviciul `otel-collector`.",
+    "contextul_general_al_aplicatiei": "Prometheus va fi sursa unică de adevăr pentru metricile runtime ale suitei. Configurându-l corespunzător încă din faza skeleton, ne asigurăm că fiecare serviciu este monitorizat și că putem construi dashboard-uri în Grafana pe baza acestor metrici.",
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/compose/prometheus.yml` cu un conținut exemplificativ:\n```yaml\nglobal:\n  scrape_interval: 15s\n\nscrape_configs:\n  - job_name: 'genius_applications'\n    static_configs:\n      - targets:\n          - 'archify.app:3000'\n          - 'flowxify.app:3000'\n          - 'i-wms.app:3000'\n          - 'mercantiq.app:3000'\n          - 'numeriqo.app:3000'\n          - 'triggerra.app:3000'\n          - 'vettify.app:3000'\n          - 'suite-admin:3000'\n          - 'suite-login:3000'\n          - 'identity:3000'\n          - 'licensing:3000'\n          - 'analytics-hub:3000'\n          - 'ai-hub:3000'\n\n  - job_name: 'traefik'\n    metrics_path: /metrics\n    scrape_interval: 5s\n    static_configs:\n      - targets:\n          - 'traefik:9100'\n\nrule_files:\n  - rules/traefik.rules.yml\n```\nLista de ținte folosește numele DNS ale containerelor din rețeaua `observability` (vor fi definite în Compose-ul orchestrator din F0.4). Secțiunea `rule_files` presupune că în container fișierele de reguli vor fi montate sub `/etc/prometheus/rules/`, iar din perspectiva config-ului vor fi accesibile ca `rules/traefik.rules.yml`.",
+    "restrictii_anti_halucinatie": "Nu inventa servicii care nu există; folosește doar numele de aplicații definite în plan. Nu adăuga deocamdată alte job-uri (ex. node_exporter) sau reguli complexe de alertare – acestea pot fi adăugate ulterior.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea aici fișierul `traefik.rules.yml` și nu te ocupa de montarea volumelor în container (acestea vor fi tratate în task-urile F0.3.16 și F0.3.23). Limitează-te la configurarea de bază a lui `prometheus.yml`.",
+    "validare": "Rulează un validator de config (ex. pornind containerul Prometheus în F0.3.16) și verifică faptul că fișierul `prometheus.yml` este acceptat fără erori de sintaxă. Verifică în loguri că job-urile `genius_applications` și `traefik` sunt înregistrate.",
+    "outcome": "Fișierul de configurare `shared/observability/compose/prometheus.yml` este pregătit, specificând scrapping-ul metricilor pentru aplicațiile suitei și pentru Traefik, cu suport pentru fișiere de rules stocate în `shared/observability/metrics/rules/`.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.15
@@ -7869,7 +7870,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.18
 
+```JSON
+  {
   "F0.3.18": {
     "denumire_task": "Creare Configurație Provisionare Dashboard-uri Grafana",
     "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana (ex. `dashboards.yml`) care indică încărcarea automată a dashboard-urilor JSON din directorul `grafana/dashboards/`.",
@@ -7884,8 +7888,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu plasa path-ul către altă locație - menținem convenția standard. Nu adăuga opțiuni avansate (ex: filtrare după tag) atâta timp cât avem doar câteva dashboard-uri generice.",
     "validare": "Similar cu datasources, validarea are loc la pornirea Grafana: dacă configul are erori, apar în log. După pornire, verifică în UI Grafana la Settings -> Provisioning -> Dashboard că provider-ul 'Genius Suite Dashboards' apare și indică calea corectă.",
     "outcome": "Fișierul de provisioning al dashboard-urilor este creat, instructând Grafana să preia automat definițiile din cod pentru panourile de monitorizare.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.19": {
     "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `grafana` în Compose dev, montând fișierele de provisioning și folderul de dashboard-uri, și expunând UI-ul Grafana.",
