@@ -7558,19 +7558,20 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.6": {
     "denumire_task": "Adăugare Dependențe OpenTelemetry și Prometheus Client",
     "descriere_scurta_task": "Instalează pachetele necesare în monorepo pentru observabilitate: OpenTelemetry (tracing), clientul Prometheus (metrici) și logger-ul Pino.",
-    "descriere_lunga_si_detaliata_task": "Pentru a implementa codul de observabilitate, este necesară instalarea librăriilor relevante. Acest task adaugă următoarele pachete npm la dependențele proiectului (probabil în `package.json`-ul rădăcină, utilizând `pnpm` cu flag `-w`):\n- **OpenTelemetry SDK**: `@opentelemetry/api`, `@opentelemetry/sdk-node` (sau echivalent, pentru a inițializa tracer-ul global), `@opentelemetry/exporter-trace-otlp-http` (exporter OTLP prin HTTP către colector) și `@opentelemetry/auto-instrumentations-node` (pentru a capta automat HTTP, DB etc.).\n- **Prometheus client**: `prom-client` pentru expunerea metricilor aplicatiilor (HTTP handler `/metrics`).\n- **Logger**: `pino` (dacă nu este deja inclus prin Fastify) și eventual plugin-uri utile (`pino-pretty` pentru dev, `pino-http` pentru integrare cu serverul web).\nInstalarea se face cu versiuni compatibile cu Node 24 LTS. După adăugare, rulează `pnpm install` pentru a actualiza lockfile-ul.",
+    "descriere_lunga_si_detaliata_task": "Pentru a implementa codul de observabilitate, este necesară instalarea librăriilor relevante la nivel de workspace. Acest task adaugă următoarele pachete npm la dependențele monorepo-ului (în `package.json`-ul rădăcină, utilizând `pnpm` cu flag `-w`):\n- **OpenTelemetry SDK**: `@opentelemetry/api`, `@opentelemetry/sdk-node` (pentru inițializarea tracer-ului global), `@opentelemetry/auto-instrumentations-node` (pentru auto-instrumentare HTTP/DB etc.) și `@opentelemetry/exporter-trace-otlp-http` (exporter OTLP prin HTTP către colector).\n- **Prometheus client**: `prom-client` pentru expunerea metricilor aplicațiilor (endpoint `/metrics`).\n- **Logger**: `pino` pentru logare structurată și `pino-pretty` pentru formatat logurile în mediul de dezvoltare.\nInstalarea se face cu versiuni stabile compatibile cu Node 24 LTS. Comanda `pnpm add` va actualiza automat și `pnpm-lock.yaml`.",
     "directorul_directoarele": [
       "/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.1-F0.3.5: Am pregătit structura de foldere pentru observabilitate. Înainte de a scrie codul de instrumentare, trebuie să avem la dispoziție pachetele third-party necesare.",
+    "contextul_taskurilor_anterioare": "F0.3.2 și F0.3.3: Structurile de foldere pentru loguri și metrici au fost create. F0.3.5: Există structura pentru dashboard-urile Grafana de nivel global. Înainte de a scrie codul de instrumentare și configurare, trebuie să avem la dispoziție pachetele third-party necesare.",
     "contextul_general_al_aplicatiei": "Suitei GeniusERP i se adaugă capabilități de observabilitate la nivel de cod. OpenTelemetry va fi folosit pentru trasabilitate distribuită, Prometheus pentru metrici și Pino pentru logare structurată. Aceste biblioteci trebuie incluse ca dependențe pentru a putea fi folosite ulterior în implementare.",
-    "contextualizarea_directoarelor si_cailor": "Execută comanda `pnpm add -w @opentelemetry/sdk-node @opentelemetry/api @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http prom-client pino` în directorul rădăcină al monorepo-ului (`/var/www/GeniusSuite/`). Aceasta va adăuga pachetele menționate în `package.json` și va actualiza modulul node.",
-    "restrictii_anti_halucinatie": "Nu instala alte pachete în afara celor menționate. Folosește versiuni stabile (latest compatibile LTS) și nu modifica alte setări în `package.json`.",
-    "restrictii_de_iesire_din context_sau_de_inventare_de_sub_taskuri": "Nu executa configurări sau inițializări ale acestor pachete în acest pas; doar asigură-te că sunt disponibile ca dependențe.",
-    "validare": "Verifică în `package.json` prezența noilor pachete la secțiunea de dependențe/devDependencies. Asigură-te că instalarea a fost finalizată cu succes (ieșirea comenzii pnpm nu conține erori).",
-    "outcome": "Dependențele necesare observabilității sunt instalate în proiect, pregătite pentru a fi utilizate în codul de instrumentare.",
-    "componenta_de_CI_CD": "Aceste dependențe vor fi preluate automat la rularea pipeline-urilor CI (pasul de instalare). Nimic special de configurat în plus."}
-  },
+    "contextualizarea_directoarelor_si_cailor": "Execută în directorul rădăcină al monorepo-ului (`/var/www/GeniusSuite/`) comanda:\n`pnpm add -w @opentelemetry/api @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http prom-client pino pino-pretty`",
+    "restrictii_anti_halucinatie": "Nu instala alte pachete în afara celor listate explicit în acest task. Nu modifica alte câmpuri din `package.json` în afară de secțiunea de dependențe actualizată de `pnpm add`.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu executa configurări sau inițializări ale acestor pachete în acest pas; doar asigură-te că sunt disponibile ca dependențe. Configurația propriu-zisă OTEL/Prometheus/Pino va fi tratată în task-uri ulterioare.",
+    "validare": "Verifică în `package.json` de la rădăcină că pachetele `@opentelemetry/api`, `@opentelemetry/sdk-node`, `@opentelemetry/auto-instrumentations-node`, `@opentelemetry/exporter-trace-otlp-http`, `prom-client`, `pino` și `pino-pretty` apar în secțiunea de dependențe. Asigură-te că ieșirea comenzii `pnpm add` nu conține erori.",
+    "outcome": "Dependențele necesare observabilității (OpenTelemetry, Prometheus client, Pino) sunt instalate în proiect și pregătite pentru a fi utilizate în codul de instrumentare.",
+    "componenta_de_CI_CD": "Aceste dependențe vor fi preluate automat în pașii de instalare din pipeline-urile de CI/CD; nu este necesară o configurare suplimentară în workflow-uri."
+  }
+},
 ```
 
 #### F0.3.7
@@ -7595,7 +7596,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-F0.3.8
+#### F0.3.8
+
+```JSON
+  {
   "F0.3.8": {
     "denumire_task": "Implementare Modul de Logging în `telemetry/pino.ts`",
     "descriere_scurta_task": "Implementează fișierul `pino.ts` în `shared/observability/telemetry/` pentru configurarea logger-ului (Pino) uniform în toate serviciile.",
@@ -7610,9 +7614,14 @@ F0.3.8
     "restrictii_de_iesire_din_context_sau de inventare de sub_taskuri": "Nu iniția aici scrierea efectivă către Loki sau altceva - acest modul doar formatează și scrie la stdout. Expedierea către Loki va fi gestionată de pipeline-ul de loguri (Promtail/OTEL Collector).",
     "validare": "Asigură-te că, la rularea unui serviciu, logurile apar în consolă în format JSON corect. De exemplu, pornește un serviciu și verifică că mesajele de log conțin câmpurile așteptate (`level`, `msg`, eventual `traceId`).",
     "outcome": "Fișierul `pino.ts` este implementat, furnizând un logger standardizat pentru toate modulele, facilitând agregarea logurilor în sistemul de observabilitate.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A" }
   },
-F0.3.9
+```
+
+#### F0.3.9
+
+```JSON
+  {
   "F0.3.9": {
     "denumire_task": "Implementare Modul de Metrici în `metrics/prometheus.ts`",
     "descriere_scurta_task": "Implementează fișierul `prometheus.ts` în `shared/observability/metrics/` pentru expunerea metricilor Prometheus în aplicații.",
@@ -7627,8 +7636,10 @@ F0.3.9
     "restrictii_de_iesire_din context_sau de inventare de sub_taskuri": "Nu deschide un port separat pentru metrici - folosește serverul existent al aplicației. Nu modifica configurații globale în afara înregistrării metricilor.",
     "validare": "Pornește un serviciu (ex. suite-admin) în modul dev după integrare și accesează ruta `/metrics`. Ar trebui să vezi un output text cu metricile default (ex. `process_cpu_user_seconds_total`, etc.), semn că modulul funcționează.",
     "outcome": "Fișierul `prometheus.ts` este implementat, oferind mecanismul necesar ca toate aplicațiile să expună metricile pentru Prometheus.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
 F0.3.10
   "F0.3.10": {
     "denumire_task": "Creare Fișier de Export `index.ts` pentru Pachetul Observability",
