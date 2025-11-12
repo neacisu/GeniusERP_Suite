@@ -8347,21 +8347,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.38": {
-    "denumire_task": "Actualizare Docker Compose pentru analytics-hub",
-    "descriere_scurta_task": "Conectează containerul analytics-hub la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",
-    "descriere_lunga si detaliata_task": "În `cp/analytics-hub/compose/docker-compose.yml`, modificăm serviciul analytics-hub astfel:\n- Adăugăm rețeaua `observability` în lista de rețele ale containerului, pentru a-l înscrie în segmentul de rețea comun cu colectorul, Prometheus, etc.\n- Adăugăm variabilele de mediu necesare: \n  - `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` \n  - `OTEL_SERVICE_NAME=analytics-hub` \nAcestea asigură configurarea agentului OTEL din interiorul aplicației. Dacă fișierul compose are deja definiții de environment, introducem acești doi parametri acolo.\n- (Opțional) Adăugăm dependința față de `otel-collector` pentru pornire ordonată, similar cum am procedat la celelalte servicii.\nAstfel, când vom lansa containerul analytics-hub împreună cu observability stack, va fi pregătit să comunice fără obstacole de rețea și cu configurarea necesară.",
+    "denumire_task": "Actualizare Docker Compose pentru analytics-hub — CORECTAT",
+    "descriere_scurta_task": "Atașează cp/analytics-hub la rețeaua de observabilitate definită global și setează variabilele OTEL, aliniat cu arhitectura (network external + compose profiles).",
+    "descriere_lunga_si_detaliata_task": "În `cp/analytics-hub/compose/docker-compose.yml`, conectează serviciul la rețeaua de observabilitate **externă** (creată de stack-ul din `shared/observability/compose/profiles/compose.dev.yml`) și setează variabilele OTEL.\n\n1) **Networks (external, denumire stabilă):**\nAdaugă rețeaua `observability` la serviciul `analytics-hub` și declară rețeaua ca **external** la finalul fișierului pentru a evita coliziuni de nume între proiecte Compose.\n\n```yaml\nservices:\n  analytics-hub:\n    # ... existing config ...\n    networks:\n      - observability\n    environment:\n      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}\n      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-analytics-hub}\n    # optional, doar pentru dev local orchestrat împreună cu observability\n    # depends_on:\n    #   - otel-collector\n\nnetworks:\n  observability:\n    external: true\n    name: ${GS_OBS_NET:-observability}\n```\n\n2) **Variabile de mediu:**\n- `OTEL_EXPORTER_OTLP_ENDPOINT` indică endpoint-ul OTLP/HTTP al colectorului (implicit `http://otel-collector:4318`).\n- `OTEL_SERVICE_NAME` stabilește identitatea serviciului în telemetrie (implicit `analytics-hub`).\n- (Opțional) definește în `.env` valorile pentru `GS_OBS_NET`, `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`.\n\n3) **Compatibilitate rețea:**\nStack-ul de observabilitate trebuie să creeze o rețea Docker numită `observability` (sau valoarea din `GS_OBS_NET`). Declararea ca `external: true` previne recrearea unei rețele separate în acest compose.",
     "directorul_directoarele": [
       "cp/analytics-hub/compose/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.37: Codul analytics-hub este pregătit pentru observabilitate. Acum adaptăm și containerizarea pentru a-l conecta la infrastructura observability.",
-    "contextul_general al aplicatiei": "Menținând consistența cu celelalte module, și aplicațiile stand-alone trebuie să fie vizibile pentru Prometheus/Loki/Tempo. Prin configurările de rețea și mediu adăugate, analytics-hub devine parte integrantă a ecosistemului de monitorizare.",
-    "contextualizarea directoarelor si cailor": "Deschide `cp/analytics-hub/compose/docker-compose.yml`. În secțiunea service pentru această aplicație, adaugă la `networks:` referința `observability`. Dacă rețeaua observability nu e definită local (pentru stand-alone compose), aceasta va fi oricum definită în orchestratorul global dev (compose.yml la rădăcină) în F0.4, deci e OK. În secțiunea environment, inserează variabilele `OTEL_EXPORTER_OTLP_ENDPOINT` și `OTEL_SERVICE_NAME`. Salvează fișierul. Dacă există un bloc de definire a rețelelor la final, asigură-te că menționează observability dacă e necesar (sau va fi predefinit în orchestrator).",
-    "restrictii_anti halucinatie": "Nu afecta alte aspecte ale Compose-ului (volumes, port mapping) - ne limităm la environment și networks. Nu redenumi serviciul sau alte elemente, păstrăm totul consistent.",
-    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu trece rețeaua observability ca external în acest context (presupunem orchestratorul principal o gestionează). Nu adăuga variabile de mediu neaprobate (doar cele necesare OTEL).",
-    "validare": "În contextul orchestrării dev, pornește serviciul analytics-hub împreună cu observability (asigurând că share aceeași rețea). Folosind `docker network inspect geniuserp_observability`, verifică că containerul analytics-hub apare listat. De asemenea, rulează `docker compose exec analytics-hub env` și confirmă că variabilele OTEL apar în config. De asemenea, la pornire, verifică cu `docker compose logs analytics-hub` că aplicația detectează variabilele (de exemplu log de initializare OTEL care arată endpoint-ul corect).",
-    "outcome": "Docker Compose-ul pentru analytics-hub a fost actualizat pentru observabilitate: containerul se alătură rețelei dedicate și conține variabilele de mediu necesare conectării la colector.",
-    "componenta de CI/DI": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "Necesită corecții la F0.3.11–F0.3.14 (mutarea și repararea `shared/observability/compose/profiles/compose.dev.yml` + volume corecte) și implementarea corectă a F0.3.37 (instrumentarea codului cu logger din @genius-suite/common și OTEL/Prometheus din @genius-suite/observability pe căile `traces/` și `metrics/recorders/`).",
+    "contextul_general_al_aplicatiei": "analytics-hub trebuie să emită trace-uri/metrici către colectorul OTEL și să fie accesibil pentru Prometheus în aceeași rețea Docker; variabilele OTEL oferă configurabilitate pe medii.",
+    "contextualizarea_directoarelor_si_cailor": "Editează `cp/analytics-hub/compose/docker-compose.yml`. La serviciul `analytics-hub`, adaugă `networks: [observability]` și cheile din `environment:`. La finalul fișierului, declară blocul `networks:` cu `observability` ca `external: true` și `name: ${GS_OBS_NET:-observability}`. Nu elimina alte rețele existente ale serviciului.",
+    "restrictii_anti_halucinatie": "Nu redenumi serviciul sau alte rețele existente; nu adăuga port mapping/volume neprevăzute. Nu seta alte variabile OTEL decât cele două necesare.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu marca rețeaua drept internal; trebuie să fie rețea comună cu stack-ul de observabilitate. Nu introduce dependențe noi în compose.",
+    "validare": "1) `docker compose -f cp/analytics-hub/compose/docker-compose.yml config` trebuie să treacă. 2) `docker network ls` trebuie să conțină rețeaua `${GS_OBS_NET:-observability}` creată de stack-ul observability. 3) `docker compose up -d analytics-hub` și apoi `docker inspect <container>` → în `Networks` trebuie să apară rețeaua observability. 4) `docker compose exec analytics-hub printenv | grep OTEL_` arată variabilele setate. 5) Dacă serviciul rulează, `curl http://localhost:<port>/metrics` trebuie să răspundă cu text Prometheus.",
+    "outcome": "Containerul analytics-hub este conectat la rețeaua de observabilitate definită global și are variabilele OTEL setate corect, gata să comunice cu colectorul.",
+    "componenta_de_CI_CD": "Adaugă un job de smoke-test care rulează `docker compose config` pe acest fișier și verifică prezența rețelei external `observability`, plus un healthcheck simplu pe `GET /metrics` (dacă este expus în dev)."
+  }
+},
 ```
 
 #### F0.3.39
@@ -8409,7 +8410,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.41
 
+```JSON
+  {
   "F0.3.41": {
     "denumire_task": "Integră Observabilitate în archify.app (Cod)",
     "descriere_scurta_task": "Instrumentează aplicația archify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
@@ -8425,8 +8429,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
     "validare": "Rulează aplicația archify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
     "outcome": "Aplicația archify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.42": {
     "denumire_task": "Actualizare Docker Compose pentru archify.app",
     "descriere_scurta task": "Conectează containerul archify.app la ecosistemul de observabilitate: adaugă rețeaua `observability` și variabilele OTEL în compose-ul aplicației.",

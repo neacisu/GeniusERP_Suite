@@ -3,7 +3,7 @@ version: '3.8'
 services:
   analytics-hub:
     build:
-      context: ../../
+      context: ../../../
       dockerfile: cp/analytics-hub/Dockerfile
     container_name: genius-suite-analytics-hub
     ports:
@@ -11,9 +11,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3006
-      - OTEL_SERVICE_NAME=analytics-hub
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-analytics-hub}
       - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - OTEL_METRICS_EXPORTER=prometheus
       - PROMETHEUS_METRICS_PORT=9090
@@ -31,4 +31,4 @@ services:
 networks:
   observability:
     external: true
-    name: geniuserp_observability
+    name: ${GS_OBS_NET:-observability}
