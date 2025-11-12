@@ -7701,20 +7701,25 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.11": {
     "denumire_task": "Creare Fișier Docker Compose pentru Observabilitate (profil dev)",
-    "descriere_scurta_task": "Creează fișierul `compose.dev.yml` în `shared/observability/compose/`, care va defini serviciile stack-ului de observabilitate pentru mediul de dezvoltare.",
-    "descriere_lunga_si_detaliata_task": "Vom configura componentele de observabilitate (OTEL Collector, Prometheus, Grafana, Loki, Tempo etc.) ca servicii Docker Compose. Acest task inițiază fișierul de orchestrare dedicat profilului de dezvoltare: `shared/observability/compose/compose.dev.yml`. Fișierul va fi ulterior completat cu definiția containerelor și a setărilor necesare pentru fiecare componentă din stack:contentReference[oaicite:16]{index=16}. În primul rând, creăm fișierul gol (sau cu un schelet de YAML minimal) pentru a pregăti terenul integrării serviciilor.",
+    "descriere_scurta_task": "Creează fișierul `compose.dev.yml` în `shared/observability/compose/profiles/`, care va defini serviciile stack-ului de observabilitate pentru mediul de dezvoltare.",
+    "descriere_lunga_si_detaliata_task": "Vom configura componentele de observabilitate (OTEL Collector, Prometheus, Grafana, Loki, Tempo etc.) ca servicii Docker Compose. Acest task inițiază fișierul de orchestrare dedicat profilului de dezvoltare: `shared/observability/compose/profiles/compose.dev.yml`. Fișierul va fi ulterior completat cu definiția containerelor și a setărilor necesare pentru fiecare componentă din stack. În acest pas creăm fișierul și îi adăugăm un schelet YAML minimal, conform structurii planificate în arhitectură.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.10: Pachetul de cod observability este gata. Acum trecem la integrarea componentelor externe (third-party) de observabilitate în mediul de dezvoltare.",
-    "contextul_general_al_aplicatiei": "Modelul de orchestrare este hibrid: fiecare aplicație are un Compose propriu, iar la nivel de suită există un Compose orchestrator:contentReference[oaicite:17]{index=17}. Componentele de observabilitate fiind comune, le vom defini într-un fișier de Compose separat (pentru profilul de dev), care poate fi inclus în orchestrare când e nevoie.",
-    "contextualizarea_directoarelor_si_cailor": "Creează directorul `shared/observability/compose/` dacă nu există deja (din structura proiectului). Apoi creează fișierul gol `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml`. Adaugă un antet de bază YAML (ex. `version: '3.9'` și un bloc gol de `services:`) pentru a valida sintaxa inițială.",
-    "restrictii_anti_halucinatie": "Nu definești încă niciun serviciu în detaliu. Nu adăuga configurări la acest pas, doar fișierul și structura minimală.",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu crea încă fișiere pentru alte profiluri (staging/prod) – ne concentrăm doar pe dev acum. Nu include aplicațiile propriu-zise în acest compose, doar stack-ul de observabilitate.",
-    "validare": "Verifică că fișierul `compose.dev.yml` există și este recunoscut ca YAML valid (poți rula `docker compose -f shared/observability/compose/compose.dev.yml config` pentru a verifica că nu sunt erori).",
-    "outcome": "Fișierul de orchestrare `compose.dev.yml` a fost creat, pregătit pentru definirea serviciilor de observabilitate în mediul de dezvoltare.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.10: Pachetul de cod observability este gata. Structura `shared/observability/compose/` este definită în arhitectură, incluzând subdirectorul `profiles/` pentru fișierele Compose specifice profilului (dev/staging/prod).",
+    "contextul_general_al_aplicatiei": "Modelul de orchestrare este hibrid: fiecare aplicație are un Compose propriu, iar la nivel de suită există un Compose orchestrator. Componentele de observabilitate, fiind comune, sunt definite într-un fișier Compose separat pentru profilul de dev, care poate fi inclus sau suprapus peste orchestrarea principală.",
+    "contextualizarea_directoarelor_si_cailor": "Creează directorul `/var/www/GeniusSuite/shared/observability/compose/profiles/` dacă nu există deja. Apoi creează fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și adaugă un schelet YAML minimal, de exemplu:\n```yaml\nversion: '3.9'\n\nservices: {}\n```\nAcest lucru asigură că fișierul este YAML valid și pregătit pentru a fi extins în task-urile următoare.",
+    "restrictii_anti_halucinatie": [
+      "Nu defini încă servicii concrete în `compose.dev.yml` (nu adăuga încă OTEL Collector, Prometheus, Grafana etc.).",
+      "Nu crea fișierul `compose.dev.yml` direct în `shared/observability/compose/`; folosește obligatoriu subdirectorul `profiles/`, conform arhitecturii.",
+      "Nu crea încă fișiere pentru alte profiluri (staging/prod) în acest task."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Limitează-te la structură minimă (version + services gol). Nu adăuga volume, rețele sau environment variables în acest pas.",
+    "validare": "Verifică faptul că fișierul există la calea `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și că `docker compose -f shared/observability/compose/profiles/compose.dev.yml config` rulează fără erori de sintaxă.",
+    "outcome": "Fișierul de orchestrare `compose.dev.yml` este creat în locația corectă (`compose/profiles/`), pregătit pentru definirea serviciilor de observabilitate în mediul de dezvoltare.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.12
@@ -7722,21 +7727,26 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.12": {
-    "denumire_task": "Definire Rețea Docker 'observability' în Compose",
-    "descriere_scurta_task": "Adaugă în `compose.dev.yml` definirea unei rețele Docker dedicate observabilității (ex. `observability`) la care vor adera componentele și aplicațiile.",
-    "descriere_lunga si_detaliata_task": "Pentru a permite comunicarea între serviciile de observabilitate și aplicații, creăm o rețea Docker izolată numită `observability`. În fișierul `compose.dev.yml`, adaugă o secțiune `networks:` la sfârșit, definind rețeaua `observability`. Această rețea va fi folosită de containerul OTEL Collector, Prometheus, Grafana, Loki, Tempo etc., precum și de containerele aplicațiilor (acestea vor fi atașate la rețea prin propriile Compose-uri). Asigură-te că rețeaua este de tip bridge și (opțional) marcată ca external dacă va fi accesată și din alte fișiere Compose (de ex. Compose-urile aplicațiilor stand-alone).",
+    "denumire_task": "Definire Rețea Docker 'observability' în Compose (profil dev)",
+    "descriere_scurta_task": "Adaugă în `compose.dev.yml` (profil dev) definirea unei rețele Docker dedicate observabilității (ex. `observability`) la care vor adera componentele și aplicațiile.",
+    "descriere_lunga_si_detaliata_task": "Pentru a permite comunicarea între serviciile de observabilitate și aplicații, creăm o rețea Docker izolată numită `observability`. În fișierul `shared/observability/compose/profiles/compose.dev.yml`, adaugă o secțiune `networks:` la sfârșit, definind rețeaua `observability`. Această rețea va fi folosită de containerul OTEL Collector, Prometheus, Grafana, Loki, Tempo etc., precum și de containerele aplicațiilor (care vor fi atașate la rețea prin propriile lor fișiere Compose). Rețeaua va fi de tip `bridge`, cu un nume explicit (ex. `geniuserp_observability`) pentru a evita conflictele și a permite referința din Compose-urile aplicațiilor.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.11: A fost creat fișierul `compose.dev.yml`. Acum stabilim infrastructura de rețea necesară înainte de a adăuga serviciile concrete.",
-    "contextul_general_al_aplicatiei": "Conform arhitecturii Docker Compose hibride, rețelele partajate (edge, internal, observability) sunt pre-definite pentru a lega containerele între ele:contentReference[oaicite:18]{index=18}. Rețeaua `observability` va izola traficul de telemetrie și va permite componentelor precum Prometheus sau OTEL Collector să comunice cu serviciile monitorizate.",
-    "contextualizarea_directoarelor si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă la sfârșit:\n```yaml\nnetworks:\n  observability:\n    name: geniuserp_observability\n    driver: bridge\n```\nAcest exemplu definește rețeaua cu un nume explicit (`geniuserp_observability`) pentru a evita conflicte și permite altor Compose-uri să se refere la ea. Poți marca rețeaua ca `external: true` dacă dorești să fie creată manual în avans și reutilizată, însă deocamdată o vom lăsa implicită (Docker o va crea la nevoie).",
-    "restrictii_anti_halucinatie": "Nu defini alte rețele decât cea specificată. Nu schimba driver-ul default (bridge) și nu seta opțiuni avansate care nu sunt necesare acum.",
-    "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Limitează-te la definirea rețelei. Nu atașa încă serviciile la rețea în acest pas - acest lucru se va face la definirea fiecărui serviciu.",
-    "validare": "Rulează `docker compose -f shared/observability/compose/compose.dev.yml config` și verifică existența secțiunii networks și a rețelei `observability`. Nu trebuie raportate erori de sintaxă.",
-    "outcome": "Rețeaua Docker `observability` este definită în config-ul Compose dev, gata să fie folosită de serviciile de observabilitate și de aplicațiile monitorizate.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.11: A fost creat fișierul `shared/observability/compose/profiles/compose.dev.yml` cu scheletul YAML de bază (version + services). Acum definim infrastructura de rețea necesară înainte de a adăuga serviciile concrete.",
+    "contextul_general_al_aplicatiei": "Conform arhitecturii Docker Compose hibride, rețelele partajate (edge, internal, observability) sunt pre-definite pentru a lega containerele între ele. Rețeaua `observability` va izola traficul de telemetrie și va permite componentelor precum Prometheus sau OTEL Collector să comunice cu serviciile monitorizate.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și adaugă la sfârșit blocul:\n```yaml\nnetworks:\n  observability:\n    name: geniuserp_observability\n    driver: bridge\n```\nDacă în fișier există deja o secțiune `networks:`, adaugă doar intrarea `observability` în acea secțiune.",
+    "restrictii_anti_halucinatie": [
+      "Nu defini alte rețele în afara `observability` în acest task.",
+      "Nu schimba driver-ul default (`bridge`).",
+      "Nu marca încă rețeaua ca `external`; acest detaliu se poate decide ulterior, la integrarea cu Compose-urile aplicațiilor."
+    ],
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Limitează-te la definirea rețelei. Nu atașa încă serviciile la rețeaua `observability` în acest pas – acest lucru se va face când definești servicii concrete (OTEL Collector, Prometheus, Grafana etc.).",
+    "validare": "Rulează `docker compose -f shared/observability/compose/profiles/compose.dev.yml config` și verifică faptul că ieșirea include secțiunea `networks` cu intrarea `observability` și că nu există erori de sintaxă.",
+    "outcome": "Rețeaua Docker `observability` este definită în config-ul Compose pentru profilul de dev, gata să fie folosită de serviciile de observabilitate și de aplicațiile monitorizate.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.13
@@ -7761,7 +7771,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-F0.3.14
+#### F0.3.14
+
+```JSON
+  {
   "F0.3.14": {
     "denumire_task": "Adăugare Serviciu OTEL Collector în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `otel-collector` în fișierul de Compose dev, folosind imaginea OpenTelemetry Collector și fișierul de configurare creat.",
@@ -7776,8 +7789,10 @@ F0.3.14
     "restrictii_de_iesire_din context sau de inventare de sub_taskuri": "Nu modifica fișierul de config OTEL în acest pas - presupunem că este corect. Nu activa încă colectarea de metrici prin acest colector, focusul e doar pe trasabilitate (conform config-ului minimal).",
     "validare": "Rulare `docker compose -f shared/observability/compose/compose.dev.yml up -d otel-collector` și verifică log-urile: containerul ar trebui să pornească fără erori de configurare (mesaj de tip \"Everything is ready\" de la otelcol).",
     "outcome": "Serviciul Docker `otel-collector` este definit în configurația de dezvoltare, folosind config-ul specific, și se alătură rețelei de observabilitate.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
   "F0.3.15": {
     "denumire_task": "Creare Configurație Prometheus (`prometheus.yml`)",
     "descriere_scurta_task": "Adaugă fișierul `prometheus.yml` în `shared/observability/prometheus/` cu job-urile de scrap pentru metricile expuse de suite.",
