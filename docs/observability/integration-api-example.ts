@@ -9,8 +9,8 @@ import { registerMetricsRoute } from '../../shared/observability';
 const app: any = {}; // Your Express app instance
 registerMetricsRoute(app);
 
-// For logging, replace existing logger
-import { createLogger } from '../../shared/observability';
+// For logging, import from the common logger package
+import { createLogger } from '../../shared/common/logger/pino';
 const appLogger = createLogger();
 appLogger.info('App started with observability enabled');
 
