@@ -1,4 +1,4 @@
-import { readJsonFile, hasRequiredProperties, isValidUrl } from '../utils/validation';
+import { readJsonFile, hasRequiredProperties } from '../utils/validation';
 
 describe('nx.json', () => {
   let nxConfig: any;
@@ -178,7 +178,7 @@ describe('nx.json', () => {
     });
 
     it('should have inputs for cacheable targets (recommended)', () => {
-      Object.entries(nxConfig.targetDefaults).forEach(([name, target]: [string, any]) => {
+      Object.entries(nxConfig.targetDefaults).forEach(([_name, target]: [string, any]) => {
         if (target.cache && target.inputs) {
           // If inputs are defined, they should be valid
           expect(Array.isArray(target.inputs)).toBe(true);

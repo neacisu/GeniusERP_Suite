@@ -32,21 +32,6 @@ describe('commitlint.config.js', () => {
 
   describe('Conventional Commits Compatibility', () => {
     it('should support standard conventional commit types', () => {
-      // This validates the config extends conventional config which supports these types
-      const standardTypes = [
-        'feat',
-        'fix',
-        'docs',
-        'style',
-        'refactor',
-        'perf',
-        'test',
-        'chore',
-        'ci',
-        'build',
-        'revert',
-      ];
-      
       // The config should work with these types (implicit via conventional config)
       expect(commitlintConfig.extends).toContain('@commitlint/config-conventional');
     });

@@ -1,4 +1,4 @@
-import { readJsonFile, hasRequiredProperties } from '../utils/validation';
+import { readJsonFile } from '../utils/validation';
 
 describe('tsconfig.base.json', () => {
   let tsconfigBase: any;
