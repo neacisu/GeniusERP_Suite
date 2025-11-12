@@ -7826,26 +7826,27 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.3.15
+#### F0.3.16
 
 ```JSON
   {
   "F0.3.16": {
     "denumire_task": "Adăugare Serviciu Prometheus în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `prometheus` în fișierul Compose dev, folosind imaginea oficială și montând configurația `prometheus.yml` generată.",
-    "descriere_lunga si_detaliata_task": "Adăugăm serviciul de monitorizare Prometheus în `shared/observability/compose/compose.dev.yml`. Sub secțiunea `services:`, introducem serviciul `prometheus` cu setările necesare:\n- **Image**: `prom/prometheus:latest` (sau o versiune stabilă actuală, ex. v2.x).\n- **Volumes**: Montăm fișierul de configurare creat la F0.3.15: ex. `- ../../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro`. De asemenea, putem monta un volum persistent pentru date (ex. `- prom_data:/prometheus`), deși pentru dev nu e critic.\n- **Command/Args**: putem specifica parametri suplimentari dacă e nevoie (ex. `--config.file=/etc/prometheus/prometheus.yml` dacă imaginea nu o ia implicit, dar în general prom/prometheus citește implicit acel fișier de config când e montat la locația default `/etc/prometheus/prometheus.yml`).\n- **Ports**: expune portul 9090 (UI web Prometheus) dacă dorim să accesăm interfața de dev (ex. mapping la host doar în dev). Acest pas e opțional, dat fiind că ne vom uita la metrici mai mult prin Grafana.\n- **Networks**: atașăm containerul la rețeaua `observability` astfel încât să poată rezolva DNS-urile serviciilor de monitorizat.\nCu această definiție, la pornire Compose-ului, Prometheus va citi configurația montată și va începe să scrape-uiască metricile serviciilor suitei.",
+    "descriere_lunga_si_detaliata_task": "Adăugăm serviciul de monitorizare Prometheus în fișierul `shared/observability/compose/profiles/compose.dev.yml`. Sub secțiunea `services:` introducem serviciul `prometheus` cu setările necesare:\n- **Image**: `prom/prometheus:latest` (sau o versiune stabilă v2.x).\n- **Volumes**: montăm fișierul de configurare creat la F0.3.15, aflat în `shared/observability/compose/prometheus.yml`, în container la `/etc/prometheus/prometheus.yml` (cale implicită pentru imaginea prom/prometheus).\n- Opțional, putem monta un volum named pentru date (ex. `prom_data:/prometheus`), dar în skeleton-ul de dev nu este obligatoriu.\n- **Ports**: expunem portul `9090` (UI Prometheus) pentru acces local în dev, ex. `9090:9090`.\n- **Networks**: atașăm containerul la rețeaua `observability` definită în F0.3.12, pentru a rezolva numele serviciilor țintă (ex. `archify.app`, `traefik`).\nCu această definiție, la pornirea Compose-ului, Prometheus va citi configurația montată și va începe să scrape-uiască metricile serviciilor suitei.",
     "directorul_directoarele": [
-      "shared/observability/compose/"
+      "shared/observability/compose/profiles/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.15: Fișierul `prometheus.yml` este disponibil cu toate țintele. Acum definim containerul Prometheus folosind acel fișier.",
-    "contextul_general_al_aplicatiei": "Integrarea Prometheus ca serviciu Docker ne permite să includem monitorizarea metricilor în mediul de dezvoltare. Acest lucru este parte din skeleton-ul de observabilitate al suitei, conform planificării F0.3:contentReference[oaicite:22]{index=22}.",
-    "contextualizarea_directoarelor si_cailor": "Deschide `/var/www/GeniusSuite/shared/observability/compose/compose.dev.yml` și adaugă serviciul:\n```yaml\n  prometheus:\n    image: prom/prometheus:latest\n    volumes:\n      - ../../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro\n    networks:\n      - observability\n    ports:\n      - 9090:9090\n```\nDacă definim un volum extern pentru date: adaugă un volum named (ex. `prom_data`) și montează-l la `/prometheus`. Pentru skeleton însă, persistența datelor nu e obligatorie. Port-ul 9090 e expus pentru acces web opțional (poate fi omis dacă nu e necesar).",
-    "restrictii_anti_halucinatie": "Nu uita să includă containerul în rețeaua corectă (observability) altfel nu va putea atinge țintele. Nu adăuga în acest moment alertmanager sau alte servicii, ne limităm la serverul Prometheus simplu.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu configura în plus autentificare sau alte flag-uri avansate Prometheus (ex. remote_write etc.) în skeleton. Rămânem la setup-ul minimal descris.",
-    "validare": "Pornește local doar serviciul Prometheus din Compose (`docker compose -f ... up -d prometheus`) după ce toate serviciile sunt integrate, și vizitează `http://localhost:9090/targets`. Ar trebui să vezi lista de job-uri definite (chiar dacă unele ținte pot fi inactive până la pornirea aplicațiilor).",
-    "outcome": "Serviciul Prometheus este definit în configurația Docker Compose, configurat să își încarce setările și să colecteze metricile din suita GeniusERP.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "F0.3.11–F0.3.12: `compose/profiles/compose.dev.yml` și rețeaua `observability` au fost create. F0.3.15: `shared/observability/compose/prometheus.yml` conține job-urile de scrap pentru aplicații și Traefik.",
+    "contextul_general_al_aplicatiei": "Integrarea Prometheus ca serviciu Docker în profilul de dezvoltare face parte din skeleton-ul de observabilitate al suitei. Stack-ul de observabilitate (OTEL Collector, Prometheus, Grafana, Loki, Tempo etc.) trebuie să poată fi pornit unitar prin Docker Compose.",
+    "contextualizarea_directoarelor_si_cailor": "Deschide fișierul `/var/www/GeniusSuite/shared/observability/compose/profiles/compose.dev.yml` și, sub secțiunea `services:`, adaugă serviciul:\n```yaml\n  prometheus:\n    image: prom/prometheus:latest\n    volumes:\n      - ../prometheus.yml:/etc/prometheus/prometheus.yml:ro\n    networks:\n      - observability\n    ports:\n      - \"9090:9090\"\n```\nNotă: calea relativă `../prometheus.yml` este calculată din directorul `profiles/` către fișierul `prometheus.yml` aflat în `shared/observability/compose/`.",
+    "restrictii_anti_halucinatie": "Nu adăuga aici alte servicii (ex. Alertmanager) și nu monta alte fișiere de configurare în afară de `prometheus.yml`. Nu defini volume persistente suplimentare decât dacă sunt clar necesare.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica conținutul fișierului `prometheus.yml` în acest task și nu altera structura rețelei `observability`. Limitează-te la definirea serviciului Prometheus folosind config-ul existent.",
+    "validare": "Rulează `docker compose -f shared/observability/compose/profiles/compose.dev.yml up -d prometheus` și accesează `http://localhost:9090/targets`. Job-urile definite în `prometheus.yml` trebuie să apară în listă (chiar dacă unele ținte pot fi încă `DOWN` până pornesc toate serviciile).",
+    "outcome": "Serviciul Prometheus este definit în profilul Docker Compose de dezvoltare, atașat la rețeaua `observability` și configurat să folosească `shared/observability/compose/prometheus.yml` pentru a colecta metricile din suita GeniusERP.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.17
@@ -7892,7 +7893,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.19
 
+```JSON
+  {
   "F0.3.19": {
     "denumire_task": "Adăugare Serviciu Grafana în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `grafana` în Compose dev, montând fișierele de provisioning și folderul de dashboard-uri, și expunând UI-ul Grafana.",
@@ -7907,8 +7911,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Păstrează config-ul clar: un singur user admin default, fără LDAP sau alte integrări. Nu modifica portul web implicit (3000) pentru Grafana în dev.",
     "validare": "După pornire, accesează `http://localhost:3000` cu user-ul/parola specificate (admin/admin) și verifică: sursele de date (meniul Configuration -> Data Sources) ar trebui să arate Prometheus, Loki, Tempo preconfigurate; iar în lista de dashboard-uri să apară panoul Traefik (după ce-l vom adăuga).",
     "outcome": "Serviciul Grafana este adăugat și configurat complet în docker-compose dev, pregătit să afișeze metricile și logurile colectate, fără configurații manuale post-lansare.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.20": {
     "denumire_task": "Creare Configurație Promtail pentru Colectarea Logurilor",
     "descriere_scurta_task": "Adaugă fișierul de configurare Promtail (agent Loki) în `shared/observability/logs/ingestion/` (ex. `promtail-config.yml`), pentru a defini ce loguri să fie trimise către Loki.",
