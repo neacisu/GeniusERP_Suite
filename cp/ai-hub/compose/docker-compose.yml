@@ -9,7 +9,7 @@ services:
     ports:
       - "3007:3007"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3007
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
       - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-ai-hub}
@@ -31,4 +31,4 @@ services:
 networks:
   observability:
     external: true
-    name: ${GS_OBS_NET:-observability}
+    name: geniuserp_observability

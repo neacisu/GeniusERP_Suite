@@ -9,7 +9,7 @@ services:
     ports:
       - "3006:3006"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
       - PORT=3006
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
       - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-analytics-hub}
