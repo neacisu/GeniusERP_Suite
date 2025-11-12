@@ -7878,20 +7878,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   {
   "F0.3.18": {
     "denumire_task": "Creare Configurație Provisionare Dashboard-uri Grafana",
-    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana (ex. `dashboards.yml`) care indică încărcarea automată a dashboard-urilor JSON din directorul `grafana/dashboards/`.",
-    "descriere_lunga si_detaliata_task": "Pentru a încărca automat dashboard-urile de bază în Grafana, vom folosi tot mecanismul de provisioning. Creăm un fișier, de exemplu `dashboards.yml`, în `shared/observability/grafana/`, cu conținutul:\n```yaml\napiVersion: 1\nproviders:\n  - name: 'Genius Suite Dashboards'\n    orgId: 1\n    folder: ''\n    type: file\n    disableDeletion: false\n    updateIntervalSeconds: 60\n    options:\n      path: /etc/grafana/provisioning/dashboards\n```\nAcest config spune Grafana să ia toate dashboard-urile JSON din calea specificată și să le încarce automat. Noi vom monta directorul nostru `shared/observability/grafana/dashboards/` în container la acea cale (`/etc/grafana/provisioning/dashboards`). Astfel, orice fișier `.json` plasat acolo (de ex. `traefik.json` pe care îl vom crea) va apărea ca dashboard în Grafana fără acțiuni manuale ulterioare. Parametrul `updateIntervalSeconds: 60` indică verificarea periodică a modificărilor (nu critic în dev, dar util).",
+    "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana (ex. `dashboards.yml`) care indică încărcarea automată a dashboard-urilor JSON din `shared/observability/dashboards/grafana/dashboards/`.",
+    "descriere_lunga_si_detaliata_task": "Pentru a încărca automat dashboard-urile de bază în Grafana, vom folosi mecanismul de provisioning. Creăm un fișier `dashboards.yml` în `shared/observability/dashboards/grafana/`, cu conținutul:\n```yaml\napiVersion: 1\nproviders:\n  - name: 'Genius Suite Dashboards'\n    orgId: 1\n    folder: ''\n    type: file\n    disableDeletion: false\n    updateIntervalSeconds: 60\n    options:\n      path: /etc/grafana/provisioning/dashboards\n```\nAcest config spune Grafana să ia toate dashboard-urile JSON din calea specificată și să le încarce automat. Noi vom monta directorul nostru `shared/observability/dashboards/grafana/dashboards/` în container la acea cale (`/etc/grafana/provisioning/dashboards`). Astfel, orice fișier `.json` plasat acolo (de ex. `traefik.json`) va apărea ca dashboard în Grafana fără acțiuni manuale ulterioare. Parametrul `updateIntervalSeconds: 60` indică verificarea periodică a modificărilor (nu critic în dev, dar util).",
     "directorul_directoarele": [
-      "shared/observability/grafana/"
+      "shared/observability/dashboards/grafana/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.17: Configurarea surselor de date Grafana este pregătită. Urmează configurarea încărcării dashboard-urilor.",
+    "contextul_taskurilor_anterioare": "F0.3.17: Configurarea surselor de date Grafana este pregătită în `shared/observability/dashboards/grafana/datasources.yml`. Urmează configurarea încărcării dashboard-urilor.",
     "contextul_general_al_aplicatiei": "Dashboard-urile de bază (cum este cel pentru Traefik) trebuie să fie disponibile imediat în Grafana pentru a valida observabilitatea. Acest fișier asigură că panourile noastre JSON din cod sunt propagate în UI Grafana la run-time.",
-    "contextualizarea_directoarelor si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/grafana/dashboards.yml` cu conținutul de mai sus. Notă: `path` indică un director din container. Vom monta folderul nostru local de dashboards acolo la configurarea serviciului Grafana. Verifică să nu existe erori de indentare YAML și că `apiVersion` este setat la 1 (versiunea schema de provisioning).",
-    "restrictii_anti_halucinatie": "Nu schimba valorile cheie (ex: orgId trebuie să rămână 1, reprezentând organizația implicită Grafana). Nu adăuga provideri multipli inutil - un singur provider global e suficient pentru skeleton.",
-    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu plasa path-ul către altă locație - menținem convenția standard. Nu adăuga opțiuni avansate (ex: filtrare după tag) atâta timp cât avem doar câteva dashboard-uri generice.",
-    "validare": "Similar cu datasources, validarea are loc la pornirea Grafana: dacă configul are erori, apar în log. După pornire, verifică în UI Grafana la Settings -> Provisioning -> Dashboard că provider-ul 'Genius Suite Dashboards' apare și indică calea corectă.",
-    "outcome": "Fișierul de provisioning al dashboard-urilor este creat, instructând Grafana să preia automat definițiile din cod pentru panourile de monitorizare.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextualizarea_directoarelor_si_cailor": "Creează fișierul `/var/www/GeniusSuite/shared/observability/dashboards/grafana/dashboards.yml` cu conținutul de mai sus. Notă: `options.path` indică un director din container. Vom monta folderul local `/var/www/GeniusSuite/shared/observability/dashboards/grafana/dashboards` în container la `/etc/grafana/provisioning/dashboards`. Verifică să nu existe erori de indentare YAML și că `apiVersion` este setat la 1.",
+    "restrictii_anti_halucinatie": "Nu schimba valorile cheie (ex: orgId trebuie să rămână 1, reprezentând organizația implicită Grafana). Nu adăuga provideri multipli inutil – un singur provider global e suficient pentru skeleton.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu plasa `options.path` către altă locație; menținem convenția standard. Nu adăuga opțiuni avansate (ex: filtrare după tag) atâta timp cât avem doar câteva dashboard-uri generice.",
+    "validare": "Configul va fi validat la pornirea Grafana: dacă fișierul are erori, acestea apar în log-urile containerului. După pornire, verifică în UI Grafana la Settings -> Provisioning -> Dashboard că provider-ul 'Genius Suite Dashboards' apare și indică calea corectă.",
+    "outcome": "Fișierul de provisioning al dashboard-urilor este creat în locația arhitectural corectă, instructând Grafana să preia automat definițiile JSON din `shared/observability/dashboards/grafana/dashboards/`.",
+    "componenta_de_CI_CD": "N/A"
+  }
+},
 ```
 
 #### F0.3.19
@@ -7938,6 +7939,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
+#### F0.3.21
+
+```JSON
+  {
   "F0.3.21": {
     "denumire_task": "Adăugare Serviciu Loki în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `loki` (Grafana Loki) în Compose dev, pentru stocarea centralizată a logurilor, incluzând un volum de date pentru persistență temporară.",
@@ -7952,8 +7957,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu seta autentificare sau multi-tenancy în config-ul Loki la acest pas - skeletonul e single-tenant dev. Nu uita volumul de date, altfel la restart logurile se pierd (în dev nu e grav, dar preferăm persistență minimă).",
     "validare": "După pornire, verifică rapid starea: accesează `http://localhost:3100/metrics` (Loki expune metrici) - dacă primești un răspuns text, containerul rulează. Grafana va raporta status-ul sursei Loki ca up dacă totul e ok.",
     "outcome": "Serviciul Loki este configurat și integrat în orchestrarea dev, gata să primească logurile colectate de la aplicații.",
-    "componenta_de_CI_CD": "N/A"
+    "componenta_de_CI_CD": "N/A"}
   },
+```
+
+
   "F0.3.22": {
     "denumire_task": "Adăugare Serviciu Promtail (Agent de Loguri) în `compose.dev.yml`",
     "descriere_scurta_task": "Configurează serviciul Docker `promtail` în Compose dev, montând configurația `promtail-config.yml` și accesul la Docker socket, pentru a trimite logurile containerelor către Loki.",
