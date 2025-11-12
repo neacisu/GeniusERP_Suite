@@ -8384,7 +8384,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica logica de business; doar bootstrap cross-cutting. Nu adăuga sampling/filtre OTEL avansate în acest pas.",
     "validare": "1) `pnpm build -r` fără erori. 2) `curl http://localhost:8080/metrics` întoarce text Prometheus. 3) Logurile apar JSON cu câmpuri standard. 4) După ce compui cu observability, trace-urile apar în Tempo și endpoint-ul /metrics este scrapat de Prometheus.",
     "outcome": "ai-hub emite trace-uri, expune metrici și loghează structurat, compatibil cu stack-ul de observabilitate.",
-    "componenta_de_CI_CD": "Adaugă un job de smoke-test care rulează serverul în mod ephemeral și verifică `GET /metrics` (HTTP 200, Content-Type text/plain)."
+    "componenta_de_CI_CD": "Adaugă un job de smoke-test care rulează serverul în mod ephemeral și verifică `GET /metrics` (HTTP 200, Content-Type text/plain).",
+    "status": "completed"
   }
 },
 ```
