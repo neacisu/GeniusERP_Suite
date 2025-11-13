@@ -50,7 +50,7 @@ COPY --from=builder /app/shared ./shared
 # Install identity service dependencies
 RUN cd cp/identity && pnpm install --frozen-lockfile --production --ignore-scripts
 
-EXPOSE 3004
+EXPOSE 6250
 
 # Start application with compiled JavaScript
 CMD ["node", "cp/identity/dist/cp/identity/src/main.js"]

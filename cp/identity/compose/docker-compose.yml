@@ -5,23 +5,39 @@ services:
     build:
       context: ../../..
       dockerfile: cp/identity/Dockerfile
-    ports:
-      - "3004:3004"
+    container_name: genius-suite-identity
+    env_file:
+      - .cp.identity.env
     environment:
-      - PORT=3004
-      - NODE_ENV=development
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=identity
+      - CP_IDT_APP_PORT=${CP_IDT_APP_PORT}
+      - CP_IDT_APP_METRICS_PORT=${CP_IDT_APP_METRICS_PORT}
+      - CP_IDT_APP_NODE_ENV=${CP_IDT_APP_NODE_ENV}
+      - CP_IDT_OBS_SERVICE_NAME=${CP_IDT_OBS_SERVICE_NAME}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
+    depends_on:
+      - postgres_server
+      - supertokens-core
+      - otel-collector
+    networks:
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://0.0.0.0:3004/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${CP_IDT_APP_PORT}/health"]
       interval: 30s
       timeout: 10s
-      start_period: 10s
       retries: 3
-    networks:
-      - observability
+      start_period: 40s
 
 networks:
-  observability:
+  net_suite_internal:
     external: true
-    name: geniuserp_observability
+    name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+  net_observability:
+    external: true
+    name: geniuserp_net_observability

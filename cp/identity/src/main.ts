@@ -4,10 +4,16 @@ import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observab
 import { logger } from '@genius-suite/common';
 
 async function main() {
+  // Validate required environment variables
+  const serviceName = process.env.CP_IDT_OBS_SERVICE_NAME;
+  if (!serviceName) {
+    throw new Error('CP_IDT_OBS_SERVICE_NAME environment variable is required');
+  }
+
   // Initialize observability - tracing and metrics
   // Reads OTEL_EXPORTER_OTLP_ENDPOINT and OTEL_SERVICE_NAME from environment
-  initTracing({ serviceName: process.env.OTEL_SERVICE_NAME ?? 'identity' });
-  initMetrics({ serviceName: process.env.OTEL_SERVICE_NAME ?? 'identity' });
+  initTracing({ serviceName });
+  initMetrics({ serviceName });
 
   // Create Fastify instance with shared logger for JSON-structured logs
   const app = fastify({ logger: logger as any });
@@ -27,7 +33,11 @@ async function main() {
   // Identity service routes will be added here
   // TODO: Implement authentication/identity logic
 
-  const port = parseInt(process.env.PORT ?? '3004', 10);
+  const portString = process.env.CP_IDT_APP_PORT;
+  if (!portString) {
+    throw new Error('CP_IDT_APP_PORT environment variable is required');
+  }
+  const port = parseInt(portString, 10);
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: 'identity' }, 'Server started');
 }
