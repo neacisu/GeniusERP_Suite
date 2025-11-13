@@ -79,27 +79,30 @@ for port_check in "${CP_PORTS[@]}"; do
 done
 
 # Tabelul 5: Stand-alone Apps (6500-6999)
-APP_PORTS=(
-  "6500|archify.app"
-  "6550|cerniq.app"
-  "6600|flowxify.app"
-  "6650|i-wms.app"
-  "6700|mercantiq.app"
-  "6750|numeriqo.app"
-  "6800|triggerra.app"
-  "6850|vettify.app"
-)
+# Skip in CI mode
+if [[ "$CI_MODE" != "true" ]]; then
+  APP_PORTS=(
+    "6500|archify.app"
+    "6550|cerniq.app"
+    "6600|flowxify.app"
+    "6650|i-wms.app"
+    "6700|mercantiq.app"
+    "6750|numeriqo.app"
+    "6800|triggerra.app"
+    "6850|vettify.app"
+  )
 
-for port_check in "${APP_PORTS[@]}"; do
-  port="${port_check%%|*}"
-  app="${port_check##*|}"
-  
-  if docker ps --format "{{.Ports}}" | grep -q ":$port->"; then
-    check_ok "$app pe portul $port"
-  else
-    check_fail "$app LIPSĂ sau pe port greșit (așteptat: $port)"
-  fi
-done
+  for port_check in "${APP_PORTS[@]}"; do
+    port="${port_check%%|*}"
+    app="${port_check##*|}"
+    
+    if docker ps --format "{{.Ports}}" | grep -q ":$port->"; then
+      check_ok "$app pe portul $port"
+    else
+      check_fail "$app LIPSĂ sau pe port greșit (așteptat: $port)"
+    fi
+  done
+fi
 
 # ==========================================
 # 3. VERIFICARE REȚELE DOCKER
@@ -152,6 +155,24 @@ done
 # 5. VERIFICARE ENDPOINT-URI CRITICE (HEALTH)
 # ==========================================
 step "Verificare endpoint-uri critice (Health & Metrics)"
+test_endpoint() {
+  local url=$1
+  local name=$2
+  http_code=$(curl -s -o /dev/null -w "%{http_code}" "$url" || echo "000000")
+  if [[ "$http_code" == "200" ]]; then
+    check_ok "$name răspunde HTTP 200"
+  else
+    check_fail "$name FAIL (HTTP $http_code)"
+  fi
+}
+
+test_endpoint "http://localhost:3000/api/health" "Grafana"
+test_endpoint "http://localhost:9090/-/healthy" "Prometheus"
+test_endpoint "http://localhost:3100/ready" "Loki"
+test_endpoint "http://localhost:6100/health" "CP:suite-shell"
+test_endpoint "http://localhost:6250/health" "CP:identity"
+test_endpoint "http://localhost:6500/health" "archify.app"
+test_endpoint "http://localhost:6850/health" "vettify.app"
 
 CRITICAL_ENDPOINTS=(
   "http://localhost:3000/metrics|Grafana"

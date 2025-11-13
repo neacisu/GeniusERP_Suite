@@ -8964,7 +8964,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```
 
 
-F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing.
+### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing.
 
 
 F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.

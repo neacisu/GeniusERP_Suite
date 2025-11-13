@@ -66,10 +66,10 @@ jobs:
     # Run only on PRs to dev/staging and pushes to dev/staging
     if: |
       (github.event_name == 'pull_request' && 
-       (github.base_ref == 'dev' || github.base_ref == 'staging')) ||
+        (github.base_ref == 'dev' || github.base_ref == 'staging')) ||
       (github.event_name == 'push' && 
-       (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'))
-    timeout-minutes: 15
+        (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'))
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -77,22 +77,92 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Create Docker networks
+      - name: Create Docker networks (Zero-Trust topology)
         run: |
+          echo "Creating 4-zone Zero-Trust network topology..."
           docker network create geniuserp_net_edge || true
           docker network create geniuserp_net_suite_internal || true
           docker network create geniuserp_net_backing_services || true
           docker network create geniuserp_net_observability || true
 
-      - name: Start observability stack
-        working-directory: shared/observability
+      - name: Create named volumes (data persistence)
         run: |
-          bash scripts/install.sh dev
+          echo "Creating named volumes for stateful services..."
+          # Observability volumes
+          docker volume create gs_prometheus_data || true
+          docker volume create gs_loki_data || true
+          docker volume create gs_grafana_data || true
+          docker volume create gs_tempo_data || true
+          # Backing services volumes
+          docker volume create gs_pgdata_identity || true
+          docker volume create gs_pgdata_licensing || true
+          docker volume create gs_pgdata_archify || true
+          docker volume create gs_pgdata_vettify || true
+          docker volume create gs_kafka_data || true
+
+      - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
+        working-directory: shared/backing-services
+        run: |
+          echo "Starting backing services on net_backing_services..."
+          docker compose -f docker-compose.backing-services.yml up -d
+          echo "Waiting for backing services to be healthy..."
+          sleep 30
         timeout-minutes: 5
 
-      - name: Run observability validation
+      - name: Start observability stack (Prometheus, Grafana, Loki, OTEL)
         working-directory: shared/observability
         run: |
+          echo "Starting observability stack..."
+          bash scripts/install.sh dev
+          echo "Waiting for observability stack to be ready..."
+          sleep 20
+        timeout-minutes: 5
+
+      - name: Start Control Plane services (7 services)
+        run: |
+          echo "Starting Control Plane services..."
+          # Suite core (6100-6249)
+          docker compose -f cp/suite-shell/compose/docker-compose.yml up -d
+          docker compose -f cp/suite-admin/compose/docker-compose.yml up -d
+          docker compose -f cp/suite-login/compose/docker-compose.yml up -d
+          # Identity & Licensing (6250-6349)
+          docker compose -f cp/identity/compose/docker-compose.yml up -d
+          docker compose -f cp/licensing/compose/docker-compose.yml up -d
+          # Analytics & AI (6350-6449)
+          docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
+          docker compose -f cp/ai-hub/compose/docker-compose.yml up -d
+          echo "Waiting for CP services to start..."
+          sleep 40
+        timeout-minutes: 7
+
+      - name: Start stand-alone applications (8 apps)
+        run: |
+          echo "Starting stand-alone applications (6500-6899)..."
+          docker compose -f archify.app/compose/docker-compose.yml up -d
+          docker compose -f cerniq.app/compose/docker-compose.yml up -d
+          docker compose -f flowxify.app/compose/docker-compose.yml up -d
+          docker compose -f i-wms.app/compose/docker-compose.yml up -d
+          docker compose -f mercantiq.app/compose/docker-compose.yml up -d
+          docker compose -f numeriqo.app/compose/docker-compose.yml up -d
+          docker compose -f triggerra.app/compose/docker-compose.yml up -d
+          docker compose -f vettify.app/compose/docker-compose.yml up -d
+          echo "Waiting for applications to be healthy..."
+          sleep 60
+        timeout-minutes: 7
+
+      - name: Show running containers status
+        if: always()
+        run: |
+          echo "=== All running containers ==="
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          echo ""
+          echo "=== Container count by status ==="
+          docker ps -a --format "{{.Status}}" | cut -d' ' -f1 | sort | uniq -c
+
+      - name: Run complete infrastructure validation (38 checks)
+        working-directory: shared/observability
+        run: |
+          echo "Running complete validation suite..."
           bash scripts/validate.sh
         timeout-minutes: 3
 
@@ -100,16 +170,41 @@ jobs:
         if: failure()
         run: |
           echo "=== Grafana logs ==="
-          docker logs profiles-grafana-1 --tail 50 || true
+          docker logs profiles-grafana-1 --tail 100 || true
           echo "=== Prometheus logs ==="
-          docker logs profiles-prometheus-1 --tail 50 || true
+          docker logs profiles-prometheus-1 --tail 100 || true
           echo "=== Loki logs ==="
-          docker logs profiles-loki-1 --tail 50 || true
+          docker logs profiles-loki-1 --tail 100 || true
           echo "=== OTEL Collector logs ==="
-          docker logs geniuserp-otel-collector --tail 50 || true
+          docker logs geniuserp-otel-collector --tail 100 || true
+          echo "=== PostgreSQL logs ==="
+          docker logs postgres-backing-1 --tail 50 || true
+          echo "=== Sample CP service logs ==="
+          docker logs cp-identity-1 --tail 50 || true
+          docker logs cp-suite-shell-1 --tail 50 || true
+          echo "=== Sample app logs ==="
+          docker logs archify-app-1 --tail 50 || true
+          docker logs vettify-app-1 --tail 50 || true
 
       - name: Cleanup
         if: always()
-        working-directory: shared/observability
         run: |
-          docker compose -f compose/profiles/compose.dev.yml down -v || true
+          echo "Stopping all services..."
+          docker compose -f archify.app/compose/docker-compose.yml down || true
+          docker compose -f cerniq.app/compose/docker-compose.yml down || true
+          docker compose -f flowxify.app/compose/docker-compose.yml down || true
+          docker compose -f i-wms.app/compose/docker-compose.yml down || true
+          docker compose -f mercantiq.app/compose/docker-compose.yml down || true
+          docker compose -f numeriqo.app/compose/docker-compose.yml down || true
+          docker compose -f triggerra.app/compose/docker-compose.yml down || true
+          docker compose -f vettify.app/compose/docker-compose.yml down || true
+          docker compose -f cp/suite-shell/compose/docker-compose.yml down || true
+          docker compose -f cp/suite-admin/compose/docker-compose.yml down || true
+          docker compose -f cp/suite-login/compose/docker-compose.yml down || true
+          docker compose -f cp/identity/compose/docker-compose.yml down || true
+          docker compose -f cp/licensing/compose/docker-compose.yml down || true
+          docker compose -f cp/analytics-hub/compose/docker-compose.yml down || true
+          docker compose -f cp/ai-hub/compose/docker-compose.yml down || true
+          docker compose -f shared/observability/compose/profiles/compose.dev.yml down || true
+          docker compose -f shared/backing-services/docker-compose.backing-services.yml down || true
+          echo "Cleanup complete"
