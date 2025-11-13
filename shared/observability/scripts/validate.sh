@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Default CI_MODE to false if not set
+CI_MODE=${CI_MODE:-false}
+
 if docker compose version >/dev/null 2>&1; then DC=(docker compose); else DC=(docker-compose); fi
 COMPOSE_FILE=${COMPOSE_FILE:-"compose/profiles/compose.dev.yml"}
 
@@ -80,7 +83,7 @@ done
 
 # Tabelul 5: Stand-alone Apps (6500-6999)
 # Skip in CI mode
-if [[ "$CI_MODE" != "true" ]]; then
+if [[ "${CI_MODE}" != "true" ]]; then
   APP_PORTS=(
     "6500|archify.app"
     "6550|cerniq.app"
