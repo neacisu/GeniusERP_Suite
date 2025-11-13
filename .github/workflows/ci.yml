@@ -402,6 +402,7 @@ jobs:
         if: always()
         run: |
           echo "Stopping all services..."
+          sleep 100
           docker compose -f archify.app/compose/docker-compose.yml down || true
           docker compose -f cerniq.app/compose/docker-compose.yml down || true
           docker compose -f flowxify.app/compose/docker-compose.yml down || true

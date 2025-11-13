@@ -37,4 +37,4 @@ COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
 USER appuser
 EXPOSE 6750
-CMD ["node", "dist/mercantiq.app/src/index.js"]
+CMD ["node", "dist/src/index.js"]
