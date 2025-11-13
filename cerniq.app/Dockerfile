@@ -14,8 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY cerniq.app ./cerniq.app
-WORKDIR /app/cerniq.app
-RUN pnpm run build
+RUN cd cerniq.app && pnpm run build
 
 FROM base AS deploy
 WORKDIR /app

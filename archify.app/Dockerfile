@@ -14,8 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY archify.app ./archify.app
-WORKDIR /app/archify.app
-RUN pnpm run build
+RUN cd archify.app && pnpm run build
 
 FROM base AS deploy
 WORKDIR /app

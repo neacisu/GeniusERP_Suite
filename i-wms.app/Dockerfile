@@ -14,8 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY i-wms.app ./i-wms.app
-WORKDIR /app/i-wms.app
-RUN pnpm run build
+RUN cd i-wms.app && pnpm run build
 
 FROM base AS deploy
 WORKDIR /app

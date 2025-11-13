@@ -14,8 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY mercantiq.app ./mercantiq.app
-WORKDIR /app/mercantiq.app
-RUN pnpm run build
+RUN cd mercantiq.app && pnpm run build
 
 FROM base AS deploy
 WORKDIR /app

@@ -14,8 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY flowxify.app ./flowxify.app
-WORKDIR /app/flowxify.app
-RUN pnpm run build
+RUN cd flowxify.app && pnpm run build
 
 FROM base AS deploy
 WORKDIR /app
