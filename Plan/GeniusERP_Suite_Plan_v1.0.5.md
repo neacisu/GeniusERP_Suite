@@ -8419,22 +8419,24 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.41": {
-    "denumire_task": "Integră Observabilitate în archify.app (Cod)",
-    "descriere_scurta_task": "Instrumentează aplicația archify.app pentru observabilitate: inițializează tracing-ul OTEL, metricile Prometheus și logger-ul Pino la pornire.",
-    "descriere_lunga si detaliata_task": "Pentru aplicația stand-alone **archify.app**, adăugăm integrarea cu librăria comună de observabilitate. În codul sursă al serverului (ex. punctul de intrare al API-ului), efectuăm aceiași pași ca la celelalte module:\n- Importăm pachetul `@genius-suite/observability` și rulăm inițializarea OpenTelemetry (traces) cât mai devreme posibil, înainte ca serverul să înceapă să proceseze cereri.\n- Setăm logger-ul global/folosit de aplicație la instanța configurată (Pino) din observability, pentru loguri JSON consistente.\n- Expunem ruta `/metrics` folosind clientul Prometheus (prom-client) pentru metricile default. În funcție de framework-ul folosit (presupunând Node/Fastify similar CP), implementarea va fi identică.\n- Configurăm numele serviciului pentru telemetrie (ex. `archify.app`) prin variabilă de mediu sau direct în cod (resource OTEL), astfel încât trace-urile și metricile să fie etichetate cu numele acestei aplicații.\nAceste modificări asigură că archify.app trimite loguri structurate, metrici și trace-uri în infrastructura de observabilitate comună.",
+    "denumire_task": "Integră Observabilitate în archify.app (Cod) — CORECTAT",
+    "descriere_scurta_task": "Inițializează OTEL (traces), expune /metrics (Prometheus) și setează logger-ul Pino din @genius-suite/common.",
+    "descriere_lunga si detaliata_task": "În entrypoint-ul archify.app: 1) importă și rulează initTracing() din @genius-suite/observability; 2) folosește logger-ul Pino din @genius-suite/common; 3) expune ruta /metrics folosind registerPrometheusRoute() din @genius-suite/observability. Respectă arhitectura: logger-ul în pachetul common, traces/metrics în pachetul observability cu layout-ul corect (traces/..., metrics/recorders/...).",
     "directorul_directoarele": [
       "archify.app/",
-      "archify.app/compose/"
+      "shared/common/",
+      "shared/observability/"
     ],
-    "contextul_taskurilor_anterioare": "F0.3.10: Librăria de observabilitate este disponibilă pentru import. Aceeași procedură aplicată la aplicațiile CP o aplicăm acum la archify.app.",
-    "contextul_general al aplicatiei": "archify.app este o aplicație stand-alone din suită și trebuie monitorizată la fel ca celelalte. Prin includerea codului de observabilitate, asigurăm vizibilitate asupra performanței și sănătății ei (loguri, metrici, trace-uri).",
-    "contextualizarea directoarelor si cailor": "Deschide fișierul principal al serverului în `archify.app/` (ex. `src/index.ts` sau similar). Adaugă importurile necesare din `@genius-suite/observability`. Rulează `initTracing()` imediat la pornire. Configurează logger-ul global al aplicației folosind `Observability.logger` (sau cum este exportat). Adaugă un endpoint /metrics folosind registrul prom-client din Observability. Asigură-te că modificați (sau creați) fișierele sursă fără a introduce regresii - de exemplu, dacă aplicația nu avea suport /metrics, acum îl va avea.",
-    "restrictii_anti halucinatie": "Nu adăuga dependințe noi separate (ex. nu instala alt client Prometheus în această aplicație; folosește-l pe cel din modulul comun). Nu muta logica existentă în jur, doar extinde cu inițializarea observabilității.",
-    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu presupune existența unor infrastructuri specifice în aceste aplicații - tratează-le similar cu cele din CP. Nu introduce configurații OTEL suplimentare (ex: sampling) în acest moment skeleton.",
-    "validare": "Rulează aplicația archify.app local (de exemplu cu `pnpm run dev` dacă există). Verifică în consolă că la pornire nu se raportează erori de OTEL. Accesează `http://localhost:{port}/metrics` și vezi metricile. Asigură-te că logurile generate (de exemplu la accesarea unor endpoint-uri) apar formatate JSON și conțin, atunci când e relevant, `traceId` sau alte meta-date injectate.",
-    "outcome": "Aplicația archify.app a fost instrumentată cu observabilitate, pregătită să raporteze metrici, loguri structurate și trasabilitate către platforma centrală.",
-    "componenta_de_CI_CD": "N/A"}
-  },
+    "contextul_taskurilor_anterioare": "Necesită corectarea F0.3.1–F0.3.10 (layout & exporturi Observability/Common) pentru a rezolva importurile.",
+    "contextul_general al aplicatiei": "archify.app trebuie să emită loguri structurate, metrici și trace-uri în stack-ul comun de observabilitate.",
+    "contextualizarea directoarelor si cailor": "Importă logger-ul din @genius-suite/common; importă initTracing și registerPrometheusRoute din @genius-suite/observability (care re-exportă din traces/ și metrics/recorders/).",
+    "restrictii_anti halucinatie": "Nu instala client Prometheus separat în app; folosește registrul expus de modulul comun. Nu muta responsabilități între pachete.",
+    "restrictii de iesire din context sau de inventare de sub_taskuri": "Nu introduce sampling/optimizări OTEL avansate acum; skeleton doar.",
+    "validare": "Rulează app-ul local, verifică logs fără erori OTEL; GET /metrics returnează metrice; logurile sunt JSON și includ meta de trace când collectorul este disponibil.",
+    "outcome": "archify.app este instrumentat corect și pregătit de conectare la infrastructura de observabilitate.",
+    "componenta_de_CI_CD": "Smoke-test CI: pornește serverul și verifică HTTP 200 pe /metrics, Content-Type text/plain."
+  }
+},
 ```
 
 #### F0.3.42
