@@ -15,7 +15,7 @@
 | archify.app | `.env.archify.example` | ⚠️  Parțial conform - ar trebui `.archify.env.example` |
 | cerniq.app | `.env.cerniq` | ⚠️  Parțial conform - ar trebui `.cerniq.env` |
 | cerniq.app | `.env.cerniq.example` | ⚠️  Parțial conform - ar trebui `.cerniq.env.example` |
-| configs | `.env.observability.example` | ❌ Locație greșită - ar trebui în `shared/observability/` |
+| ~~configs~~ | ~~`.env.observability.example`~~ | ✅ **ȘTERS** - fișierul corect este în `shared/observability/` |
 | cp | `.env.geniussuite` | ℹ️  Fișier shared CP (nu în Tabelul 1 dar util) |
 | cp | `.env.geniussuite.example` | ℹ️  Fișier shared CP (nu în Tabelul 1 dar util) |
 | cp/identity | `.env.identity` | ⚠️  Parțial conform - ar trebui `.cp.identity.env` |

@@ -57,15 +57,17 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
 
 ## Running the Monitoring Stack
 
-1. Start the observability services:
+1. Start the observability services (development profile):
    ```bash
-   docker-compose -f configs/docker-compose.observability.yml up -d
+   docker-compose -f shared/observability/compose/profiles/compose.dev.yml up -d
    ```
 
-2. Or use the production stack (includes observability):
-   ```bash
-   docker-compose -f docker-compose.prod.yml up -d
-   ```
+2. The observability stack includes:
+   - OTEL Collector (traces)
+   - Prometheus (metrics)
+   - Grafana (visualization)
+   - Loki (logs)
+   - Promtail (log collector)
 
 ## Accessing Services
 

@@ -53,7 +53,7 @@ COPY --from=builder /app/shared ./shared
 # Install ai-hub service dependencies
 RUN cd cp/ai-hub && pnpm install --frozen-lockfile --production --ignore-scripts
 
-EXPOSE 3007
+EXPOSE 6400
 
 # Start application with compiled JavaScript
 CMD ["node", "cp/ai-hub/dist/main.js"]

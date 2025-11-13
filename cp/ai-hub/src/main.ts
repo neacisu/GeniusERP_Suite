@@ -7,10 +7,16 @@ import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observab
 import { logger } from '@genius-suite/common';
 
 async function main() {
+  // Validate required environment variables
+  const serviceName = process.env.CP_AI_OBS_SERVICE_NAME;
+  if (!serviceName) {
+    throw new Error('CP_AI_OBS_SERVICE_NAME environment variable is required');
+  }
+
   // Initialize tracing very early in runtime
   // TODO: Update to use sub-path import when available
-  // await initTracing({ serviceName: process.env.OTEL_SERVICE_NAME || 'ai-hub' });
-  await initTracing({ serviceName: process.env.OTEL_SERVICE_NAME ?? 'ai-hub' });
+  // await initTracing({ serviceName: process.env.CP_AI_OBS_SERVICE_NAME || 'ai-hub' });
+  await initTracing({ serviceName });
 
   // Create Fastify instance with shared logger for JSON-structured logs
   const app = fastify({ logger });
@@ -19,7 +25,7 @@ async function main() {
   // TODO: Update to use sub-path import when available
   // initDefaultMetrics();
   // const metricsRegistry = promClient;
-  await initMetrics({ serviceName: process.env.OTEL_SERVICE_NAME ?? 'ai-hub' });
+  await initMetrics({ serviceName });
 
   // Health endpoint for Kubernetes/Docker health checks
   app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {
@@ -38,7 +44,11 @@ async function main() {
   // AI Hub service routes will be added here
   // TODO: Implement AI logic (model inference, data processing, analytics)
 
-  const port = parseInt(process.env.PORT ?? '3007', 10);
+  const portString = process.env.CP_AI_APP_PORT;
+  if (!portString) {
+    throw new Error('CP_AI_APP_PORT environment variable is required');
+  }
+  const port = parseInt(portString, 10);
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: 'ai-hub' }, 'Server started');
 }

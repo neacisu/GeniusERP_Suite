@@ -6,29 +6,39 @@ services:
       context: ../../../
       dockerfile: cp/ai-hub/Dockerfile
     container_name: genius-suite-ai-hub
-    ports:
-      - "3007:3007"
+    env_file:
+      - .cp.ai-hub.env
     environment:
-      - NODE_ENV=development
-      - PORT=3007
-      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
-      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-ai-hub}
-      - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-      - OTEL_METRICS_EXPORTER=prometheus
-      - PROMETHEUS_METRICS_PORT=9090
+      - CP_AI_APP_PORT=${CP_AI_APP_PORT}
+      - CP_AI_APP_METRICS_PORT=${CP_AI_APP_METRICS_PORT}
+      - CP_AI_APP_NODE_ENV=${CP_AI_APP_NODE_ENV}
+      - CP_AI_OBS_SERVICE_NAME=${CP_AI_OBS_SERVICE_NAME}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
       - LOG_LEVEL=info
+    depends_on:
+      - postgres_server
+      - kafka
+      - temporal
+      - otel-collector
     networks:
-      - observability
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3007/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${CP_AI_APP_PORT}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
 networks:
-  observability:
+  net_suite_internal:
     external: true
-    name: geniuserp_observability
+    name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+  net_observability:
+    external: true
+    name: geniuserp_net_observability
