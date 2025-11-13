@@ -142,6 +142,7 @@ jobs:
           SUITE_GENERAL_KAFKA_PASSWORD=${KAFKA_PASSWORD}
           SUITE_GENERAL_NODE_ENV=test
           NX_CLOUD_DISTRIBUTED_EXECUTION=false
+          SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=http://otel-collector:4318
           EOF
           
           echo "Creating .observability.env for CI..."
@@ -153,7 +154,129 @@ jobs:
           OBS_LOKI_RETENTION=3d
           EOF
           
-          echo "✓ Environment files created from GitHub Secrets"
+          echo "Creating Control Plane .env files..."
+          # CP suite-shell
+          cat > cp/suite-shell/.cp.suite-shell.env << EOF
+          CP_SHELL_APP_PORT=6100
+          CP_SHELL_APP_METRICS_PORT=6101
+          CP_SHELL_APP_NODE_ENV=development
+          CP_SHELL_OBS_SERVICE_NAME=suite-shell
+          EOF
+          
+          # CP suite-admin
+          cat > cp/suite-admin/.cp.suite-admin.env << EOF
+          CP_ADMIN_APP_PORT=6150
+          CP_ADMIN_APP_METRICS_PORT=6151
+          CP_ADMIN_APP_NODE_ENV=development
+          CP_ADMIN_OBS_SERVICE_NAME=suite-admin
+          EOF
+          
+          # CP suite-login
+          cat > cp/suite-login/.cp.suite-login.env << EOF
+          CP_LOGIN_APP_PORT=6200
+          CP_LOGIN_APP_METRICS_PORT=6201
+          CP_LOGIN_APP_NODE_ENV=development
+          CP_LOGIN_OBS_SERVICE_NAME=suite-login
+          EOF
+          
+          # CP identity
+          cat > cp/identity/.cp.identity.env << EOF
+          CP_IDT_APP_PORT=6250
+          CP_IDT_APP_METRICS_PORT=6251
+          CP_IDT_APP_NODE_ENV=development
+          CP_IDT_OBS_SERVICE_NAME=identity
+          EOF
+          
+          # CP licensing
+          cat > cp/licensing/.cp.licensing.env << EOF
+          CP_LIC_APP_PORT=6300
+          CP_LIC_APP_METRICS_PORT=6301
+          CP_LIC_APP_NODE_ENV=development
+          CP_LIC_OBS_SERVICE_NAME=licensing
+          EOF
+          
+          # CP analytics-hub
+          cat > cp/analytics-hub/.cp.analytics-hub.env << EOF
+          CP_ANLY_APP_PORT=6350
+          CP_ANLY_APP_METRICS_PORT=6351
+          CP_ANLY_APP_NODE_ENV=development
+          CP_ANLY_OBS_SERVICE_NAME=analytics-hub
+          EOF
+          
+          # CP ai-hub
+          cat > cp/ai-hub/.cp.ai-hub.env << EOF
+          CP_AI_APP_PORT=6400
+          CP_AI_APP_METRICS_PORT=6401
+          CP_AI_APP_NODE_ENV=development
+          CP_AI_OBS_SERVICE_NAME=ai-hub
+          EOF
+          
+          echo "Creating stand-alone app .env files..."
+          # archify.app
+          cat > archify.app/.archify.env << EOF
+          ARCHIFY_APP_PORT=6500
+          ARCHIFY_APP_METRICS_PORT=6501
+          ARCHIFY_APP_NODE_ENV=development
+          ARCHIFY_OBS_SERVICE_NAME=archify.app
+          EOF
+          
+          # cerniq.app
+          cat > cerniq.app/.cerniq.env << EOF
+          CERNIQ_APP_PORT=6550
+          CERNIQ_APP_METRICS_PORT=6551
+          CERNIQ_APP_NODE_ENV=development
+          CERNIQ_OBS_SERVICE_NAME=cerniq.app
+          EOF
+          
+          # flowxify.app
+          cat > flowxify.app/.flowxify.env << EOF
+          FLOWXIFY_APP_PORT=6600
+          FLOWXIFY_APP_METRICS_PORT=6601
+          FLOWXIFY_APP_NODE_ENV=development
+          FLOWXIFY_OBS_SERVICE_NAME=flowxify.app
+          EOF
+          
+          # i-wms.app
+          cat > i-wms.app/.i-wms.env << EOF
+          IWMS_APP_PORT=6650
+          IWMS_APP_METRICS_PORT=6651
+          IWMS_APP_NODE_ENV=development
+          IWMS_OBS_SERVICE_NAME=i-wms.app
+          EOF
+          
+          # mercantiq.app
+          cat > mercantiq.app/.mercantiq.env << EOF
+          MERCANTIQ_APP_PORT=6700
+          MERCANTIQ_APP_METRICS_PORT=6701
+          MERCANTIQ_APP_NODE_ENV=development
+          MERCANTIQ_OBS_SERVICE_NAME=mercantiq.app
+          EOF
+          
+          # numeriqo.app
+          cat > numeriqo.app/.numeriqo.env << EOF
+          NUMERIQO_APP_PORT=6750
+          NUMERIQO_APP_METRICS_PORT=6751
+          NUMERIQO_APP_NODE_ENV=development
+          NUMERIQO_OBS_SERVICE_NAME=numeriqo.app
+          EOF
+          
+          # triggerra.app
+          cat > triggerra.app/.triggerra.env << EOF
+          TRIGGERRA_APP_PORT=6800
+          TRIGGERRA_APP_METRICS_PORT=6801
+          TRIGGERRA_APP_NODE_ENV=development
+          TRIGGERRA_OBS_SERVICE_NAME=triggerra.app
+          EOF
+          
+          # vettify.app
+          cat > vettify.app/.vettify.env << EOF
+          VETTIFY_APP_PORT=6850
+          VETTIFY_APP_METRICS_PORT=6851
+          VETTIFY_APP_NODE_ENV=development
+          VETTIFY_OBS_SERVICE_NAME=vettify.app
+          EOF
+          
+          echo "✓ All environment files created (17 services)"
 
       - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
         run: |
