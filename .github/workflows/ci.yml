@@ -300,16 +300,32 @@ jobs:
       - name: Start Control Plane services (7 services)
         run: |
           echo "Starting Control Plane services..."
+          # Export env vars for docker-compose interpolation
+          export $(grep -v '^#' cp/suite-shell/.cp.suite-shell.env | xargs)
+          export $(grep -v '^#' .suite.general.env | xargs)
           # Suite core (6100-6249)
           docker compose -f cp/suite-shell/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' cp/suite-admin/.cp.suite-admin.env | xargs)
           docker compose -f cp/suite-admin/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' cp/suite-login/.cp.suite-login.env | xargs)
           docker compose -f cp/suite-login/compose/docker-compose.yml up -d
+          
           # Identity & Licensing (6250-6349)
+          export $(grep -v '^#' cp/identity/.cp.identity.env | xargs)
           docker compose -f cp/identity/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' cp/licensing/.cp.licensing.env | xargs)
           docker compose -f cp/licensing/compose/docker-compose.yml up -d
+          
           # Analytics & AI (6350-6449)
+          export $(grep -v '^#' cp/analytics-hub/.cp.analytics-hub.env | xargs)
           docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' cp/ai-hub/.cp.ai-hub.env | xargs)
           docker compose -f cp/ai-hub/compose/docker-compose.yml up -d
+          
           echo "Waiting for CP services to start..."
           sleep 40
         timeout-minutes: 7
@@ -317,14 +333,31 @@ jobs:
       - name: Start stand-alone applications (8 apps)
         run: |
           echo "Starting stand-alone applications (6500-6899)..."
+          # Export and start each app
+          export $(grep -v '^#' archify.app/.archify.env | xargs)
           docker compose -f archify.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' cerniq.app/.cerniq.env | xargs)
           docker compose -f cerniq.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' flowxify.app/.flowxify.env | xargs)
           docker compose -f flowxify.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' i-wms.app/.i-wms.env | xargs)
           docker compose -f i-wms.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' mercantiq.app/.mercantiq.env | xargs)
           docker compose -f mercantiq.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' numeriqo.app/.numeriqo.env | xargs)
           docker compose -f numeriqo.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' triggerra.app/.triggerra.env | xargs)
           docker compose -f triggerra.app/compose/docker-compose.yml up -d
+          
+          export $(grep -v '^#' vettify.app/.vettify.env | xargs)
           docker compose -f vettify.app/compose/docker-compose.yml up -d
+          
           echo "Waiting for applications to be healthy..."
           sleep 60
         timeout-minutes: 7
