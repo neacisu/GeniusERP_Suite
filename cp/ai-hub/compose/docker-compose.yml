@@ -7,7 +7,7 @@ services:
       dockerfile: cp/ai-hub/Dockerfile
     container_name: genius-suite-ai-hub
     ports:
-      - "${CP_AI_APP_PORT:-6400}:${CP_AI_APP_PORT:-6400}"
+      - "${CP_AI_APP_PORT}:${CP_AI_APP_PORT}"
     env_file:
       - ../.cp.ai-hub.env
     environment:

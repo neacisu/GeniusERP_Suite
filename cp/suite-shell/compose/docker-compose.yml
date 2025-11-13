@@ -7,7 +7,7 @@ services:
       dockerfile: cp/suite-shell/Dockerfile
     container_name: genius-suite-shell
     ports:
-      - "${CP_SHELL_APP_PORT:-6100}:${CP_SHELL_APP_PORT:-6100}"
+      - "${CP_SHELL_APP_PORT}:${CP_SHELL_APP_PORT}"
     env_file:
       - ../.cp.suite-shell.env
     environment:
