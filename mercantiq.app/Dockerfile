@@ -14,7 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY mercantiq.app ./mercantiq.app
-RUN cd mercantiq.app && pnpm run build
+RUN pnpm --filter=@genius-suite/mercantiq.app run build
 
 FROM base AS deploy
 WORKDIR /app

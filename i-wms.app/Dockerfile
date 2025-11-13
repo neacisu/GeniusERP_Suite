@@ -14,7 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY i-wms.app ./i-wms.app
-RUN cd i-wms.app && pnpm run build
+RUN pnpm --filter=@genius-suite/i-wms.app run build
 
 FROM base AS deploy
 WORKDIR /app

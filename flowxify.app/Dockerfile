@@ -14,7 +14,7 @@ COPY tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY flowxify.app ./flowxify.app
-RUN cd flowxify.app && pnpm run build
+RUN pnpm --filter=@genius-suite/flowxify.app run build
 
 FROM base AS deploy
 WORKDIR /app
