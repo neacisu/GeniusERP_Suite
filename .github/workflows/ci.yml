@@ -155,7 +155,7 @@ jobs:
           EOF
           
           echo "Creating Control Plane .env files..."
-          # CP suite-shell
+          # CP suite-shell (path relative to compose/)
           cat > cp/suite-shell/.cp.suite-shell.env << EOF
           CP_SHELL_APP_PORT=6100
           CP_SHELL_APP_METRICS_PORT=6101
@@ -212,7 +212,7 @@ jobs:
           EOF
           
           echo "Creating stand-alone app .env files..."
-          # archify.app
+          # archify.app (path relative to compose/)
           cat > archify.app/.archify.env << EOF
           ARCHIFY_APP_PORT=6500
           ARCHIFY_APP_METRICS_PORT=6501
@@ -277,6 +277,8 @@ jobs:
           EOF
           
           echo "✓ All environment files created (17 services)"
+          echo "Verifying created files..."
+          ls -la cp/suite-shell/.cp.suite-shell.env archify.app/.archify.env 2>/dev/null || echo "Warning: Some files may not exist"
 
       - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
         run: |
