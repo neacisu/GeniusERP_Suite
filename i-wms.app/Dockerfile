@@ -10,14 +10,9 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY pnpm-workspace.yaml pnpm-lock.yaml* tsconfig.base.json package.json ./
-COPY i-wms.app/package.json ./i-wms.app/
-COPY shared/common/package.json ./shared/common/
-COPY shared/observability/package.json ./shared/observability/
 COPY --from=deps /app/node_modules ./node_modules
-COPY shared ./shared
-COPY i-wms.app ./i-wms.app
-RUN pnpm --filter=@genius-suite/i-wms.app run build
+COPY . .
+RUN pnpm --filter=@genius-suite/i-wms.app build
 
 FROM base AS deploy
 WORKDIR /app

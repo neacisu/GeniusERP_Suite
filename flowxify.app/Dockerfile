@@ -10,14 +10,9 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY pnpm-workspace.yaml pnpm-lock.yaml* tsconfig.base.json package.json ./
-COPY flowxify.app/package.json ./flowxify.app/
-COPY shared/common/package.json ./shared/common/
-COPY shared/observability/package.json ./shared/observability/
 COPY --from=deps /app/node_modules ./node_modules
-COPY shared ./shared
-COPY flowxify.app ./flowxify.app
-RUN pnpm --filter=@genius-suite/flowxify.app run build
+COPY . .
+RUN pnpm --filter=@genius-suite/flowxify.app build
 
 FROM base AS deploy
 WORKDIR /app
