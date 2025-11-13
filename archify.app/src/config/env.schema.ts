@@ -24,12 +24,12 @@ import { z } from 'zod';
  * Base schema with shared variables from root .env
  */
 const sharedEnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production']).default('development'),
+  NODE_ENV: z.enum(['development', 'production']),
   DATABASE_URL: z.string().url().or(z.string().startsWith('postgres://')).or(z.string().startsWith('postgresql://')),
   REDIS_URL: z.string().optional(),
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
-  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().default('http://localhost:4318'),
-  OTEL_ENABLED: z.boolean().default(true),
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url(),
+  OTEL_ENABLED: z.boolean(),
   ALLOWED_ORIGINS: z.string().optional(),
   API_GATEWAY_URL: z.string().optional(),
 });
@@ -39,8 +39,8 @@ const sharedEnvSchema = z.object({
  */
 const archifySpecificSchema = z.object({
   // ===== APPLICATION IDENTITY =====
-  PORT: z.coerce.number().min(1024).max(65535).default(3100),
-  SERVICE_NAME: z.string().default('archify'),
+  PORT: z.coerce.number().min(1024).max(65535),
+  SERVICE_NAME: z.string(),
 
   // ===== DOCUMENT STORAGE =====
   ARCHIFY_MAX_FILE_SIZE: z.coerce.number().default(104857600), // 100MB
