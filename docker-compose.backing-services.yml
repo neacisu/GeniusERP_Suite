@@ -1,0 +1,253 @@
+# ============================================================================
+# GeniusSuite - Orchestrator Central pentru Backing Services
+# ============================================================================
+# 
+# Acest fișier definește serviciile de infrastructură critice pentru suită:
+# - PostgreSQL 18 (baze de date per aplicație)
+# - Apache Kafka 4.1.0 (broker mesaje)
+# - Temporal (orchestrare BPM)
+# - SuperTokens 11.2.0 (auth core)
+#
+# Conform:
+# - Tabelul 4: Porturi Backing Services (Strategii de Fișiere.env și Porturi)
+# - Tabelul 2.4: Matricea Volumelor (Strategie Docker: Volumuri, Rețele și Backup)
+# - Tabelul 3: Matricea Rețelelor (Strategii de Fișiere.env și Porturi)
+#
+# ============================================================================
+
+services:
+  # ==========================================================================
+  # PostgreSQL 18 - Bază de Date Principală
+  # Port: 5432 (Tabelul 4)
+  # Rețele: net_backing_services, net_observability
+  # ==========================================================================
+  postgres_server:
+    image: postgres:18
+    container_name: geniuserp-postgres
+    env_file:
+      - .suite.general.env
+    environment:
+      POSTGRES_USER: suite_admin
+      POSTGRES_PASSWORD: DevPassword123!ChangeInProduction
+      POSTGRES_DB: postgres
+      # Permite crearea automată a bazelor de date per aplicație
+      POSTGRES_MULTIPLE_DATABASES: identity_db,licensing_db,temporal_db,archify_db,cerniq_db,flowxify_db,iwms_db,mercantiq_db,numeriqo_db,triggerra_db,vettify_db,geniuserp_db,admin_db
+    volumes:
+      # Volume numite per aplicație conform Tabelul 2.4
+      - gs_pgdata_identity:/var/lib/postgresql/data/identity
+      - gs_pgdata_licensing:/var/lib/postgresql/data/licensing
+      - gs_pgdata_temporal:/var/lib/postgresql/data/temporal
+      - gs_pgdata_archify:/var/lib/postgresql/data/archify
+      - gs_pgdata_cerniq:/var/lib/postgresql/data/cerniq
+      - gs_pgdata_flowxify:/var/lib/postgresql/data/flowxify
+      - gs_pgdata_iwms:/var/lib/postgresql/data/iwms
+      - gs_pgdata_mercantiq:/var/lib/postgresql/data/mercantiq
+      - gs_pgdata_numeriqo:/var/lib/postgresql/data/numeriqo
+      - gs_pgdata_triggerra:/var/lib/postgresql/data/triggerra
+      - gs_pgdata_vettify:/var/lib/postgresql/data/vettify
+      - gs_pgdata_geniuserp:/var/lib/postgresql/data/geniuserp
+      - gs_pgdata_admin:/var/lib/postgresql/data/admin
+    networks:
+      - net_backing_services
+      - net_observability
+    ports:
+      - "${SUITE_DB_POSTGRES_PORT:-5432}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U suite_admin -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ==========================================================================
+  # Apache Kafka 4.1.0 - Broker Mesaje
+  # Port: 9092 (Tabelul 4)
+  # Rețele: net_backing_services, net_observability
+  # ==========================================================================
+  kafka:
+    image: apache/kafka:4.1.0
+    container_name: geniuserp-kafka
+    env_file:
+      - .suite.general.env
+    environment:
+      # KRaft mode (fără ZooKeeper)
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      # Configurare log și stocare conform Tabelul 2.4
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - gs_kafka_data:/var/lib/kafka/data
+    networks:
+      - net_backing_services
+      - net_observability
+    ports:
+      - "9092:9092"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ==========================================================================
+  # Temporal - Orchestrare BPM
+  # Port: 7233 (Tabelul 4)
+  # Rețele: net_backing_services, net_observability
+  # ==========================================================================
+  temporal:
+    image: temporalio/auto-setup:latest
+    container_name: geniuserp-temporal
+    env_file:
+      - .suite.general.env
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=suite_admin
+      - POSTGRES_PWD=DevPassword123!ChangeInProduction
+      - POSTGRES_SEEDS=postgres_server
+      - BIND_ON_IP=0.0.0.0  # Listen on all interfaces
+    networks:
+      - net_backing_services
+      - net_observability
+    ports:
+      - "7233:7233"  # gRPC Frontend
+      - "8233:8233"  # Web UI (opțional)
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    restart: unless-stopped
+    # Health check commented - Temporal doesn't expose simple HTTP health endpoint
+    # gRPC health can be tested with: tctl --address temporal:7233 cluster health
+    # For now, relying on depends_on and manual verification
+
+  # ==========================================================================
+  # SuperTokens 11.2.0 - Auth Core
+  # Port: 3567 (Tabelul 4)
+  # Rețele: net_backing_services
+  # ==========================================================================
+  supertokens-core:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:11.2
+    container_name: geniuserp-supertokens
+    env_file:
+      - .suite.general.env
+    environment:
+      # Conexiune la PostgreSQL (folosește baza identity_db)
+      POSTGRESQL_HOST: postgres_server
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_USER: suite_admin
+      POSTGRESQL_PASSWORD: DevPassword123!ChangeInProduction
+      POSTGRESQL_DATABASE_NAME: identity_db
+      POSTGRESQL_TABLE_NAMES_PREFIX: supertokens_
+      # API Key pentru securizare (minim 20 caractere)
+      API_KEYS: ${CP_IDT_AUTH_SUPERTOKENS_API_KEY}
+    networks:
+      - net_backing_services
+    ports:
+      - "3567:3567"
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3567/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# ============================================================================
+# REȚELE DOCKER - Definirea celor 4 Zone de Securitate
+# Conform Tabelul 3: Matricea Rețelelor (Strategii de Fișiere.env și Porturi)
+# ============================================================================
+networks:
+  # Rețea Edge - Public-Facing (DMZ)
+  # Membri: Traefik proxy
+  net_edge:
+    external: true
+    name: geniuserp_net_edge
+
+  # Rețea API Internă - Trusted Zone
+  # Membri: Traefik, Gateway, toate API-urile CP și aplicații
+  net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+
+  # Rețea Backing Services - Securizată
+  # Membri: PostgreSQL, Kafka, Temporal, SuperTokens, API-urile care au nevoie de acces
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+
+  # Rețea Observability - Management Zone
+  # Membri: Prometheus, Loki, Grafana, OTEL + TOATE serviciile (pentru metrici)
+  net_observability:
+    external: true
+    name: geniuserp_net_observability
+
+# ============================================================================
+# VOLUME PERSISTENTE - Definirea Volumelor Numite
+# Conform Tabelul 2.4: Matricea de Alocare a Volumelor (Strategie Docker)
+# ============================================================================
+volumes:
+  # PostgreSQL - Volume per aplicație
+  gs_pgdata_identity:
+    name: geniuserp_pgdata_identity
+    driver: local
+  gs_pgdata_licensing:
+    name: geniuserp_pgdata_licensing
+    driver: local
+  gs_pgdata_temporal:
+    name: geniuserp_pgdata_temporal
+    driver: local
+  gs_pgdata_archify:
+    name: geniuserp_pgdata_archify
+    driver: local
+  gs_pgdata_cerniq:
+    name: geniuserp_pgdata_cerniq
+    driver: local
+  gs_pgdata_flowxify:
+    name: geniuserp_pgdata_flowxify
+    driver: local
+  gs_pgdata_iwms:
+    name: geniuserp_pgdata_iwms
+    driver: local
+  gs_pgdata_mercantiq:
+    name: geniuserp_pgdata_mercantiq
+    driver: local
+  gs_pgdata_numeriqo:
+    name: geniuserp_pgdata_numeriqo
+    driver: local
+  gs_pgdata_triggerra:
+    name: geniuserp_pgdata_triggerra
+    driver: local
+  gs_pgdata_vettify:
+    name: geniuserp_pgdata_vettify
+    driver: local
+  gs_pgdata_geniuserp:
+    name: geniuserp_pgdata_geniuserp
+    driver: local
+  gs_pgdata_admin:
+    name: geniuserp_pgdata_admin
+    driver: local
+
+  # Kafka - Stocare log-uri și partitions
+  gs_kafka_data:
+    name: geniuserp_kafka_data
+    driver: local
+
+  # Observability - Loki data (pentru logs)
+  geniuserp_loki_data:
+    name: geniuserp_loki_data
+    driver: local

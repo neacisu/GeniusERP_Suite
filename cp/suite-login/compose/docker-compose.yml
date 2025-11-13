@@ -17,14 +17,12 @@ services:
       - CP_LOGIN_OBS_SERVICE_NAME=${CP_LOGIN_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
       - LOG_LEVEL=info
-    depends_on:
-      - otel-collector
     networks:
       - net_suite_internal
       - net_observability
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${CP_LOGIN_APP_PORT}/health"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6200/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

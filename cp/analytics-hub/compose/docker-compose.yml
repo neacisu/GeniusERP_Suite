@@ -17,11 +17,6 @@ services:
       - CP_ANLY_OBS_SERVICE_NAME=${CP_ANLY_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
       - LOG_LEVEL=info
-    depends_on:
-      - postgres_server
-      - kafka
-      - temporal
-      - otel-collector
     networks:
       - net_suite_internal
       - net_backing_services

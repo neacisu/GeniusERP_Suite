@@ -1,11 +1,15 @@
 services:
   otel-collector:
     image: otel/opentelemetry-collector:latest
+    container_name: geniuserp-otel-collector
     command: ["--config=/etc/otel-collector-config.yml"]
     volumes:
       - ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
     networks:
       - observability
+    ports:
+      - "4317:4317"  # gRPC
+      - "4318:4318"  # HTTP
 
   prometheus:
     image: prom/prometheus:latest
@@ -53,8 +57,10 @@ services:
 
 networks:
   observability:
-    name: geniuserp_observability
-    driver: bridge
+    external: true
+    name: geniuserp_net_observability
 
 volumes:
   loki_data:
+    external: true
+    name: geniuserp_loki_data

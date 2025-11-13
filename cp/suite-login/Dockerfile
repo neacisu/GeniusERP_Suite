@@ -11,11 +11,14 @@ COPY shared ./shared
 COPY cp/suite-login ./cp/suite-login
 
 # Install dependencies
-# Install pnpm
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+# Install pnpm globally
+RUN npm install -g pnpm
 
 # Add pnpm to PATH
-ENV PATH="$HOME/.local/share/pnpm:$PATH"
+ENV PATH="/usr/local/bin:$PATH"
+
+# Install all dependencies
+RUN pnpm install --frozen-lockfile
 
 # Build shared libraries first
 RUN cd shared/observability && pnpm run build
@@ -30,11 +33,10 @@ FROM node:24-alpine
 WORKDIR /app
 
 # Install pnpm globally
-# Install pnpm
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+RUN npm install -g pnpm
 
 # Add pnpm to PATH
-ENV PATH="$HOME/.local/share/pnpm:$PATH"
+ENV PATH="/usr/local/bin:$PATH"
 
 # Copy entire workspace
 COPY --from=builder /app/node_modules ./node_modules

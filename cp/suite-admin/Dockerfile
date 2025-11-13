@@ -11,11 +11,14 @@ COPY shared ./shared
 COPY cp ./cp
 
 # Install dependencies
-# Install pnpm
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which sh)" sh -
+# Install pnpm globally
+RUN npm install -g pnpm
 
 # Add pnpm to PATH
-ENV PATH="$HOME/.local/share/pnpm:$PATH"
+ENV PATH="/usr/local/bin:$PATH"
+
+# Install all dependencies (including dev dependencies for building)
+RUN pnpm install --frozen-lockfile
 
 # Compile shared libraries and suite-admin
 RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build && cd ../../cp/suite-admin && pnpm run build
