@@ -39,27 +39,28 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Set Nx SHAs
         uses: nrwl/nx-set-shas@v4
-      - name: Connect to Nx Cloud
+      - name: Connect to Nx Cloud (for caching only)
         continue-on-error: true
-        run: pnpm exec nx-cloud start-ci-run
         env:
           NX_CLOUD_AUTH_TOKEN: ${{ secrets.NX_CLOUD_AUTH_TOKEN }}
+        run: |
+          # Enable Nx Cloud for remote caching, but disable distributed execution
+          echo "NX_CLOUD_DISTRIBUTED_EXECUTION=false" >> $GITHUB_ENV
       # Run Jest tests for configuration validation
       - name: Run configuration tests
         run: pnpm test
-      # TODO: Nx affected commands - will be enabled when workspace packages are added. add all test here when project will have more packages.
+      # Nx affected commands
       - name: Check formatting (affected)
         continue-on-error: true
-        run: pnpm exec nx affected -t format:check || echo "⚠️ No Nx projects found yet"
+        run: pnpm exec nx affected -t format:check || echo "⚠️ No affected projects"
       - name: Lint affected projects
         continue-on-error: true
-        run: pnpm exec nx affected -t lint || echo "⚠️ No Nx projects found yet"
+        run: pnpm exec nx affected -t lint || echo "⚠️ No affected projects"
       - name: Test affected projects
         continue-on-error: true
-        run: pnpm exec nx affected -t test || echo "⚠️ No Nx projects found yet"
+        run: pnpm exec nx affected -t test || echo "⚠️ No affected projects"
       - name: Build affected projects
-        continue-on-error: true
-        run: pnpm exec nx affected -t build || echo "⚠️ No Nx projects found yet"
+        run: pnpm exec nx affected -t build --verbose
 
   observability-validate:
     runs-on: ubuntu-latest
