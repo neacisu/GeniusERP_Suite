@@ -9,6 +9,13 @@
       "options": {
         "targetName": "lint"
       }
+    },
+    {
+      "plugin": "@nx/js",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test"
+      }
     }
   ],
   "targetDefaults": {
