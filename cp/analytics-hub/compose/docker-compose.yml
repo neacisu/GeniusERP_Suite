@@ -6,8 +6,10 @@ services:
       context: ../../../
       dockerfile: cp/analytics-hub/Dockerfile
     container_name: genius-suite-analytics-hub
+    ports:
+      - "${CP_ANLY_APP_PORT:-6350}:${CP_ANLY_APP_PORT:-6350}"
     env_file:
-      - .cp.analytics-hub.env
+      - ../.cp.analytics-hub.env
     environment:
       - CP_ANLY_APP_PORT=${CP_ANLY_APP_PORT}
       - CP_ANLY_APP_METRICS_PORT=${CP_ANLY_APP_METRICS_PORT}

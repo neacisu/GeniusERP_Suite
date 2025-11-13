@@ -6,8 +6,10 @@ services:
       context: ../../..
       dockerfile: cp/suite-admin/Dockerfile
     container_name: genius-suite-admin
+    ports:
+      - "${CP_ADMIN_APP_PORT:-6150}:${CP_ADMIN_APP_PORT:-6150}"
     env_file:
-      - .cp.suite-admin.env
+      - ../.cp.suite-admin.env
     environment:
       - CP_ADMIN_APP_PORT=${CP_ADMIN_APP_PORT}
       - CP_ADMIN_APP_METRICS_PORT=${CP_ADMIN_APP_METRICS_PORT}

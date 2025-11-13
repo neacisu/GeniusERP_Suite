@@ -6,8 +6,10 @@ services:
       context: ../../..
       dockerfile: cp/suite-shell/Dockerfile
     container_name: genius-suite-shell
+    ports:
+      - "${CP_SHELL_APP_PORT:-6100}:${CP_SHELL_APP_PORT:-6100}"
     env_file:
-      - .cp.suite-shell.env
+      - ../.cp.suite-shell.env
     environment:
       - CP_SHELL_APP_PORT=${CP_SHELL_APP_PORT}
       - CP_SHELL_APP_METRICS_PORT=${CP_SHELL_APP_METRICS_PORT}
@@ -15,8 +17,6 @@ services:
       - CP_SHELL_OBS_SERVICE_NAME=${CP_SHELL_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
       - LOG_LEVEL=info
-    depends_on:
-      - otel-collector
     networks:
       - net_suite_internal
       - net_observability

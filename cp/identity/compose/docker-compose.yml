@@ -6,8 +6,10 @@ services:
       context: ../../..
       dockerfile: cp/identity/Dockerfile
     container_name: genius-suite-identity
+    ports:
+      - "${CP_IDT_APP_PORT:-6250}:${CP_IDT_APP_PORT:-6250}"
     env_file:
-      - .cp.identity.env
+      - ../.cp.identity.env
     environment:
       - CP_IDT_APP_PORT=${CP_IDT_APP_PORT}
       - CP_IDT_APP_METRICS_PORT=${CP_IDT_APP_METRICS_PORT}

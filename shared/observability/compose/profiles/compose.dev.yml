@@ -31,7 +31,7 @@ services:
     ports:
       - "${OBS_GRAFANA_PORT:-3000}:${OBS_GRAFANA_PORT:-3000}"
     env_file:
-      - ../../../.observability.env
+      - ../../.observability.env
 
   loki:
     image: grafana/loki:latest

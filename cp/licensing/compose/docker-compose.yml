@@ -6,8 +6,10 @@ services:
       context: ../../..
       dockerfile: cp/licensing/Dockerfile
     container_name: genius-suite-licensing
+    ports:
+      - "${CP_LIC_APP_PORT:-6300}:${CP_LIC_APP_PORT:-6300}"
     env_file:
-      - .cp.licensing.env
+      - ../.cp.licensing.env
     environment:
       - CP_LIC_APP_PORT=${CP_LIC_APP_PORT}
       - CP_LIC_APP_METRICS_PORT=${CP_LIC_APP_METRICS_PORT}

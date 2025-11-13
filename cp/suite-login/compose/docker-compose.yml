@@ -6,8 +6,10 @@ services:
       context: ../../../
       dockerfile: cp/suite-login/Dockerfile
     container_name: genius-suite-login
+    ports:
+      - "${CP_LOGIN_APP_PORT:-6200}:${CP_LOGIN_APP_PORT:-6200}"
     env_file:
-      - .cp.suite-login.env
+      - ../.cp.suite-login.env
     environment:
       - CP_LOGIN_APP_PORT=${CP_LOGIN_APP_PORT}
       - CP_LOGIN_APP_METRICS_PORT=${CP_LOGIN_APP_METRICS_PORT}
