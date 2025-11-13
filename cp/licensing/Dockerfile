@@ -50,7 +50,7 @@ COPY --from=builder /app/shared ./shared
 # Install licensing service dependencies
 RUN cd cp/licensing && pnpm install --frozen-lockfile --production --ignore-scripts
 
-EXPOSE 3005
+EXPOSE 6300
 
 # Start application with compiled JavaScript
 CMD ["node", "cp/licensing/dist/cp/licensing/src/main.js"]
