@@ -12,6 +12,9 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
       - OTEL_SERVICE_NAME=vettify.app
     networks:
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6850/health"]
@@ -22,5 +25,15 @@ services:
     restart: unless-stopped
 
 networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   geniuserp_net_observability:
     external: true
+    name: geniuserp_net_observability

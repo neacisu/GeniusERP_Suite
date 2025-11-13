@@ -8744,87 +8744,88 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.56": {
-    "denumire_task": "Actualizează Docker Compose pentru vettify.app cu Observabilitate",
-    "descriere_scurta_task": "Extinde fișierele Docker Compose ale vettify.app pentru a conecta serviciul la stack-ul de observabilitate: rețele comune, variabile OTEL și expunerea endpoint-ului /metrics.",
-    "descriere_lunga_si_detaliata_task": "În directoarele de compose ale vettify.app, actualizează serviciul principal astfel încât să fie aliniat cu profilurile de observabilitate deja definite pentru restul aplicațiilor. Adaugă environment variables standardizate pentru OTEL (de ex. \"OTEL_EXPORTER_OTLP_ENDPOINT\", \"OTEL_SERVICE_NAME=vettify.app\", \"OTEL_RESOURCE_ATTRIBUTES\" etc.), mapează portul pe care aplicația expune \"/metrics\" astfel încât să poată fi scrapat de Prometheus și asigură-te că serviciul se află în aceeași rețea Docker ca stack-ul de observabilitate (de ex. \"observability-net\" sau o rețea comună definită la nivel root de compose). Dacă există fișiere de profil separate pentru dev/staging/prod, aplică modificările în profilul corespunzător fazei F0.3 (de regulă \"compose.dev.yml\"), fără a altera acum setările specifice pentru staging/prod.",
-    "directorul_directoarele": [
-      "vettify.app/compose/"
-    ],
-    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate (OTEL collector, Prometheus, Grafana, Loki, Tempo) a fost definit la nivel de compose în F0.3.x, iar aplicațiile din Control Plane și alte module stand-alone au fost deja conectate la el prin variabile de mediu și rețele comune. Codul vettify.app este instrumentat în F0.3.55, dar containerul trebuie aliniat ca runtime cu același stack.",
-    "contextul_general_al_aplicatiei": "Toate aplicațiile din suită trebuie să poată trimite telemetrie către stack-ul comun de observabilitate atunci când sunt rulate prin Docker Compose. vettify.app trebuie să folosească aceleași convenții de rețea, denumire de serviciu și variabile de mediu pentru OTEL și Prometheus ca restul aplicațiilor, pentru a obține o observabilitate unificată.",
-    "contextualizarea_directoarelor_si_cailor": "Deschide fișierele de compose asociate vettify.app din \"vettify.app/compose/\" (de exemplu \"docker-compose.yml\" și/sau \"profiles/compose.dev.yml\", în funcție de structura concretă). În secțiunea de servicii, găsește serviciul principal al aplicației. 1) Adaugă variabilele de mediu OTEL/Prometheus folosite și de celelalte servicii din suită (reuse exact aceleași chei și valori, adaptând doar numele serviciului la \"vettify.app\"); 2) atașează serviciul la aceeași rețea declarată pentru observability (de ex. \"observability-net\" sau rețeaua comună configurată în compose root); 3) expune portul pe care rulează \"/metrics\" pentru a permite scraping-ul Prometheus, păstrând convențiile de port aplicate în restul serviciilor (nu inventa porturi noi dacă nu este strict necesar).",
-    "restrictii_anti_halucinatie": "Nu inventa nume noi de rețele sau variabile; reutilizează aceleași rețele și aceleași chei de variabile de mediu care au fost introduse pentru observabilitate la celelalte aplicații. Nu adăuga containere noi pentru vettify.app în afara serviciului existent; nu modifica mapping-ul de volume sau politicile de resurse ale containerului decât dacă este strict necesar pentru a expune \"/metrics\". Nu modifica stack-ul global de observabilitate definit anterior.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea profiluri noi de compose sau fișiere adiționale; lucrează strict în fișierele deja definite pentru vettify.app. Nu introduce alte servicii (de ex. baze de date, cache-uri) ca parte a acestui task; scopul este doar integrarea cu observability. Nu inventa pași suplimentari în afara actualizării configurației compose.",
-    "validare": "Pornește local stack-ul de observabilitate și serviciul vettify.app folosind \"docker compose up\" cu profilul de dezvoltare. 1) Verifică în UI-ul Prometheus că ținta vettify.app apare în lista de targets și are status UP; 2) verifică printr-un request HTTP direct (curl sau browser) că \"/metrics\" este accesibil din afara containerului și răspunde corect; 3) verifică în Grafana că există metrici cu labeluri de tip \"service=vettify.app\" sau \"service_name=vettify.app\" în dashboard-ul generic. Dacă apar erori de rețea sau variabile OTEL lipsă, ajustează fișierele de compose până când toate verificările sunt verzi.",
-    "outcome": "Containerul vettify.app este complet integrat cu stack-ul de observabilitate atunci când este rulat prin Docker Compose, folosind aceleași rețele și variabile standardizate, permițând colectarea unificată a metricilor și a trace-urilor alături de restul aplicațiilor GeniusSuite.",
-    "componenta_de_CI_CD": "După actualizarea fișierelor de compose, rulează local \"docker compose config\" pentru a valida sintaxa. Commit-ul cu modificări se face pe branch-ul \"dev\" cu un mesaj clar (de ex. \"chore(observability): wire vettify.app compose to observability stack\"). Asigură-te că pipeline-ul CI include (sau va include ulterior, în F0.3.64) un pas de verificare a fișierelor Docker Compose și că acest pas este verde înainte de a deschide un PR/MR din \"dev\" către \"staging\". După ce modificările sunt verificate pe \"staging\" și nu afectează alte servicii, ele pot fi promovate către \"master\" în cadrul PR-ului final de fază."}
+    "denumire_task": "Actualizare Docker Compose pentru vettify.app",
+    "descriere_scurta_task": "Atașează vettify.app la `observability` și setează variabilele OTEL.",
+    "descriere_lunga si detaliata_task": "Editează `vettify.app/compose/docker-compose.yml`:\n```\nversion: \"3.9\"\nservices:\n  app:\n    build:\n      context: ..\n    environment:\n      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318\n      - OTEL_SERVICE_NAME=vettify.app\n    networks:\n      - default\n      - observability\nnetworks:\n  observability:\n    name: ${COMPOSE_PROJECT_NAME}_observability\n```",
+    "directorul_directoarele": ["vettify.app/compose/"],
+    "contextul_taskurilor_anterioare": "F0.3.55 finalizat; profil observability activ.",
+    "contextul_general_al_aplicatiei": "Conectare OTLP/HTTP → collector.",
+    "contextualizarea_directoarelor si_cailor": "Rețea unificată definită global.",
+    "restrictii_anti_halucinatie": "Nu modifica alte servicii/volumes. Nu marca rețeaua external.",
+    "restrictii_de_iesire din context sau de inventare de sub_taskuri": "Nu redenumi serviciul.",
+    "validare": "`docker compose up -d`; inspect network; verifică variabilele OTEL în env.",
+    "outcome": "vettify.app conectat corect la observability.",
+    "componenta_de_CI_CD": "Healthcheck `/metrics` în pipeline."}
   },
 ```
 
 #### F0.3.57
 
 ```JSON
-  {
+{
   "F0.3.57": {
     "denumire_task": "Creează scriptul shared/observability/scripts/install.sh (skeleton)",
-    "descriere_scurta_task": "Definește un script Bash minimal install.sh în shared/observability/scripts pentru bootstrap-ul stack-ului de observabilitate în mediul local.",
-    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"install.sh\" și marchează-l executabil. Scriptul trebuie să fie un skeleton clar, cu antet standard (\"#!/usr/bin/env bash\", set -euo pipefail), care: 1) afișează un mesaj de help când este apelat cu \"-h\"/\"--help\"; 2) verifică precondiții de bază (prezența \"docker\" și \"docker compose\" sau a aliasului folosit în proiect); 3) pentru faza F0.3, poate să se limiteze la a descrie pașii care vor fi executați (echo) și, opțional, să invoce \"docker compose\" pe fișierele din \"shared/observability/compose/docker-compose.yml\" pentru profilul de dezvoltare. Structura scriptului trebuie gândită astfel încât să poată fi extinsă în fazele ulterioare (F0.4, F0.8) cu instalare pentru staging/prod, fără a fi nevoie de o rescriere completă.",
+    "descriere_scurta_task": "Script Bash minimal pentru bootstrap local al stack-ului de observabilitate.",
+    "descriere_lunga_si_detaliata_task": "Creează `shared/observability/scripts/install.sh` executabil, cu precondiții și pornire opțională a profilului dev:\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\nusage() {\n  cat <<EOF\nUsage: $0 [dev] [--help]\n  dev       Pornește stack-ul de observabilitate pentru dezvoltare\n  --help    Afișează acest mesaj\nEOF\n}\n\ncommand -v docker >/dev/null || { echo \"Eroare: docker lipsă\"; exit 1; }\nif docker compose version >/dev/null 2>&1; then DC=(docker compose); else DC=(docker-compose); fi\n\nMODE=\"${1:-dev}\"\n[[ \"${MODE}\" == \"--help\" ]] && { usage; exit 0; }\n[[ \"${MODE}\" != \"dev\" ]] && { echo \"Doar 'dev' suportat în F0.3\"; exit 2; }\n\nCOMPOSE_FILE=${COMPOSE_FILE:-\"compose/profiles/compose.dev.yml\"}\n\necho \"[install] Verific profilul: ${COMPOSE_FILE}\"\n${DC[@]} -f \"${COMPOSE_FILE}\" config >/dev/null\n\necho \"[install] Pornez stack-ul de observabilitate (dev)\"\n${DC[@]} -f \"${COMPOSE_FILE}\" up -d\n\necho \"[install] OK. Servicii pornite.\"\n```\nSalvează și `chmod +x`.",
     "directorul_directoarele": [
       "shared/observability/scripts/"
     ],
-    "contextul_taskurilor_anterioare": "Structura directorului \"shared/observability/\" a fost definită: logs/, metrics/, traces/, dashboards/, alerts/, exporters/, otel-config/, compose/, scripts/, docs/. Stack-ul de observabilitate este descris la nivel conceptual și prin fișiere de compose. Avem nevoie acum de un entrypoint scriptat pentru bootstrap local, care va fi folosit și de alte faze (CI, QA, demo).",
-    "contextul_general_al_aplicatiei": "GeniusSuite are nevoie de un mod standardizat de a porni stack-ul de observabilitate în mediul local pentru dezvoltatori și pentru pipeline-uri. Scriptul install.sh este primul pas către automatizarea completă a acestui bootstrap, chiar dacă în F0.3 implementăm doar un skeleton minim, focalizat pe dev.",
-    "contextualizarea_directoarelor_si_cailor": "Lucrează în directorul \"shared/observability/scripts/\" și creează \"install.sh\". Scriptul trebuie să facă referire explicită la fișierele de compose din \"shared/observability/compose/\" (de ex. \"docker-compose.yml\" și profilele dedicate), fără a folosi căi hardcodate invalide. Asigură-te că scriptul poate fi apelat din rădăcina repo-ului (\"/var/www/GeniusSuite/\") cu o cale relativă clară (de ex. \"bash shared/observability/scripts/install.sh dev\"). Comentează în interiorul scriptului ce va face fiecare secțiune în fazele viitoare, dar fără a implementa acum logică complexă.",
-    "restrictii_anti_halucinatie": "Nu implementa logică completă de provisioning pentru medii de staging/prod în acest task; scriptul este un skeleton pentru dev. Nu adăuga pași care modifică infrastructura cloud sau servicii externe; limitează-te la validări locale și la eventuală invocare a docker compose-ului local. Nu crea alte fișiere în afara \"install.sh\" în acest task.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea directoare noi în afara celor deja definite în shared/observability. Nu inventa alte scripturi; \"install.sh\" este singura țintă a acestui task. Nu modifica fișierele de compose sau de configurare OTEL în cadrul acestui task; acestea sunt gestionate în alte taskuri F0.3.",
-    "validare": "Rulează din rădăcina repo-ului comanda \"bash shared/observability/scripts/install.sh --help\" și verifică faptul că scriptul afișează un mesaj de ajutor clar, cu parametrii acceptați (de ex. dev, staging, prod) și cu mențiunea că pentru F0.3 este suportat doar modul dev. Verifică faptul că, apelat cu \"dev\", scriptul nu returnează erori de execuție și că se limitează la pașii definiți (validatează precondițiile, eventual pornește sau sugerează pornirea stack-ului de observabilitate).",
-    "outcome": "Există un script \"shared/observability/scripts/install.sh\" clar, documentat minimal, care poate fi folosit ca entrypoint pentru bootstrap-ul stack-ului de observabilitate în mediul local, pregătit pentru extindere în fazele ulterioare.",
-    "componenta_de_CI_CD": "Deocamdată, scriptul nu este încă integrat în CI; în F0.3.64 va fi definit explicit un job CI care rulează scriptul de validare. În acest task, doar asigură-te că scriptul este executabil (chmod +x) și că poate fi rulat manual de pe branch-ul \"dev\". Modificarea trebuie comisă pe \"dev\" cu un mesaj clar (de ex. \"chore(observability): add install.sh skeleton for observability stack\"), urmând a fi inclusă în PR-ul final de fază F0.3."}
-  },
+    "contextul_taskurilor_anterioare": "Structura `shared/observability/` definită; profilul compose există.",
+    "contextul_general_al_aplicatiei": "Bootstrap rapid pentru dev și pentru utilizare ulterioară în CI.",
+    "contextualizarea_directoarelor_si_cailor": "Rulează din rădăcina repo-ului; COMPOSE_FILE poate fi suprascris.",
+    "restrictii_anti_halucinatie": "Nu implementa provisioning pentru staging/prod în acest task.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica fișierele de compose.",
+    "validare": "`bash shared/observability/scripts/install.sh --help`; apoi `bash .../install.sh` → stack UP.",
+    "outcome": "Script skeleton instalare observability (dev) disponibil.",
+    "componenta_de_CI_CD": "Va fi folosit în faze ulterioare; deocamdată manual."
+  }
+},
 ```
 
 #### F0.3.58
 
 ```JSON
-  {
+{
   "F0.3.58": {
-    "denumire_task": "Creează scriptul shared/observability/scripts/validate.sh (standard validare observabilitate)",
-    "descriere_scurta_task": "Definește scriptul validate.sh în shared/observability/scripts ca standard unic de validare a observabilității, utilizabil și în CI.",
-    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"validate.sh\" (executabil) care joacă rolul de standard de validare a observabilității pentru suite: în modul skeleton F0.3, scriptul trebuie să verifice minim că stack-ul de observabilitate poate porni și că cel puțin o aplicație (de ex. CP sau vettify.app) expune sănătos endpoint-ul \"/metrics\". Structura recomandată: 1) antet Bash cu \"#!/usr/bin/env bash\" și \"set -euo pipefail\"; 2) funcții mici pentru verificarea precondițiilor (docker, docker compose, network), pornirea stack-ului de observabilitate (sau validarea că este deja pornit), executarea unor HTTP checks simple (curl către \"/metrics\" și, opțional, către un endpoint de health al unei aplicații) și raportarea rezultatelor; 3) exit code 0 dacă toate verificările trec, cod nenul în caz de eșec. Scriptul trebuie să poată fi rulat atât manual de dezvoltatori, cât și din pipeline-ul CI, fără a cere input interactiv.",
+    "denumire_task": "Creează scriptul shared/observability/scripts/validate.sh",
+    "descriere_scurta_task": "Standard unic de validare a observabilității (local & CI).",
+    "descriere_lunga_si_detaliata_task": "Creează `shared/observability/scripts/validate.sh` executabil, care verifică stack-ul și cel puțin un /metrics:\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\nif docker compose version >/dev/null 2>&1; then DC=(docker compose); else DC=(docker-compose); fi\nCOMPOSE_FILE=${COMPOSE_FILE:-\"compose/profiles/compose.dev.yml\"}\nTARGET_METRICS_URL=${TARGET_METRICS_URL:-\"http://localhost:3000/metrics\"}\n\nstep() { echo \"[validate] $1\"; }\n\nstep \"Verific docker compose config\"\n${DC[@]} -f \"${COMPOSE_FILE}\" config >/dev/null\n\nstep \"Verific că /metrics răspunde la ${TARGET_METRICS_URL}\"\nHTTP_CODE=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 5 \"${TARGET_METRICS_URL}\")\n[[ \"${HTTP_CODE}\" == \"200\" ]] || { echo \"FAIL: /metrics=${HTTP_CODE}\"; exit 3; }\n\nstep \"OK: /metrics răspunde 200\"\n```\nAdaugă `chmod +x`.",
     "directorul_directoarele": [
       "shared/observability/scripts/"
     ],
-    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate este definit conceptual și la nivel de compose. Scriptul install.sh (F0.3.57) oferă un skeleton de bootstrap. Avem nevoie acum de un script clar, \"validate.sh\", care să fie punctul unic de intrare pentru validarea observabilității, astfel încât să poată fi inclus ușor ca job în CI și folosit de developeri înainte de a deschide PR-uri.",
-    "contextul_general_al_aplicatiei": "Validarea observabilității trebuie standardizată pentru a evita scenarii în care aplicațiile par OK din perspectiva testelor unitare sau de integrare, dar stack-ul de metrics/logs/traces este nefuncțional sau incomplet. Scriptul validate.sh devine contractul minim: dacă el trece, considerăm că observabilitatea de bază este configurată corect pentru faza F0.3.",
-    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/scripts/\" și creează \"validate.sh\". Scriptul poate apela, dacă este necesar, compose-ul din \"shared/observability/compose/\" sau poate presupune că stack-ul de observabilitate este deja pornit. Folosește comenzi simple \"curl\" către \"/metrics\" pentru cel puțin o aplicație instrumentată (de ex. CP) și verifică status code 200 și prezența unor metrici de bază. Toate căile din script trebuie să fie relative față de rădăcina repo-ului (\"/var/www/GeniusSuite/\") sau să fie documentate clar. Prevede un mod \"--strict\" care poate fi folosit în viitor pentru verificări mai dure, dar pentru F0.3 este suficientă verificarea de bază.",
-    "restrictii_anti_halucinatie": "Nu implementa teste de load, security sau e2e complexe în acest script; acestea țin de alte faze (F0.8). Nu te conecta la servicii externe (cloud, SaaS) din acest script; limitează-te la verificări locale ale stack-ului de observabilitate. Nu crea alte scripturi sau directoare în afara \"validate.sh\".",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica fișierele de compose, configurațiile OTEL sau codul aplicațiilor în cadrul acestui task; focusul este exclusiv pe scriptul de validare. Nu inventa sub-taskuri noi; scriptul trebuie să rămână atomic și clar, astfel încât să poată fi invocat direct din CI.",
-    "validare": "Rulează manual (din rădăcina repo-ului) comanda \"bash shared/observability/scripts/validate.sh\" cu stack-ul de observabilitate și cel puțin o aplicație (ex. CP) pornite. Verifică: 1) că scriptul afișează pașii pe care îi execută; 2) că face cel puțin un HTTP check către \"/metrics\" și returnează HTTP 200; 3) că exit code este 0 în condiții normale și nenul dacă endpoint-ul nu răspunde sau răspunde cu cod de eroare. Ajustează scriptul până când comportamentul este determinist și reproductibil.",
-    "outcome": "Există un script standard \"shared/observability/scripts/validate.sh\" care poate fi folosit atât local, cât și în pipeline-ul CI, pentru a valida că stack-ul de observabilitate de bază funcționează și că cel puțin o aplicație instrumentată raportează metrici.",
-    "componenta_de_CI_CD": "Acest script este gândit pentru a fi integrat în pipeline-ul CI ca job de validare a observabilității (vezi F0.3.64). În acest task, asigură-te doar că scriptul este determinist și returnează coduri de exit corecte, astfel încât job-ul CI să poată eșua sau trece în mod clar. Commit-ul se face pe branch-ul \"dev\" (de ex. mesaj \"chore(observability): add validate.sh as observability validation standard\") și va fi inclus în PR-ul de fază F0.3."}
-  },
+    "contextul_taskurilor_anterioare": "install.sh există; aplicațiile expun /metrics.",
+    "contextul_general_al_aplicatiei": "Validare rapidă și deterministă a observabilității.",
+    "contextualizarea_directoarelor_si_cailor": "Parametrizabil prin `COMPOSE_FILE` și `TARGET_METRICS_URL`.",
+    "restrictii_anti_halucinatie": "Nu include teste de load/e2e.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifică compose sau codul aplicațiilor.",
+    "validare": "Rulează scriptul cu un serviciu up; primește exit 0.",
+    "outcome": "Standard de validare observabilitate disponibil.",
+    "componenta_de_CI_CD": "Poate fi integrat ca job obligatoriu în pipeline."
+  }
+},
 ```
 
 #### F0.3.59
 
 ```JSON
-  {
+{
   "F0.3.59": {
-    "denumire_task": "Creează scriptul shared/observability/scripts/smoke.sh (smoke tests observabilitate)",
-    "descriere_scurta_task": "Adaugă scriptul smoke.sh în shared/observability/scripts pentru a rula smoke tests rapide asupra endpoint-urilor critice și a observabilității.",
-    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"smoke.sh\" (executabil), responsabil cu un set minim de smoke tests pentru observabilitate și rute critice. Spre deosebire de validate.sh, care se concentrează pe stack-ul de observabilitate în sine, smoke.sh poate: 1) invoca endpoint-uri cheie de sănătate (de ex. \"/health\", \"/ready\") pentru CP și câteva aplicații stand-alone; 2) verifica rapid că \"/metrics\" răspunde pentru cel puțin două servicii; 3) loga un sumar al rezultatelor (câte teste OK / FAILED). În faza F0.3, scriptul este încă minimalist (număr mic de endpoint-uri), dar structurat astfel încât să poată fi extins ulterior. Trebuie să fie non-interactiv și să folosească exit code pentru a semnaliza succesul sau eșecul.",
+    "denumire_task": "Creează scriptul shared/observability/scripts/smoke.sh",
+    "descriere_scurta_task": "Smoke tests rapide pentru health & /metrics pe servicii cheie.",
+    "descriere_lunga_si_detaliata_task": "Creează `shared/observability/scripts/smoke.sh` executabil, cu verificări HTTP rapide:\n```bash\n#!/usr/bin/env bash\nset -euo pipefail\n\nENDPOINTS=(\n  \"http://localhost:3000/metrics\"\n  \"http://localhost:3001/health\"\n)\n\nOK=0; FAIL=0\ncheck() {\n  local url=\"$1\"\n  local code\n  code=$(curl -s -o /dev/null -w \"%{http_code}\" --max-time 5 \"$url\" || echo 000)\n  if [[ \"$code\" == 200 ]]; then\n    echo \"[smoke] OK  $url\"\n    ((OK++))\n  else\n    echo \"[smoke] FAIL $url => $code\"\n    ((FAIL++))\n  fi\n}\n\nfor e in \"${ENDPOINTS[@]}\"; do check \"$e\"; done\n\necho \"[smoke] Rezultat: OK=$OK FAIL=$FAIL\"\n[[ $FAIL -eq 0 ]] || exit 4\n```\nAjustează lista ENDPOINTS după mediul local.",
     "directorul_directoarele": [
       "shared/observability/scripts/"
     ],
-    "contextul_taskurilor_anterioare": "Stack-ul de observabilitate și scriptul de validare validate.sh au fost definite. Avem nevoie și de un script de tip smoke, orientat pe verificări foarte rapide ale punctelor critice (health, metrics), care poate fi rulată manual după deploy sau automat într-un stage rapid de CI/CD.",
-    "contextul_general_al_aplicatiei": "Smoke tests-urile sunt o verigă importantă între observabilitate și health checking: ajută la detectarea rapidă a unor probleme evidente după un deploy (servicii căzute, endpoint-uri lipsă) fără a rula suite complete de teste. În contextul Observabilității, smoke.sh trebuie să valideze că există un minim de semnale (health și metrics) pentru câteva componente cheie.",
-    "contextualizarea_directoarelor_si_cailor": "Lucrează în \"shared/observability/scripts/\" și creează \"smoke.sh\". Scriptul poate apela HTTP endpoints (folosind curl) din serviciile care rulează, adresându-se fie prin hostname-urile expuse în Docker Compose (de ex. cp-identity:port), fie prin localhost + port mapat, în funcție de contextul de execuție. Structura scriptului: secțiune de config (lista minimală de endpoint-uri), funcție generică de check HTTP (care loghează status și timp de răspuns), agregare de rezultate și exit code în funcție de numărul de eșecuri. Comentariile trebuie să explice cum pot fi adăugate servicii noi în lista de smoke tests.",
-    "restrictii_anti_halucinatie": "Nu transforma acest script într-o suită completă de teste e2e sau de load; el trebuie să rămână foarte rapid. Nu adăuga logica de pornire/oprire a mediului; smoke.sh pornește de la premisa că serviciile sunt deja up. Nu crea alte fișiere sau directoare în afară de scriptul smoke.sh în acest task.",
-    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu modifica configurațiile aplicațiilor sau fișierele de compose în cadrul acestui task. Nu inventa sub-taskuri suplimentare; smoke.sh este o componentă izolată care se bazează pe infrastructura deja existentă.",
-    "validare": "Cu câteva servicii pornite (ex. CP + una-două aplicații stand-alone), rulează \"bash shared/observability/scripts/smoke.sh\" și verifică: 1) că scriptul raportează în mod clar fiecare endpoint testat și rezultatul; 2) că exit code este 0 când toate endpoint-urile răspund cu HTTP 200 (sau codurile așteptate); 3) că în caz de eșec pentru un endpoint, scriptul marchează FAIL și returnează un exit code nenul. Ajustează lista minimă de endpoint-uri astfel încât scriptul să fie reprezentativ dar rapid.",
-    "outcome": "Există un script \"shared/observability/scripts/smoke.sh\" care rulează un set minim de smoke tests pe endpoint-uri critice și pe \"/metrics\", ajutând la validarea rapidă a sănătății sistemului după modificări sau deploy.",
-    "componenta_de_CI_CD": "În această fază, smoke.sh poate fi folosit manual sau inclus opțional în pipeline-uri dedicate de QA. Integrarea lui formală în CI/CD complet (ca gate obligatoriu) poate fi planificată în faze ulterioare (F0.8). Commit-ul se face pe branch-ul \"dev\" (ex. \"chore(observability): add smoke.sh for observability smoke tests\") și scriptul va fi inclus în PR-ul de fază F0.3."}
-  },
+    "contextul_taskurilor_anterioare": "validate.sh există; aplicațiile expun health/metrics.",
+    "contextul_general_al_aplicatiei": "Detecție rapidă a problemelor evidente după schimbări.",
+    "contextualizarea_directoarelor_si_cailor": "Rulat manual sau dintr-un stage rapid de CI.",
+    "restrictii_anti_halucinatie": "Nu devine suită e2e/performanță.",
+    "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu pornește/oprim servicii; presupune mediul up.",
+    "validare": "Rulare: OK=2, FAIL=0 cu serviciile up.",
+    "outcome": "Smoke tests pentru observabilitate disponibile.",
+    "componenta_de_CI_CD": "Opțional în pipeline ca verificare rapidă post-deploy."
+  }
+},
 ```
 
 #### F0.3.60
@@ -8834,11 +8835,11 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.60": {
     "denumire_task": "Creează README pentru shared/observability/scripts (usage & convenții)",
     "descriere_scurta_task": "Documentează în README.md din shared/observability/scripts modul de utilizare a scripturilor install.sh, validate.sh și smoke.sh.",
-    "descriere_lunga_si_detaliata_task": "În directorul \"shared/observability/scripts/\" creează fișierul \"README.md\" care descrie clar rolul fiecărui script (install.sh, validate.sh, smoke.sh), parametrii acceptați, modurile de execuție (local vs CI) și convențiile de extindere. README-ul trebuie să includă exemple concrete de comenzi (bash shared/observability/scripts/install.sh dev, bash .../validate.sh, bash .../smoke.sh), explicații despre codurile de exit și recomandări de folosire înainte de deschiderea unui PR. Scopul este ca orice dezvoltator sau pipeline să poată înțelege rapid cum să pornească și să verifice stack-ul de observabilitate folosind aceste scripturi, fără a citi direct codul lor.",
+    "descriere_lunga_si_detaliata_task": [],
     "directorul_directoarele": [
       "shared/observability/scripts/"
     ],
-    "contextul_taskurilor_anterioare": "Scripturile install.sh, validate.sh și smoke.sh au fost create ca skeletons funcționale. Fără documentație, utilizarea lor poate fi neuniformă sau greșită. Acest README leagă împreună intenția scripturilor și modul corect de utilizare, fiind o sursă de adevăr pentru dezvoltatori și pentru configurarea CI/CD.",
+    "contextul_taskurilor_anterioare": "Scripturile install.sh, validate.sh și smoke.sh au fost create funcționale. Fără documentație, utilizarea lor poate fi neuniformă sau greșită. Acest README leagă împreună intenția scripturilor și modul corect de utilizare, fiind o sursă de adevăr pentru dezvoltatori și pentru configurarea CI/CD.",
     "contextul_general_al_aplicatiei": "Documentația clară în repo este esențială pentru a evita knowledge silos și pentru a asigura că Observabilitatea este folosită consistent de echipă. shared/observability/scripts/README.md devine entrypoint-ul de documentație pentru tool-urile de Observabilitate la nivel de script.",
     "contextualizarea_directoarelor_si_cailor": "Creează fișierul \"shared/observability/scripts/README.md\" și structurează-l cu secțiuni precum: Introducere, Precondiții, install.sh (rol și exemple), validate.sh (rol și exemple, inclusiv în CI), smoke.sh (rol și exemple), Extensii viitoare. Referențiază clar căi relative din repo (de ex. \"shared/observability/compose/docker-compose.yml\" acolo unde este cazul).",
     "restrictii_anti_halucinatie": "Nu documenta comportamente care nu există în scripturi (de ex. parametri sau moduri de execuție neimplementate încă). Dacă un feature este planificat pentru faze ulterioare, marchează-l explicit ca \"future work\" sau \"planned\". Nu introduce în README concepte de observabilitate sau infrastructură care nu sunt menționate în planul actual.",
@@ -8876,20 +8877,20 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 ```JSON
   {
   "F0.3.62": {
-    "denumire_task": "Creează shared/observability/docs/how-to-add-app.md (guideline integrare nouă aplicație)",
+    "denumire_task": "Creează shared/observability/docs/how-to-add-new-app(module).md (guideline integrare nouă aplicație)",
     "descriere_scurta_task": "Documentează pașii standard pentru a integra o nouă aplicație în stack-ul de observabilitate în how-to-add-app.md.",
-    "descriere_lunga_si_detaliata_task": "Creează fișierul \"shared/observability/docs/how-to-add-app.md\" care descrie pas cu pas cum se integrează o aplicație nouă (sau un nou modul) în Observabilitate. Ghidul trebuie să acopere: 1) ce trebuie adăugat în cod (importul librăriei shared/observability, init tracing, logger, /metrics); 2) ce fișiere de config trebuie create sau extinse (de ex. otel-config/apps/<app>.yaml); 3) cum se conectează aplicația la stack-ul de observabilitate în Docker Compose (rețele, variabile OTEL, porturi); 4) cum se validează integrarea folosind validate.sh și smoke.sh; 5) ce așteptări de naming și tagging există (service.name, environment etc.). Documentul trebuie să folosească exemple reale deja implementate (de ex. CP sau una dintre aplicațiile stand-alone) ca model.",
+    "descriere_lunga_si_detaliata_task": "Creează fișierul \"shared/observability/docs/how-to-add-new-app(module).md\" care descrie pas cu pas cum se integrează o aplicație nouă (sau un nou modul) în Observabilitate. Ghidul trebuie să acopere: 1) ce trebuie adăugat în cod (importul librăriei shared/observability, init tracing, logger, /metrics); 2) ce fișiere de config trebuie create sau extinse (de ex. otel-config/apps/<app>.yaml); 3) cum se conectează aplicația la stack-ul de observabilitate în Docker Compose (rețele, variabile OTEL, porturi); 4) cum se validează integrarea folosind validate.sh și smoke.sh; 5) ce așteptări de naming și tagging există (service.name, environment etc.). Documentul trebuie să folosească exemple reale deja implementate (de ex. CP sau una dintre aplicațiile stand-alone) ca model.",
     "directorul_directoarele": [
       "shared/observability/docs/"
     ],
     "contextul_taskurilor_anterioare": "Integrarea Observabilității a fost realizată pentru mai multe aplicații ale suitei (CP, archify.app, vettify.app etc.), dar procesul nu este încă formalizat într-un ghid reutilizabil. how-to-add-app.md este acel ghid, care reduce riscul de implementări inconsistente atunci când se adaugă aplicații noi.",
     "contextul_general_al_aplicatiei": "Pe termen lung, vor exista mai multe module și servicii noi în GeniusSuite. Un ghid clar de integrare Observabilitate asigură că fiecare aplicație este onboardată în mod standard, fără discuții repetitive sau decizii ad-hoc.",
-    "contextualizarea_directoarelor_si_cailor": "Creează \"shared/observability/docs/how-to-add-app.md\" și structurează-l în secțiuni: Precondiții, Modificări în cod, Configurări OTEL, Integrare în Compose, Validare cu scripturi, Checklist final. Folosește referințe către fișiere concrete (de ex. \"shared/observability/otel-config/apps/vettify.yaml\", exemplu de cod dintr-o aplicație deja instrumentată) pentru a face ghidul cât mai practic.",
+    "contextualizarea_directoarelor_si_cailor": "Creează \"shared/observability/docs/how-to-add-new-app(module).md\" și structurează-l în secțiuni: Precondiții, Modificări în cod, Configurări OTEL, Integrare în Compose, Validare cu scripturi, Checklist final. Folosește referințe către fișiere concrete (de ex. \"shared/observability/otel-config/apps/vettify.yaml\", exemplu de cod dintr-o aplicație deja instrumentată) pentru a face ghidul cât mai practic.",
     "restrictii_anti_halucinatie": "Nu descrie pași care nu sunt utilizați de niciuna dintre aplicațiile deja integrate. Dacă unele pattern-uri sunt dorite, dar încă neimplementate, marchează-le explicit ca recomandări viitoare. Nu inventa noi directoare sau structuri în repo; rămâi în limitele structurii deja definite pentru shared/observability.",
     "restrictii_de_iesire_din_context_sau_de_inventare_de_sub_taskuri": "Nu crea alte fișiere de documentație în acest task și nu modifica codul aplicațiilor existente doar pentru a se potrivi perfect cu ghidul; dacă se observă diferențe majore, acestea se pot adresa în taskuri separate.",
     "validare": "Verifică ghidul practic: simulează integrarea unei aplicații noi urmând exclusiv pașii din how-to-add-app.md și confirmă că, în principiu, se poate ajunge la o integrare completă a observabilității (cod, config, compose, validare). Asigură-te că toate referințele de fișiere și comenzi sunt corecte.",
     "outcome": "Există un ghid clar how-to-add-app.md pentru integrarea noilor aplicații în Observabilitate, reducând efortul de onboarding și crescând consistența implementărilor.",
-    "componenta_de_CI_CD": "Documentul poate fi folosit ca referință obligatorie pentru viitoarele PR-uri care introduc aplicații noi (link în template-ul de PR). Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): add how-to-add-app guideline\") și este verificat în cadrul PR-ului de fază.",
+    "componenta_de_CI_CD": "Documentul poate fi folosit ca referință obligatorie pentru viitoarele PR-uri care introduc aplicații noi (link în template-ul de PR). Commit-ul se face pe branch-ul \"dev\" (ex. \"docs(observability): add how-to-add-new-app guideline\") și este verificat în cadrul PR-ului de fază.",
     "componenta_de_CI_CD_note": "Câmp auxiliar opțional dacă vrei să separi clar partea de PR/template; poate fi ignorat de parser dacă nu este folosit."
   },
 ```
@@ -8923,7 +8924,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.64": {
     "denumire_task": "Integrează shared/observability/scripts/validate.sh în pipeline-ul CI (dev/staging)",
     "descriere_scurta_task": "Adaugă un job de CI care rulează validate.sh pentru a verifica observabilitatea pe branch-urile dev și staging înainte de merge.",
-    "descriere_lunga_si_detaliata_task": "Actualizează configurația de CI existentă (de ex. \".github/workflows/ci.yml\" pentru GitHub sau \".gitlab-ci.yml\" pentru GitLab) pentru a introduce un job nou, de tip \"observability-validate\", care rulează scriptul \"shared/observability/scripts/validate.sh\". Job-ul trebuie să pornească de la o imagine care are la dispoziție un mediu potrivit (bash, docker, eventual docker-in-docker dacă este necesar) și să se asigure că stack-ul de observabilitate și cel puțin o aplicație relevantă sunt pornite sau pornite temporar în contextul job-ului. Job-ul trebuie configurat să ruleze automat pe PR/MR deschise către branch-urile \"dev\" și \"staging\" (sau pe push-uri către aceste branch-uri), iar eșecul scriptului validate.sh să blocheze merge-ul. Include în configurație timeouts rezonabile pentru a evita blocări.",
+    "descriere_lunga_si_detaliata_task": "Actualizează configurația de CI existentă (de ex. \".github/workflows/ci.yml\" pentru GitHub sau \".gitlab-ci.yml\" pentru GitLab) pentru a introduce un job nou, de tip \"observability-validate\", care rulează scriptul \"shared/observability/scripts/validate.sh\". Job-ul trebuie să pornească de la o imagine care are la dispoziție un mediu potrivit (bash, docker, eventual docker-in-docker dacă este necesar) și să se asigure că stack-ul de observabilitate și aplicațiile sunt pornite sau pornite temporar în contextul job-ului. Job-ul trebuie configurat să ruleze automat pe PR/MR deschise către branch-urile \"dev\" și \"staging\" (sau pe push-uri către aceste branch-uri), iar eșecul scriptului validate.sh să blocheze merge-ul. Include în configurație timeouts rezonabile pentru a evita blocări.",
     "directorul_directoarele": [
       ".github/workflows/",
       ".gitlab-ci.yml",

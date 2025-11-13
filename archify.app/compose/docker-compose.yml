@@ -15,7 +15,9 @@ services:
     ports:
       - "6500:6500"
     networks:
-      - default
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6500/health"]
@@ -25,6 +27,15 @@ services:
       start_period: 40s
 
 networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   geniuserp_net_observability:
     external: true
     name: geniuserp_net_observability

@@ -5,16 +5,19 @@ services:
       dockerfile: numeriqo.app/Dockerfile
     container_name: numeriqo-app
     ports:
-      - "6900:6900"
+      - "6750:6750"
     environment:
       - NODE_ENV=production
-      - PORT=6900
+      - PORT=6750
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
       - OTEL_SERVICE_NAME=numeriqo.app
     networks:
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6900/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:6750/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -22,5 +25,15 @@ services:
     restart: unless-stopped
 
 networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   geniuserp_net_observability:
     external: true
+    name: geniuserp_net_observability

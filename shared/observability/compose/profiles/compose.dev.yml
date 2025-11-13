@@ -15,6 +15,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ../prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - gs_prometheus_data:/prometheus
     networks:
       - observability
     ports:
@@ -28,6 +29,7 @@ services:
       - ../../dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
       - ../../dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
       - ../../dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - gs_grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${OBS_GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${OBS_GRAFANA_ADMIN_PASS:-admin}
@@ -35,15 +37,13 @@ services:
       - observability
     ports:
       - "${OBS_GRAFANA_PORT:-3000}:${OBS_GRAFANA_PORT:-3000}"
-    env_file:
-      - ../../.observability.env
 
   loki:
     image: grafana/loki:latest
     networks:
       - observability
     volumes:
-      - loki_data:/loki
+      - gs_loki_data:/loki
     ports:
       - "${OBS_LOKI_PORT:-3100}:${OBS_LOKI_PORT:-3100}"
 
@@ -62,6 +62,9 @@ networks:
     name: geniuserp_net_observability
 
 volumes:
-  loki_data:
-    external: true
-    name: geniuserp_loki_data
+  gs_prometheus_data:
+    name: gs_prometheus_data
+  gs_loki_data:
+    name: gs_loki_data
+  gs_grafana_data:
+    name: gs_grafana_data

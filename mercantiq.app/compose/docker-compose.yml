@@ -9,21 +9,33 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - PORT=6750
+      - PORT=6700
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://geniuserp-otel-collector:4318
       - OTEL_SERVICE_NAME=mercantiq.app
     ports:
-      - "6750:6750"
+      - "6700:6700"
     networks:
-      - default
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6750/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:6700/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
 networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   geniuserp_net_observability:
     external: true
+    name: geniuserp_net_observability
