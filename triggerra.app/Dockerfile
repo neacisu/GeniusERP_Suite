@@ -13,8 +13,8 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN pnpm install --frozen-lockfile
 RUN pnpm --filter=@genius-suite/triggerra.app build
 
 FROM base AS deploy

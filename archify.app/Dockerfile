@@ -13,12 +13,8 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY pnpm-workspace.yaml package.json ./
-COPY archify.app/package.json ./archify.app/
-COPY shared/common/package.json ./shared/common/
-COPY shared/observability/package.json ./shared/observability/
-RUN pnpm install --frozen-lockfile
 COPY . .
+RUN pnpm install --frozen-lockfile
 RUN pnpm --filter=@genius-suite/archify.app build
 
 FROM base AS deploy
