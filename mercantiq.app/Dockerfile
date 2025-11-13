@@ -10,7 +10,7 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY tsconfig.base.json package.json ./
+COPY pnpm-workspace.yaml tsconfig.base.json package.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY shared ./shared
 COPY mercantiq.app ./mercantiq.app
