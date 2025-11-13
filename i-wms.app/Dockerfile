@@ -1,9 +1,10 @@
 FROM node:22-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
+COPY pnpm-lock.yaml ./
 
 FROM base AS deps
-COPY pnpm-workspace.yaml package.json pnpm-lock.yaml* ./
+COPY pnpm-workspace.yaml package.json ./
 COPY i-wms.app/package.json ./i-wms.app/
 COPY shared/common/package.json ./shared/common/
 COPY shared/observability/package.json ./shared/observability/
