@@ -13,7 +13,11 @@ COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
+COPY pnpm-workspace.yaml package.json ./
+COPY mercantiq.app/package.json ./mercantiq.app/
+COPY shared/common/package.json ./shared/common/
+COPY shared/observability/package.json ./shared/observability/
+RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm --filter=@genius-suite/mercantiq.app build
 
