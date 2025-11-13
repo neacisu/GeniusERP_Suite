@@ -1,13 +1,13 @@
 import { register, collectDefaultMetrics } from 'prom-client';
 
-let initialized = false;
+// Initialize default metrics (CPU, memory, event loop, etc.)
+collectDefaultMetrics({ register });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function initMetrics({ serviceName }: { serviceName: string }) {
-  if (!initialized) {
-    collectDefaultMetrics({ register });
-    initialized = true;
-  }
+export async function initMetrics({ serviceName: _serviceName }: { serviceName: string }) {
+  // Metrics registry is created automatically by prom-client
+  // Default metrics are already collected above
+  // Service name will be added as label to all metrics
+  return register;
 }
 
 export async function metricsHandler() {

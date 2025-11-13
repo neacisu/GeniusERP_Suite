@@ -26,6 +26,7 @@ services:
     image: grafana/grafana-oss:latest
     volumes:
       - ../../dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ../../dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
       - ../../dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
     environment:
       - GF_SECURITY_ADMIN_USER=${OBS_GRAFANA_ADMIN_USER:-admin}

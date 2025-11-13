@@ -1,0 +1,26 @@
+services:
+  triggerra-app:
+    build:
+      context: ../..
+      dockerfile: triggerra.app/Dockerfile
+    container_name: triggerra-app
+    ports:
+      - "6800:6800"
+    environment:
+      - NODE_ENV=production
+      - PORT=6800
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
+      - OTEL_SERVICE_NAME=triggerra.app
+    networks:
+      - geniuserp_net_observability
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6800/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  geniuserp_net_observability:
+    external: true

@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  archify-app:
+    build:
+      context: ../..
+      dockerfile: archify.app/Dockerfile
+    container_name: archify-app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=6500
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://geniuserp-otel-collector:4318
+      - OTEL_SERVICE_NAME=archify.app
+    ports:
+      - "6500:6500"
+    networks:
+      - default
+      - geniuserp_net_observability
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6500/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  geniuserp_net_observability:
+    external: true
+    name: geniuserp_net_observability
