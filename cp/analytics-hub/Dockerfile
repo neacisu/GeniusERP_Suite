@@ -53,7 +53,7 @@ COPY --from=builder /app/shared ./shared
 # Install analytics-hub service dependencies
 RUN cd cp/analytics-hub && pnpm install --frozen-lockfile --production --ignore-scripts
 
-EXPOSE 3006
+EXPOSE 6350
 
 # Start application with compiled JavaScript
 CMD ["node", "cp/analytics-hub/dist/cp/analytics-hub/src/main.js"]
