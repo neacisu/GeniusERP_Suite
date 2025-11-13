@@ -102,7 +102,6 @@ jobs:
           docker volume create gs_kafka_data || true
 
       - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
-        working-directory: shared/backing-services
         run: |
           echo "Starting backing services on net_backing_services..."
           docker compose -f docker-compose.backing-services.yml up -d
