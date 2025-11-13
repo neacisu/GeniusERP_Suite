@@ -86,6 +86,30 @@ jobs:
           docker network create geniuserp_net_backing_services || true
           docker network create geniuserp_net_observability || true
 
+      - name: Create minimal .env files for CI
+        run: |
+          echo "Creating minimal environment configuration for CI..."
+          # Suite general env
+          cat > .suite.general.env << 'EOF'
+          # CI Environment - Minimal configuration
+          NODE_ENV=development
+          POSTGRES_HOST=postgres-backing
+          POSTGRES_PORT=5432
+          POSTGRES_USER=geniuserp_ci
+          POSTGRES_PASSWORD=ci_test_password_change_in_production
+          KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+          TEMPORAL_ADDRESS=temporal:7233
+          SUPERTOKENS_CONNECTION_URI=http://supertokens:3567
+          EOF
+          
+          # Observability env
+          cat > shared/observability/.observability.env << 'EOF'
+          OBS_GRAFANA_ADMIN_USER=admin
+          OBS_GRAFANA_ADMIN_PASSWORD=admin
+          OBS_PROMETHEUS_RETENTION_TIME=15d
+          OBS_LOKI_RETENTION_PERIOD=168h
+          EOF
+
       - name: Create named volumes (data persistence)
         run: |
           echo "Creating named volumes for stateful services..."
@@ -100,6 +124,36 @@ jobs:
           docker volume create gs_pgdata_archify || true
           docker volume create gs_pgdata_vettify || true
           docker volume create gs_kafka_data || true
+
+      - name: Create CI environment files from secrets
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD || 'ci_test_pass_temp_123' }}
+          KAFKA_PASSWORD: ${{ secrets.CI_KAFKA_PASSWORD || 'ci_kafka_pass_temp_456' }}
+          GRAFANA_PASSWORD: ${{ secrets.CI_GRAFANA_PASSWORD || 'ci_grafana_pass_temp_789' }}
+        run: |
+          echo "Creating .suite.general.env for CI..."
+          cat > .suite.general.env << EOF
+          # CI Environment - Generated from GitHub Secrets
+          SUITE_GENERAL_DB_HOST=postgres-backing-1
+          SUITE_GENERAL_DB_PORT=5432
+          SUITE_GENERAL_DB_USER=postgres
+          SUITE_GENERAL_DB_PASSWORD=${POSTGRES_PASSWORD}
+          SUITE_GENERAL_KAFKA_BROKERS=kafka:9092
+          SUITE_GENERAL_KAFKA_PASSWORD=${KAFKA_PASSWORD}
+          SUITE_GENERAL_NODE_ENV=test
+          NX_CLOUD_DISTRIBUTED_EXECUTION=false
+          EOF
+          
+          echo "Creating .observability.env for CI..."
+          cat > shared/observability/.observability.env << EOF
+          # Observability CI Config
+          OBS_GRAFANA_ADMIN_USER=admin
+          OBS_GRAFANA_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+          OBS_PROMETHEUS_RETENTION=7d
+          OBS_LOKI_RETENTION=3d
+          EOF
+          
+          echo "✓ Environment files created from GitHub Secrets"
 
       - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
         run: |
