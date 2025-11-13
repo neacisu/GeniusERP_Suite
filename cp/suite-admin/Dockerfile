@@ -33,7 +33,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
 # Expose API and metrics port
-EXPOSE 3002
+EXPOSE 6150
 
 # Start application with ts-node for TypeScript resolution
 CMD ["node", "-r", "ts-node/register", "cp/suite-admin/src/main.ts"]

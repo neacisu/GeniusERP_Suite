@@ -7,9 +7,15 @@ import { logger } from '@genius-suite/common';
 const app = Fastify({ logger });
 
 async function main() {
+  // Validate required environment variables
+  const serviceName = process.env.CP_LOGIN_OBS_SERVICE_NAME;
+  if (!serviceName) {
+    throw new Error('CP_LOGIN_OBS_SERVICE_NAME environment variable is required');
+  }
+
   // Initialize observability
-  await initTracing({ serviceName: 'suite-login' });
-  await initMetrics({ serviceName: 'suite-login' });
+  await initTracing({ serviceName });
+  await initMetrics({ serviceName });
 
   // Metrics endpoint
   app.get('/metrics', async (request: FastifyRequest, reply: FastifyReply) => {
@@ -23,9 +29,15 @@ async function main() {
   });
 
   // Start server
+  const portString = process.env.CP_LOGIN_APP_PORT;
+  if (!portString) {
+    throw new Error('CP_LOGIN_APP_PORT environment variable is required');
+  }
+  const port = parseInt(portString, 10);
+
   try {
-    await app.listen({ port: 3003, host: '0.0.0.0' });
-    logger.info('Suite-login service started on port 3003');
+    await app.listen({ port, host: '0.0.0.0' });
+    logger.info(`Suite-login service started on port ${port}`);
   } catch (err) {
     logger.error(err);
     process.exit(1);

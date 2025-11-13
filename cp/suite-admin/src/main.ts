@@ -4,13 +4,15 @@ import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observab
 import { logger } from '@genius-suite/common';
 
 async function main() {
+  // Validate required environment variables
+  const serviceName = process.env.CP_ADMIN_OBS_SERVICE_NAME;
+  if (!serviceName) {
+    throw new Error('CP_ADMIN_OBS_SERVICE_NAME environment variable is required');
+  }
+
   // Initialize observability
-  initTracing({
-    serviceName: process.env.OTEL_SERVICE_NAME || 'suite-admin',
-  });
-  await initMetrics({
-    serviceName: process.env.OTEL_SERVICE_NAME || 'suite-admin',
-  });
+  initTracing({ serviceName });
+  await initMetrics({ serviceName });
 
   const app = fastify({ logger: logger as any });
 
@@ -28,8 +30,14 @@ async function main() {
 
   // TODO: Add business logic routes here
 
-  await app.listen({ port: 3002, host: '0.0.0.0' });
-  logger.info('Suite Admin API listening at http://0.0.0.0:3002');
+  const portString = process.env.CP_ADMIN_APP_PORT;
+  if (!portString) {
+    throw new Error('CP_ADMIN_APP_PORT environment variable is required');
+  }
+  const port = parseInt(portString, 10);
+
+  await app.listen({ port, host: '0.0.0.0' });
+  logger.info(`Suite Admin API listening at http://0.0.0.0:${port}`);
 }
 
 main().catch(console.error);

@@ -5,21 +5,33 @@ services:
     build:
       context: ../../..
       dockerfile: cp/suite-shell/Dockerfile
-    ports:
-      - "3001:3001"
+    container_name: genius-suite-shell
+    env_file:
+      - .cp.suite-shell.env
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
-      - OTEL_SERVICE_NAME=suite-shell
+      - CP_SHELL_APP_PORT=${CP_SHELL_APP_PORT}
+      - CP_SHELL_APP_METRICS_PORT=${CP_SHELL_APP_METRICS_PORT}
+      - CP_SHELL_APP_NODE_ENV=${CP_SHELL_APP_NODE_ENV}
+      - CP_SHELL_OBS_SERVICE_NAME=${CP_SHELL_OBS_SERVICE_NAME}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
+    depends_on:
+      - otel-collector
+    networks:
+      - net_suite_internal
+      - net_observability
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://0.0.0.0:3001/health"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${CP_SHELL_APP_PORT}/health"]
       interval: 30s
       timeout: 10s
-      start_period: 10s
       retries: 3
-    networks:
-      - observability
+      start_period: 40s
 
 networks:
-  observability:
+  net_suite_internal:
     external: true
-    name: geniuserp_observability
+    name: geniuserp_net_suite_internal
+  net_observability:
+    external: true
+    name: geniuserp_net_observability

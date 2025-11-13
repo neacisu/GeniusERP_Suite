@@ -42,7 +42,7 @@ COPY --from=builder /app/shared ./shared
 COPY --from=builder /app/cp/suite-login ./cp/suite-login
 
 # Expose metrics and app port
-EXPOSE 3003
+EXPOSE 6200
 
 # Start application directly with ts-node from source
 CMD ["node", "-r", "ts-node/register", "cp/suite-login/src/main.ts"]
