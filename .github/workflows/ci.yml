@@ -328,7 +328,7 @@ jobs:
           
           echo "Waiting for CP services to start..."
           sleep 40
-        timeout-minutes: 7
+        timeout-minutes: 10
 
       - name: Start stand-alone applications (8 apps)
         run: |
@@ -360,7 +360,7 @@ jobs:
           
           echo "Waiting for applications to be healthy..."
           sleep 60
-        timeout-minutes: 7
+        timeout-minutes: 10
 
       - name: Show running containers status
         if: always()
