@@ -61,3 +61,56 @@ jobs:
       - name: Build affected projects
         continue-on-error: true
         run: pnpm exec nx affected -t build || echo "⚠️ No Nx projects found yet"
+
+  observability-validate:
+    runs-on: ubuntu-latest
+    # Run only on PRs to dev/staging and pushes to dev/staging
+    if: |
+      (github.event_name == 'pull_request' && 
+       (github.base_ref == 'dev' || github.base_ref == 'staging')) ||
+      (github.event_name == 'push' && 
+       (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'))
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create Docker networks
+        run: |
+          docker network create geniuserp_net_edge || true
+          docker network create geniuserp_net_suite_internal || true
+          docker network create geniuserp_net_backing_services || true
+          docker network create geniuserp_net_observability || true
+
+      - name: Start observability stack
+        working-directory: shared/observability
+        run: |
+          bash scripts/install.sh dev
+        timeout-minutes: 5
+
+      - name: Run observability validation
+        working-directory: shared/observability
+        run: |
+          bash scripts/validate.sh
+        timeout-minutes: 3
+
+      - name: Show validation logs on failure
+        if: failure()
+        run: |
+          echo "=== Grafana logs ==="
+          docker logs profiles-grafana-1 --tail 50 || true
+          echo "=== Prometheus logs ==="
+          docker logs profiles-prometheus-1 --tail 50 || true
+          echo "=== Loki logs ==="
+          docker logs profiles-loki-1 --tail 50 || true
+          echo "=== OTEL Collector logs ==="
+          docker logs geniuserp-otel-collector --tail 50 || true
+
+      - name: Cleanup
+        if: always()
+        working-directory: shared/observability
+        run: |
+          docker compose -f compose/profiles/compose.dev.yml down -v || true
