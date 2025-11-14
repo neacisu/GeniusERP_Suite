@@ -2,6 +2,8 @@ import { readFile } from '../utils/validation';
 import { existsSync, statSync } from 'fs';
 import { join } from 'path';
 
+const SHELL_SAFE_LINE_REGEX = /^[\w\s\-$./"'=]+$/;
+
 describe('Husky Git Hooks', () => {
   describe('Hook Files Existence', () => {
     it('should have .husky directory', () => {
@@ -65,7 +67,7 @@ describe('Husky Git Hooks', () => {
       expect(lines.length).toBeGreaterThan(0);
       lines.forEach((line) => {
         if (!line.startsWith('#')) {
-          expect(line).toMatch(/^[\w\s\-$./"']+$/);
+          expect(line).toMatch(SHELL_SAFE_LINE_REGEX);
         }
       });
     });
@@ -95,7 +97,7 @@ describe('Husky Git Hooks', () => {
       expect(lines.length).toBeGreaterThan(0);
       lines.forEach((line) => {
         if (!line.startsWith('#')) {
-          expect(line).toMatch(/^[\w\s\-$./"']+$/);
+          expect(line).toMatch(SHELL_SAFE_LINE_REGEX);
         }
       });
     });
@@ -104,18 +106,14 @@ describe('Husky Git Hooks', () => {
   describe('Hook Integration', () => {
     it('should integrate with commitlint config', () => {
       const commitMsgContent = readFile('.husky/commit-msg');
-      const commitlintConfigExists = existsSync(
-        join(process.cwd(), 'commitlint.config.js'),
-      );
+      const commitlintConfigExists = existsSync(join(process.cwd(), 'commitlint.config.js'));
       expect(commitMsgContent).toContain('commitlint');
       expect(commitlintConfigExists).toBe(true);
     });
 
     it('should integrate with lint-staged config', () => {
       const preCommitContent = readFile('.husky/pre-commit');
-      const lintStagedConfigExists = existsSync(
-        join(process.cwd(), '.lintstagedrc.json'),
-      );
+      const lintStagedConfigExists = existsSync(join(process.cwd(), '.lintstagedrc.json'));
       expect(preCommitContent).toContain('lint-staged');
       expect(lintStagedConfigExists).toBe(true);
     });

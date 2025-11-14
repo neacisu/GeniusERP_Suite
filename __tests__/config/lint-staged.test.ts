@@ -1,4 +1,20 @@
-import { readJsonFile } from '../utils/validation';
+import { readFile, readJsonFile } from '../utils/validation';
+
+const TS_PATTERN = '*.{ts,tsx,js,jsx}';
+const NX_AFFECTED_SCRIPT = 'scripts/lint-staged/nx-affected.sh';
+
+const isScriptCommand = (command: string): boolean => {
+  const normalized = command.trim().split(' ')[0];
+  return normalized.endsWith('.sh');
+};
+
+const readScriptForCommand = (command: string): string => {
+  const scriptPath = command.trim().split(' ')[0];
+  return readFile(scriptPath);
+};
+
+const isLintCommand = (command: string): boolean =>
+  command.includes('lint') || command.includes('nx-affected');
 
 describe('.lintstagedrc.json', () => {
   let lintStagedConfig: any;
@@ -21,36 +37,45 @@ describe('.lintstagedrc.json', () => {
 
   describe('TypeScript/JavaScript File Patterns', () => {
     it('should have configuration for TS/JS files', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      expect(lintStagedConfig[pattern]).toBeDefined();
+      expect(lintStagedConfig[TS_PATTERN]).toBeDefined();
     });
 
     it('should have commands as an array', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      expect(Array.isArray(lintStagedConfig[pattern])).toBe(true);
+      expect(Array.isArray(lintStagedConfig[TS_PATTERN])).toBe(true);
     });
 
     it('should include format command', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      const commands = lintStagedConfig[pattern];
+      const commands = lintStagedConfig[TS_PATTERN];
       const formatCommand = commands.find((cmd: string) => cmd.includes('format:write'));
       expect(formatCommand).toBeDefined();
       expect(formatCommand).toContain('nx format:write --files');
     });
 
     it('should include lint fix command', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      const commands = lintStagedConfig[pattern];
-      const lintCommand = commands.find((cmd: string) => cmd.includes('lint'));
+      const commands = lintStagedConfig[TS_PATTERN];
+      const lintCommand = commands.find((cmd: string) => isLintCommand(cmd));
       expect(lintCommand).toBeDefined();
-      expect(lintCommand).toContain('nx affected:lint --fix --files');
+      if (!lintCommand) {
+        return;
+      }
+
+      if (lintCommand.includes('nx affected:lint')) {
+        expect(lintCommand).toContain('--fix');
+        expect(lintCommand).toContain('--files');
+      } else if (lintCommand.includes(NX_AFFECTED_SCRIPT)) {
+        const scriptContent = readScriptForCommand(lintCommand);
+        expect(scriptContent).toContain('nx affected:lint');
+        expect(scriptContent).toContain('--fix');
+        expect(scriptContent).toContain('--files');
+      } else {
+        throw new Error('Unknown lint command configured in lint-staged');
+      }
     });
 
     it('should run format before lint', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      const commands = lintStagedConfig[pattern];
+      const commands = lintStagedConfig[TS_PATTERN];
       const formatIndex = commands.findIndex((cmd: string) => cmd.includes('format'));
-      const lintIndex = commands.findIndex((cmd: string) => cmd.includes('lint'));
+      const lintIndex = commands.findIndex((cmd: string) => isLintCommand(cmd));
       expect(formatIndex).toBeLessThan(lintIndex);
     });
   });
@@ -68,33 +93,51 @@ describe('.lintstagedrc.json', () => {
     });
 
     it('should use nx commands', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      const commands = lintStagedConfig[pattern];
+      const commands = lintStagedConfig[TS_PATTERN];
       commands.forEach((cmd: string) => {
-        expect(cmd).toContain('nx');
+        if (cmd.includes('nx')) {
+          expect(cmd).toContain('nx');
+          return;
+        }
+
+        if (isScriptCommand(cmd)) {
+          const scriptContent = readScriptForCommand(cmd);
+          expect(scriptContent).toContain('nx');
+          return;
+        }
+
+        throw new Error(`Command ${cmd} does not reference nx tooling`);
       });
     });
 
     it('should pass files to commands', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      const commands = lintStagedConfig[pattern];
+      const commands = lintStagedConfig[TS_PATTERN];
       commands.forEach((cmd: string) => {
-        expect(cmd).toContain('--files');
+        if (cmd.includes('--files')) {
+          expect(cmd).toContain('--files');
+          return;
+        }
+
+        if (isScriptCommand(cmd)) {
+          const scriptContent = readScriptForCommand(cmd);
+          expect(scriptContent).toContain('--files');
+          return;
+        }
+
+        throw new Error(`Command ${cmd} does not receive file arguments`);
       });
     });
   });
 
   describe('Pattern Coverage', () => {
     it('should cover TypeScript files', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      expect(pattern).toContain('ts');
-      expect(pattern).toContain('tsx');
+      expect(TS_PATTERN).toContain('ts');
+      expect(TS_PATTERN).toContain('tsx');
     });
 
     it('should cover JavaScript files', () => {
-      const pattern = '*.{ts,tsx,js,jsx}';
-      expect(pattern).toContain('js');
-      expect(pattern).toContain('jsx');
+      expect(TS_PATTERN).toContain('js');
+      expect(TS_PATTERN).toContain('jsx');
     });
 
     it('should use glob pattern syntax', () => {
