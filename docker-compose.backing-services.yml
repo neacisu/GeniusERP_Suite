@@ -26,9 +26,10 @@ services:
     container_name: geniuserp-postgres
     env_file:
       - .suite.general.env
+      - .backing-services.env
     environment:
       POSTGRES_USER: suite_admin
-      POSTGRES_PASSWORD: DevPassword123!ChangeInProduction
+      POSTGRES_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
       POSTGRES_DB: postgres
       # Permite crearea automată a bazelor de date per aplicație
       POSTGRES_MULTIPLE_DATABASES: identity_db,licensing_db,temporal_db,archify_db,cerniq_db,flowxify_db,iwms_db,mercantiq_db,numeriqo_db,triggerra_db,vettify_db,geniuserp_db,admin_db
@@ -70,6 +71,7 @@ services:
     container_name: geniuserp-kafka
     env_file:
       - .suite.general.env
+      - .backing-services.env
     environment:
       # KRaft mode (fără ZooKeeper)
       KAFKA_NODE_ID: 1
@@ -111,11 +113,12 @@ services:
     container_name: geniuserp-temporal
     env_file:
       - .suite.general.env
+      - .backing-services.env
     environment:
       - DB=postgres12
       - DB_PORT=5432
       - POSTGRES_USER=suite_admin
-      - POSTGRES_PWD=DevPassword123!ChangeInProduction
+      - POSTGRES_PWD=${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
       - POSTGRES_SEEDS=postgres_server
       - BIND_ON_IP=0.0.0.0  # Listen on all interfaces
     networks:
@@ -142,16 +145,17 @@ services:
     container_name: geniuserp-supertokens
     env_file:
       - .suite.general.env
+      - .backing-services.env
     environment:
       # Conexiune la PostgreSQL (folosește baza identity_db)
       POSTGRESQL_HOST: postgres_server
       POSTGRESQL_PORT: 5432
       POSTGRESQL_USER: suite_admin
-      POSTGRESQL_PASSWORD: DevPassword123!ChangeInProduction
+      POSTGRESQL_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
       POSTGRESQL_DATABASE_NAME: identity_db
       POSTGRESQL_TABLE_NAMES_PREFIX: supertokens_
       # API Key pentru securizare (minim 20 caractere)
-      API_KEYS: ${CP_IDT_AUTH_SUPERTOKENS_API_KEY}
+      API_KEYS: ${CP_IDT_AUTH_SUPERTOKENS_API_KEY:-ChangeThisSuperTokensKey}
     networks:
       - net_backing_services
     ports:

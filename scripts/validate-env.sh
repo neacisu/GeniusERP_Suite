@@ -20,6 +20,8 @@ total_files=0
 valid_files=0
 total_vars=0
 invalid_vars=0
+missing_files=0
+declare -a invalid_var_details=()
 
 # Categorii valide conform Tabelul 2
 VALID_CATEGORIES="DB|MQ|BPM|AUTH|API|SVC|APP|OBS"
@@ -30,7 +32,8 @@ validate_env_file() {
     local prefix_expected=$2
     
     if [ ! -f "$file" ]; then
-        echo "  ⚠️  LIPSEȘTE: $file"
+        echo "  ❌ LIPSEȘTE: $file"
+        missing_files=$((missing_files + 1))
         return 1
     fi
     
@@ -49,6 +52,7 @@ validate_env_file() {
         if [[ ! "$var" =~ ^${prefix_expected}_ ]]; then
             echo "    ❌ INVALID PREFIX: $var (așteptat: ${prefix_expected}_*)"
             invalid_vars=$((invalid_vars + 1))
+            invalid_var_details+=("$file:$var")
             file_valid=false
             continue
         fi
@@ -103,12 +107,30 @@ echo "Fișiere verificate: $total_files"
 echo "Fișiere valide: $valid_files"
 echo "Total variabile: $total_vars"
 echo "Variabile invalide (prefix greșit): $invalid_vars"
+echo "Fișiere lipsă: $missing_files"
 echo ""
 
-if [ $invalid_vars -eq 0 ]; then
-    echo "✅ TOATE VARIABILELE RESPECTĂ CONVENȚIA!"
-    exit 0
-else
-    echo "⚠️  ATENȚIE: $invalid_vars variabile cu prefix invalid găsite."
-    exit 1
+if [ ${#invalid_var_details[@]} -gt 0 ]; then
+    echo "---- VARIABILE CU PREFIX GREȘIT ----"
+    for detail in "${invalid_var_details[@]}"; do
+        IFS=':' read -r file var <<< "$detail"
+        echo "• $file -> $var"
+    done
+    echo "-------------------------------------"
+    echo ""
 fi
+
+if [ $invalid_vars -eq 0 ] && [ $missing_files -eq 0 ]; then
+    echo "✅ TOATE VARIABILELE RESPECTĂ CONVENȚIA ȘI TOATE FIȘIERELE EXISTĂ!"
+    exit 0
+fi
+
+if [ $missing_files -gt 0 ]; then
+    echo "❌ LIPSESC $missing_files FIȘIERE .env OBLIGATORII."
+fi
+
+if [ $invalid_vars -gt 0 ]; then
+    echo "⚠️  ATENȚIE: $invalid_vars variabile cu prefix invalid găsite."
+fi
+
+exit 1

@@ -122,7 +122,7 @@ echo ""
 log "FAZA 3: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
 
 cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml --env-file ../../.observability.env up -d
+docker compose -f compose.dev.yml --env-file ./.observability.env up -d
 cd /var/www/GeniusSuite
 
 log "Așteptăm OTEL Collector să fie ready (10 secunde)..."

@@ -17,12 +17,13 @@ MODE="${1:-dev}"
 [[ "${MODE}" != "dev" ]] && { echo "Doar 'dev' suportat în F0.3"; exit 2; }
 
 COMPOSE_FILE=${COMPOSE_FILE:-"compose/profiles/compose.dev.yml"}
+ENV_FILE=${ENV_FILE:-".observability.env"}
 
 echo "[install] Verific profilul: ${COMPOSE_FILE}"
-${DC[@]} -f "${COMPOSE_FILE}" config >/dev/null
+${DC[@]} -f "${COMPOSE_FILE}" --env-file "${ENV_FILE}" config >/dev/null
 
 echo "[install] Pornez stack-ul de observabilitate (dev)"
-${DC[@]} -f "${COMPOSE_FILE}" up -d
+${DC[@]} -f "${COMPOSE_FILE}" --env-file "${ENV_FILE}" up -d
 
 echo "[install] Aștept ca serviciile să devină healthy..."
 sleep 10

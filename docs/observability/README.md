@@ -81,4 +81,4 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
 - `configs/otel-collector-config.yml`: OTEL Collector configuration
 - `configs/prometheus.yml`: Prometheus scrape configuration
 - `configs/grafana-dashboard.json`: Sample Grafana dashboard
-- `configs/.env.observability.example`: Environment variables template
+- `shared/observability/.observability.env.example`: Environment variables template

@@ -220,7 +220,7 @@ Cauză: Variable substitution `${VAR}` nu funcționează în CONNECTION_URI.
 POSTGRESQL_HOST: postgres_server
 POSTGRESQL_PORT: 5432
 POSTGRESQL_USER: suite_admin
-POSTGRESQL_PASSWORD: DevPassword123!ChangeInProduction
+POSTGRESQL_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
 POSTGRESQL_DATABASE_NAME: identity_db
 ```
 
@@ -329,7 +329,7 @@ healthcheck:
 POSTGRESQL_HOST: postgres_server
 POSTGRESQL_PORT: 5432
 POSTGRESQL_USER: suite_admin
-POSTGRESQL_PASSWORD: DevPassword123!ChangeInProduction
+POSTGRESQL_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
 POSTGRESQL_DATABASE_NAME: identity_db
 ```
 </details>

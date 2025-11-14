@@ -1,23 +1,28 @@
+version: '3.9'
+
 services:
   numeriqo-app:
     build:
       context: ../..
       dockerfile: numeriqo.app/Dockerfile
     container_name: numeriqo-app
-    ports:
-      - "6750:6750"
+    env_file:
+      - ../../.suite.general.env
+      - ../.numeriqo.env
     environment:
-      - NODE_ENV=production
-      - PORT=6750
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
-      - OTEL_SERVICE_NAME=numeriqo.app
+      NODE_ENV: ${NUMQ_APP_NODE_ENV:-production}
+      PORT: ${NUMQ_APP_PORT:-6750}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_SERVICE_NAME: numeriqo.app
+    ports:
+      - "${NUMQ_APP_PORT:-6750}:${NUMQ_APP_PORT:-6750}"
     networks:
       - geniuserp_net_edge
       - geniuserp_net_suite_internal
       - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6750/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${NUMQ_APP_PORT:-6750}/health"]
       interval: 30s
       timeout: 10s
       retries: 3

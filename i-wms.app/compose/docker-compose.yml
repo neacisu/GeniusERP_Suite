@@ -7,20 +7,23 @@ services:
       dockerfile: i-wms.app/Dockerfile
     container_name: i-wms-app
     restart: unless-stopped
+    env_file:
+      - ../../.suite.general.env
+      - ../.i-wms.env
     environment:
-      - NODE_ENV=production
-      - PORT=6650
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://geniuserp-otel-collector:4318
-      - OTEL_SERVICE_NAME=i-wms.app
+      NODE_ENV: ${IWMS_APP_NODE_ENV:-production}
+      PORT: ${IWMS_APP_PORT:-6650}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_SERVICE_NAME: i-wms.app
     ports:
-      - "6650:6650"
+      - "${IWMS_APP_PORT:-6650}:${IWMS_APP_PORT:-6650}"
     networks:
       - geniuserp_net_edge
       - geniuserp_net_suite_internal
       - geniuserp_net_backing_services
       - geniuserp_net_observability
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6650/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:${IWMS_APP_PORT:-6650}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
