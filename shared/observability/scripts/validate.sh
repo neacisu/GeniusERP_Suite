@@ -17,7 +17,6 @@ OBS_ENV_FILE="${OBSERVABILITY_ROOT}/.observability.env"
 step() { echo "[validate] $1"; }
 check_fail() { echo "  ✗ $1"; FAIL=$((FAIL + 1)); FAILURES+=("$1"); }
 check_ok() { echo "  ✓ $1"; }
-check_skip() { echo "  ~ $1"; }
 
 FAIL=0
 FAILURES=()
@@ -151,10 +150,6 @@ BACKING_SERVICES_PORTS=(
 for entry in "${BACKING_SERVICES_PORTS[@]}"; do
   port="${entry%%|*}"
   label="${entry##*|}"
-  if [[ "$CI_MODE" == "true" && "$label" == "SuperTokens" ]]; then
-    check_skip "SuperTokens verificare port sărită în CI (3567)"
-    continue
-  fi
   validate_port_binding "$label" "$port"
 done
 
@@ -188,10 +183,6 @@ CP_SERVICE_SPECS=(
 
 for spec in "${CP_SERVICE_SPECS[@]}"; do
   IFS='|' read -r label file var fallback <<<"$spec"
-  if [[ "$CI_MODE" == "true" && "$label" == "CP:ai-hub" ]]; then
-    check_skip "CP:ai-hub verificare port sărită în CI (instabil)"
-    continue
-  fi
   port=$(numeric_or_default "$(read_env_var "$file" "$var" "$fallback")" "$fallback")
   validate_port_binding "$label" "$port"
   case "$label" in
