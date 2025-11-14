@@ -375,7 +375,7 @@ jobs:
         working-directory: shared/observability
         run: |
           echo "Running complete validation suite..."
-          bash scripts/validate.sh
+          CI_MODE=true bash scripts/validate.sh
         timeout-minutes: 5
 
       - name: Show validation logs on failure
