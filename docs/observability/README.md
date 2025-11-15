@@ -1,84 +1,100 @@
-# Genius Suite Observability Setup
+# GeniusSuite Observability Reference
 
-This document describes the observability infrastructure for the Genius Suite, including tracing, logging, metrics, and monitoring stack.
+This guide summarizes how to instrument services and how to run the shared observability stack that powers metrics, logs, and traces across the suite.
 
-## Overview
+## Stack Overview
 
-The observability stack includes:
-- **Tracing**: OpenTelemetry with Jaeger for distributed tracing
-- **Logging**: Pino with OTEL trace correlation
-- **Metrics**: Prometheus client for application metrics
-- **Monitoring**: Docker Compose stack with OTEL Collector, Jaeger, Prometheus, Grafana
+- **Traces:** OpenTelemetry SDKs export OTLP data to `geniuserp-otel-collector` (Tempo integration is planned; traces are currently logged via the collector).
+- **Metrics:** `prom-client` in every service plus Prometheus scraping (`shared/observability/compose/prometheus.yml`).
+- **Logs:** Structured JSON logs collected by Promtail and stored inside Loki.
+- **Visualization:** Grafana dashboards (provisioned via `dashboards/grafana/*`).
 
-## Core Modules
+All services share the `geniuserp_net_observability` Docker network when running locally via `shared/observability/compose/profiles/compose.dev.yml`.
 
-### Tracing (`shared/observability/traces/otel.ts`)
-- Initializes OpenTelemetry SDK with auto-instrumentations
-- Exports OTLP trace exporter to collector
-- Use `startOtel()` to initialize tracing
+## Runtime Helpers
 
-### Logging (`shared/common/logger/pino.ts`)
-- Pino logger with pretty printing in development
-- Integrates OTEL trace ID for correlation
-- Use `createLogger()` to get a logger instance
+The `@genius-suite/observability` workspace package exposes the helpers every service should call:
 
-### Metrics (`shared/observability/metrics/recorders/prometheus.ts`)
-- Prometheus client with default metrics collection
-- Exports `registerMetricsRoute(app)` to add /metrics endpoint
-- Exports `promClient` for custom metrics
+### Tracing
 
-## Usage
+```ts
+import { initTracing } from '@genius-suite/observability';
 
-```typescript
-import { startOtel, createLogger, registerMetricsRoute, promClient } from '@genius-suite/observability';
-
-// Initialize tracing
-await startOtel();
-
-// Create logger
-const logger = createLogger();
-
-// Register metrics route (e.g., in Fastify)
-registerMetricsRoute(app);
-
-// Use custom metrics
-const counter = new promClient.Counter({ name: 'requests_total', help: 'Total requests' });
-counter.inc();
+await initTracing({ serviceName: 'archify.app' });
 ```
 
-## Environment Variables
+- Uses the OpenTelemetry Node SDK with auto-instrumentations.
+- Honors `OTEL_EXPORTER_OTLP_ENDPOINT` (defaults to `http://localhost:4318/v1/traces`).
 
-Set the following in your `.env`:
+### Metrics
+
+```ts
+import { initMetrics, metricsHandler, promClient } from '@genius-suite/observability';
+
+await initMetrics({ serviceName: 'archify.app' });
+
+app.get('/metrics', async (_req, res) => {
+  res.setHeader('Content-Type', promClient.contentType);
+  res.send(await metricsHandler());
+});
+```
+
+- `initMetrics` enables `prom-client` default collectors.
+- `metricsHandler` serializes the registry for Prometheus/Grafana.
+- `promClient` lets you register custom counters and histograms.
+
+### Logging
+
+Use the shared logger from `shared/common/logger/pino.ts` when you need structured logs with OTEL correlation IDs:
+
+```ts
+import { createLogger } from '../../shared/common/logger/pino';
+
+const logger = createLogger();
+logger.info({ event: 'bootstrap' }, 'Service started');
+```
+
+## Required Environment Variables
+
+Set these either in your service-specific `.env` file or via the shell:
 
 ```bash
-OTEL_SERVICE_NAME=genius-suite-service
-OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318/v1/traces
+OTEL_SERVICE_NAME=archify.app
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 ```
 
-## Running the Monitoring Stack
+The observability stack also expects `.observability.env`; copy `.observability.env.example` under `shared/observability/` and adjust ports if needed.
 
-1. Start the observability services (development profile):
-   ```bash
-   docker-compose -f shared/observability/compose/profiles/compose.dev.yml up -d
-   ```
+## Running the Stack Locally
 
-2. The observability stack includes:
-   - OTEL Collector (traces)
-   - Prometheus (metrics)
-   - Grafana (visualization)
-   - Loki (logs)
-   - Promtail (log collector)
+```bash
+cd shared/observability
+bash scripts/install.sh dev       # docker compose up + readiness checks
+bash scripts/validate.sh          # 38 infrastructure checks
+bash scripts/smoke.sh             # endpoint smoke tests
+```
 
-## Accessing Services
+Services started:
+- OpenTelemetry Collector (`4317/4318`)
+- Prometheus (`${OBS_PROMETHEUS_PORT:-9090}`)
+- Grafana (`${OBS_GRAFANA_PORT:-3000}`)
+- Loki (`${OBS_LOKI_PORT:-3100}`)
+- Promtail (Docker socket scrape)
 
-- **Jaeger UI**: http://localhost:16686
-- **Prometheus**: http://localhost:9090
-- **Grafana**: http://localhost:3000 (admin/admin)
-- **Metrics endpoint**: http://localhost:3000/metrics (on your app)
+## Access Points
+
+- **Grafana:** http://localhost:3000 (admin / admin)
+- **Prometheus:** http://localhost:9090
+- **Loki readiness:** http://localhost:3100/ready
+- **Collector health:** http://localhost:4318
 
 ## Configuration Files
 
-- `configs/otel-collector-config.yml`: OTEL Collector configuration
-- `configs/prometheus.yml`: Prometheus scrape configuration
-- `configs/grafana-dashboard.json`: Sample Grafana dashboard
-- `shared/observability/.observability.env.example`: Environment variables template
+- `shared/observability/compose/profiles/compose.dev.yml` – docker-compose stack
+- `shared/observability/compose/prometheus.yml` – Prometheus targets + rule files
+- `shared/observability/metrics/rules/traefik.rules.yml` – sample alert rule (referenced by Prometheus)
+- `shared/observability/logs/ingestion/promtail-config.yml` – Promtail scraping config
+- `shared/observability/otel-config/otel-collector-config.yml` – OTEL Collector pipeline
+- `shared/observability/.observability.env.example` – environment template
+
+Keep this document updated whenever new components (Tempo, Alertmanager, prod compose profile, etc.) land so onboarding stays accurate.

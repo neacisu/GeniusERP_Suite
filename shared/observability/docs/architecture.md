@@ -1,8 +1,8 @@
 # Observability Architecture - GeniusSuite
 
-**Status:** F0.3 Skeleton Implementation  
-**Last Updated:** 2024-11-13  
-**Version:** 1.0.0
+**Status:** F0.3 Skeleton (validated via CI Validation workflow)  
+**Last Updated:** 2025-11-15  
+**Version:** 1.1.0
 
 ---
 
@@ -127,7 +127,7 @@ Applications → OTLP → OTEL Collector → Prometheus (metrics)
 **Metrics Endpoint Convention:** `http://<service>:<port+1>/metrics`  
 Example: archify.app exposes health on `:6500`, metrics on `:6501`
 
-**Rules:** `compose/rules/traefik.rules.yml` (alerting rules - planned F0.4)
+**Rules:** `metrics/rules/traefik.rules.yml` (skeleton alert rule referenced by Prometheus)
 
 ### 3. Grafana
 
@@ -255,6 +255,35 @@ graph LR
 2. **OTEL Collector** receives and batches traces
 3. **Debug exporter** logs traces to collector stdout (F0.3 only)
 4. **Tempo integration** planned for F0.4+ (persistent trace storage)
+
+---
+
+## Application SDK (Runtime Instrumentation)
+
+The `shared/observability` workspace package encapsulates everything services need to publish telemetry. It currently exports:
+
+| API | Location | Purpose |
+| --- | --- | --- |
+| `initTracing({ serviceName })` | `shared/observability/traces/otel.ts` | Boots the OpenTelemetry Node SDK with auto-instrumentations and an OTLP HTTP exporter (defaults to `http://localhost:4318/v1/traces` if `OTEL_EXPORTER_OTLP_ENDPOINT` is not set). |
+| `initMetrics({ serviceName })` | `shared/observability/metrics/recorders/prometheus.ts` | Enables `prom-client` default collectors so every service exposes CPU, heap, event-loop, and GC metrics. |
+| `metricsHandler()` | `shared/observability/metrics/recorders/prometheus.ts` | Serializes the registry contents; mount it on your `/metrics` HTTP route together with `promClient.contentType`. |
+| `promClient` | `shared/observability/metrics/recorders/prometheus.ts` | Pass-through registry that lets services register custom counters/histograms and reuse the shared default instance. |
+
+Usage snippet:
+
+```ts
+import { initMetrics, initTracing, metricsHandler, promClient } from '@genius-suite/observability';
+
+await initTracing({ serviceName: 'cp/identity' });
+await initMetrics({ serviceName: 'cp/identity' });
+
+app.get('/metrics', async (_req, res) => {
+  res.setHeader('Content-Type', promClient.contentType);
+  res.send(await metricsHandler());
+});
+```
+
+Place the tracing bootstrap right after env validation so it captures all auto-instrumented modules that load later in the process lifecycle.
 
 ---
 
@@ -406,9 +435,7 @@ shared/observability/
 ├── compose/                      # Docker Compose configurations
 │   ├── profiles/
 │   │   └── compose.dev.yml      # F0.3 dev stack
-│   ├── prometheus.yml           # Prometheus scrape config
-│   └── rules/
-│       └── traefik.rules.yml    # Alerting rules (skeleton)
+│   └── prometheus.yml           # Prometheus scrape config (static targets)
 ├── dashboards/                   # Grafana dashboards
 │   └── grafana/
 │       ├── datasources.yml      # Prometheus, Loki, Tempo datasources
@@ -424,7 +451,11 @@ shared/observability/
 │   ├── processors/              # Log enrichment (future)
 │   ├── retention/               # Retention policies (future)
 │   └── sinks/                   # Additional log sinks (future)
-├── metrics/                      # Metrics configuration (future custom metrics)
+├── metrics/                      # Metrics helpers & rules
+│   ├── recorders/
+│   │   └── prometheus.ts        # prom-client helper exported to apps
+│   └── rules/
+│       └── traefik.rules.yml    # Example alerting rule (referenced by Prometheus)
 ├── otel-config/                  # OpenTelemetry configuration
 │   └── otel-collector-config.yml # OTEL Collector pipeline
 ├── scripts/                      # Automation scripts
@@ -435,7 +466,7 @@ shared/observability/
 ├── traces/                       # Tracing configuration (Tempo - future)
 ├── .observability.env           # Environment variables (gitignored)
 ├── .observability.env.example   # Environment template
-├── index.ts                     # TypeScript observability library (future)
+├── index.ts                     # TypeScript observability entry point
 └── package.json                 # npm package for shared utilities
 ```
 
@@ -446,6 +477,9 @@ shared/observability/
 | `compose/profiles/compose.dev.yml` | Docker stack definition | F0.3 ✓ |
 | `otel-config/otel-collector-config.yml` | OTEL pipeline config | F0.3 ✓ |
 | `compose/prometheus.yml` | Prometheus targets | F0.3 ✓ |
+| `metrics/rules/traefik.rules.yml` | Example alert rule referenced by Prometheus | F0.3 ✓ (skeleton) |
+| `metrics/recorders/prometheus.ts` | prom-client helper exported to apps | F0.3 ✓ |
+| `traces/otel.ts` | OpenTelemetry SDK bootstrap | F0.3 ✓ |
 | `logs/ingestion/promtail-config.yml` | Promtail scraping | F0.3 ✓ |
 | `dashboards/grafana/datasources.yml` | Grafana datasources | F0.3 ✓ |
 | `scripts/install.sh` | Stack bootstrap | F0.3 ✓ |
@@ -509,6 +543,17 @@ shared/observability/
 4. **Manual scrape targets** - Prometheus uses static config, no service discovery
 5. **Single network** - All observability on one network (no isolation between metrics/logs/traces)
 6. **Dev-only configuration** - Not production-ready (no resource limits, secrets management, HA)
+
+---
+
+## CI/CD Integration
+
+The `.github/workflows/ci.yml` pipeline now enforces observability health on every pull request:
+
+- **`validate` job** runs the Jest-based configuration suite (`__tests__/config/*.test.ts`) to ensure Husky, lint-staged, nx, and other repo policies stay aligned.
+- **`observability-validate` job** boots the Docker Compose stack defined in `shared/observability/compose/profiles/compose.dev.yml`, provisions backing services, then executes `scripts/validate.sh` in `CI_MODE=true`. The script performs 38 structural checks (ports, volumes, critical endpoints, docker networks) while the workflow also confirms that all 15 application containers plus the observability stack stay healthy for the duration of the run.
+
+The workflow surfaced the restart issues seen on 2025-11-14/15 and now serves as the gate before promoting changes to `dev → staging → master`.
 
 ---
 

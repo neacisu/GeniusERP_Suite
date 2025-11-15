@@ -1,6 +1,7 @@
 FROM node:22-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV CI=true
 RUN corepack enable
 WORKDIR /app
 COPY pnpm-lock.yaml ./
@@ -37,4 +38,4 @@ COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
 USER appuser
 EXPOSE 6700
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/i-wms.app/src/index.js"]

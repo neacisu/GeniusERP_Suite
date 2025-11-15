@@ -38,4 +38,4 @@ COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
 USER appuser
 EXPOSE 6500
-CMD ["node", "dist/src/index.js"]
+CMD ["node", "dist/archify.app/src/index.js"]

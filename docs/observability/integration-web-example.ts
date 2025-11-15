@@ -10,6 +10,6 @@
 // provider.addSpanProcessor(new SimpleSpanProcessor(new OTLPTraceExporter()));
 // provider.register();
 
-// For logging, use the shared logger (though it's Node.js focused)
-// import { createLogger } from '../../shared/observability';
+// For logging in SSR/BFF layers, reuse the shared Node logger
+// import { createLogger } from '../../shared/common/logger/pino';
 // const logger = createLogger();
