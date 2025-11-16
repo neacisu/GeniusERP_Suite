@@ -40,11 +40,7 @@ jobs:
             echo "pr_exists=false" >> $GITHUB_OUTPUT
           fi
         env:
-
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
           GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
-
 
       - name: Check if there are new commits
         id: check-commits
@@ -75,7 +71,7 @@ jobs:
           if [ "$TOTAL_COMMITS" -gt 20 ]; then
             COMMITS="$COMMITS
 
-... și alte $((TOTAL_COMMITS - 20)) commit-uri. Vezi istoricul complet în tab-ul Commits."
+            Mai există $((TOTAL_COMMITS - 20)) commit-uri. Vezi istoricul complet în tab-ul Commits."
           fi
 
           # Creează PR body
@@ -126,9 +122,6 @@ jobs:
             --body-file pr_body.md \
             --label "auto-created"
         env:
-
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
           GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
 
 

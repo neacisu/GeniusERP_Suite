@@ -2,11 +2,19 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "defaultBase": "dev",
   "packageManager": "pnpm",
+  "nxCloudId": "691268eb369b28a97cc96512",
   "plugins": [
     {
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/js",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test"
       }
     }
   ],

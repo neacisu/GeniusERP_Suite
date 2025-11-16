@@ -1,0 +1,70 @@
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: geniuserp-otel-collector
+    command: ["--config=/etc/otel-collector-config.yml"]
+    volumes:
+      - ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
+    networks:
+      - observability
+    ports:
+      - "4317:4317"  # gRPC
+      - "4318:4318"  # HTTP
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ../prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - gs_prometheus_data:/prometheus
+    networks:
+      - observability
+    ports:
+      - "${OBS_PROMETHEUS_PORT:-9090}:${OBS_PROMETHEUS_PORT:-9090}"
+    environment:
+      - OBS_PROMETHEUS_PORT=${OBS_PROMETHEUS_PORT:-9090}
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    volumes:
+      - ../../dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ../../dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ../../dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - gs_grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${OBS_GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${OBS_GRAFANA_ADMIN_PASS:-admin}
+    networks:
+      - observability
+    ports:
+      - "${OBS_GRAFANA_PORT:-3000}:${OBS_GRAFANA_PORT:-3000}"
+
+  loki:
+    image: grafana/loki:latest
+    networks:
+      - observability
+    volumes:
+      - gs_loki_data:/loki
+    ports:
+      - "${OBS_LOKI_PORT:-3100}:${OBS_LOKI_PORT:-3100}"
+
+  promtail:
+    image: grafana/promtail:latest
+    command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env=true
+    volumes:
+      - ../../logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - observability
+
+networks:
+  observability:
+    external: true
+    name: geniuserp_net_observability
+
+volumes:
+  gs_prometheus_data:
+    name: gs_prometheus_data
+  gs_loki_data:
+    name: gs_loki_data
+  gs_grafana_data:
+    name: gs_grafana_data

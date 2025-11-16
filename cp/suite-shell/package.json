@@ -1,0 +1,20 @@
+{
+  "name": "@genius-suite/cp-suite-shell",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "build": "tsc",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "fastify": "^4.0.0",
+    "@genius-suite/observability": "workspace:*",
+    "@genius-suite/common": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  }
+}

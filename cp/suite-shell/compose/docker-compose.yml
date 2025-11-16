@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  suite-shell:
+    build:
+      context: ../../..
+      dockerfile: cp/suite-shell/Dockerfile
+    container_name: genius-suite-shell
+    ports:
+      - "${CP_SHELL_APP_PORT}:${CP_SHELL_APP_PORT}"
+    env_file:
+      - ../.cp.suite-shell.env
+    environment:
+      - CP_SHELL_APP_PORT=${CP_SHELL_APP_PORT}
+      - CP_SHELL_APP_METRICS_PORT=${CP_SHELL_APP_METRICS_PORT}
+      - CP_SHELL_APP_NODE_ENV=${CP_SHELL_APP_NODE_ENV}
+      - CP_SHELL_OBS_SERVICE_NAME=${CP_SHELL_OBS_SERVICE_NAME}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
+    networks:
+      - net_suite_internal
+      - net_observability
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6100/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  net_observability:
+    external: true
+    name: geniuserp_net_observability

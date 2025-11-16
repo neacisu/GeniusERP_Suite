@@ -114,10 +114,11 @@ describe('Workflow Integration and Consistency', () => {
       expect(ciContent).toContain('nx affected');
     });
 
-    it('should setup Nx Cloud if token is available', () => {
+    it('should have Nx Cloud configuration', () => {
       const ciContent = readFile('.github/workflows/ci.yml');
       expect(ciContent).toContain('NX_CLOUD_AUTH_TOKEN');
-      expect(ciContent).toContain('nx-cloud start-ci-run');
+      // Nx Cloud is configured for caching, distributed execution disabled for direct CI execution
+      expect(ciContent).toContain('NX_CLOUD_DISTRIBUTED_EXECUTION');
     });
   });
 

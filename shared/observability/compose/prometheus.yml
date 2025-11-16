@@ -1,0 +1,31 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'genius_applications'
+    static_configs:
+      - targets:
+          - 'archify.app:6501'
+          - 'cerniq.app:6551'
+          - 'flowxify.app:6601'
+          - 'i-wms.app:6651'
+          - 'mercantiq.app:6701'
+          - 'numeriqo.app:6751'
+          - 'triggerra.app:6801'
+          - 'vettify.app:6851'
+          - 'suite-admin:6151'
+          - 'suite-login:6201'
+          - 'identity:6251'
+          - 'licensing:6301'
+          - 'analytics-hub:6351'
+          - 'ai-hub:6401'
+
+  - job_name: 'traefik'
+    metrics_path: /metrics
+    scrape_interval: 5s
+    static_configs:
+      - targets:
+          - 'traefik:9100'
+
+rule_files:
+  - rules/traefik.rules.yml

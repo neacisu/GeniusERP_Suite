@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  triggerra-app:
+    build:
+      context: ../..
+      dockerfile: triggerra.app/Dockerfile
+    container_name: triggerra-app
+    env_file:
+      - ../../.suite.general.env
+      - ../.triggerra.env
+    environment:
+      NODE_ENV: ${TRIGR_APP_NODE_ENV:-production}
+      PORT: ${TRIGR_APP_PORT:-6800}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_SERVICE_NAME: triggerra.app
+    ports:
+      - "${TRIGR_APP_PORT:-6800}:${TRIGR_APP_PORT:-6800}"
+    networks:
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${TRIGR_APP_PORT:-6800}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+  geniuserp_net_observability:
+    external: true
+    name: geniuserp_net_observability

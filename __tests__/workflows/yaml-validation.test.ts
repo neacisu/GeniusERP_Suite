@@ -67,7 +67,7 @@ describe('GitHub Workflows YAML Validation', () => {
 
         it('should have valid indentation', () => {
           const lines = content.split('\n');
-          lines.forEach((line, index) => {
+          lines.forEach((line, _index) => {
             if (line.trim().length > 0) {
               const leadingSpaces = line.match(/^ */)?.[0].length || 0;
               expect(leadingSpaces % 2).toBe(0); // Should be multiples of 2

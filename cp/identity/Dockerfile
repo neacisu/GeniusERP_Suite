@@ -1,0 +1,56 @@
+# Build stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy workspace files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+
+# Copy source from workspace root
+COPY shared ./shared
+COPY cp ./cp
+
+# Install dependencies
+# Install pnpm
+RUN npm install -g pnpm
+
+# Add pnpm to PATH
+ENV PATH="/usr/local/bin:$PATH"
+
+# Install all dependencies (including dev dependencies for building)
+RUN pnpm install --frozen-lockfile
+
+# Compile shared libraries
+RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build
+
+# Build the identity service
+RUN cd cp/identity && pnpm run build
+
+# Runtime stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Add pnpm to PATH
+ENV PATH="/usr/local/bin:$PATH"
+ENV CI=true
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+RUN pnpm install --frozen-lockfile --production --ignore-scripts
+
+# Copy node_modules and built application from builder
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/cp/identity/dist ./cp/identity/dist
+COPY --from=builder /app/cp/identity/package.json ./cp/identity/package.json
+COPY --from=builder /app/shared ./shared
+
+# Install identity service dependencies
+RUN cd cp/identity && pnpm install --frozen-lockfile --production --ignore-scripts
+
+EXPOSE 6250
+
+# Start application with compiled JavaScript
+CMD ["node", "cp/identity/dist/cp/identity/src/main.js"]

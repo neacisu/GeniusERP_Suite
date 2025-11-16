@@ -1,2 +1,4 @@
 #!/usr/bin/env sh
+
+export LINT_STAGED_RELATIVE_CWD=true
 pnpm exec lint-staged

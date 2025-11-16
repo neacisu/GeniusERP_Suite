@@ -1,0 +1,29 @@
+name: "Task de Implementare"
+description: "O unitate de muncă granulară (de ex. F0.1.1)"
+body:
+  - type: input
+    id: ref-plan
+    attributes:
+      label: "Referință Plan"
+      description: "Codul task-ului din Capitolul 17."
+      placeholder: "Ex: F0.1.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: descriere
+    attributes:
+      label: "Descrierea Task-ului"
+      description: "Copiați descrierea detaliată din planul."
+    validations:
+      required: true
+
+  - type: textarea
+    id: livrabile
+    attributes:
+      label: "Livrabile / Definiția 'Done'"
+      description: "Ce artefacte concrete trebuie produse?"
+    validations:
+      required: true
+
+labels: [task]
