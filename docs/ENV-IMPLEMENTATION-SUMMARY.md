@@ -125,6 +125,7 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 ## 5. Checklist Variabile Critice per Componentă
 
 ### 5.1 Configurație Globală (SUITE_)
+
 - ✅ `SUITE_APP_DOMAIN` - Domeniul principal
 - ✅ `SUITE_DB_POSTGRES_HOST` - Host PostgreSQL
 - ✅ `SUITE_MQ_KAFKA_BROKERS` - Adresă Kafka
@@ -132,6 +133,7 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 - ✅ `SUITE_OBS_OTEL_COLLECTOR_GRPC_URL` - Endpoint OTEL
 
 ### 5.2 Identity (CP_IDT_) - Serviciu Critic
+
 - ✅ `CP_IDT_APP_PORT=6250`
 - ✅ `CP_IDT_DB_POSTGRES_URL` - Bază de date identity
 - ✅ `CP_IDT_AUTH_SUPERTOKENS_CONNECTION_URI` - SuperTokens Core
@@ -139,12 +141,14 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 - ✅ `CP_IDT_AUTH_OIDC_CLIENT_SECRET` - Secret OIDC
 
 ### 5.3 Licensing (CP_LIC_) - Serviciu Critic
+
 - ✅ `CP_LIC_APP_PORT=6300`
 - ✅ `CP_LIC_DB_POSTGRES_URL` - Bază de date licensing
 - ✅ `CP_LIC_LICENSE_ENCRYPTION_KEY` - Cheie criptare licențe
 - ✅ `CP_LIC_API_STRIPE_SECRET_KEY` - Stripe pentru billing
 
 ### 5.4 Numeriqo (NUMQ_) - Integrări Critice RO
+
 - ✅ `NUMQ_APP_PORT=6750`
 - ✅ `NUMQ_DB_POSTGRES_URL` - Bază de date numeriqo
 - ✅ `NUMQ_API_ANAF_CLIENT_ID` - Integrare ANAF
@@ -152,6 +156,7 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 - ✅ `NUMQ_API_REVOLUT_API_KEY` - Revolut Business
 
 ### 5.5 Observability (OBS_)
+
 - ✅ `OBS_GRAFANA_PORT=3000`
 - ✅ `OBS_PROMETHEUS_PORT=9090`
 - ✅ `OBS_LOKI_PORT=3100`
@@ -171,6 +176,7 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 ## 7. Securitate și Guvernanță
 
 ### 7.1 .gitignore
+
 ```gitignore
 # Exclude all .env files (secrets should never be committed)
 *.env
@@ -183,11 +189,13 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 ### 7.2 Separare Dev vs. Producție
 
 **Mediu Development (Local):**
+
 - Dezvoltatorii folosesc fișiere `.env` locale
 - Fișierele `.env` sunt strict interzise în Git
 - Docker Compose folosește flag `--env-file`
 
 **Medii Staging/Production:**
+
 - NU se folosesc fișiere `.env`
 - Secretele sunt gestionate prin HashiCorp Vault
 - Pipeline CI/CD injectează secretele la runtime
@@ -216,12 +224,14 @@ Toate serviciile au referințe către servicii dependente:
 **Locație:** `/var/www/GeniusSuite/scripts/validate-env.sh`
 
 **Utilizare:**
+
 ```bash
 cd /var/www/GeniusSuite
 bash scripts/validate-env.sh
 ```
 
 **Verificări:**
+
 - ✅ Existența tuturor celor 20 fișiere .env
 - ✅ Conformitatea prefixelor variabilelor
 - ✅ Structura PREFIX_CATEGORIE_NUME
@@ -245,16 +255,19 @@ Pentru a adăuga un serviciu nou (ex: `new-feature.app`):
 1. **Alocare Port:** Alege din interval rezervat (6900-6999)
 2. **Definire Prefix:** Alege prefix unic (ex: `NEWF_`)
 3. **Creare Fișiere:**
+
    ```bash
-   touch new-feature.app/.new-feature.env
-   touch new-feature.app/.new-feature.env.example
-   ```
+    touch new-feature.app/.new-feature.env
+    touch new-feature.app/.new-feature.env.example
+    ```
+
 4. **Populare Variabile:** Respectă convenția `NEWF_<CATEGORIE>_<NUME>`
 5. **Actualizare Documentație:** Adaugă în acest document
 
 ### 11.2 Verificare Periodică
 
 Rulează validarea lunar:
+
 ```bash
 bash scripts/validate-env.sh
 ```
@@ -271,7 +284,6 @@ bash scripts/validate-env.sh
 
 ---
 
-**✅ IMPLEMENTARE COMPLETĂ ȘI VALIDATĂ**
+### ✅ Implementare completă și validată
 
 Toate cele 40 de fișiere (20 .env + 20 .env.example) au fost create conform strategiei standardizate din Tabelul 1. Sistemul este gata pentru deployment în toate mediile (dev, staging, production).
-

@@ -71,7 +71,7 @@ jobs:
           if [ "$TOTAL_COMMITS" -gt 20 ]; then
             COMMITS="$COMMITS
 
-... și alte $((TOTAL_COMMITS - 20)) commit-uri. Vezi istoricul complet în tab-ul Commits."
+            Mai există $((TOTAL_COMMITS - 20)) commit-uri. Vezi istoricul complet în tab-ul Commits."
           fi
 
           # Creează PR body
