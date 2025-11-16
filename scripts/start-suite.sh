@@ -48,12 +48,21 @@ if [ ! -f "docker-compose.backing-services.yml" ]; then
     exit 1
 fi
 
+ROOT_COMPOSE_FILE="compose.yml"
+OBS_ENV_FILE="shared/observability/.observability.env"
+
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
+    error "Nu am găsit $ROOT_COMPOSE_FILE în rădăcina repo-ului."
+    exit 1
+fi
+
 log "==================================================================="
 log "  PORNIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
 
 PROXY_ENV_FILE="proxy/.proxy.env"
 PROXY_ENV_LOADED=false
+OBS_ENV_LOADED=false
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -74,6 +83,23 @@ load_proxy_env() {
     source "$PROXY_ENV_FILE"
     set +a
     PROXY_ENV_LOADED=true
+}
+
+load_obs_env() {
+    if [ "${OBS_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$OBS_ENV_FILE" ]; then
+        error "Lipsește $OBS_ENV_FILE. Copiază shared/observability/.observability.env.example și configurează valorile pentru stack-ul de observabilitate."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$OBS_ENV_FILE"
+    set +a
+    OBS_ENV_LOADED=true
 }
 
 prepare_proxy_dashboard_auth() {
@@ -137,12 +163,7 @@ log "FAZA 2: Pornire Proxy (Traefik)..."
 load_proxy_env
 prepare_proxy_dashboard_auth
 
-if [ ! -f "compose.proxy.yml" ]; then
-    error "Nu am găsit compose.proxy.yml în rădăcina repo-ului. Acest fișier este necesar pentru serviciul proxy."
-    exit 1
-fi
-
-docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" up -d proxy
+docker compose -f "$ROOT_COMPOSE_FILE" up -d proxy
 
 log "Așteptăm Traefik să devină ready (10 secunde)..."
 sleep 10
@@ -192,11 +213,10 @@ echo ""
 # ============================================================================
 # FAZA 4: Pornire Observability Stack
 # ============================================================================
-log "FAZA 4: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
+log "FAZA 4: Pornire Observability Stack (Prometheus, Loki, Grafana, Tempo, OTEL, Promtail)..."
 
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml --env-file ./.observability.env up -d
-cd /var/www/GeniusSuite
+load_obs_env
+docker compose -f "$ROOT_COMPOSE_FILE" up -d otel-collector tempo prometheus grafana loki promtail
 
 log "Așteptăm OTEL Collector să fie ready (10 secunde)..."
 sleep 10
@@ -252,9 +272,12 @@ log "==================================================================="
 log "  ✓ GENIUSSUITE PORNIT CU SUCCES"
 log "==================================================================="
 log ""
+GRAFANA_HOST=${OBS_GRAFANA_DOMAIN:-"grafana.${PROXY_DOMAIN:-geniuserp.app}"}
+PROM_HOST=${OBS_PROMETHEUS_DOMAIN:-"prometheus.${PROXY_DOMAIN:-geniuserp.app}"}
+
 log "Acces servicii:"
-log "  - Grafana:     http://localhost:3000"
-log "  - Prometheus:  http://localhost:9090"
+log "  - Grafana:     https://${GRAFANA_HOST} (Traefik) / http://localhost:${OBS_GRAFANA_PORT:-3000}"
+log "  - Prometheus:  https://${PROM_HOST} (Traefik) / http://localhost:${OBS_PROMETHEUS_PORT:-9090}"
 log "  - Temporal UI: http://localhost:8233"
 log "  - Identity:    http://localhost:6250"
 log "  - Licensing:   http://localhost:6300"

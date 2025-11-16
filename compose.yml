@@ -1,0 +1,197 @@
+name: geniussuite
+
+services:
+  proxy:
+    container_name: traefik
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --certificatesresolvers.letsencrypt.acme.email=${PROXY_TLS_ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=${PROXY_ACME_STORAGE:-/letsencrypt/acme.json}
+      - --certificatesresolvers.letsencrypt.acme.caserver=${PROXY_TLS_ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    env_file:
+      - proxy/.proxy.env
+    ports:
+      - "${PROXY_HTTP_PORT:-80}:80"
+      - "${PROXY_HTTPS_PORT:-443}:443"
+      - "127.0.0.1:${PROXY_DASHBOARD_PORT:-8080}:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./proxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./proxy/traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "./proxy/traefik/secrets:/etc/traefik/secrets:ro"
+      - "gs_traefik_certs:/letsencrypt"
+    networks:
+      geniuserp_net_edge:
+        aliases:
+          - traefik-edge
+      geniuserp_net_suite_internal:
+        aliases:
+          - traefik-internal
+      geniuserp_net_observability:
+        aliases:
+          - traefik-observability
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - 'traefik.http.routers.traefik-dashboard.rule=Host("${PROXY_DASHBOARD_DOMAIN:-traefik.${PROXY_DOMAIN:-geniuserp.app}}")'
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-chain@file"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
+  otel-collector:
+    container_name: geniussuite-otel-collector
+    image: otel/opentelemetry-collector:latest
+    restart: unless-stopped
+    command: ["--config=/etc/otel-collector-config.yml"]
+    env_file:
+      - shared/observability/.observability.env
+    volumes:
+      - "./shared/observability/otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro"
+    depends_on:
+      - tempo
+    networks:
+      - geniuserp_net_observability
+
+  tempo:
+    container_name: geniussuite-tempo
+    image: grafana/tempo:2.5.0
+    restart: unless-stopped
+    command: ["-config.file=/etc/tempo.yml"]
+    env_file:
+      - shared/observability/.observability.env
+    volumes:
+      - "./shared/observability/traces/tempo-config.yml:/etc/tempo.yml:ro"
+      - "gs_tempo_data:/var/tempo"
+    networks:
+      - geniuserp_net_observability
+
+  prometheus:
+    container_name: geniussuite-prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    env_file:
+      - shared/observability/.observability.env
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=${OBS_PROMETHEUS_RETENTION_TIME:-15d}"
+      - "--storage.tsdb.retention.size=${OBS_PROMETHEUS_RETENTION_SIZE:-50GB}"
+    volumes:
+      - "./shared/observability/compose/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+      - "./shared/observability/metrics/rules:/etc/prometheus/rules:ro"
+      - "gs_prometheus_data:/prometheus"
+    ports:
+      - "127.0.0.1:${OBS_PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - geniuserp_net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}"
+      - 'traefik.http.routers.prometheus.rule=Host("${OBS_PROMETHEUS_DOMAIN:-prometheus.${PROXY_DOMAIN:-geniuserp.app}}")'
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.prometheus.middlewares=global-chain@file"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+
+  grafana:
+    container_name: geniussuite-grafana
+    image: grafana/grafana-oss:11.1.0
+    restart: unless-stopped
+    env_file:
+      - shared/observability/.observability.env
+    environment:
+      - GF_SECURITY_ADMIN_USER=${OBS_GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${OBS_GRAFANA_ADMIN_PASS:-admin}
+      - GF_SERVER_HTTP_PORT=3000
+      - GF_SERVER_ROOT_URL=https://${OBS_GRAFANA_DOMAIN:-grafana.${PROXY_DOMAIN:-geniuserp.app}}
+    volumes:
+      - "./shared/observability/dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro"
+      - "./shared/observability/dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro"
+      - "./shared/observability/dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro"
+      - "gs_grafana_data:/var/lib/grafana"
+    ports:
+      - "127.0.0.1:${OBS_GRAFANA_PORT:-3000}:3000"
+    networks:
+      - geniuserp_net_observability
+      - geniuserp_net_suite_internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - 'traefik.http.routers.grafana.rule=Host("${OBS_GRAFANA_DOMAIN:-grafana.${PROXY_DOMAIN:-geniuserp.app}}")'
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.grafana.middlewares=global-chain@file"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
+  loki:
+    container_name: geniussuite-loki
+    image: grafana/loki:3.1.1
+    restart: unless-stopped
+    env_file:
+      - shared/observability/.observability.env
+    volumes:
+      - "gs_loki_data:/loki"
+    ports:
+      - "127.0.0.1:${OBS_LOKI_PORT:-3100}:3100"
+    networks:
+      - geniuserp_net_observability
+
+  promtail:
+    container_name: geniussuite-promtail
+    image: grafana/promtail:3.1.1
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env=true
+    env_file:
+      - shared/observability/.observability.env
+    volumes:
+      - "./shared/observability/logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      - loki
+    networks:
+      - geniuserp_net_observability
+
+networks:
+  geniuserp_net_edge:
+    external: true
+    name: ${PROXY_NETWORK_EDGE:-geniuserp_net_edge}
+  geniuserp_net_suite_internal:
+    external: true
+    name: ${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
+  geniuserp_net_observability:
+    external: true
+    name: ${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}
+
+volumes:
+  gs_traefik_certs:
+    name: gs_traefik_certs
+    driver: local
+  gs_prometheus_data:
+    name: gs_prometheus_data
+    driver: local
+  gs_grafana_data:
+    name: gs_grafana_data
+    driver: local
+  gs_loki_data:
+    name: gs_loki_data
+    driver: local
+  gs_tempo_data:
+    name: gs_tempo_data
+    driver: local

@@ -111,13 +111,13 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 │   ├── architecture/
 │   ├── security/
 │   └── ops/
-└── compose.proxy.yml                        # orchestrator root (rețele, Traefik, observability)
+└── compose.yml                              # orchestrator root (rețele, Traefik, observability)
 ```
 
 **Notă orchestrare (model hibrid):**
 
 - Compose **per aplicație** (`*/compose/docker-compose.yml`) → izolare, rulare rapidă, ownership clar.
-- Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.proxy.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
+- Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
 
 ### 6) Licențiere & Deployment
 

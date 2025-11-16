@@ -24,7 +24,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
-      - "traefik.http.routers.analytics_hub.rule=Host(`analytics.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - 'traefik.http.routers.analytics_hub.rule=Host("analytics.${SUITE_APP_DOMAIN:-geniuserp.app}")'
       - "traefik.http.routers.analytics_hub.entrypoints=websecure"
       - "traefik.http.routers.analytics_hub.tls=true"
       - "traefik.http.routers.analytics_hub.tls.certresolver=letsencrypt"

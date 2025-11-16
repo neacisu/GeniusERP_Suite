@@ -49,11 +49,16 @@ if [ ! -f "docker-compose.backing-services.yml" ]; then
     exit 1
 fi
 
+ROOT_COMPOSE_FILE="compose.yml"
+
 log "==================================================================="
 log "  OPRIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
 
 PROXY_ENV_FILE="proxy/.proxy.env"
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
+    warning "Nu am găsit $ROOT_COMPOSE_FILE în rădăcină. Este posibil ca proxy-ul/observability să nu fi fost pornite via orchestrator."
+fi
 
 # ============================================================================
 # FAZA 1: Oprire Control Plane Services
@@ -86,11 +91,17 @@ echo ""
 # ============================================================================
 log "FAZA 2: Oprire Observability Stack..."
 
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml down  # FĂRĂ -v
-cd /var/www/GeniusSuite
+if [ -f "$ROOT_COMPOSE_FILE" ]; then
+    if ! docker compose -f "$ROOT_COMPOSE_FILE" stop otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1; then
+        warning "Stack-ul de observabilitate pare deja oprit."
+    else
+        docker compose -f "$ROOT_COMPOSE_FILE" rm -f otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1 || true
+        log "✓ Observability Stack oprit"
+    fi
+else
+    warning "Nu pot opri Observability Stack (lipsește $ROOT_COMPOSE_FILE)."
+fi
 
-log "✓ Observability Stack oprit"
 echo ""
 
 # ============================================================================
@@ -108,19 +119,23 @@ echo ""
 # ============================================================================
 log "FAZA 4: Oprire Proxy (Traefik)..."
 
-if [ -f "compose.proxy.yml" ]; then
+if [ -f "$ROOT_COMPOSE_FILE" ]; then
     if [ -f "$PROXY_ENV_FILE" ]; then
-        if ! docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" stop proxy >/dev/null 2>&1; then
+        set -a
+        # shellcheck disable=SC1090
+        source "$PROXY_ENV_FILE"
+        set +a
+        if ! docker compose -f "$ROOT_COMPOSE_FILE" stop proxy >/dev/null 2>&1; then
             warning "Nu am reușit să opresc proxy-ul (probabil nu era pornit)."
         else
-            docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" rm -f proxy >/dev/null 2>&1 || true
+            docker compose -f "$ROOT_COMPOSE_FILE" rm -f proxy >/dev/null 2>&1 || true
             log "✓ Proxy oprit"
         fi
     else
         warning "Lipsește $PROXY_ENV_FILE. Sar peste oprirea Traefik."
     fi
 else
-    warning "Nu am găsit compose.proxy.yml în rădăcină. Sar peste oprirea Traefik."
+    warning "Nu am găsit $ROOT_COMPOSE_FILE în rădăcină. Sar peste oprirea Traefik."
 fi
 
 echo ""

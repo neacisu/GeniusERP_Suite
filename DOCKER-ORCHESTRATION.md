@@ -40,13 +40,14 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 
 ## 🌐 Edge Proxy (Traefik)
 
-- **Fișier compose:** `compose.proxy.yml` definește serviciul Traefik și volumul persistent `gs_traefik_certs` montat la `/letsencrypt` pentru stocarea ACME (`acme.json`).
+- **Fișier compose:** `compose.yml` definește serviciul Traefik și volumul persistent `gs_traefik_certs` montat la `/letsencrypt` pentru stocarea ACME (`acme.json`).
 - **Config statică/dinamică:** `proxy/traefik/traefik.yml` stabilește entrypoints (80/443/8080/9100) și `proxy/traefik/dynamic/middlewares.yml` oferă middleware-uri (security headers, rate limit, basic-auth chain pentru dashboard).
 - **Fișier env:** copiați `proxy/.proxy.env.example` în `proxy/.proxy.env`, setați `PROXY_DOMAIN`, `PROXY_DASHBOARD_DOMAIN`, `PROXY_DASHBOARD_USER/PASS`, email ACME și, opțional, token-urile DNS provider.
 - **Pornire manuală:**
 
   ```bash
-  docker compose -f compose.proxy.yml --env-file proxy/.proxy.env up -d proxy
+  set -a && source proxy/.proxy.env && set +a
+  docker compose -f compose.yml up -d proxy
   ```
   
   Scriptul `scripts/start-suite.sh` rulează acest pas în FAZA 2, generează hash-ul BasicAuth (folosind `openssl passwd -apr1`) în `proxy/traefik/secrets/dashboard-users` și expune dashboard-ul doar pe `PROXY_DASHBOARD_DOMAIN` via entrypoint `traefik` (localhost:8080).
@@ -56,7 +57,7 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 
 ```bash
 # container up & sănătos
-docker compose -f compose.proxy.yml --env-file proxy/.proxy.env ps
+docker compose -f compose.yml ps proxy
 
 # redirect HTTP→HTTPS (folosește porturile din PROXY_HTTP/HTTPS_PORT)
 curl -I -H "Host: identity.${PROXY_DOMAIN}" http://127.0.0.1:${PROXY_HTTP_PORT}
@@ -98,7 +99,8 @@ docker network create --driver bridge --subnet 172.23.0.0/16 geniuserp_net_obser
 ```bash
 cd /var/www/GeniusSuite
 cp proxy/.proxy.env.example proxy/.proxy.env  # doar prima dată, apoi actualizează valorile reale
-docker compose -f compose.proxy.yml --env-file proxy/.proxy.env up -d proxy
+set -a && source proxy/.proxy.env && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml up -d proxy
 ```
 
 > Notă: `gs_traefik_certs` păstrează `acme.json`. Scriptul `scripts/start-suite.sh` regenerează fișierul BasicAuth în `proxy/traefik/secrets/dashboard-users` înainte de fiecare pornire.
@@ -121,8 +123,9 @@ Așteptat: 4 containere (postgres, kafka, temporal, supertokens)
 #### 4. **Pornire Observability Stack**
 
 ```bash
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml up -d
+cd /var/www/GeniusSuite
+set -a && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml up -d otel-collector tempo prometheus grafana loki promtail
 ```
 
 Accesare UI:
@@ -174,8 +177,10 @@ docker compose -f cp/licensing/compose/docker-compose.yml down
 docker compose -f cp/identity/compose/docker-compose.yml down
 
 # Observability
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml down
+cd /var/www/GeniusSuite
+set -a && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml stop otel-collector tempo prometheus grafana loki promtail
+docker compose -f compose.yml rm -f otel-collector tempo prometheus grafana loki promtail
 
 # Backing Services
 cd /var/www/GeniusSuite

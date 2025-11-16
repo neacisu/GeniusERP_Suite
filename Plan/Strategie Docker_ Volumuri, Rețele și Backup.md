@@ -122,8 +122,8 @@ Acest lucru creează un risc major în arhitectura hibridă a GeniusSuite. Un de
 Soluția strategică exploatează arhitectura hibridă pentru a crea un mecanism de siguranță.  
 **Strategia de Implementare Prescriptivă:**
 
-1. **Definiția în Orchestratorul Root:** Toate volumele de date critice (întreaga listă de baze de date PostgreSQL, Kafka, Loki etc. din Partea 1\) *trebuie* definite exclusiv în secțiunea volumes: a fișierului compose.proxy.yml de la rădăcină (/var/www/GeniusSuite/compose.proxy.yml).  
-   `# /var/www/GeniusSuite/compose.proxy.yml`  
+1. **Definiția în Orchestratorul Root:** Toate volumele de date critice (întreaga listă de baze de date PostgreSQL, Kafka, Loki etc. din Partea 1\) *trebuie* definite exclusiv în secțiunea volumes: a fișierului compose.yml de la rădăcină (/var/www/GeniusSuite/compose.yml).  
+  `# /var/www/GeniusSuite/compose.yml`  
    `version: "3.9"`
 
    `services:`  
@@ -261,9 +261,9 @@ Această strategie răspunde cerinței pentru "backup automatizat al volumelor z
 ### **4.1 Arhitectura de Backup: Containerul "Sidecar" Dedicat**
 
 O soluție bazată pe cron la nivelul sistemului de operare gazdă este fragilă, neportabilă și încalcă principiile de containerizare. Strategia recomandată este utilizarea unui container "sidecar" dedicat, numit backup-manager, care rulează alături de baza de date.  
-Acest container va fi definit în orchestratorul root (compose.proxy.yml) și va rula scripturile pg-dump.ts și rotate.ts menționate în planul de suită.  
+Acest container va fi definit în orchestratorul root (compose.yml) și va rula scripturile pg-dump.ts și rotate.ts menționate în planul de suită.  
 **Definiție docker-compose.yml (extras pentru backup-manager):**  
-`# /var/www/GeniusSuite/compose.proxy.yml`
+`# /var/www/GeniusSuite/compose.yml`
 
 `services:`  
   `#... alte servicii...`
