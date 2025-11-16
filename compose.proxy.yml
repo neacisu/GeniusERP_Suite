@@ -1,0 +1,70 @@
+name: geniussuite
+
+services:
+  proxy:
+    container_name: traefik
+    image: traefik:v3.0
+    restart: unless-stopped
+    command:
+      - --configFile=/etc/traefik/traefik.yml
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --certificatesresolvers.letsencrypt.acme.email=${PROXY_TLS_ACME_EMAIL}
+      - --certificatesresolvers.letsencrypt.acme.storage=${PROXY_ACME_STORAGE:-/letsencrypt/acme.json}
+      - --certificatesresolvers.letsencrypt.acme.caserver=${PROXY_TLS_ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    env_file:
+      - proxy/.proxy.env
+    ports:
+      - "${PROXY_HTTP_PORT:-80}:80"
+      - "${PROXY_HTTPS_PORT:-443}:443"
+      - "127.0.0.1:${PROXY_DASHBOARD_PORT:-8080}:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./proxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./proxy/traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "./proxy/traefik/secrets:/etc/traefik/secrets:ro"
+      - "gs_traefik_certs:/letsencrypt"
+    networks:
+      geniuserp_net_edge:
+        aliases:
+          - traefik-edge
+      geniuserp_net_suite_internal:
+        aliases:
+          - traefik-internal
+      geniuserp_net_observability:
+        aliases:
+          - traefik-observability
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`${PROXY_DASHBOARD_DOMAIN:-traefik.${PROXY_DOMAIN:-geniuserp.app}}`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-chain@file"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+
+networks:
+  geniuserp_net_edge:
+    external: true
+    name: ${PROXY_NETWORK_EDGE:-geniuserp_net_edge}
+  geniuserp_net_suite_internal:
+    external: true
+    name: ${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
+  geniuserp_net_observability:
+    external: true
+    name: ${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}
+
+volumes:
+  gs_traefik_certs:
+    name: gs_traefik_certs
+    driver: local

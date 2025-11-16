@@ -21,6 +21,15 @@ services:
       - net_suite_internal
       - net_backing_services
       - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.analytics_hub.rule=Host(`analytics.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.analytics_hub.entrypoints=websecure"
+      - "traefik.http.routers.analytics_hub.tls=true"
+      - "traefik.http.routers.analytics_hub.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.analytics_hub.middlewares=global-chain@file"
+      - "traefik.http.services.analytics_hub.loadbalancer.server.port=${CP_ANLY_APP_PORT:-6350}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${CP_ANLY_APP_PORT}/health"]

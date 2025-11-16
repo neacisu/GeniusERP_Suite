@@ -20,6 +20,15 @@ services:
     networks:
       - net_suite_internal
       - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.suite_login.rule=Host(`login.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.suite_login.entrypoints=websecure"
+      - "traefik.http.routers.suite_login.tls=true"
+      - "traefik.http.routers.suite_login.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.suite_login.middlewares=global-chain@file"
+      - "traefik.http.services.suite_login.loadbalancer.server.port=${CP_LOGIN_APP_PORT:-6200}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6200/health || exit 1"]

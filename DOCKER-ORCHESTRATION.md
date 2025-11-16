@@ -11,7 +11,7 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  net_edge (172.20.0.0/16)                                   │
-│  - Gateway/Proxy (viitor)                                    │
+│  - Gateway/Proxy (Traefik)                                   │
 └─────────────────────────────────────────────────────────────┘
          │
          ▼
@@ -38,6 +38,41 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 - **Observability** colectează metrici prin net_observability
 - **Izolare completă** între zone
 
+## 🌐 Edge Proxy (Traefik)
+
+- **Fișier compose:** `compose.proxy.yml` definește serviciul Traefik și volumul persistent `gs_traefik_certs` montat la `/letsencrypt` pentru stocarea ACME (`acme.json`).
+- **Config statică/dinamică:** `proxy/traefik/traefik.yml` stabilește entrypoints (80/443/8080/9100) și `proxy/traefik/dynamic/middlewares.yml` oferă middleware-uri (security headers, rate limit, basic-auth chain pentru dashboard).
+- **Fișier env:** copiați `proxy/.proxy.env.example` în `proxy/.proxy.env`, setați `PROXY_DOMAIN`, `PROXY_DASHBOARD_DOMAIN`, `PROXY_DASHBOARD_USER/PASS`, email ACME și, opțional, token-urile DNS provider.
+- **Pornire manuală:**
+
+  ```bash
+  docker compose -f compose.proxy.yml --env-file proxy/.proxy.env up -d proxy
+  ```
+  
+  Scriptul `scripts/start-suite.sh` rulează acest pas în FAZA 2, generează hash-ul BasicAuth (folosind `openssl passwd -apr1`) în `proxy/traefik/secrets/dashboard-users` și expune dashboard-ul doar pe `PROXY_DASHBOARD_DOMAIN` via entrypoint `traefik` (localhost:8080).
+- **Observabilitate:** Traefik expune metrice Prometheus pe entrypoint `metrics` (9100) din `geniuserp_net_observability`, iar Prometheus le colectează prin job-ul `traefik`.
+
+### Validare rapidă Traefik
+
+```bash
+# container up & sănătos
+docker compose -f compose.proxy.yml --env-file proxy/.proxy.env ps
+
+# redirect HTTP→HTTPS (folosește porturile din PROXY_HTTP/HTTPS_PORT)
+curl -I -H "Host: identity.${PROXY_DOMAIN}" http://127.0.0.1:${PROXY_HTTP_PORT}
+
+# dashboard protejat (SNI + basic-auth)
+curl -k -u "$PROXY_DASHBOARD_USER:$PROXY_DASHBOARD_PASS" \
+  --resolve "${PROXY_DASHBOARD_DOMAIN}:${PROXY_DASHBOARD_PORT}:127.0.0.1" \
+  https://${PROXY_DASHBOARD_DOMAIN}:${PROXY_DASHBOARD_PORT}/dashboard/ -o /dev/null -w '%{http_code}\n'
+
+# Prometheus metrics (din interiorul rețelei observability)
+docker exec traefik wget -qO- http://localhost:9100/metrics | head -n 10
+
+# verifică persistența acme.json
+docker exec traefik ls -l /letsencrypt
+```
+
 ## 🚀 Pornire Infrastructure
 
 ### Comandă Rapidă
@@ -58,7 +93,17 @@ docker network create --driver bridge --subnet 172.22.0.0/16 geniuserp_net_backi
 docker network create --driver bridge --subnet 172.23.0.0/16 geniuserp_net_observability
 ```
 
-#### 2. **Pornire Backing Services**
+#### 2. **Pornire Proxy (Traefik)**
+
+```bash
+cd /var/www/GeniusSuite
+cp proxy/.proxy.env.example proxy/.proxy.env  # doar prima dată, apoi actualizează valorile reale
+docker compose -f compose.proxy.yml --env-file proxy/.proxy.env up -d proxy
+```
+
+> Notă: `gs_traefik_certs` păstrează `acme.json`. Scriptul `scripts/start-suite.sh` regenerează fișierul BasicAuth în `proxy/traefik/secrets/dashboard-users` înainte de fiecare pornire.
+
+#### 3. **Pornire Backing Services**
 
 ```bash
 cd /var/www/GeniusSuite
@@ -73,7 +118,7 @@ docker ps --filter name=geniuserp --format 'table {{.Names}}\t{{.Status}}'
 
 Așteptat: 4 containere (postgres, kafka, temporal, supertokens)
 
-#### 3. **Pornire Observability Stack**
+#### 4. **Pornire Observability Stack**
 
 ```bash
 cd shared/observability/compose/profiles
@@ -86,7 +131,7 @@ Accesare UI:
 - **Prometheus**: `http://localhost:9090`
 - **Temporal UI**: `http://localhost:8233`
 
-#### 4. **Pornire CP Services**
+#### 5. **Pornire CP Services**
 
 ⚠️ **IMPORTANT**: Environment variables trebuie încărcate înainte de build/start:
 

@@ -78,8 +78,8 @@ Aceste volume sunt critice pentru funcționarea întregii suite și trebuie defi
 * **Traefik ACME:** Serviciul proxy/traefik gestionează certificatele TLS/SSL prin ACME (Let's Encrypt). Pentru a preveni re-emiterea certificatelor la fiecare repornire și atingerea limitelor de rată ale autorității de certificare, fișierul acme.json trebuie să fie persistent.  
   * **Notă de Implementare:** O tentativă de a monta direct fișierul (ex: \-v./acme.json:/acme.json) va eșua, deoarece Docker va crea un *director* numit acme.json în container. Soluția corectă este montarea directorului părinte.  
   * **Volum:** gs\_traefik\_certs  
-  * **Cale Montare (în docker-compose.yml):** volumes: \- gs\_traefik\_certs:/etc/traefik/acme  
-  * **Configurare Traefik (în traefik.yml):** certificatesResolvers.myresolver.acme.storage=/etc/traefik/acme/acme.json
+  * **Cale Montare (în docker-compose.yml):** volumes: \- gs\_traefik\_certs:/letsencrypt  
+  * **Configurare Traefik (în traefik.yml):** certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
 
 ### **2.3 Inventarul Volumelor Numite pentru Aplicațiile Stand-Alone**
 
@@ -122,8 +122,8 @@ Acest lucru creează un risc major în arhitectura hibridă a GeniusSuite. Un de
 Soluția strategică exploatează arhitectura hibridă pentru a crea un mecanism de siguranță.  
 **Strategia de Implementare Prescriptivă:**
 
-1. **Definiția în Orchestratorul Root:** Toate volumele de date critice (întreaga listă de baze de date PostgreSQL, Kafka, Loki etc. din Partea 1\) *trebuie* definite exclusiv în secțiunea volumes: a fișierului compose.yml de la rădăcină (/var/www/GeniusSuite/compose.yml).  
-   `# /var/www/GeniusSuite/compose.yml`  
+1. **Definiția în Orchestratorul Root:** Toate volumele de date critice (întreaga listă de baze de date PostgreSQL, Kafka, Loki etc. din Partea 1\) *trebuie* definite exclusiv în secțiunea volumes: a fișierului compose.proxy.yml de la rădăcină (/var/www/GeniusSuite/compose.proxy.yml).  
+   `# /var/www/GeniusSuite/compose.proxy.yml`  
    `version: "3.9"`
 
    `services:`  
@@ -261,9 +261,9 @@ Această strategie răspunde cerinței pentru "backup automatizat al volumelor z
 ### **4.1 Arhitectura de Backup: Containerul "Sidecar" Dedicat**
 
 O soluție bazată pe cron la nivelul sistemului de operare gazdă este fragilă, neportabilă și încalcă principiile de containerizare. Strategia recomandată este utilizarea unui container "sidecar" dedicat, numit backup-manager, care rulează alături de baza de date.  
-Acest container va fi definit în orchestratorul root (compose.yml) și va rula scripturile pg-dump.ts și rotate.ts menționate în planul de suită.  
+Acest container va fi definit în orchestratorul root (compose.proxy.yml) și va rula scripturile pg-dump.ts și rotate.ts menționate în planul de suită.  
 **Definiție docker-compose.yml (extras pentru backup-manager):**  
-`# /var/www/GeniusSuite/compose.yml`
+`# /var/www/GeniusSuite/compose.proxy.yml`
 
 `services:`  
   `#... alte servicii...`

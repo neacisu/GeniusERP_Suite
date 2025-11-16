@@ -52,6 +52,58 @@ log "==================================================================="
 log "  PORNIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
 
+PROXY_ENV_FILE="proxy/.proxy.env"
+PROXY_ENV_LOADED=false
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+load_proxy_env() {
+    if [ "${PROXY_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$PROXY_ENV_FILE" ]; then
+        error "Lipsește $PROXY_ENV_FILE. Copiază proxy/.proxy.env.example și actualizează valorile necesare."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$PROXY_ENV_FILE"
+    set +a
+    PROXY_ENV_LOADED=true
+}
+
+prepare_proxy_dashboard_auth() {
+    load_proxy_env
+    local dashboard_dir="proxy/traefik/secrets"
+    local dashboard_file="$dashboard_dir/dashboard-users"
+
+    mkdir -p "$dashboard_dir"
+
+    if [ -z "${PROXY_DASHBOARD_USER:-}" ] || [ -z "${PROXY_DASHBOARD_PASS:-}" ]; then
+        warning "PROXY_DASHBOARD_USER/PASS nu sunt setate. Dashboard-ul Traefik va rămâne inaccesibil."
+        : > "$dashboard_file"
+        chmod 600 "$dashboard_file"
+        return
+    fi
+
+    if ! command_exists openssl; then
+        warning "Nu pot genera hash basic-auth (openssl nu este instalat)."
+        : > "$dashboard_file"
+        chmod 600 "$dashboard_file"
+        return
+    fi
+
+    local hashed
+    hashed=$(openssl passwd -apr1 "$PROXY_DASHBOARD_PASS")
+    printf "%s:%s\n" "$PROXY_DASHBOARD_USER" "$hashed" > "$dashboard_file"
+    chmod 600 "$dashboard_file"
+    info "Credentialele basic-auth pentru Traefik dashboard au fost regenerate"
+}
+
 # ============================================================================
 # FAZA 1: Creare Rețele Docker (Dacă nu există deja)
 # ============================================================================
@@ -78,9 +130,30 @@ log "✓ Toate rețelele sunt create"
 echo ""
 
 # ============================================================================
-# FAZA 2: Pornire Backing Services
+# FAZA 2: Pornire Proxy (Traefik)
 # ============================================================================
-log "FAZA 2: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens)..."
+log "FAZA 2: Pornire Proxy (Traefik)..."
+
+load_proxy_env
+prepare_proxy_dashboard_auth
+
+if [ ! -f "compose.proxy.yml" ]; then
+    error "Nu am găsit compose.proxy.yml în rădăcina repo-ului. Acest fișier este necesar pentru serviciul proxy."
+    exit 1
+fi
+
+docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" up -d proxy
+
+log "Așteptăm Traefik să devină ready (10 secunde)..."
+sleep 10
+
+log "✓ Proxy pornit"
+echo ""
+
+# ============================================================================
+# FAZA 3: Pornire Backing Services
+# ============================================================================
+log "FAZA 3: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens)..."
 
 # Încărcăm variabilele de mediu
 if [ -f ".backing-services.env" ]; then
@@ -117,9 +190,9 @@ log "✓ Backing Services pornite și funcționale"
 echo ""
 
 # ============================================================================
-# FAZA 3: Pornire Observability Stack
+# FAZA 4: Pornire Observability Stack
 # ============================================================================
-log "FAZA 3: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
+log "FAZA 4: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
 
 cd shared/observability/compose/profiles
 docker compose -f compose.dev.yml --env-file ./.observability.env up -d
@@ -132,9 +205,9 @@ log "✓ Observability Stack pornit"
 echo ""
 
 # ============================================================================
-# FAZA 4: Pornire Control Plane Services
+# FAZA 5: Pornire Control Plane Services
 # ============================================================================
-log "FAZA 4: Pornire Control Plane Services..."
+log "FAZA 5: Pornire Control Plane Services..."
 
 # Funcție pentru pornirea unui serviciu CP
 start_cp_service() {

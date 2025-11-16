@@ -53,6 +53,8 @@ log "==================================================================="
 log "  OPRIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
 
+PROXY_ENV_FILE="proxy/.proxy.env"
+
 # ============================================================================
 # FAZA 1: Oprire Control Plane Services
 # ============================================================================
@@ -99,6 +101,28 @@ log "FAZA 3: Oprire Backing Services..."
 docker compose -f docker-compose.backing-services.yml down  # FĂRĂ -v
 
 log "✓ Backing Services oprite"
+echo ""
+
+# ============================================================================
+# FAZA 4: Oprire Proxy (Traefik)
+# ============================================================================
+log "FAZA 4: Oprire Proxy (Traefik)..."
+
+if [ -f "compose.proxy.yml" ]; then
+    if [ -f "$PROXY_ENV_FILE" ]; then
+        if ! docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" stop proxy >/dev/null 2>&1; then
+            warning "Nu am reușit să opresc proxy-ul (probabil nu era pornit)."
+        else
+            docker compose -f compose.proxy.yml --env-file "$PROXY_ENV_FILE" rm -f proxy >/dev/null 2>&1 || true
+            log "✓ Proxy oprit"
+        fi
+    else
+        warning "Lipsește $PROXY_ENV_FILE. Sar peste oprirea Traefik."
+    fi
+else
+    warning "Nu am găsit compose.proxy.yml în rădăcină. Sar peste oprirea Traefik."
+fi
+
 echo ""
 
 # ============================================================================

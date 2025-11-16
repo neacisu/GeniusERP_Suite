@@ -111,13 +111,13 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 │   ├── architecture/
 │   ├── security/
 │   └── ops/
-└── compose.yml                              # orchestrator root (rețele, Traefik, observability)
+└── compose.proxy.yml                        # orchestrator root (rețele, Traefik, observability)
 ```
 
 **Notă orchestrare (model hibrid):**
 
 - Compose **per aplicație** (`*/compose/docker-compose.yml`) → izolare, rulare rapidă, ownership clar.
-- Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
+- Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.proxy.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
 
 ### 6) Licențiere & Deployment
 
@@ -4489,7 +4489,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 13. Concluzie: DB comună vs. DB per aplicație
+### 13. Concluzie: DB comună vs. DB per aplicație
 
 - **Per aplicație (RECOMANDAT):**
 - ✅ Izolare clară → vânzare stand‑alone fără migrare dificilă.
@@ -4504,7 +4504,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 14. Convenții denumire & tipuri
+### 14. Convenții denumire & tipuri
 
 - Tabele `snake_case`, PK `id`, FK `<entity>_id`.
 - Timpuri `timestamptz`. Bani `numeric(18,2)`; cantități `numeric(18,3/4)`.
@@ -4513,7 +4513,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 15. Extensii PostgreSQL necesare
+### 15. Extensii PostgreSQL necesare
 
 `pgcrypto` (hash/encrypt), `citext`, `btree_gin`, `pg_trgm`, `pg_partman` (opțional), `postgis` (dacă e nevoie), `timescaledb` (opțional pentru events/time‑series).
 
@@ -4521,7 +4521,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 16. Migrate & seeds (Drizzle)
+### 16. Migrate & seeds (Drizzle)
 
 - Migrations versionate pe fiecare DB; seeds minime: roluri default, planuri, chart of accounts (RO), VAT codes, payroll pay items.
 
@@ -6425,7 +6425,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry
+#### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry
 
 #### F0.2.1
 
@@ -7598,7 +7598,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază
+#### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază
 
 #### F0.3.1
 
@@ -9147,21 +9147,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
+#### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
 
-JSON
+##### F0.4.1
 
-
-{
-  "F0.4_Orchestrare_Docker": Definește 4 rețele de tip 'bridge' în /var/www/GeniusSuite/compose.yml. Acestea vor fi referite ca 'external: true' de către aplicații.",
-        "surse": ,
-        "obiectiv_faza": "F0.4",
-        "rationale": "Stabilește fundația pentru Stratul 1 (Rețea) al strategiei Defense in Depth [45], impunând segmentarea traficului conform.",
-        "validare": "Comanda 'docker network ls' afișează cele 4 rețele după rularea scriptului de inițializare (F0.4.20)."
-      }
-    },
+```JSON
     {
-      "F0.4.2": {
+      "F0.4.1": {
         "denumire_task": "Definire Volumelor Numite Globale (Root compose.yml)",
         "descriere_scurta_task": "Definirea tuturor volumelor 'stateful' (PostgreSQL, Kafka, Observability, Traefik) în fișierul compose.yml de la rădăcină.",
         "detalii_tehnice": "Implementează Partea 2 din  (Strategia de Protecție a Datelor). Definește volumele numite (ex. 'gs_pgdata_identity', 'gs_kafka_data', 'gs_traefik_certs') în secțiunea 'volumes:' a fișierului root. Acest lucru previne ștergerea lor accidentală de către comenzi 'docker compose down -v' la nivel de aplicație.[24]",
@@ -9171,8 +9163,13 @@ JSON
         "validare": "Comanda 'docker volume ls' afișează volumele (ex. 'gs_pgdata_identity') după rularea scriptului de inițializare (F0.4.20)."
       }
     },
+  ```
+
+##### F0.4.2
+
+```JSON
     {
-      "F0.4.3": {
+      "F0.4.2": {
         "denumire_task": "Configurare Serviciu 'proxy' (Traefik) în Root Compose",
         "descriere_scurta_task": "Adăugarea serviciului Traefik în compose.yml de la rădăcină, expunerea porturilor 80/443 și conectarea la rețele.",
         "detalii_tehnice": "Serviciul 'proxy/traefik'  se conectează la 'net_edge' (pentru porturile 80/443), 'net_suite_internal' (pentru a ruta traficul către API-uri) și 'net_observability' (pentru a expune /metrics). Utilizează volumul 'gs_traefik_certs'  pentru stocarea certificatelor ACME.",
@@ -9182,8 +9179,13 @@ JSON
         "validare": "Traefik pornește, redirecționează HTTP->HTTPS și obține certificate ACME valide."
       }
     },
+  ```
+
+##### F0.4.3
+
+```JSON
     {
-      "F0.4.4": {
+      "F0.4.3": {
         "denumire_task": "Configurare Serviciu 'observability' în Root Compose",
         "descriere_scurta_task": "Adăugarea stack-ului de observabilitate (Prometheus, Grafana, Loki) în compose.yml de la rădăcină.",
         "detalii_tehnice": "Adaugă serviciile din 'shared/observability/compose/' (definite în F0.3) în orchestratorul root. Toate serviciile (Prometheus, Loki, Tempo) se conectează *exclusiv* la 'net_observability' și utilizează volumele 'stateful' dedicate (ex. 'gs_prometheus_data'). Grafana UI poate fi expusă prin Traefik pe 'net_suite_internal'.",
@@ -9193,8 +9195,13 @@ JSON
         "validare": "Serviciile Grafana și Prometheus sunt accesibile prin rutele Traefik."
       }
     },
+  ```
+
+##### F0.4.4
+
+```JSON
     {
-      "F0.4.5": {
+      "F0.4.4": {
         "denumire_task": "Implementare Servicii de Bază (Backing Services) în Root Compose",
         "descriere_scurta_task": "Adăugarea definițiilor de servicii pentru PostgreSQL (instanțe multiple), Kafka și Temporal în compose.yml de la rădăcină.",
         "detalii_tehnice": "Adaugă serviciile 'stateful' partajate în orchestratorul root. Fiecare serviciu (ex. 'postgres_identity', 'postgres_numeriqo', 'kafka', 'temporal', 'neo4j_vettify') trebuie să folosească volumul numit corespunzător (ex. 'gs_pgdata_identity' ) și să se conecteze *exclusiv* la 'net_backing_services' și 'net_observability'. Niciunul dintre aceste servicii nu trebuie să fie pe 'net_suite_internal' sau 'net_edge'.",

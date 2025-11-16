@@ -6,7 +6,7 @@ Acest document stabilește standardele tehnice prescriptive pentru managementul 
 
 ### **1.1. Principii Fundamentale și Arhitectura Configurației**
 
-Arhitectura GeniusERP, așa cum este detaliată în planul de suită , se bazează pe un "model hibrid" de orchestrare Docker. Acest model utilizează atât fișiere docker-compose.yml la nivel de aplicație (pentru izolare și ownership), cât și un compose.yml orchestrator la rădăcină (pentru gestionarea rețelelor partajate, Traefik și observabilitate).  
+Arhitectura GeniusERP, așa cum este detaliată în planul de suită , se bazează pe un "model hibrid" de orchestrare Docker. Acest model utilizează atât fișiere docker-compose.yml la nivel de aplicație (pentru izolare și ownership), cât și un compose.proxy.yml orchestrator la rădăcină (pentru gestionarea rețelelor partajate, Traefik și observabilitate).  
 Acest model de orchestrare impune, prin necesitate, o strategie de configurare la fel de hibridă:
 
 1. **Configurații Specifice Aplicației:** Fiecărui serviciu sau aplicație (de exemplu, archify.app) îi trebuie propriile secrete izolate (de exemplu, cheia sa de conectare la baza de date).  
@@ -103,7 +103,7 @@ Următoarele șabloane definesc setul minim de variabile de mediu necesare pentr
 
 #### **Șablon 1: .suite.general.env (Configurații Globale/Partajate)**
 
-Aceste variabile sunt destinate orchestratorului rădăcină (/var/www/GeniusSuite/compose.yml) și pot fi partajate cu toate serviciile ca referințe comune.  
+Aceste variabile sunt destinate orchestratorului rădăcină (/var/www/GeniusSuite/compose.proxy.yml) și pot fi partajate cu toate serviciile ca referințe comune.  
 `#######################################################`  
 `# SUITA GENIUSSUITE - CONFIGURAȚII GLOBALE`  
 `# Sursă:  (Stack tehnologic, Control Plane)`  
