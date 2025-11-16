@@ -3,13 +3,18 @@ import { readFile, readJsonFile } from '../utils/validation';
 const TS_PATTERN = '*.{ts,tsx,js,jsx}';
 const NX_AFFECTED_SCRIPT = 'scripts/lint-staged/nx-affected.sh';
 
+const getCommandHead = (command: string): string => command.trim().split(' ')[0] ?? '';
+
 const isScriptCommand = (command: string): boolean => {
-  const normalized = command.trim().split(' ')[0];
+  const normalized = getCommandHead(command);
   return normalized.endsWith('.sh');
 };
 
 const readScriptForCommand = (command: string): string => {
-  const scriptPath = command.trim().split(' ')[0];
+  const scriptPath = getCommandHead(command);
+  if (!scriptPath) {
+    throw new Error(`Command "${command}" does not contain an executable`);
+  }
   return readFile(scriptPath);
 };
 

@@ -1,29 +1,29 @@
 /**
  * Environment Variables Loader
- * 
+ *
  * Hierarchical environment configuration loader with support for:
  * - Multiple .env files with priority levels
  * - Application-specific overrides
  * - Environment-specific settings (dev/prod)
  * - Validation with Zod schemas
- * 
+ *
  * Loading priority (lowest to highest):
  * 1. .env (root base defaults)
  * 2. .env.{appName} (app-specific)
  * 3. .env.local (local overrides - dev only)
  * 4. .env.{environment} (environment overrides)
  * 5. process.env (runtime environment variables - highest)
- * 
+ *
  * @example
  * // In your application's main.ts
  * import { EnvLoader } from '@shared/config/env-loader';
- * 
+ *
  * // For applications in root-level directories
  * EnvLoader.loadEnv('archify', process.env.NODE_ENV);
- * 
+ *
  * // For Control Plane services in subdirectories
  * EnvLoader.loadEnv('geniussuite', process.env.NODE_ENV, __dirname);
- * 
+ *
  * // Then validate:
  * import { validateArchifyEnv } from '@archify/config/env.schema';
  * const config = validateArchifyEnv();
@@ -67,7 +67,7 @@ export class EnvLoader {
 
   /**
    * Load environment variables with hierarchical priority
-   * 
+   *
    * @param appName - Application name (e.g., 'archify', 'geniussuite')
    * @param environment - 'development' or 'production'
    * @param appDir - Optional: specific directory for app-specific .env files
@@ -77,27 +77,16 @@ export class EnvLoader {
     appName: string,
     environment: 'development' | 'production' = 'development',
     appDir?: string,
-    options: EnvLoaderOptions = {}
+    options: EnvLoaderOptions = {},
   ): void {
-    const {
-      allowLocal = true,
-      verbose = false,
-      strict = false,
-      baseDir = process.cwd(),
-    } = options;
+    const { allowLocal = true, verbose = false, strict = false, baseDir = process.cwd() } = options;
 
     if (verbose) {
       console.log(`\n📚 [EnvLoader] Loading environment for: ${appName} (${environment})`);
     }
 
     // Build list of files to load in priority order (low to high)
-    const filesToLoad = this.buildFileList(
-      appName,
-      environment,
-      baseDir,
-      appDir,
-      allowLocal
-    );
+    const filesToLoad = this.buildFileList(appName, environment, baseDir, appDir, allowLocal);
 
     // Load files in order, with later files overriding earlier ones
     for (const filePath of filesToLoad) {
@@ -107,7 +96,10 @@ export class EnvLoader {
         }
 
         try {
-          const envConfig = dotenv.parse(fs.readFileSync(filePath, 'utf-8'));
+          const envConfig = dotenv.parse(fs.readFileSync(filePath, 'utf-8')) as Record<
+            string,
+            string
+          >;
 
           // Merge into loadedVars and process.env
           // Only set if not already set by higher-priority source
@@ -135,7 +127,10 @@ export class EnvLoader {
       } else if (verbose && path.basename(filePath).includes('.example')) {
         // Don't warn about missing .example files
         continue;
-      } else if (verbose && (path.basename(filePath) === '.env.local' || path.basename(filePath) === '.env.production')) {
+      } else if (
+        verbose &&
+        (path.basename(filePath) === '.env.local' || path.basename(filePath) === '.env.production')
+      ) {
         // Don't warn about optional local/production files
         continue;
       }
@@ -156,7 +151,7 @@ export class EnvLoader {
     environment: 'development' | 'production',
     baseDir: string,
     appDir?: string,
-    allowLocal: boolean = true
+    allowLocal: boolean = true,
   ): string[] {
     const files: string[] = [];
 
@@ -191,7 +186,7 @@ export class EnvLoader {
   /**
    * Get all variables that were loaded from .env files
    * (Does not include process.env variables not from .env files)
-   * 
+   *
    * @returns Map of loaded variable name to value
    */
   static getLoadedVars(): Record<string, string> {
@@ -200,7 +195,7 @@ export class EnvLoader {
 
   /**
    * Get the list of files that were loaded for an app
-   * 
+   *
    * @param appName - Application name
    * @returns List of file paths that were loaded
    */
@@ -219,7 +214,7 @@ export class EnvLoader {
 
   /**
    * Get a required environment variable or throw error
-   * 
+   *
    * @param key - Variable name
    * @param appName - Application name (for error message)
    * @returns Variable value
@@ -230,7 +225,7 @@ export class EnvLoader {
     if (!value) {
       throw new Error(
         `❌ Required environment variable missing: ${key} (app: ${appName})\n` +
-        `Please set ${key} in one of the .env files or in process.env`
+          `Please set ${key} in one of the .env files or in process.env`,
       );
     }
     return value;
@@ -238,7 +233,7 @@ export class EnvLoader {
 
   /**
    * Get an optional environment variable with default
-   * 
+   *
    * @param key - Variable name
    * @param defaultValue - Default value if not set
    * @returns Variable value or default
@@ -249,7 +244,7 @@ export class EnvLoader {
 
   /**
    * Get a numeric environment variable
-   * 
+   *
    * @param key - Variable name
    * @param defaultValue - Default value if not set
    * @returns Parsed number
@@ -274,7 +269,7 @@ export class EnvLoader {
    * Get a boolean environment variable
    * Recognizes: 'true', '1', 'yes', 'on' as true (case-insensitive)
    * Everything else is false
-   * 
+   *
    * @param key - Variable name
    * @param defaultValue - Default value if not set
    * @returns Parsed boolean
@@ -289,7 +284,7 @@ export class EnvLoader {
 
   /**
    * Get a comma-separated list as array
-   * 
+   *
    * @param key - Variable name
    * @param defaultValue - Default value if not set
    * @returns Array of strings
@@ -299,34 +294,32 @@ export class EnvLoader {
     if (!value) {
       return defaultValue;
     }
-    return value.split(',').map(v => v.trim()).filter(Boolean);
+    return value
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
   }
 }
 
 /**
  * Setup function to load env and validate schema
  * Use this as a convenient wrapper in your app
- * 
+ *
  * @example
  * import { setupEnv } from '@shared/config/env-loader';
  * import { validateArchifyEnv } from '@archify/config/env.schema';
- * 
+ *
  * const config = setupEnv('archify', validateArchifyEnv, { verbose: true });
  */
 export function setupEnv<T>(
   appName: string,
   validator: (env: NodeJS.ProcessEnv) => T,
-  options?: EnvLoaderOptions & { appDir?: string }
+  options?: EnvLoaderOptions & { appDir?: string },
 ): T {
   const { appDir, ...loaderOptions } = options || {};
 
   // Load .env files
-  EnvLoader.loadEnv(
-    appName,
-    (process.env.NODE_ENV as any) || 'development',
-    appDir,
-    loaderOptions
-  );
+  EnvLoader.loadEnv(appName, (process.env.NODE_ENV as any) || 'development', appDir, loaderOptions);
 
   // Validate and return typed config
   return validator(process.env);

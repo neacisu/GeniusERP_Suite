@@ -18,13 +18,13 @@ async function main() {
   await initMetrics({ serviceName });
 
   // Metrics endpoint
-  app.get('/metrics', async (request: FastifyRequest, reply: FastifyReply) => {
+  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
     reply.type('text/plain');
     return metricsHandler();
   });
 
   // Health endpoint
-  app.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
+  app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {
     return { status: 'ok', service: 'suite-login' };
   });
 
