@@ -75,6 +75,7 @@ bash scripts/smoke.sh             # endpoint smoke tests
 ```
 
 Services started:
+
 - OpenTelemetry Collector (`4317/4318`)
 - Prometheus (`${OBS_PROMETHEUS_PORT:-9090}`)
 - Grafana (`${OBS_GRAFANA_PORT:-3000}`)
@@ -83,10 +84,10 @@ Services started:
 
 ## Access Points
 
-- **Grafana:** http://localhost:3000 (admin / admin)
-- **Prometheus:** http://localhost:9090
-- **Loki readiness:** http://localhost:3100/ready
-- **Collector health:** http://localhost:4318
+- **Grafana:** [http://localhost:3000](http://localhost:3000) (admin / admin)
+- **Prometheus:** [http://localhost:9090](http://localhost:9090)
+- **Loki readiness:** [http://localhost:3100/ready](http://localhost:3100/ready)
+- **Collector health:** [http://localhost:4318](http://localhost:4318)
 
 ## Configuration Files
 

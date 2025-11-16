@@ -115,17 +115,17 @@ Aceste variabile sunt destinate orchestratorului rădăcină (/var/www/GeniusSui
 
 `# -- SERVICII DE BAZĂ PARTAJATE (BACKING SERVICES) --`
 
-`# Bază de Date Principală`   
+`# Bază de Date Principală`  
 `SUITE_DB_POSTGRES_HOST=postgres_server`  
 `SUITE_DB_POSTGRES_USER=suite_admin`  
 `SUITE_DB_POSTGRES_PASS=ReplaceMeWithGlobalDBPassword`
 
-`# Broker`   
+`# Broker`  
 `SUITE_MQ_KAFKA_BROKERS=kafka:9092`  
 `SUITE_MQ_KAFKA_USER=ReplaceMeWithKafkaUser`  
 `SUITE_MQ_KAFKA_PASS=ReplaceMeWithKafkaPassword`
 
-`# BPM`   
+`# BPM`  
 `SUITE_BPM_TEMPORAL_HOST_PORT=temporal:7233`
 
 `# -- OBSERVABILITATE  --`  
@@ -297,13 +297,13 @@ Tabelul 6 oferă o "Piatră de Rosetta" care demonstrează această sinergie pen
 | :---- | :---- | :---- | :---- |
 | .suite.general.env | SUITE\_MQ\_KAFKA\_BROKERS | kafka:9092 | Tabelul 4 |
 | .suite.general.env | SUITE\_BPM\_TEMPORAL\_HOST\_PORT | temporal:7233 | Tabelul 4 |
-| .suite.general.env | SUITE\_OBS\_OTEL\_COLLECTOR\_HTTP\_URL | http://otel-collector:4318 | Tabelul 4 |
+| .suite.general.env | SUITE\_OBS\_OTEL\_COLLECTOR\_HTTP\_URL | [http://otel-collector:4318](http://otel-collector:4318) | Tabelul 4 |
 | .observability.env | OBS\_GRAFANA\_PORT | 3000 | Tabelul 4 |
 | .observability.env | OBS\_PROMETHEUS\_PORT | 9090 | Tabelul 4 |
 | .cp.identity.env | CP\_IDT\_APP\_PORT | 6250 | Tabelul 5 (Plaja 6250-6299) |
-| .cp.identity.env | CP\_IDT\_AUTH\_SUPERTOKENS\_CONNECTION\_URI | http://supertokens-core:3567 | Tabelul 4 |
+| .cp.identity.env | CP\_IDT\_AUTH\_SUPERTOKENS\_CONNECTION\_URI | [http://supertokens-core:3567](http://supertokens-core:3567) | Tabelul 4 |
 | .archify.env | ARCHY\_APP\_PORT | 6500 | Tabelul 5 (Plaja 6500-6549) |
-| .archify.env | ARCHY\_SVC\_CP\_IDENTITY\_URL | http://identity:6250 | Tabelul 5 |
+| .archify.env | ARCHY\_SVC\_CP\_IDENTITY\_URL | [http://identity:6250](http://identity:6250) | Tabelul 5 |
 | .vettify.env | VETFY\_APP\_PORT | 6850 | Tabelul 5 (Plaja 6850-6899) |
 
 ### **3.2. Recomandări de Implementare DevSecOps (Dev vs. Producție)**
@@ -339,4 +339,6 @@ Respectarea acestui proces asigură că suita GeniusERP rămâne organizată, se
 
 #### **Works cited**
 
-1\. Loki: Getting Started \- DEV Community, https://dev.to/joachim8675309/loki-getting-started-n8o 2\. How to Set Up Grafana, Loki, and Prometheus Locally with Docker Compose: Part 1 of 3 | by Ahmad Bilal | Medium, https://medium.com/@ahmadbilalch891/how-to-set-up-grafana-loki-and-prometheus-locally-with-docker-compose-part-1-of-3-62fb25e51d92 3\. Manage authentication | Grafana Loki documentation, https://grafana.com/docs/loki/latest/operations/authentication/
+1\. Loki: Getting Started \- DEV Community ([dev.to](https://dev.to/joachim8675309/loki-getting-started-n8o))
+2\. How to Set Up Grafana, Loki, and Prometheus Locally with Docker Compose: Part 1 of 3 \| by Ahmad Bilal \| Medium ([medium.com](https://medium.com/@ahmadbilalch891/how-to-set-up-grafana-loki-and-prometheus-locally-with-docker-compose-part-1-of-3-62fb25e51d92))
+3\. Manage authentication \| Grafana Loki documentation ([grafana.com](https://grafana.com/docs/loki/latest/operations/authentication/))
