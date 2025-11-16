@@ -1,0 +1,6 @@
+{
+  "*.{ts,tsx,js,jsx}": [
+    "nx format:write --files",
+    "scripts/lint-staged/nx-affected.sh"
+  ]
+}

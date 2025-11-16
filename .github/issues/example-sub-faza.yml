@@ -1,0 +1,26 @@
+title: "F0.1 - Inițializare Infrastructură"
+body: |
+  ## 🎯 Obiectiv
+  Configurare bază pentru dezvoltarea GeniusERP Suite
+
+  ## 📋 Criterii de Acceptare
+  - [ ] Repository GitHub creat și configurat
+  - [ ] Workflow-uri CI/CD configurate
+  - [ ] Structura monorepo stabilită cu Nx
+  - [ ] Șabloane de issues implementate
+  - [ ] Documentație inițială adăugată
+
+  ## 🔗 Task-uri conexe
+  - F0.1.1 - Setup Repository GitHub
+  - F0.1.2 - Configurare CI/CD
+  - F0.1.3 - Setup Nx monorepo
+  - F0.1.4 - Implementare șabloane issues
+  - F0.1.5 - Documentare setup
+
+  ## 📈 Prioritate
+  🔥 Critical - Fără această fază nu putem începe dezvoltarea
+
+  ## 👥 Responsabili
+  - @neacisu - Coordonare tehnică
+labels: ["epic-tracker", "faza-0", "infrastructure", "critical"]
+assignees: ["neacisu"]

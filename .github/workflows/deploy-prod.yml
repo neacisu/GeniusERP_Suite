@@ -1,0 +1,76 @@
+name: Deploy to Production
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  docker-deploy-prod:
+    name: Docker Build & Push (Production)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # pentru a avea istoric complet când vom adăuga pașii reali în F0.2.23
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for Nx projects
+        id: check-projects
+        run: |
+          PROJECT_COUNT=$(pnpm exec nx show projects --json | jq length)
+          echo "project_count=$PROJECT_COUNT" >> $GITHUB_OUTPUT
+          if [ "$PROJECT_COUNT" -gt 0 ]; then
+            echo "✅ Found $PROJECT_COUNT Nx projects"
+            echo "has_projects=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ No Nx projects found yet - skipping Docker build"
+            echo "has_projects=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build & push Docker images (production)
+        if: steps.check-projects.outputs.has_projects == 'true'
+        run: pnpm exec nx affected -t docker-build
+        env:
+          DOCKER_REGISTRY: ghcr.io/${{ github.repository_owner }}
+          DOCKER_TAG: ${{ github.ref_name }}

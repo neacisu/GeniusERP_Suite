@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+
+# Șablon multi-stage pentru aplicații Node.js 24 în monorepo Nx + pnpm
+ARG NODE_VERSION=24-alpine
+ARG APP_NAME
+
+FROM node:${NODE_VERSION} AS base
+WORKDIR /app
+
+ENV PNPM_HOME=/pnpm
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+FROM base AS builder
+
+# Copiem fișierele de lock și de workspace pentru a instala dependențele
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+RUN pnpm install --frozen-lockfile
+
+# Copiem restul monorepo-ului pentru a permite build-ul Nx
+COPY . .
+
+# Construim doar aplicația țintă folosind Nx; APP_NAME va fi trecut ca build-arg
+RUN pnpm exec nx build ${APP_NAME}
+
+FROM node:${NODE_VERSION} AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Copiem artefactele de build ale aplicației în imaginea finală
+COPY --from=builder /app/dist/apps/${APP_NAME} ./dist
+
+# Punct de intrare implicit (pentru aplicații Node tip backend Nest/Express).
+# Aplicațiile individuale pot suprascrie CMD în propriile Dockerfile-uri.
+CMD ["node", "dist/main.js"]

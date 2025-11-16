@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  vettify-app:
+    build:
+      context: ../..
+      dockerfile: vettify.app/Dockerfile
+    container_name: vettify-app
+    env_file:
+      - ../../.suite.general.env
+      - ../.vettify.env
+    environment:
+      NODE_ENV: ${VETFY_APP_NODE_ENV:-production}
+      PORT: ${VETFY_APP_PORT:-6850}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_SERVICE_NAME: vettify.app
+    ports:
+      - "${VETFY_APP_PORT:-6850}:${VETFY_APP_PORT:-6850}"
+    networks:
+      - geniuserp_net_edge
+      - geniuserp_net_suite_internal
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${VETFY_APP_PORT:-6850}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+networks:
+  geniuserp_net_edge:
+    external: true
+    name: geniuserp_net_edge
+  geniuserp_net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  geniuserp_net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+  geniuserp_net_observability:
+    external: true
+    name: geniuserp_net_observability

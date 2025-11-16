@@ -1,0 +1,85 @@
+name: Changeset Bot
+
+on:
+  pull_request:
+    branches:
+      - master
+      - staging
+      - dev
+
+jobs:
+  changeset-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Detect changed packages
+        id: changed-files
+        run: |
+          BASE_BRANCH=${GITHUB_BASE_REF:-master}
+          git fetch origin "$BASE_BRANCH" --depth=50
+          changed_files=$(git diff --name-only "origin/$BASE_BRANCH"...HEAD | grep -E '^(shared/|cp/|vettify\.app/)' || true)
+          if [ -n "$changed_files" ]; then
+            echo "has_package_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_package_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check for changeset files
+        id: changeset-check
+        run: |
+          if [ -d ".changeset" ]; then
+            count=$(find .changeset -maxdepth 1 -name '*.md' ! -name 'README.md' | wc -l)
+          else
+            count=0
+          fi
+          if [ "$count" -eq 0 ]; then
+            echo "has_changesets=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changesets=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment when changesets are missing
+        if: steps.changed-files.outputs.has_package_changes == 'true' && steps.changeset-check.outputs.has_changesets == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { context, github } = require('@actions/github');
+            const { owner, repo } = context.repo;
+            const prNumber = context.payload.pull_request.number;
+            const body = [
+              '## Changesets',
+              '',
+              'Am detectat modificări în pachetele monorepo-ului, dar niciun fișier `.changeset`.',
+              'Te rog rulează `pnpm exec changeset` în local, alege versiunea potrivită și comite fișierul generat în acest PR.',
+              '',
+              'Fără changeset, modificarea nu va fi inclusă corect în release-uri.'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: prNumber,
+              body,
+            });
+
+      - name: Fail if package changes have no changeset
+        if: steps.changed-files.outputs.has_package_changes == 'true' && steps.changeset-check.outputs.has_changesets == 'false'
+        run: |
+          echo "Pachet modificat fără fișier .changeset. Vedeți comentariul automat pentru instrucțiuni."
+          exit 1

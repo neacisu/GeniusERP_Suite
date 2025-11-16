@@ -1,0 +1,27 @@
+{
+  "title": "Traefik Overview",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Request Rate by Status",
+      "targets": [
+        {
+          "expr": "sum by (code) (rate(traefik_service_requests_total[1m]))",
+          "legendFormat": "{{code}}"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Active Connections",
+      "targets": [
+        {
+          "expr": "sum(traefik_service_open_connections)"
+        }
+      ]
+    }
+  ],
+  "time": { "from": "now-5m", "to": "now" },
+  "uid": "traefik-overview",
+  "schemaVersion": 36
+}

@@ -1,0 +1,11 @@
+groups:
+- name: traefik_alerts
+  rules:
+  - alert: TraefikHighErrorRate
+    expr: sum(rate(traefik_service_requests_total{code=~"5.."}[5m])) by (service) > 0.1
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Rată mare de erori 5xx pe serviciul {{ $labels.service }}"
+      description: "Traefik raportează >10% request-uri cu erori 5xx în ultimele 5 minute."

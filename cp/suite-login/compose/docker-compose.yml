@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  suite-login:
+    build:
+      context: ../../../
+      dockerfile: cp/suite-login/Dockerfile
+    container_name: genius-suite-login
+    ports:
+      - "${CP_LOGIN_APP_PORT}:${CP_LOGIN_APP_PORT}"
+    env_file:
+      - ../.cp.suite-login.env
+    environment:
+      - CP_LOGIN_APP_PORT=${CP_LOGIN_APP_PORT}
+      - CP_LOGIN_APP_METRICS_PORT=${CP_LOGIN_APP_METRICS_PORT}
+      - CP_LOGIN_APP_NODE_ENV=${CP_LOGIN_APP_NODE_ENV}
+      - CP_LOGIN_OBS_SERVICE_NAME=${CP_LOGIN_OBS_SERVICE_NAME}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
+    networks:
+      - net_suite_internal
+      - net_observability
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6200/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  net_observability:
+    external: true
+    name: geniuserp_net_observability
