@@ -6,9 +6,14 @@ import { initMetrics, initTracing, metricsHandler, promClient } from '../../shar
 await initTracing({ serviceName: 'apps/api' });
 await initMetrics({ serviceName: 'apps/api' });
 
+type MetricsResponse = {
+  set(header: string, value: string): void;
+  send(payload: unknown): void;
+};
+
 // After creating the Express/Fastify app
 const app: any = {}; // Replace with your HTTP server instance
-app.get('/metrics', async (_req, res) => {
+app.get('/metrics', async (_req: unknown, res: MetricsResponse) => {
   res.set('Content-Type', promClient.contentType);
   res.send(await metricsHandler());
 });

@@ -17,12 +17,12 @@ async function main() {
   const app = fastify({ logger: logger as any });
 
   // Health endpoint
-  app.get('/health', async (request: FastifyRequest, reply: FastifyReply) => {
+  app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {
     return { status: 'ok', service: 'suite-shell' };
   });
 
   // Metrics endpoint for Prometheus scraping
-  app.get('/metrics', async (request: FastifyRequest, reply: FastifyReply) => {
+  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
     const body = await metricsHandler();
     reply.type('text/plain').send(body);
   });

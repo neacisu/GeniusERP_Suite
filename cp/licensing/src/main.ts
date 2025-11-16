@@ -20,7 +20,7 @@ async function main() {
   await initMetrics({ serviceName });
 
   // Health endpoint for Kubernetes/Docker health checks
-  app.get('/health', async (_request: FastifyRequest, reply: FastifyReply) => {
+  app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {
     return { status: 'ok', service: 'licensing' };
   });
 

@@ -40,10 +40,12 @@
 ## 2. Fișiere Lipsă conform Tabelul 1
 
 ### 2.1 Configurație Globală
+
 - ❌ `.suite.general.env` (rădăcină)
 - ❌ `.suite.general.env.example` (rădăcină)
 
 ### 2.2 Infrastructură
+
 - ❌ `gateway/.gateway.env`
 - ❌ `gateway/.gateway.env.example`
 - ❌ `proxy/.proxy.env`
@@ -52,6 +54,7 @@
 - ❌ `shared/observability/.observability.env.example`
 
 ### 2.3 Control Plane
+
 - ❌ `cp/suite-shell/.cp.suite-shell.env`
 - ❌ `cp/suite-shell/.cp.suite-shell.env.example`
 - ❌ `cp/suite-admin/.cp.suite-admin.env`
@@ -68,11 +71,13 @@
 - ❌ `cp/ai-hub/.cp.ai-hub.env.example`
 
 ### 2.4 Aplicații
+
 Toate aplicațiile au fișiere .env dar cu naming convention incorect (`.env.<app>` în loc de `.<app>.env`)
 
 ## 3. Verificare Structură Directoare
 
 ### 3.1 Directoare Existente ✅
+
 - ✅ gateway/
 - ✅ proxy/
 - ✅ shared/observability/
@@ -96,7 +101,8 @@ Toate aplicațiile au fișiere .env dar cu naming convention incorect (`.env.<ap
 ## 4. Verificare .gitignore
 
 ### 4.1 Reguli Actuale
-```
+
+```gitignore
 .env
 .env.local
 .env.production
@@ -104,16 +110,18 @@ Toate aplicațiile au fișiere .env dar cu naming convention incorect (`.env.<ap
 ```
 
 ### 4.2 Reguli Necesare conform Strategiei
-```
+
+```gitignore
 *.env
 !*.env.example
 ```
 
-**Status:** ❌ Necesită actualizare pentru a exclude toate fișierele *.env și a permite explicit *.env.example
+**Status:** ❌ Necesită actualizare pentru a exclude toate fișierele `*.env` și a permite explicit `*.env.example`
 
 ## 5. Sumar și Recomandări
 
 ### 5.1 Statistici
+
 - **Fișiere .env găsite:** 25 (13 perechi .env + .env.example + 1 fișier shared)
 - **Fișiere conforme 100%:** 0
 - **Fișiere parțial conforme:** 23 (nume aproape corect dar nu conform convenției exacte)
@@ -133,23 +141,26 @@ Toate aplicațiile au fișiere .env dar cu naming convention incorect (`.env.<ap
 ### 5.3 Prioritate Implementare
 
 **Prioritate 1 (Critică):**
+
 - .suite.general.env (configurații globale)
 - .cp.identity.env (autentificare)
 - .observability.env (monitoring)
 
 **Prioritate 2 (Înaltă):**
+
 - Control Plane complet
 - Gateway și Proxy
 
 **Prioritate 3 (Medie):**
+
 - Aplicații (majoritatea au deja fișiere, doar redenumire)
 
 ## 6. Concluzie
 
 Implementarea curentă are o bază solidă cu 13 aplicații/module având fișiere .env, dar naming convention-ul nu este conform cu strategia din Tabelul 1. Sunt necesare:
+
 - Redenumiri sistematice
 - Completare fișiere lipsă pentru infrastructură și CP
 - Actualizare .gitignore pentru securitate conformă
 
 **Status General:** ⚠️ Parțial implementat - necesită standardizare conform Tabelul 1
-

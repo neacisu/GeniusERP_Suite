@@ -1,10 +1,15 @@
-GeniusERP Suite Plan
+# GeniusERP Suite Plan
+
 Add Headings (Format > Paragraph styles) and they will appear in your table of contents.
-Capitolul 1
-# GeniusSuite – Plan general
-## 1) Descriere generală
+
+## Capitolul 1 - GeniusSuite – Plan general
+
+### 1) Descriere generală
+
 GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo, Docker) vândută fie ca suita completă **GeniusERP.app**, fie ca aplicații stand‑alone: **archify.app, cerniq.app, flowxify.app, geniuserp.app, i-wms.app, mercantiq.app, numeriqo.app, triggerra.app, vettify.app**. Fiecare aplicație rulează în containere proprii, cu rețele Docker interne, SSO comun și control centralizat al licențelor.
-## 2) Distribuția modulelor pe domenii
+
+### 2) Distribuția modulelor pe domenii
+
 - **geniuserp.app** – Control Plane (admin, auth, settings, analytics, audit, ai, integrations, shared, users)
 - **archify.app** – Document Management (documents, OCR, versionare, registru)
 - **cerniq.app** – Platformă Data Mesh & BI (consumator de "Produse de Date", semantic layer, dashboards, governance)
@@ -14,7 +19,9 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **numeriqo.app** – Accounting (RO) + HR & Payroll + Invoicing (pro)
 - **triggerra.app** – Marketing Automation (campanii, journeys, comms)
 - **vettify.app** – CRM & Relații + Firmographics (CUI/ANAF/Termene)
-## 3) Stack tehnologic
+
+### 3) Stack tehnologic
+
 - **Frontend:** React 19 LTS, TypeScript (latest), tRPC 3.1.0, Tailwind
 - **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM (latest) + Drizzle‑kit, PostgreSQL 18
 - **Auth:** SuperTokens 11.2.0 LTS (PKCE → JWT), OIDC, RBAC, multi‑tenant
@@ -22,7 +29,9 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **Broker:** Apache Kafka 4.1.0 LTS
 - **Observabilitate:** OpenTelemetry, Prometheus, Grafana, Loki, Tempo
 - **Containerizare:** pnpm, NX, Docker Compose (model hibrid)
-## 4) Control Plane (CP)
+
+### 4) Control Plane (CP)
+
 - **suite-shell** – orchestrator micro‑frontend (routing, registry, runtime)
 - **suite-admin** – portal administrare centrală
 - **suite-login** – portal PKCE + OIDC
@@ -30,8 +39,10 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 - **licensing** – licențe, entitlement & metering, billing
 - **analytics-hub** – Hub de Evenimente & Data Mesh (colectare stream-uri Kafka, publicare "Produse de Date" ale suitei)
 - **ai-hub** – servicii AI (inference, RAG, assistants)
-## 5) Structură directoare (radăcină + 2 niveluri)
-```
+
+### 5) Structură directoare (radăcină + 2 niveluri)
+
+```text
 /var/www/GeniusSuite/                       # rădăcina monorepo‑ului NX + orchestrator
 ├── shared/                                  # librării comune reutilizabile
 │   ├── ui-design-system/                    # componente UI, layouts, tokens
@@ -102,22 +113,27 @@ GeniusSuite este o suită modulară de aplicații enterprise (PERN, NX monorepo,
 │   └── ops/
 └── compose.yml                              # orchestrator root (rețele, Traefik, observability)
 ```
+
 **Notă orchestrare (model hibrid):**
+
 - Compose **per aplicație** (`*/compose/docker-compose.yml`) → izolare, rulare rapidă, ownership clar.
 - Compose **orchestrat la rădăcină** (`/var/www/GeniusSuite/compose.yml`) → pornește suita/subseturi, gestionează Traefik, rețelele partajate și observability.
-## 6) Licențiere & Deployment
+
+### 6) Licențiere & Deployment
+
 - Stand‑alone sau suită completă; licențiere și entitlement centralizate în **CP/licensing**.
 - SSO PKCE→JWT comun (SuperTokens/identity), multi‑tenant la nivel de subdomeniu.
 - Pipeline CI/CD pe profiluri (dev/staging/prod) + observabilitate unificată.
 
+## Capitolul 2 `shared/` – modul comun al suitei (arhitectură și structuri detaliate)
 
-Capitolul 2
-# `shared/` – modul comun al suitei (arhitectură și structuri detaliate)
 > Scop: oferă biblioteci, tipuri, utilitare, SDK‑uri și observabilitate comune tuturor aplicațiilor și Control Plane‑ului. Standardizează API‑urile, erorile, contractele de evenimente și UX‑ul.
-## 1) `ui-design-system/`
+
+### 1) `ui-design-system/`
+
 Structură pe 6–7 niveluri până la fișiere, cu comentarii pentru fiecare element.
 
-```
+```text
 shared/ui-design-system/
 ├── package.json                      # pachet npm intern, sideEffects: false
 ├── tsconfig.json                     # strictețe TS pentru librării
@@ -267,10 +283,10 @@ shared/ui-design-system/
 ├── scripts/release.ts
 └── scripts/changelog.ts
 ```
-## 2) `feature-flags/`
-SDK server/client + API admin, cu DB și openapi.
 
-```
+### 2) `feature-flags/` SDK server/client + API admin, cu DB și openapi
+
+```text
 shared/feature-flags/
 ├── package.json
 ├── drizzle/
@@ -310,10 +326,10 @@ shared/feature-flags/
 │   └── guards/require-admin.ts       # authN/authZ pentru admin flags
 └── README.md
 ```
-## 3) `auth-client/`
-PKCE → OIDC → JWT, hooks React, guards RBAC/ABAC, multi‑tenant routing.
 
-```
+### 3) `auth-client/` PKCE → OIDC → JWT, hooks React, guards RBAC/ABAC, multi‑tenant routing
+
+```text
 shared/auth-client/
 ├── package.json
 ├── src/
@@ -369,10 +385,10 @@ shared/auth-client/
 │   └── session.test.ts
 └── README.md
 ```
-## 4) `types/`
-Tipuri cross‑domain: domain/api/events/security/ui/validation/dto/errors/utils.
 
-```
+### 4) `types/` Tipuri cross‑domain: domain/api/events/security/ui/validation/dto/errors/utils
+
+```text
 shared/types/
 ├── index.ts
 ├── domain/
@@ -404,10 +420,10 @@ shared/types/
 ├── errors/{codes.ts,http.ts,domain.ts,retryable.ts,index.ts}
 └── utils/{result.ts,option.ts,branded.ts,ids.ts,index.ts}
 ```
-## 5) `common/`
-Utilitare, config centralizat, logger, middleware și mapare erori.
 
-```
+### 5) `common/` Utilitare, config centralizat, logger, middleware și mapare erori
+
+```text
 shared/common/
 ├── index.ts
 ├── utils/{date.ts,number.ts,string.ts,crypto.ts,env.ts,index.ts}
@@ -417,10 +433,10 @@ shared/common/
 ├── error-handling/{problem.ts,errorMapper.ts}
 └── logger/{pino.ts,formatters.ts,index.ts}
 ```
-## 6) `integrations/`
-Conectori oficiali (BNR, ANAF, Revolut, Shopify, Stripe, PandaDoc, e‑mail/SMS/WA, Graph, OpenAI, ElevenLabs, curieri).
 
-```
+### 6) `integrations/` Conectori oficiali (BNR, ANAF, Revolut, Shopify, Stripe, PandaDoc, e‑mail/SMS/WA, Graph, OpenAI, ElevenLabs, curieri)
+
+```text
 shared/integrations/
 ├── finance/{bnr/{client.ts,types.ts,index.ts},revolut/{client.ts,webhooks.ts,index.ts}}
 ├── gov/{anaf/{client.ts,auth.ts,schemas/,index.ts},termene/{client.ts,mappers.ts,index.ts}}
@@ -431,10 +447,10 @@ shared/integrations/
 ├── ai/{openai/{chat.ts,embeddings.ts,index.ts},elevenlabs/{tts.ts,index.ts}}
 └── logistics/{sameday/{client.ts,index.ts},fancourier/{client.ts,index.ts},cargus/{client.ts,index.ts}}
 ```
-## 7) `observability/`
-Stack complet: logs/metrics/traces + dashboards, alerts și OTEL collector.
 
-```
+### 7) `observability/` Stack complet: logs/metrics/traces + dashboards, alerts și OTEL collector
+
+```text
 shared/observability/
 ├── logs/{ingestion/,parsers/,processors/,retention/,sinks/,dashboards/,README.md}
 ├── metrics/{exporters/,recorders/,rules/,dashboards/,README.md}
@@ -448,20 +464,21 @@ shared/observability/
 └── docs/{architecture.md,how-to-add-app.md,dashboards.md,runbooks.md}
 ```
 
----
-## Convenții generale
+### Convenții generale
+
 - **Naming:** `kebab-case` pentru directoare, `PascalCase.tsx` pentru componente, `camelCase.ts` pentru utilitare.
 - **Barrel exports:** fiecare subdirector expune `index.ts` pentru API clar și tree‑shaking.
 - **Strict TS:** `"strict": true`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
 - **Testare:** unit (Jest), vizual (Playwright), e2e acolo unde are sens (component stories).
 - **Versionare:** changeset pe pachetele `shared/*` + release automat în registry intern.
 
+## Capitolul 3 - `cp/` – Control Plane (arhitectură și structuri detaliate)
 
-Capitolul 3
-# `cp/` – Control Plane (arhitectură și structuri detaliate)
 > Scop: găzduiește serviciile centrale ale suitei: orchestrator MF, admin, login PKCE/OIDC, identitate (SuperTokens + OIDC provider + RBAC), licențiere & metering, analytics hub (BI pentru suită) și AI hub. Toate serviciile sunt containerizate și pot rula independent sau orchestrate la rădăcină.
-## 1) `suite-shell/` – orchestrator micro‑frontend (Module Federation host)
-```
+
+### 1) `suite-shell/` – orchestrator micro‑frontend (Module Federation host)
+
+```text
 cp/suite-shell/
 ├── package.json
 ├── tsconfig.json
@@ -521,8 +538,10 @@ cp/suite-shell/
 │   └── nginx.conf                      # static host pt. assets/shell
 └── README.md
 ```
-## 2) `suite-admin/` – portal administrare centrală
-```
+
+### 2) `suite-admin/` – portal administrare centrală
+
+```text
 cp/suite-admin/
 ├── package.json
 ├── tsconfig.json
@@ -580,8 +599,10 @@ cp/suite-admin/
 │   └── docker-compose.yml
 └── README.md
 ```
-## 3) `suite-login/` – portal PKCE + OIDC
-```
+
+### 3) `suite-login/` – portal PKCE + OIDC
+
+```text
 cp/suite-login/
 ├── package.json
 ├── tsconfig.json
@@ -621,8 +642,10 @@ cp/suite-login/
 │   └── Dockerfile
 └── README.md
 ```
-## 4) `identity/` – SuperTokens + OIDC provider + RBAC + tenants
-```
+
+### 4) `identity/` – SuperTokens + OIDC provider + RBAC + tenants
+
+```text
 cp/identity/
 ├── package.json
 ├── tsconfig.json
@@ -676,8 +699,10 @@ cp/identity/
 │   └── Dockerfile
 └── README.md
 ```
-## 5) `licensing/` – licențe, entitlements, metering, billing
-```
+
+### 5) `licensing/` – licențe, entitlements, metering, billing
+
+```text
 cp/licensing/
 ├── package.json
 ├── tsconfig.json
@@ -723,8 +748,10 @@ cp/licensing/
 │   └── Dockerfile
 └── README.md
 ```
-## 6) `analytics-hub/` – BI pentru suită (ingestion → warehouse → semantic → APIs)
-```
+
+### 6) `analytics-hub/` – BI pentru suită (ingestion → warehouse → semantic → APIs)
+
+```text
 cp/analytics-hub/
 ├── package.json
 ├── tsconfig.json
@@ -791,8 +818,10 @@ cp/analytics-hub/
 │   └── Dockerfile
 └── README.md
 ```
-## 7) `ai-hub/` – servicii AI centralizate (inference, RAG, assistants)
-```
+
+### 7) `ai-hub/` – servicii AI centralizate (inference, RAG, assistants)
+
+```text
 cp/ai-hub/
 ├── package.json
 ├── tsconfig.json
@@ -836,20 +865,21 @@ cp/ai-hub/
 └── README.md
 ```
 
----
-## Convenții & operațional
+### Convenții & operațional
+
 - **Segregare clară** `apps/` vs `services/`, `web/` vs `api/` când e cazul.
 - **AuthN/AuthZ** centralizate: toate rutele admin trec prin `identity` (JWT + scopes + entitlements).
 - **Temporal**: workflows pentru ingestie (analytics-hub) și joburi programate (licensing.jobs).
 - **Kafka**: topics canonice pentru evenimente cross‑app (publicate din apps ca "Data Products", consumate de cerniq și alte module).
 - **Docker Compose** la nivel de serviciu + profiluri orchestrate la rădăcină.
 
+## Capitolul 4 - `archify.app/` – Document Management (DMS) – arhitectură și structuri detaliate
 
-Capitolul 4
-# `archify.app/` – Document Management (DMS) – arhitectură și structuri detaliate
 > Scop: gestionare documente enterprise (upload, OCR, indexare, versionare, permisiuni granulare, registru intrări/ieșiri, șabloane, e‑semnătură, fluxuri de aprobare, retenție legală), integrată în suita GeniusERP sau vândută stand‑alone.
-## 1) Structură generală (6–7 niveluri, până la fișier) – web + API + servicii
-```
+
+### 1) Structură generală (6–7 niveluri, până la fișier) – web + API + servicii
+
+```text
 archify.app/
 ├── package.json
 ├── tsconfig.json
@@ -885,7 +915,7 @@ archify.app/
 │   │       │   │   │   ├── FiltersBar.tsx
 │   │       │   │   │   ├── BulkActions.tsx
 │   │       │   │   │   ├── UploadDropzone.tsx
-│   │   │   │   │   ├── VersionTimeline.tsx
+│   │       │   │   │   ├── VersionTimeline.tsx
 │   │       │   │   │   └── ShareDialog.tsx
 │   │       │   │   ├── hooks/
 │   │       │   │   │   ├── useDocuments.ts     # tRPC queries + cache
@@ -1102,27 +1132,34 @@ archify.app/
 ├── images/
 └── office/
 ```
-## 2) Fluxuri funcționale cheie (overview)
+
+### 2) Fluxuri funcționale cheie (overview)
+
 - **Upload** (web → presign → S3/MinIO) → **antivirus** → **thumbnailer** → **OCR** (dacă e cazul) → **indexer** → disponibil în listare/căutare.
 - **Share**: link securizat cu expirare/număr accesări, politicile ACL sunt verificate la fiecare acces.
 - **Workflows**: aprobări/semnături orchestrate prin Temporal; Webhooks PandaDoc sincronizează starea.
 - **Registry**: intrări/ieșiri cu serii numerice per tenant, export CSV/PDF.
 - **Retention**: politici declarative per tip document, executate de joburi programate.
-## 3) Securitate & Observabilitate
+
+### 3) Securitate & Observabilitate
+
 - Auth: PKCE→OIDC→JWT (SuperTokens/identity), RBAC + entitlements din CP/licensing.
 - RLS/CLS: filtre la nivel de tenant/utilizator pentru interogări și căutări.
 - OTEL: trace pentru upload/OCR/indexare; logs structurate (pino) + metrics (durate OCR, rata erori, dimensiune fișiere).
-## 4) Integrare cu suita
+
+### 4) Integrare cu suita
+
 - MF remote: `web` poate fi încărcat în `cp/suite-shell`.
 - API: expune tRPC + OpenAPI; gateway-ul global poate compune rute și policy‑uri.
 - Evenimente (Data Mesh): Publică "Produse de Date" (ex. dms.document.created, dms.document.ocr_extracted) pe Kafka, disponibile pentru consum de către cerniq.app și ai-hub`.'
 
+## Capitolul 5 - `cerniq.app/` – Advanced Business Intelligence Hub (arhitectură și structuri detaliate)
 
-Capitolul 5
-# `cerniq.app/` – Advanced Business Intelligence Hub (arhitectură și structuri detaliate)
 > Scop: platformă Data Mesh & BI. Acționează ca un **consumator** inteligent de "Produse de Date" publicate de celelalte module (archify, numeriqo, i-wms etc.). Nu deține datele brute. Unifică aceste date într-un semantic layer centralizat pentru dashboards, AI și analiză predictivă.
-## 1) Structură generală (6–7 niveluri, până la fișiere) – collectors → ingestion → transforms → warehouse → semantics → apis → dashboards → governance
-```
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – collectors → ingestion → transforms → warehouse → semantics → apis → dashboards → governance
+
+```text
 cerniq.app/
 ├── package.json
 ├── tsconfig.json
@@ -1280,26 +1317,35 @@ cerniq.app/
 ├── federation.md                     # gateway & caching
 └── runbooks.md                       # proceduri operaționale
 ```
-## 2) Fluxuri cheie
+
+### 2) Fluxuri cheie
+
 - **Consum Data Mesh**: Se abonează la "Produse de Date" publicate de modulele operaționale (ex. wms.stock_changed, numeriqo.invoice.paid).
 - **Guvernanță**: Validează la intrare contractele de date (schemas) ale produselor consumate.
 - **Semantic Layer**: Unifică produsele de date într-un model semantic central (metrics, dimensions), fără a muta datele brute.
 - **Semantic layer** definește KPI/dimensiuni și controlează consistența rapoartelor.
 - **Federation gateway** randează SQL sau calcule semantice, cu cache + invalidare CDC.
 - **Governance**: RLS/CLS, data contracts, lineage (OpenLineage), catalog & ownership.
-## 3) Securitate, multi-tenant & licențiere
+
+### 3) Securitate, multi-tenant & licențiere
+
 - Integrare `cp/identity` (PKCE→JWT, scopes) + `cp/licensing` (entitlements la nivel metric/raport).
 - RLS per tenant, masking pentru PII, audit acces & query.
-## 4) Observabilitate
+
+### 4) Observabilitate
+
 - OTEL (traces pentru query & transformări), logs structurate (pino), metrics runtime: cache hit ratio, query latency p95, job failures.
 
+## Capitolul 6 - flowxify.app/ – Platformă de Orchestrare Inteligentă (BPM, AI, iPaaS, Collab)
 
-Capitolul 6
-flowxify.app/ – Platformă de Orchestrare Inteligentă (BPM, AI, iPaaS, Collab)
-Scop: Platformă de orchestrare inteligentă bazată pe o **Arhitectură Hibridă Dublă**: 
-Nivel 2 (Inteligență No-Code): Agenți AI (CrewAI/LangGraph via cp/ai-hub) și Server MCP (Model Context Protocol) pentru brainstorming și orchestrare dinamică a proceselor.
-Nivel 1 (Orchestrare Code-First): BPM Durabil (Temporal) pentru **toate** procesele stateful (SLA-uri, aprobări, procese de lungă durată) și pentru execuția **fluxurilor customizate (serviciu monetizabil "BPM on-request")**.
-## 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + serviciiflowxify.app/
+Scop: Platformă de orchestrare inteligentă bazată pe o **Arhitectură Hibridă Dublă**:
+
+- Nivel 2 (Inteligență No-Code): Agenți AI (CrewAI/LangGraph via cp/ai-hub) și Server MCP (Model Context Protocol) pentru brainstorming și orchestrare dinamică a proceselor.
+- Nivel 1 (Orchestrare Code-First): BPM Durabil (Temporal) pentru **toate** procesele stateful (SLA-uri, aprobări, procese de lungă durată) și pentru execuția **fluxurilor customizate (serviciu monetizabil "BPM on-request")**.
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + serviciiflowxify.app/
+
+```text
 ├── package.json
 ├── tsconfig.json
 ├── nx.json
@@ -1546,36 +1592,46 @@ Nivel 1 (Orchestrare Code-First): BPM Durabil (Temporal) pentru **toate** proces
 ├── wiki/
 ├── messages/
 └── tasks/
-## 2) Fluxuri funcționale cheie (Arhitectură Hibridă Triplă)
-### Nivel 3: Brainstorming (No-Code AI):
+```
+
+### 2) Fluxuri funcționale cheie (Arhitectură Hibridă Triplă)
+
+- **Nivel 3: Brainstorming (No-Code AI)**:
 Utilizatorul (în Collab/Chat 1) cere un proces ("Aprobare factură"). Agentul AI (din cp/ai-hub 1) interpretează cererea, folosește MCP pentru a apela tool_start_temporal_workflow, și pornește un workflow de Nivel 1.
-### Nivel 1: Execuție Durabilă (Code-First - Temporal):
+- **Nivel 1: Execuție Durabilă (Code-First - Temporal)**:
 Workflow-ul pornit la Nivelul 3 rulează. Acesta execută pași critici (ex. verifică suma în numeriqo.app).
-### Nivel 1 -> HITL (Human-in-the-Loop):
+- **Nivel 1 -> HITL (Human-in-the-Loop)**:
 Workflow-ul Temporal ajunge la pasul de aprobare. Apelează tool_create_human_task (via MCP sau o activitate directă). Un task nou apare în Tasks.tsx (Kanban). Workflow-ul Temporal intră în "așteptare" (sleep).
-### HITL -> Nivel 1:
+- **HITL -> Nivel 1**:
 Managerul aprobă task-ul în UI. Acțiunea trimite un semnal workflow-ului Temporal aflat în așteptare, care se "trezește" și continuă.
-### Unificarea Orchestrării Toate execuțiile 
+- **Unificarea Orchestrării Toate execuțiile**
 Atât cele inițiate de AI-Nivel 3, cât și cele predefinite, rulează exclusiv pe motorul Temporal (Nivel 1). Integrările non-critice (ex. "Postează un mesaj pe Slack") sunt executate ca activități Temporal standard, nu printr-un sistem iPaaS separat, asigurând o orchestrare cu stare unificată.
 
-## 3) Securitate & Multi‑tenant
-PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pentru spații/proiecte/canale.
-RLS pe tabele (tenant_id + membership), audit evenimente (Kafka → cerniq).
-Serverul MCP aplică aceleași politici de autorizare, asigurând că agenții AI nu pot executa acțiuni nepermise utilizatorului.
-## 4) Observabilitate
-OTEL (traces pentru WS, workflows, DB), logs structurate, metrics: message fanout latency, WS connections, task cycle time, approval SLA breachs.
-NOU: Metrics pentru Nivelul 3 (timp de răspuns agent AI, utilizare unelte MCP).
-## 5) Integrare cu suita
-MF remote: web poate fi încărcat în cp/suite-shell.
-API: tRPC + OpenAPI; gateway global compune rute și policies.Integrare AI (Nivel 3): Consumator principal al cp/ai-hub (Cap 3) (pt. agenți LangGraph/CrewAI). Expune un Server MCP cu "unelte" (tools) pentru a orchestra Nivelul 1 și 2.
-Servicii BPM On-Request: Expune API-uri pentru serviciul monetizabil de dezvoltare fluxuri customizate pe Temporal, permițând clienților să solicite și să monitorizeze noi automatizări.
-Evenimente: Kafka (collab.task.created, chat.message.posted, bpm.approval.pending, agent.flow.generated).
+### 3) Securitate & Multi‑tenant
 
+- PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pentru spații/proiecte/canale.
+- RLS pe tabele (tenant_id + membership), audit evenimente (Kafka → cerniq).
+- Serverul MCP aplică aceleași politici de autorizare, asigurând că agenții AI nu pot executa acțiuni nepermise utilizatorului.
 
-Capitolul 7
-# i-wms.app/ – Warehouse & Inventory (arhitectură și structuri detaliate)
+### 4) Observabilitate flowxify
+
+- OTEL (traces pentru WS, workflows, DB), logs structurate, metrics: message fanout latency, WS connections, task cycle time, approval SLA breachs.
+- NOU: Metrics pentru Nivelul 3 (timp de răspuns agent AI, utilizare unelte MCP).
+
+### 5) Integrare cu restul suitei
+
+- MF remote: web poate fi încărcat în cp/suite-shell.
+- API: tRPC + OpenAPI; gateway global compune rute și policies.Integrare AI (Nivel 3): Consumator principal al cp/ai-hub (Cap 3) (pt. agenți LangGraph/CrewAI). Expune un Server MCP cu "unelte" (tools) pentru a orchestra Nivelul 1 și 2.
+- Servicii BPM On-Request: Expune API-uri pentru serviciul monetizabil de dezvoltare fluxuri customizate pe Temporal, permițând clienților să solicite și să monitorizeze noi automatizări.
+- Evenimente: Kafka (collab.task.created, chat.message.posted, bpm.approval.pending, agent.flow.generated).
+
+## Capitolul 7 - i-wms.app/ – Warehouse & Inventory (arhitectură și structuri detaliate)
+
 Scop: WMS multi‑depozit, multi‑tenant, cu optimizare AI (slotting dinamic, prognoză cerere, planificare picking), orchestrare WES (roboți & forță de muncă), recepții (ASN), NIR românesc, putaway ghidat, picking (Single/Multi/Batch/Wave/Streaming), FEFO/FIFO, lot/serie/expirări, inventariere (cycle count), packing, etichetare (ZPL), expediții (curieri RO), transferuri inter‑depozit, 3PL billing și sincronizare e‑commerce/OMS/POS.
-## 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + servicii + RF
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + servicii + RF
+
+```text
 i-wms.app/
 ├── package.json
 ├── tsconfig.json
@@ -1903,39 +1959,40 @@ latență
 ├── zpl/
 ├── csv/
 └── json/
-## 2) Fluxuri funcționale cheie (Actualizat cu AI)
-Inbound: ASN → recepție → NIR (RO) → putaway ghidat (AI slotting & capacități).
-
-Inventory: stoc granular (lot/serie/exp), RLS per tenant & depozit, transferuri, ajustări, cycle counts.
-
-Outbound: AI wave planning (order streaming) → picking optimizat (zone/batch/path) → packing (dim weight) → etichete curier → tracking.
-
-Replenishment: AI Demand Forecast (bazat pe cp/ai-hub ) vs. reguli min/max statice, tasking automat.
-
-Orchestrare WES: NOU: Alocare dinamică a taskurilor (roboți & operatori) prin Agent AI Supervisor (conectat la cp/ai-hub ).
-
-3PL: servicii tarifabile, rate cards, export facturi către numeriqo.app.
-## 3) Securitate & Multi‑tenant
-PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pe depozit/zonă.
-
-Audit evenimente operaționale → Kafka (cerniq.app).
-## 4) Observabilitate
-OTEL (traces pentru RF, picking, carriers, AI models), logs structurate, metrics: UPH/LPH, lead time inbound/outbound, acuratețe stoc, acuratețe prognoză AI.
-## 5) Integrare cu suita
-MF remote: apps/web poate fi încărcat în cp/suite-shell.
-
-API: tRPC + OpenAPI; gateway global compune rute și policies.
-
-Integrare AI: Consumator principal al cp/ai-hub (Cap 3)  pentru modele de prognoză, optimizare și agenți.
-
-Evenimente: Kafka (wms.inbound.received, wms.pick.completed, wms.shipped, wms.ai.recommendation.generated).
-
-
-Capitolul 8
-# `mercantiq.app/` – Commerce & Sales Ops (arhitectură și structuri detaliate)
-> Scop: aplicație stand‑alone pentru cataloage produse, cotații/ofertare B2B, coș/checkout, comenzi, plăți, promoții, prețuri dinamice, integrare marketplace & e‑commerce, sincron stoc (cu `i-wms.app`), facturare *lite* (export spre `numeriqo.app`), CRM & lead hand‑off (`vettify.app`), asistent AI pentru oferte și recomandări. Multi‑tenant, RBAC & entitlements prin `cp/identity`/`cp/licensing`.
-## 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + engines + services
 ```
+
+### 2) Fluxuri funcționale cheie (Actualizat cu AI)
+
+- Inbound: ASN → recepție → NIR (RO) → putaway ghidat (AI slotting & capacități).
+- Inventory: stoc granular (lot/serie/exp), RLS per tenant & depozit, transferuri, ajustări, cycle counts.
+- Outbound: AI wave planning (order streaming) → picking optimizat (zone/batch/path) → packing (dim weight) → etichete curier → tracking.
+- Replenishment: AI Demand Forecast (bazat pe cp/ai-hub ) vs. reguli min/max statice, tasking automat.
+- Orchestrare WES: NOU: Alocare dinamică a taskurilor (roboți & operatori) prin Agent AI Supervisor (conectat la cp/ai-hub ).
+- 3PL: servicii tarifabile, rate cards, export facturi către numeriqo.app.
+
+### 3) Securitate & Multi‑tenant i-wms
+
+- PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pe depozit/zonă.
+- Audit evenimente operaționale → Kafka (cerniq.app).
+
+### 4) Observabilitate i-wms
+
+OTEL (traces pentru RF, picking, carriers, AI models), logs structurate, metrics: UPH/LPH, lead time inbound/outbound, acuratețe stoc, acuratețe prognoză AI.
+
+### 5) Integrare cu suita
+
+- MF remote: apps/web poate fi încărcat în cp/suite-shell.
+-API: tRPC + OpenAPI; gateway global compune rute și policies.
+-Integrare AI: Consumator principal al cp/ai-hub (Cap 3)  pentru modele de prognoză, optimizare și agenți.
+-Evenimente: Kafka (wms.inbound.received, wms.pick.completed, wms.shipped, wms.ai.recommendation.generated).
+
+## Capitolul 8 - `mercantiq.app/` – Commerce & Sales Ops (arhitectură și structuri detaliate)
+
+> Scop: aplicație stand‑alone pentru cataloage produse, cotații/ofertare B2B, coș/checkout, comenzi, plăți, promoții, prețuri dinamice, integrare marketplace & e‑commerce, sincron stoc (cu `i-wms.app`), facturare *lite* (export spre `numeriqo.app`), CRM & lead hand‑off (`vettify.app`), asistent AI pentru oferte și recomandări. Multi‑tenant, RBAC & entitlements prin `cp/identity`/`cp/licensing`.
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + engines + services
+
+```text
 mercantiq.app/
 ├── package.json
 ├── tsconfig.json
@@ -2189,28 +2246,37 @@ mercantiq.app/
 │   └── b2b-quote-to-cash.spec.ts          # quote→checkout→payment→order
 └── fixtures/{catalog/,orders/,payments/}
 ```
-## 2) Fluxuri funcționale cheie
+
+### 2) Fluxuri funcționale cheie
+
 - **Catalog & Căutare**: atribute, variante, prețuri, dispo stoc (via `i-wms.app`), FTS + facete.
 - **Cotații B2B**: generare, discounturi negociate, aprobare (integrare `flowxify`), conversie în comenzi.
 - **Coș & Checkout**: cupoane, taxe, transport, intents de plată (Stripe/Revolut), 3DS, webhooks.
 - **Comenzi**: alocare multi‑depozit, tracking transport, retururi; facturare *lite* → export `numeriqo`.
 - **Recomandări/AI**: cross/upsell, reprice suggestions (semnale din `cerniq`).
-## 3) Securitate & Multi‑tenant
+
+### 3) Securitate & Multi‑tenant mercantiq
+
 - PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pe canale/segmente.
 - RLS per tenant, audit evenimente vânzare → Kafka (`cerniq.app`).
-## 4) Observabilitate
+
+### 4) Observabilitate mercantiq
+
 - OTEL (traces pentru checkout, payment, sync), logs structurate, metrics: conversie, latency plăți, erori webhooks, out‑of‑stock rate.
-## 5) Integrare cu suita
+
+### 5) Integrare cu restul suitei a mercantiq
+
 - MF remote: `apps/web` încărcabil în `cp/suite-shell`.
 - API: tRPC + OpenAPI; gateway global compune rute/policies.
 - Evenimente: Kafka (`commerce.order.created`, `commerce.payment.succeeded`).
 
+## Capitolul 9 - `numeriqo.app/` – Accounting, Tax (RO), HR & Payroll – arhitectură și structuri detaliate
 
-Capitolul 9
-# `numeriqo.app/` – Accounting, Tax (RO), HR & Payroll – arhitectură și structuri detaliate
 > Scop: aplicație stand‑alone și modul al suitei pentru **contabilitate românească** (OMFP 1802/2014, plan de conturi, partidă dublă, registre, TVA – D300/D394/D390, SAF‑T D406), **facturare pro + e‑Factura**, **HR & Payroll** (contracte, REGES‑Online, D112), politici salarizare, pontaj, concedii, tichete, rețineri, exporte bancare, raportări către ANAF/BNR/IM. Multi‑tenant, RBAC, RLS pe entități contabile.
-## 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + domenii + servicii
-```
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + domenii + servicii
+
+```text
 numeriqo.app/
 ├── package.json
 ├── tsconfig.json
@@ -2449,7 +2515,9 @@ numeriqo.app/
 │   └── ro-compliance-flows.spec.ts          # factură→jurnal→TVA→SAF-T→D112
 └── fixtures/{invoices/,employees/,saft/}
 ```
-## 2) Modele de date – esențiale (Drizzle)
+
+### 2) Modele de date – esențiale (Drizzle)
+
 - **Cont**: `code`, `name`, `type` (`asset|liability|equity|income|expense|bifunctional`), `parent`, `currency`, `isAnalytic`, `tenantId`.
 - **NotaContabila**: `date`, `period`, `lines[]` (cont, debit, credit, descriere, VATLink?), `docRef` (factură/încasare/plată), `locked`.
 - **Jurnal**: tip (`sales|purchases|cash|bank|general`), `sequence`, `documentNo`, legături la note.
@@ -2457,27 +2525,36 @@ numeriqo.app/
 - **FixedAsset**: `class`, `method`, `lifetime`, `residual`, `startDate`, `depreciationPlan[]`.
 - **Invoice**: `series`, `number`, `partner`, `lines[]` (cont venit/chelt., TVA), `due`, `status`, `ubl`.
 - **Employee/Contract/Timesheet/PayrollRun/Payslip**: câmpuri standard + istorice.
-## 3) Fluxuri funcționale cheie
+
+### 3) Fluxuri funcționale cheie
+
 - **Partidă dublă**: orice document generează **note contabile echilibrate** (debit=credit). Lock perioade la închidere.
 - **TVA**: setări cote/regimuri, marcaj „TVA la încasare”, reconciliere D300↔D394↔D390, validări VIES.
 - **SAF‑T (D406)**: builder XML pe schemele RO, validări de consistență și raport erori; export lunar/trimestrial/anual după categorie contribuabil.
 - **HR**: gestionare CIM, reviste contracte, generare export hibrid REGES‑Online și integrare API; pontaj cu coduri muncă; politici concedii. - **Payroll**: motor brut→net (contribuții, impozit, deduceri), fluturași, fișiere bancare, D112.
 - **Invoicing Pro**: e‑Factura (upload & status), serii numerotare, șabloane PDF/UBL.
-## 4) Securitate & Multi‑tenant
+
+### 4) Securitate & Multi‑tenant
+
 - PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing) pe entități (companie, jurnal, perioadă). RLS pe tabele cu `tenantId` + `companyId`.
-## 5) Observabilitate
+
+### 5) Observabilitate
+
 - OTEL (traces pentru posting, generatoare D‑forms, payroll), logs structurate, KPIs contabile, alerte reconciliere TVA și erori SAF‑T/D112.
-## 6) Integrare cu suita
+
+### 6) Integrare cu suita
+
 - MF remote: `apps/web` încărcabil în `cp/suite-shell`.
 - API: tRPC + OpenAPI; gateway global compune rute și policies.
 - Evenimente: Kafka (`acct.entry.posted`, `vat.return.generated`, `hr.payroll.closed`).
 
+## Capitolul 10 - # `triggerra.app/` – Marketing Automation, Intelligence & Decisioning (state‑of‑the‑art)
 
-Capitolul 10
-# `triggerra.app/` – Marketing Automation, Intelligence & Decisioning (state‑of‑the‑art)
 > Scop: aplicație stand‑alone și modul de marketing al suitei. Concentrează **automation**, **CDP first‑party**, **analytics avansat** (MTA + MMM), **decisioning în timp real**, **journey orchestration** (Temporal), **SEO & Product Knowledge Graph** ca „source of truth”, **data clean rooms** și **server‑side tagging**. Integrare nativă cu `vettify.app` (CRM), `mercantiq.app` (commerce), `i-wms.app` (stoc/logistică), `numeriqo.app` (costuri/margini), `cerniq.app` (BI Hub).
-## 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + engines + analytics + services
-```
+
+### 1) Structură generală (6–7 niveluri, până la fișiere) – web + API + engines + analytics + services
+
+```text
 triggerra.app/
 ├── package.json
 ├── tsconfig.json
@@ -2717,14 +2794,18 @@ triggerra.app/
 │   └── full-funnel-journey.spec.ts            # ad→landing→lead→order→LTV
 └── fixtures/{events/,schema/,feeds/,adh/}
 ```
-## 2) Modele de date – esențiale (Drizzle)
+
+### 2) Modele de date – esențiale (Drizzle) triggerra
+
 - **Profile** (CDP): identități (email, phone, deviceId, cookieId), `traits` (JSONB tipizat), consimțământ (TCF 2.2), `tenantId`.
 - **Events**: evenimente normalizate (view, add_to_cart, checkout, purchase, lead_submitted), sursă (web/app/backend), UTM, campaign/adset/ad, `profileId`.
 - **Audiences**: reguli (inclusion/exclusion), dimensiune, refresh policy, export destinations (adtech/CDP extern).
 - **Assets**: creativ, varianta, canal, budget cap, flight window.
 - **Experiments**: design (A/B/n, bandit, uplift), `metrics` (primary/secondary), trafic alocat.
 - **SEO/Feeds**: `productId`, schema JSON‑LD generată, stări feed (GMC/Meta/marketplace), erori validator.
-## 3) Fluxuri funcționale cheie
+
+### 3) Fluxuri funcționale cheie triggerra
+
 - **CDP & Tagging**: colectare server‑side (GTM‑SS) → normalizare → îmbogățire (UTM/geo) → scriere în Events; rezolvare identități; consimțământ TCF aplicat înainte de activări.
 - **Journeys**: templatizate (bun‑venit, abandon coș, replenishment, winback); orchestrare cu Temporal; canale: email/SMS/WhatsApp/ads audiences; throttling & frequency caps.
 - **Attribution**: MTA (Markov/Shapley/time‑decay) pentru digital; MMM (Robyn/LightweightMMM) pentru mix cross‑canal + optimizator bugete.
@@ -2732,21 +2813,28 @@ triggerra.app/
 - **SEO & Source‑of‑Truth**: generator JSON‑LD (schema.org Product) + feeduri GMC/Meta; reconciliere PIM↔web; validare conform ghidurilor Google.
 - **Research & Enrichment**: crawlers etici (robots.txt), parsare schema.org, agregare specificații/preturi; scor calitate + deduplicare; publică "Produse de Date" (ex. marketing.trends) consumabile de cerniq.app (Data Mesh).
 - **Clean Rooms & Privacy**: Ads Data Hub / BigQuery DCR pentru analize agregate; PII redaction/hashing; guvernanță acces.
-## 4) Securitate & Multi‑tenant
+
+### 4) Securitate & Multi‑tenant triggerra
+
 - PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing). RLS pe `tenantId` + controale pe canale & destinații. Audit complet pentru activări & exporturi.
-## 5) Observabilitate
+
+### 5) Observabilitate triggerra
+
 - OTEL (traces pentru journeys, activări, MTA/MMM joburi), logs structurate, metrics: delivery, uplift, ROAS, cost per event, erori feeds.
-## 6) Integrare în suita
+
+### 6) Integrare în suita triggerra
+
 - MF remote: `apps/web` încărcabil în `cp/suite-shell`.
 - API: tRPC + OpenAPI; gateway global compune rute/policies.
 - Evenimente: Kafka (`marketing.event.ingested`, `marketing.journey.sent`, `marketing.attribution.updated`).
 
+## Capitolul 11 - `vettify.app/` – CRM, Relationships & Firmographics (EU‑grade)
 
-Capitolul 11
-# `vettify.app/` – CRM, Relationships & Firmographics (EU‑grade)
 > Scop: aplicație stand‑alone și modul CRM al suitei, axată pe **prospects/leads/clients/partners/suppliers**, **firmographics RO+UE (oficiale, GDPR‑compliant)**, **identity resolution**, **enrichment automat**, **lead scoring ML & ICP fit**, **sales funnels & pipeline automation**, **outreach multi‑canal**, **data quality & dedup**, **graph‑360 relații**. Integrare nativă cu `triggerra.app` (marketing CDP), `mercantiq.app` (sales orders & quotes), `numeriqo.app` (invoicing/account status), `cerniq.app` (BI) și `i‑wms.app` (livrări).
-## 1) Structură generală (6–7 niveluri) – web + API + enrichment + graph + services
-```
+
+### 1) Structură generală (6–7 niveluri) – web + API + enrichment + graph + services
+
+```text
 vettify.app/
 ├── package.json
 ├── tsconfig.json
@@ -2976,7 +3064,9 @@ vettify.app/
 │   └── lead‑to‑opportunity.spec.ts               # import→enrich→route→close
 └── fixtures/{leads/,accounts/,emails/}
 ```
-## 2) Modele de date – esențiale (Drizzle + Graph)
+
+### 2) Modele de date – esențiale (Drizzle + Graph)
+
 - **Lead**: identități brute (email/phone/domain/url), sursă, `status`, `score`, `owner`, `tenantId`.
 - **Account**: companie; CUI/TVA, CAEN, dimensiune, venituri, adrese, website, tehnologie (techgraph), `riskProfile`.
 - **Contact**: persoană; consimțământ by‑channel, preferințe, job title, seniority, `gdprFlags`.
@@ -2984,7 +3074,9 @@ vettify.app/
 - **Activity**: tip (call/email/meeting/task), outcome, nextStep, linked entities.
 - **EnrichmentSource**: vendor, fields coverage, trust score, freshness, provenance.
 - **Graph (Neo4j)**: noduri `ACCOUNT`, `CONTACT`, `LEAD`, relații `WORKS_AT`, `OWNS`, `PARTNERS_WITH`, `CHILD_OF` (grupuri), `INTERACTED`.
-## 3) Fluxuri funcționale cheie
+
+### 3) Fluxuri funcționale cheie vettify
+
 - **Identity Resolution & Dedupe**: matching determinist (email, domain+CUI) + fuzzy (nume, adresă) cu scor; **merge survivorship** pe reguli (freshness, trust, source priority) + audit lineage.
 - **Firmographics EU‑grade**: prioritizare surse oficiale (RO: CUI/TVA, bilanțuri) + vendori EU (intent, tech install); reconciliere periodică & alerts diferențe.
 - **Enrichment Orchestrator**: Temporal workflows: `enrich.lead` → `enrich.account` → `verify.email` → `score.icp` → `route.owner`. Timeouts & fallbacks per sursă; cache + TTL.
@@ -2992,36 +3084,45 @@ vettify.app/
 - **Outreach Sequences**: multi‑canal (email/SMS/WhatsApp) cu throttling, quiet hours, A/B, reply intent detect; auto‑stop la pozitiv/negativ.
 - **Lead Scoring ML**: features din firmographics, intent signals, web events (Triggerra), istoric vânzări; model binar (close/won) + **uplift** pentru prescriptiv.
 - **Graph360**: vizualizare grupuri, relații între conturi, parteneriate, shareholding; query „path to power” pentru stakeholders; recomandări next‑best‑account.
-## 4) Securitate & Multi‑tenant
+
+### 4) Securitate & Multi‑tenant vettify
+
 - PKCE→OIDC→JWT (cp/identity), RBAC + entitlements (cp/licensing). RLS pe `tenantId`; mascare câmpuri sensibile; export guvernat cu registre de procesare.
 
-## 5) Observabilitate
+### 5) Observabilitate vettify
+
 - OTEL pentru enrichment/identity/outreach; KPIs: coverage, hygiene, conversion lift, reply rate; alerte pentru spike‑uri de bounce sau rate‑limit vendors.
-## 6) Integrare cu suita
+
+### 6) Integrare cu restul suitei a vettify
+
 - MF remote: `apps/web` încărcabil în `cp/suite-shell`.
 - API: tRPC + OpenAPI; gateway global compune rute/policies.
 - Evenimente: Kafka (`crm.lead.created`, `crm.account.enriched`, `crm.sequence.sent`).
-```
-## 7) Seeds & Playbooks (inițiale)
+
+### 7) Seeds & Playbooks (inițiale) vettify
+
 - **ICP Templates** (SaaS/Manufacturing/Commerce) – câmpuri & greutăți scor.
 - **Pipeline Defaults** – stadii + probabilități + SLA per stadiu.
 - **Sequences** – cold outreach (etice, opt‑in), nurture, referral, re‑activation.
-## 8) Config & Policies
+
+### 8) Config & Policies vettify
+
 - **Field Mapping** (import CSV/XLSX, API) cu validatori CUI/IBAN/phone.
 - **Source Priority** – matrice vendor×câmp (firm name, revenue, headcount, NAICS/CAEN etc.).
 - **GDPR** – DPIA/LIA templates, residency EU, TCF v2.2 hooks pentru tracking/activation.
 
+## Capitolul 12 - `geniuserp.app/` – Suite Orchestrator Surface & Tenant Operations
 
-Capitolul 12
-# `geniuserp.app/` – Suite Orchestrator Surface & Tenant Operations
 > Scop: aplicație stand‑alone (public website + customer portal) și „fața” suita **GeniusERP**. Nu dublează Control Plane (CP), ci îl **orchestrază și expune** pentru clienți: onboarding, SSO, management tenanți, abonamente & facturare (front), status & suport, documentație. Integrare strânsă cu `cp/identity`, `cp/licensing`, `gateway/`, `shared/feature-flags`, `shared/ui-design-system`.
 
 - **Public site**: homepage, produse, prețuri, blog/docs, contact, legal.
 - **Customer Portal**: workspace selector, provisioning subdomenii, SSO → **suite-shell**, gestionare licențe, plăți, invitații, audit bazic.
 - **Status & Incidente**: status public, RSS/Atom, istorice incidente, SLO/SLA vizibile.
 - **Docs**: ghiduri, changelog, API docs (agregat din `gateway/openapi`).
-## 1) Structură generală (6–7 niveluri, până la fișiere)
-```
+
+### 1) Structură generală (6–7 niveluri, până la fișiere)
+
+```text
 geniuserp.app/
 ├── package.json
 ├── tsconfig.json
@@ -3217,28 +3318,39 @@ geniuserp.app/
 │   └── signup‑to‑launch.spec.ts                 # signup→provision→SSO→suite‑shell
 └── fixtures/{plans/,tenants/,domains/}
 ```
-## 2) Contracte & Evenimente (interfețe cu CP și suita)
+
+### 2) Contracte & Evenimente (interfețe cu CP și suita)
+
 - **Bridge CP**: `identity.client.ts` (creare utilizator/invitații, SSO settings), `licensing.client.ts` (planuri, entitlements, metering), `billing.client.ts` (checkout/portal), `gateway.client.ts` (OpenAPI union + service discovery).
 - **Events (Kafka)**: `tenant.created`, `tenant.domain.verified`, `license.plan.changed`, `billing.payment.failed`, `user.invited`, `user.accepted`.
-## 3) Fluxuri cheie
+
+### 3) Fluxuri cheie geniuserp.app
+
 - **Onboarding**: signup → verificare domeniu (opțional) → creare tenant → seed defaults → alegere plan trial → invitații → Launch (handoff la `cp/suite-shell`).
 - **SSO Enterprise**: configurare OIDC/SAML, test conexiune, enforce SSO, SCIM provisionare automată.
 - **Provisioning Subdomenii**: verificări DNS (TXT/CNAME), emitere certificate (Traefik ACME), mapare routes.
 - **Billing & Licențe**: checkout, dunning, upgrade/downgrade, seat management, entitlements sincronizate în SDK‑urile app‑urilor.
 - **Docs & API**: agregare OpenAPI din `gateway` + MDX docs, changelog sincronizat din monorepo tags.
-## 4) Securitate & Multi‑tenant
+
+### 4) Securitate & Multi‑tenant geniuserp.app
+
 - PKCE→OIDC→JWT (via `cp/identity`). RLS pe `tenantId` în tabele portal. Guard pentru entitlement la nivel de rută UI + API. Audit trail la acțiuni critice.
-## 5) Observabilitate
+
+### 5) Observabilitate geniuserp.app
+
 - OTEL: traces pentru provisioning/billing; dashboards de funnel (signup→launch), alerte pentru eșec provisioning/dunning > N.
-## 6) Integrare în suita
+
+### 6) Integrare în suita generala a geniuserp.app
+
 - „Launch” deschide `cp/suite-shell` cu tenant context + token SSO. Portalul devine sursa principală pentru operațiuni tenant (users, domains, licenses, billing) — CP rămâne intern (adminită de echipa noastră).
 
+## Capitolul 13 - `gateway/` – API Gateway, BFF & Policy Enforcement (suite‑wide)
 
-Capitolul 13
-# `gateway/` – API Gateway, BFF & Policy Enforcement (suite‑wide)
 > Scop: layer unic de **intrare** în suită pentru UI‑uri (BFF), agregare API‑uri cross‑app (tRPC + OpenAPI), **policy enforcement** (authZ pe roluri + entitlements + tenant RLS), **rate‑limiting & caching**, observabilitate, **schema governance** și **service discovery**. Nu dublează CP; îl folosește (identity/licensing) și compune interfețe stabile pentru clienți interni/externi.
-## 1) Structură generală (6–7 niveluri)
-```
+
+### 1) Structură generală (6–7 niveluri)
+
+```text
 gateway/
 ├── package.json
 ├── tsconfig.json
@@ -3450,31 +3562,42 @@ gateway/
 │   └── policies.eval.test.ts
 └── fixtures/{openapi/,trpc/,tokens/}
 ```
-## 2) Fluxuri cheie
+
+### 2) Fluxuri cheie gateway
+
 - **AuthN/AuthZ**: PKCE→OIDC (via `cp/identity`) → JWT validat (JWKS cache) → RBAC + entitlements (via `cp/licensing`) → OPA policies.
 - **BFF**: agregă rute pentru UI (portal, site, shell) și aplică caching+ratelimit atent la tenant/plan.
 - **API Gateway**: unifică **tRPC** (federat) + **OpenAPI** (agregat) și oferă rute REST stabile; transformă răspunsurile și normalizează paginațiile.
 - **Discovery & Health**: registry semiautomat din compose; poller degradează serviciile instabile (circuit breaker).
 - **Schema Governance**: lint/validate specs, versionare evenimente (JSON Schema/Avro), compat check între apps și gateway.
-## 3) Interfețe cu alte module
+
+### 3) Interfețe cu alte module
+
 - `cp/identity` → JWKS, claims, OIDC; **bff/security/jwt.verify.ts** folosește cache + rotație chei.
 - `cp/licensing` → entitlements & metering; **security/entitlement.guard.ts** blochează rutele fără drepturi.
 - `shared/feature-flags` → toggles pentru rollout endpointuri noi.
 - Aplicații stand‑alone → publică `trpc` routers și `openapi` specs; **federation/** le compune.
-## 4) Observabilitate & SLO
+
+### 4) Observabilitate & SLO
+
 - OTEL traces pe hop‑uri (BFF→Gateway→Service), Prometheus metrics (lat, err rate, pXX), dashboards grafana preset.
 - Alarme: `5xx_rate>1%` 5m, `p95_latency>1s` 10m, `auth_fail_spike`.
-## 5) Securitate
+
+### 5) Securitate
+
 - Strict transport security (HSTS), CORS pe allowlist din tenants, rate‑limit adaptiv pe plan, redaction PII în logs, mTLS opțional spre servicii sensibile.
-## 6) Deploy & CI
+
+### 6) Deploy & CI
+
 - Compose per modul + orchestrator root; job CI pentru **openapi build + spectral lint + publish**; contract tests pentru compatibilitate înainte de release.
 
+## Capitolul 14 - `proxy/` – Edge Proxy, Ingress & Routing (Traefik primary, Caddy optional)
 
-Capitolul 14
-# `proxy/` – Edge Proxy, Ingress & Routing (Traefik primary, Caddy optional)
 > Rol: stratul **edge** al suitei GeniusSuite. Face terminare TLS (ACME/LE), rutare pe domenii/subdomenii către serviciile interne (gateway, cp, apps), **forward‑auth** către `cp/identity` (PKCE→OIDC→JWT), **security headers/WAF**, **rate‑limit & buffering**, **HTTP/2 + HTTP/3 (QUIC)**, **WebSocket** pass‑through, **observabilitate**. Mode „hibrid”: *compose per app* + *compose orchestrator root*.
-## 1) Structură director (6–7 niveluri) cu fișiere comentate
-```
+
+### 1) Structură director (6–7 niveluri) cu fișiere comentate
+
+```text
 proxy/
 ├── traefik/                                        # Stack Traefik (primar)
 │   ├── static/                                     # Config static (cerut la boot)
@@ -3622,7 +3745,9 @@ proxy/
 │   └── README.md
 └── README.md                                        # cum se folosește proxy-ul în suită
 ```
-## 2) `traefik/static/traefik.yml` – conținut exemplificativ (comentat)
+
+### 2) `traefik/static/traefik.yml` – conținut exemplificativ (comentat)
+
 ```yaml
 entryPoints:
 web:
@@ -3665,7 +3790,8 @@ addEntryPointsLabels: true
 addServicesLabels: true
 ```
 
-## 3) `traefik/dynamic/routers/geniuserp.yml` – rute (site, portal, status, docs)
+### 3) `traefik/dynamic/routers/geniuserp.yml` – rute (site, portal, status, docs)
+
 ```yaml
 http:
 routers:
@@ -3715,7 +3841,9 @@ loadBalancer:
 servers:
 - url: "http://geniuserp-docs:8083"
 ```
-## 4) `traefik/dynamic/middlewares/oauth-forwardauth.yml` – forward auth (OIDC/JWT)
+
+### 4) `traefik/dynamic/middlewares/oauth-forwardauth.yml` – forward auth (OIDC/JWT)
+
 ```yaml
 http:
 middlewares:
@@ -3725,7 +3853,9 @@ address: "http://forward-auth:3000/check"   # validează JWT (cp/identity JWKS)
 trustForwardHeader: true
 authResponseHeaders: ["X-User-Id","X-User-Roles","X-Tenant-Id"]
 ```
-## 5) Compose (root) – extras `proxy/compose/docker-compose.yml`
+
+### 5) Compose (root) – extras `proxy/compose/docker-compose.yml`
+
 ```yaml
 version: "3.9"
 services:
@@ -3767,30 +3897,39 @@ external: true
 internal:
 external: true
 ```
-## 6) Integrare cu orchestratorul root & per‑app compose
+
+### 6) Integrare cu orchestratorul root & per‑app compose
+
 - **Per‑app**: fiecare aplicație are etichete Docker `traefik.enable=true`, `traefik.http.routers.<app>.rule=Host(...)`, sau folosim **providerul file** (recomandat pentru multi‑tenant) → fișiere generate în `traefik/files/tenants/tenant-<id>.yml` via `scripts/generate-tenant-route.ts`.
 - **Orchestrator root**: atașează toate serviciile pe rețelele `edge` și `internal`, expune Traefik pe 80/443, gestionează ACME centralizat, logs și metrics.
-## 7) Securitate
+
+### 7) Securitate
+
 - **Headers**: HSTS, CSP strict (nonce), Referrer‑Policy, X‑Frame‑Options deny pe portal/admin.
 - **Auth**: `forwardAuth` obligatoriu pentru subdomeniile aplicațiilor (exceptând public/health).
 - **mTLS intern**: pentru servicii sensibile (identity/licensing/gateway‑admin) conform `dynamic/tls/mtls.yml`.
 - **Rate‑limit**: per plan/tenant, protecție DoS; **circuit‑breaker** pe servicii instabile.
 - **Logs**: access log JSON cu redactare PII; trimise la `observability/` (Loki + dashboards).
-## 8) Observabilitate & Testare
+
+### 8) Observabilitate & Testare
+
 - **Metrics**: Prometheus scrape; dashboards Grafana predefinite.
 - **Smoke tests**: `scripts/smoke.sh` execută rute critice (200/302/403) pentru fiecare domeniu.
 - **Health**: liveness/readiness pentru container Traefik + probe pe upstreams.
-## 9) Proceduri operaționale (README)
+
+### 9) Proceduri operaționale (README)
+
 - Adăugare tenant: rulează `scripts/generate-tenant-route.ts`, verifică DNS, reload config.
 - Rotație ACME: `scripts/rotate-acme.sh` (backup → rotate → reload); permisiuni 600 pe `acme.json`.
 - Failover: profil **Caddy** – pornește `caddy/compose/docker-compose.yml` și dezactivează Traefik.
 
+## Capitolul 15 - # `scripts/` – DevOps, CI/CD & Tooling for GeniusSuite (root‑level)
 
-Capitolul 15
-# `scripts/` – DevOps, CI/CD & Tooling for GeniusSuite (root‑level)
 > Rol: colecție unificată de **scripturi operaționale** pentru bootstrap monorepo, orchestrare Docker (model hibrid), baze de date (Drizzle), build & release, QA (e2e, load, security), guvernanță API (OpenAPI + tRPC), provisioning tenanți, observabilitate, și siguranță (secrets, SBoM). Toate scripturile suportă target **global** sau **per‑aplicație** (`--app vettify.app`) și **per‑mediu** (`--env dev|staging|prod`).
-## 1) Arhitectura directorului (6–7 niveluri + fișiere)
-```
+
+### 1) Arhitectura directorului (6–7 niveluri + fișiere)
+
+```text
 scripts/
 ├── README.md                                  # ghid complet: convenții, cum rulezi
 ├── common/                                     # utilitare partajate între scripturi
@@ -3994,7 +4133,9 @@ scripts/
 ├── gs.cmd                                  # Windows shim
 └── README.md
 ```
-## 2) `bin/gs` – CLI unificat (schelet)
+
+### 2) `bin/gs` – CLI unificat (schelet)
+
 ```bash
 #!/usr/bin/env node
 import("../common/lib/args.js").then(async ({ parseArgs }) => {
@@ -4007,33 +4148,40 @@ process.exit(1);
 await mod.default({ app, env, rest });
 });
 ```
-## 3) Exemple de comenzi uzuale (README)
+
+### 3) Exemple de comenzi uzuale (README)
+
 - **Pornește suita minimă pentru onboarding:** `scripts/bin/gs compose up --profile core`
 - **Migrare DB pentru `numeriqo.app` în staging:** `gs db migrate --app numeriqo.app --env staging`
 - **Agregă & publică OpenAPI:** `gs api openapi publish --env prod`
 - **Rulează e2e critice:** `gs qa e2e run --select signup-to-launch`
 - **Creează tenant demo:** `gs provisioning tenants create --plan pro --domain acme.geniuserp.app`
-## 4) Convenții
+
+### 4) Convenții
+
 - Fiecare script **nu scrie** în repo fără prompt (`--yes`) și loghează în `logs/`.
 - Toate scripturile acceptă `--dry-run`.
 - Selectoare: `--app`, `--tag` (nx affected), `--env`, `--profile` (compose), `--tenant`.
-## 5) Integrare cu celelalte module
+
+### 5) Integrare cu celelalte module
+
 - **proxy/**: `compose/sync-proxy.ts` regenerează file-provider din compose‑urile active.
 - **gateway/**: `api/openapi/*` colectează & validează specs; `api/trpc/*` compune routers.
 - **cp/**: `provisioning/*` apelează `identity/licensing` pentru SSO & entitlements.
 - **shared/**: `codegen/*` folosește types & contracts pentru generarea SDK‑urilor.
-## 6) Roadmap
+
+### 6) Roadmap
+
 - Profil **k8s** (Helm charts + skaffold dev loop).
 - `gs doctor` pentru sănătate sistem end‑to‑end.
 - Generare **tenant blueprints** (seturi de module+feature‑flags).
 
+## Capitolul 16 - Database Schema – GeniusSuite (v1 core)
 
-Capitolul 16
-# Database Schema – GeniusSuite (v1 core)
 > Obiectiv: schemă completă **PostgreSQL 18** pentru suita GeniusSuite, optimizată pentru vânzare ca **stand‑alone apps** și ca **suită**. Include tabele, coloane, tipuri ENUM, indici, chei, constrângeri și politici de multi‑tenancy.
 
----
-## 0. Arhitectură date & multi‑tenancy
+### 0. Arhitectură date & multi‑tenancy
+
 - **Model recomandat (profesional, flexibil):**
 - **DB per aplicație** (ex: `db_vettify`, `db_numeriqo`, `db_cerniq`, …) → izolare clară pentru vânzarea stand‑alone.
 - **Schema per tenant** în interiorul fiecărei DB (ex: `tenant_acme`, `tenant_beta`). Pentru resurse globale (config/metadata): schema `public`.
@@ -4046,10 +4194,12 @@ Capitolul 16
 - **RLS ON** la toate tabelele tenant‑scoped. Politici: `USING (tenant_id = current_setting('app.tenant_id', true)::uuid)`; `WITH CHECK` similar.
 - Trigger `updated_at` on update; trigger `insert_tenant_guard` pentru a impune `tenant_id`.
 
----
-## 1. DB: `db_identity` (SSO, utilizatori, org, SAML/OIDC)
+### 1. DB: `db_identity` (SSO, utilizatori, org, SAML/OIDC)
+
 **Schemas:** `public` (global), `auth` (session/index), `admin` (audit).
-### 1.1 Tabele cheie
+
+#### 1.1 Tabele cheie
+
 - `public.tenants`
 - `id uuid PK`, `slug citext UNIQUE`, `name text NOT NULL`, `status enum_tenant_status NOT NULL DEFAULT 'active'`, `plan_id uuid NULL`, `created_at`, `updated_at`
 - **Index:** `ix_tenants_slug` (unique), `ix_tenants_status`
@@ -4086,8 +4236,11 @@ Capitolul 16
 **RLS:** ON pentru `organizations`, `memberships`, `roles`, `role_permissions`, `audit_logs`.
 
 ---
-## 2. DB: `db_licensing` (planuri, entitlements, metering, billing refs)
+
+### 2. DB: `db_licensing` (planuri, entitlements, metering, billing refs)
+
 **Schema:** `public`
+
 - `plans` — **planuri comerciale**
 - `id uuid PK`, `key text UNIQUE`, `name text`, `period enum_billing_period`, `price_cents int`, `currency char(3)`, `max_seats int`, `meta jsonb`, `created_at`, `updated_at`
 - **ENUM:** `enum_billing_period=('monthly','yearly')`
@@ -4111,7 +4264,9 @@ Capitolul 16
 **RLS:** ON (tenant scoping). Triggers de calcul `entitlements` on plan change.
 
 ---
-## 3. DB: `db_vettify` (CRM + Firmographics)
+
+### 3. DB: `db_vettify` (CRM + Firmographics)
+
 **Schemas:** `public` (meta), `tenant_*` (date tenant). Mai jos: tabele tenant‑scoped.
 
 - `accounts` (companii/organizații)
@@ -4144,12 +4299,16 @@ Capitolul 16
 - **ENUM:** `enum_channel_type=('email','phone','whatsapp','linkedin')`
 - `deals` (alias pentru opportunities dacă Mercantiq nu e instalat) – **opțional**
 
-**Relații & constrângeri:** FK la `accounts` și `contacts`; `owner_id` referință la `identity.users` (cross‑db via app layer). **RLS ON**.
+**Relații & constrângeri:** FK la `accounts` și `contacts`; `owner_id` referință la `identity.users` (cross‑db via app layer). **RLS ON**
 
 ---
-## 4. DB: `db_numeriqo` (Accounting RO + HR & Payroll)
+
+### 4. DB: `db_numeriqo` (Accounting RO + HR & Payroll)
+
 **Schemas:** `public` (metadata), `tenant_*` pentru contabilitate și HR.
-### 4.1 Accounting – tabele de bază (partida dublă, RO)
+
+#### 4.1 Accounting – tabele de bază (partida dublă, RO)
+
 - `chart_of_accounts`
 - `id uuid PK`, `tenant_id`, `code text NOT NULL`, `name text NOT NULL`, `type enum_account_type`, `vat_relevant boolean DEFAULT false`, `currency char(3) NULL`, `is_active boolean DEFAULT true`, `parent_id uuid NULL FK → chart_of_accounts.id`, `created_at`, `updated_at`
 - **ENUM:** `enum_account_type=('asset','liability','equity','revenue','expense','bifunctional','offbalance')`
@@ -4183,7 +4342,9 @@ Capitolul 16
 - active imobilizate + rulări amortizare (plan liniar/accelerat)
 
 **Registre:** jurnale vânzări/cumpărări/casă/bancă se pot obține din `journal_entries/lines` + vederi materializate.
-### 4.2 HR & Payroll (RO)
+
+#### 4.2 HR & Payroll (RO)
+
 - `employees`
 - `id uuid PK`, `tenant_id`, `person_no text`, `cnp text ENCRYPTED`, `first_name`, `last_name`, `email`, `phone`, `address jsonb`, `hire_date date`, `fire_date date NULL`, `status enum_emp_status`, `department_id uuid`, `position text`, `contract_type enum_contract_type`, `work_time enum_work_time`, `salary_base numeric(18,2)`, `currency char(3)`, `created_at`, `updated_at`
 - **ENUM:** `enum_emp_status=('active','suspended','terminated')`, `enum_contract_type=('cdi','cdd','part-time','internship')`, `enum_work_time=('full','part')`
@@ -4206,7 +4367,9 @@ Capitolul 16
 **RLS:** ON. **Conformitate RO:** mapări conturi implicite, TVA, declarații (prin exporte).
 
 ---
-## 5. DB: `db_archify` (Document Management)
+
+### 5. DB: `db_archify` (Document Management)
+
 - `documents`
 - `id uuid PK`, `tenant_id`, `title text`, `doc_type enum_doc_type`, `owner_id uuid`, `storage_key text`, `mime_type text`, `size_bytes bigint`, `hash sha256`, `created_at`, `updated_at`
 - **ENUM:** `enum_doc_type=('contract','invoice','po','hr','other')`
@@ -4225,7 +4388,9 @@ Capitolul 16
 - **ENUM:** `enum_sign_provider=('pandadoc','adobe','internal')`, `enum_sign_status=('draft','sent','signed','declined')`
 
 ---
-## 6. DB: `db_flowxify` (BPM + Collaboration + Intranet)
+
+### 6. DB: `db_flowxify` (BPM + Collaboration + Intranet)
+
 - `workflows`
 - `id uuid PK`, `tenant_id`, `key text`, `name text`, `version int`, `definition jsonb`, `status enum_wf_status`, `created_at`, `updated_at`
 - **ENUM:** `enum_wf_status=('active','disabled')`; **UQ:** `(tenant_id, key, version)`
@@ -4241,7 +4406,9 @@ Capitolul 16
 - **ENUM:** `enum_thread_channel=('general','team','project','private')`
 
 ---
-## 7. DB: `db_iwms` (Warehouse & Inventory)
+
+### 7. DB: `db_iwms` (Warehouse & Inventory)
+
 - `warehouses`
 - `id uuid PK`, `tenant_id`, `code text`, `name text`, `address jsonb`, `created_at`
 - **UQ:** `(tenant_id, code)`
@@ -4259,7 +4426,9 @@ Capitolul 16
 - **ENUM:** `enum_move_reason=('receipt','shipment','transfer','adjustment')`
 
 ---
-## 8. DB: `db_mercantiq` (Sales, Invoicing lite, E‑commerce)
+
+### 8. DB: `db_mercantiq` (Sales, Invoicing lite, E‑commerce)
+
 - `quotes`
 - `id uuid PK`, `tenant_id`, `account_id uuid`, `name text`, `status enum_quote_status`, `currency`, `total numeric(18,2)`, `created_at`, `updated_at`
 - **ENUM:** `enum_quote_status=('draft','sent','accepted','rejected','expired')`
@@ -4273,7 +4442,9 @@ Capitolul 16
 - **ENUM:** `enum_pay_provider=('stripe','revolut','pos')`, `enum_payment_status=('pending','paid','failed','refunded')`
 
 ---
-## 9. DB: `db_triggerra` (Marketing Automation)
+
+### 9. DB: `db_triggerra` (Marketing Automation)
+
 - `campaigns`
 - `id uuid PK`, `tenant_id`, `name`, `type enum_campaign_type`, `status enum_campaign_status`, `created_at`, `updated_at`
 - **ENUM:** `enum_campaign_type=('email','sms','whatsapp','ads','mixed')`, `enum_campaign_status=('draft','running','paused','completed')`
@@ -4287,7 +4458,9 @@ Capitolul 16
 - **Index:** `(tenant_id, type, ts DESC)`, GIN `payload`
 
 ---
-## 10. DB: db_cerniq (BI Metastore & Data Mesh Cache)
+
+### 10. DB: db_cerniq (BI Metastore & Data Mesh Cache)
+
 > Notă: db_cerniq nu stochează datele brute (care rămân în DB-urile aplicațiilor). Stochează doar definițiile și cache-ul semantic.
 
 - **data_products** - id uuid PK, tenant_id, source_module text(ex. 'numeriqo'),product_name text(ex. 'invoices_paid'),kafka_topic text, schema_definition jsonb (contractul de date).
@@ -4296,12 +4469,16 @@ Capitolul 16
 - **governance_rules** - id uuid PK, tenant_id, product_id uuid FK, rule_type text, config jsonb.
 
 ---
-## 11. DB: `db_gateway` (policy cache, service registry)
+
+### 11. DB: `db_gateway` (policy cache, service registry)
+
 - `service_registry` — `id`, `name`, `version`, `endpoint`, `health`, `updated_at`
 - `policy_cache` — `id`, `tenant_id`, `route`, `policy jsonb`, `etag`, `updated_at`
 
 ---
-## 12. Indici, constrângeri & performanță (guidelines)
+
+### 12. Indici, constrângeri & performanță (guidelines)
+
 - **Indici compuși** pentru chei de filtrare uzuale: `(tenant_id, status)`, `(tenant_id, created_at DESC)`.
 - **GIN** pentru `jsonb` (path_ops) pe coloane `meta/criteria/payload`.
 - **Partial indexes** pentru stări frecvente: ex. `WHERE is_deleted = false`.
@@ -4311,7 +4488,9 @@ Capitolul 16
 - **PG18 – `JSON_TABLE`:** preferați views care expun coloane relaționale peste `jsonb` (ex. firmographics, events) pentru interogări mai curate și mai rapide.
 
 ---
+
 ## 13. Concluzie: DB comună vs. DB per aplicație
+
 - **Per aplicație (RECOMANDAT):**
 - ✅ Izolare clară → vânzare stand‑alone fără migrare dificilă.
 - ✅ Scalare independentă (tuning, partiționare, failover pe app‑uri critice).
@@ -4324,38 +4503,41 @@ Capitolul 16
 > **Decizie:** **DB per aplicație + schema per tenant**, cu **identity/licensing** comune și **cerniq (Data Mesh)** ca platformă de consum analitic unificată (DB-less).
 
 ---
+
 ## 14. Convenții denumire & tipuri
+
 - Tabele `snake_case`, PK `id`, FK `<entity>_id`.
 - Timpuri `timestamptz`. Bani `numeric(18,2)`; cantități `numeric(18,3/4)`.
 - ENUM‑uri prefixate per domeniu (`enum_invoice_status`, `enum_wf_status`).
 - Toate tabele tenant‑scoped au **RLS ON** + politici standard.
 
 ---
+
 ## 15. Extensii PostgreSQL necesare
+
 `pgcrypto` (hash/encrypt), `citext`, `btree_gin`, `pg_trgm`, `pg_partman` (opțional), `postgis` (dacă e nevoie), `timescaledb` (opțional pentru events/time‑series).
 
 > Notă: **`uuidv7()` este nativ în PostgreSQL 18**, nu mai este necesar `uuid-ossp`/`pg_uuidv7`. `JSON_TABLE` este disponibil fără extensii.
 
 ---
+
 ## 16. Migrate & seeds (Drizzle)
+
 - Migrations versionate pe fiecare DB; seeds minime: roluri default, planuri, chart of accounts (RO), VAT codes, payroll pay items.
 
 > Versiunea acestui schelet: **v1 core**. Pentru extindere (ex: e‑Factura detaliu, SAF‑T, modele HR avansate, E‑commerce complet) se pot adăuga sub‑canvasuri pe module.
 
-
-# Capitolul 17
-
-# Program de implementare pe faze – GeniusSuite
+## Capitolul 17 - Program de implementare pe faze – GeniusSuite
 
 Structură generală de implementare, fiecare canvas = o fază. În fiecare fază avem subfaze (F1.1..Fn.m) care acoperă structura + scripturile din canvasul dedicat. Ordonarea ține cont de dependențe (Fundație/Auth/CP înaintea apps) și de livrabile incrementale (MVP → Hardening → GA).
 
-## F0 - Faza 0 — Fundația: Guvernanță, DevEx, DB & Scripts
+### F0 - Faza 0 — Fundația: Guvernanță, DevEx, DB & Scripts
 
 Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate proiectele.
 
-### F0.1 Monorepo & Tooling: NX + pnpm, workspaces, standard TS/ESLint/Prettier, commit hooks.
+#### F0.1 Monorepo & Tooling: NX + pnpm, workspaces, standard TS/ESLint/Prettier, commit hooks
 
-#### F0.1.1
+##### F0.1.1
 
 ```json
 {
@@ -4378,7 +4560,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.2 
+##### F0.1.2
 
 ```json
 {
@@ -4399,7 +4581,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.3
+##### F0.1.3
+
 ```json
 {
   "F0.1.3": {
@@ -4419,7 +4602,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.4
+##### F0.1.4
+
 ```json
 {
   "F0.1.4": {
@@ -4439,7 +4623,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.5
+##### F0.1.5
 
 ```json
 {
@@ -4460,7 +4644,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.6 
+##### F0.1.6
 
 ```JSON
  {
@@ -4489,7 +4673,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.7
+##### F0.1.7
 
 ```JSON
  {
@@ -4518,7 +4702,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.8
+##### F0.1.8
 
 ```JSON
  {
@@ -4549,7 +4733,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.9
+##### F0.1.9
 
 ```JSON
  {
@@ -4575,7 +4759,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.10
+##### F0.1.10
 
 ```JSON
  {
@@ -4596,7 +4780,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.11
+##### F0.1.11
 
 ```JSON
  {
@@ -4617,7 +4801,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.12
+##### F0.1.12
 
 ```JSON
  {
@@ -4644,7 +4828,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.13
+##### F0.1.13
 
 ```JSON
   {
@@ -4687,7 +4871,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.14
+##### F0.1.14
 
 ```JSON
   {
@@ -4712,7 +4896,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.15
+##### F0.1.15
 
 ```JSON
   {
@@ -4741,7 +4925,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.16
+##### F0.1.16
 
 ```JSON
   {
@@ -4768,7 +4952,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.17
+##### F0.1.17
 
 ```JSON
   {
@@ -4796,7 +4980,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.18
+##### F0.1.18
 
 ```JSON
   {
@@ -4860,7 +5044,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.19
+##### F0.1.19
 
 ```JSON
   {
@@ -4898,7 +5082,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.20
+##### F0.1.20
 
 ```JSON
   {
@@ -4928,7 +5112,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.21
+##### F0.1.21
 
 ```JSON
   {
@@ -4972,7 +5156,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.22
+##### F0.1.22
 
 ```JSON
   {
@@ -5011,7 +5195,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.23
+##### F0.1.23
 
 ```JSON
   {
@@ -5042,7 +5226,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.24
+##### F0.1.24
 
 ```JSON
   {
@@ -5073,7 +5257,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.25
+##### F0.1.25
 
 ```JSON
   {
@@ -5104,7 +5288,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.26
+##### F0.1.26
 
 ```JSON
   {
@@ -5135,7 +5319,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.27
+##### F0.1.27
 
 ```JSON
   {
@@ -5172,7 +5356,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.28
+##### F0.1.28
 
 ```JSON
   {
@@ -5209,7 +5393,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.29
+##### F0.1.29
 
 ```JSON
   {
@@ -5269,7 +5453,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.30
+##### F0.1.30
 
 ```JSON
   {
@@ -5300,7 +5484,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.31
+##### F0.1.31
 
 ```JSON
   {
@@ -5331,7 +5515,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.32
+##### F0.1.32
 
 ```JSON
   {
@@ -5381,7 +5565,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.33
+##### F0.1.33
 
 ```JSON
   {
@@ -5415,7 +5599,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.34
+##### F0.1.34
 
 ```JSON
   {
@@ -5446,7 +5630,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.35
+##### F0.1.35
 
 ```JSON
   {
@@ -5479,7 +5663,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.36
+##### F0.1.36
 
 ```JSON
   {
@@ -5511,7 +5695,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.37
+##### F0.1.37
 
 ```JSON
   {
@@ -5549,7 +5733,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.38
+##### F0.1.38
 
 ```JSON
   {
@@ -5574,7 +5758,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   },
 ```
 
-#### F0.1.39
+##### F0.1.39
 
 ```JSON
   {
@@ -5606,7 +5790,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.40
+##### F0.1.40
 
 ```JSON
   {
@@ -5637,7 +5821,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.41
+##### F0.1.41
 
 ```JSON
   {
@@ -5670,7 +5854,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.42
+##### F0.1.42
 
 ```JSON
   {
@@ -5703,7 +5887,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
  ```
 
-#### F0.1.43
+##### F0.1.43
 
 ```JSON
   {
@@ -5736,7 +5920,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.44
+##### F0.1.44
 
 ```JSON
   {
@@ -5769,7 +5953,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.45
+##### F0.1.45
 
 ```JSON
   {
@@ -5822,7 +6006,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.46
+##### F0.1.46
 
 ```JSON
   {
@@ -5897,7 +6081,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.47
+##### F0.1.47
 
 ```JSON
   {
@@ -5947,7 +6131,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.48
+##### F0.1.48
 
 ```JSON
   {
@@ -5995,7 +6179,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.49
+##### F0.1.49
 
 ```JSON
   {
@@ -6060,7 +6244,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.50
+##### F0.1.50
 
 ```JSON
   {
@@ -6102,7 +6286,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.51
+##### F0.1.51
 
 ```JSON
   {
@@ -6144,7 +6328,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-#### F0.1.52
+##### F0.1.52
+
 ```JSON
   {
   "F0.1.52": {
@@ -6196,7 +6381,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-#### F0.1.53
+##### F0.1.53
 
 ```JSON
   {
@@ -6240,7 +6425,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry.
+### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry
 
 #### F0.2.1
 
@@ -7413,7 +7598,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază.
+### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază
 
 #### F0.3.1
 
@@ -8268,7 +8453,6 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 },
 ```
 
-
 #### F0.3.35
 
 ```JSON
@@ -8963,154 +9147,115 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-
-### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing.
-
+### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
 
 F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
 
-
 F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
-
 
 F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db.
 
-
 F0.8 CI & QA Scripts: smoke/load/security scripts, canary.
-
 
 F0.9 Schemă DB Comună: Identity/Licensing/Gateway (crea/upgrade DB comune: uuidv7, RLS, indici).
 
-
 F0.10 Schemă DB per App: vettify, numeriqo, archify, flowxify, iwms, mercantiq, triggerra – aplicare scheme + seeds minime.
 
+F0.11 Schemă DB BI: cerniq_warehouse (metastore/cache) + joburi ETL inițiale.
 
-F0.11 Schemă DB BI: cerniq_warehouse (metastore/cache) + joburi ETL inițiale. 
-
-
-Deliverables: repo inițial, pipelines verzi, DB-uri funcționale (migrate & seed), „one‑command up” pentru profile dev. 
+Deliverables: repo inițial, pipelines verzi, DB-uri funcționale (migrate & seed), „one‑command up” pentru profile dev.
 Criterii acceptare: pnpm i && pnpm build trece global; docker compose -f compose.yml up pornește Traefik+observability; gs db migrate funcțional.
 
 F1 - Faza 1 — Shared (Canvas: „Shared”)
 Obiectiv: biblioteci comune reutilizabile.
 F1.1 UI Design System: structura components/primitives/layouts/tokens/themes, Storybook, teste vizuale.
 
-
 F1.2 Feature Flags: server+client SDK, storage provider, UI admin, tRPC/OpenAPI.
-
 
 F1.3 Auth Client: PKCE, OIDC, JWT mgmt, hooks React, guards RBAC/ABAC, interceptors.
 
-
 F1.4 Types & Contracts: domain types, DTOs, events (Kafka), validation (Zod), errors, utils.
 
+F1.5 Integrations & Common: clienți ANAF/BNR/Stripe etc. + utilitare.
 
-F1.5 Integrations & Common: clienți ANAF/BNR/Stripe etc. + utilitare. 
-
-
-Deliverables: pachete @shared/* publicate intern, acoperire teste ≥70%. 
+Deliverables: pachete @shared/ publicate intern, acoperire teste ≥70%.
 Criterii acceptare: toate apps pot importa din @shared/* fără breaking.
 
 F2 - Faza 2 — Control Plane (Canvas: „CP”)
 Obiectiv: nucleu suite: shell MF, admin, login, identity, licensing, analytics-hub, ai-hub.
 F2.1 Suite Shell: MF container, registry, routing, fallback, theming per tenant.
 
-
 F2.2 Suite Login: flux PKCE → JWT, MFA, reset, consimțământ; pagini gata de brand-uit.
-
 
 F2.3 Identity: SuperTokens, OIDC provider, memberships/roles, RLS policies în DB identity.
 
-
 F2.4 Licensing: planuri, features, entitlements, metering + SDK client.
-
 
 F2.5 Analytics-Hub (skeleton): colectori, ingestion, semantic layer minimal.
 
-
 F2.6 AI-Hub (skeleton): endpoints chat/embeddings + policy & quota.
 
-
-Deliverables: acces unificat în suita, provisioning tenant, licențe funcționale. 
+Deliverables: acces unificat în suita, provisioning tenant, licențe funcționale.
 Criterii acceptare: login funcțional, RBAC enforce, license gates active, shell încarcă remote apps.
 
 F3 - Faza 3 — Gateway (Canvas: „gateway”)
 Obiectiv: strat unificat de acces API.
 F3.1 BFF & API Gateway: agregare servicii, rate limit, caching, schema validation.
 
-
 F3.2 tRPC/OpenAPI: contract federation, doc UI (Scalar), versionare.
-
 
 F3.3 Policies: access policies per route/tenant/entitlement.
 
-
-Deliverables: endpoint stabil pentru frontends; docs centralizate. 
+Deliverables: endpoint stabil pentru frontends; docs centralizate.
 Criterii acceptare: conformance tests cross-app, latență sub praguri definite.
 
 F4 - Faza 4 — Proxy (Canvas: „proxy”)
 Obiectiv: edge routing & TLS.
 F4.1 Traefik: routers/services/middlewares + certificates.
 
-
 F4.2 Alternative Caddy (profil): config paralel pentru fallback.
 
-
-Deliverables: domenii & subdomenii funcționale, HTTPS. 
+Deliverables: domenii & subdomenii funcționale, HTTPS.
 Criterii acceptare: health-check extern OK, canary routes funcționale.
 
 F5 - Faza 5 — Archify (Canvas: „archify.app”)
 Obiectiv: DMS: upload, versiuni, OCR, e‑sign.
 F5.1 DB & Storage: tabele, versiuni, tags, storage drivers (din F0.10).
 
-
 F5.2 OCR Pipeline: cozi/worker, statusuri, extragere text.
-
 
 F5.3 Semnături: integrare PandaDoc/adapters.
 
-
 F5.4 UI & Permisiuni: views, căutare, ACL.
 
-
-Deliverables: MVP gestionare documente multi-tenant. 
+Deliverables: MVP gestionare documente multi-tenant.
 Criterii acceptare: upload→OCR→search→sign flow end‑to‑end.
 
 F6 - Faza 6 — Numeriqo (Canvas: „numeriqo.app”)
 Obiectiv: Producător Date #1: contabilitate RO + HR/Payroll.
 F6.1 Accounting Core: plan de conturi, jurnale, înregistrări partida dublă, TVA.
 
-
 F6.2 Invoicing PRO & e‑Factura/SAF‑T: generare, validare, export.
-
 
 F6.3 HR & Payroll & REGES‑Online (faza hibrid):
 F6.3.1 Achiziție și integrare nomenclatoare: descărcarea, parsarea și actualizarea periodică a nomenclatoarelor oficiale (COR, SIRUTA, temeiuri de încetare/suspendare, tipuri de contracte) din sursa reges‑ro/integrare.
 
-
 F6.3.2 Mapare model de date: construirea și menținerea tabelului de mapare între câmpurile interne din GeniusERP și modelul de date REGES‑Online, pe baza documentației inferate.
-
 
 F6.3.3 Motor de validare locală: implementarea unui serviciu de validare locală care aplică regulile de business (de exemplu: salariu minim, durată program, coduri COR/SIRUTA valide) și utilizează nomenclatoarele; blocarea exportului la apariția erorilor.
 
-
 F6.3.4 Generare fișiere REGES (JSON/XML): dezvoltarea funcției de serializare pentru export în format JSON (și XML ca alternativă) pentru operațiunile de HR selectate; creare UI/UX dedicat care afișează operațiunile ne‑raportate și permite selecția lor; testarea fișierelor generate în mediul de test REGES‑Online și redactarea unui ghid pas‑cu‑pas pentru clienți privind generarea și upload‑ul manual.
-
 
 F6.4 Integrare API REGES‑Online (faza completă):
 F6.4.1 Obținere documentație și autorizări: contactarea oficială a Inspecției Muncii pentru a obține specificațiile API și accesul la mediul de test; pregătirea pachetului juridic de „prestator” și a actelor adiționale; gestionarea procesului de delegare și colectarea credențialelor pentru fiecare client.
 
-
 F6.4.2 Management credențiale: implementarea unui mecanism securizat (vault) pentru stocarea perechii (ID_Utilizator, ID_Angajator) asociate fiecărui client; dezvoltarea unui flux de colectare a acestor chei prin portalul clientului.
-
 
 F6.4.3 Client API și transmitere automată: dezvoltarea serviciului backend care autentifică și transmite automat operațiunile (angajare, modificare, încetare) către endpoint‑urile REGES‑Online; implementarea mecanismelor de retry cu exponential backoff pentru erorile 5xx și logica de reconciliere prin apeluri GET; gestionarea răspunsurilor și jurnalizare detaliată.
 
-
 F6.4.4 UI/UX și onboarding modul automat: extinderea interfeței GeniusERP cu un buton „Transmitere directă REGES” și un ecran „Jurnal Transmiteri” care afișează statusurile (Succes/Eroare); implementarea procesului de onboarding care permite trecerea clienților de la modul hibrid la modul automat, inclusiv introducerea credențialelor API și validarea lor.
 
-
-Deliverables: balanță/bilanț, registre, state salarii, modul de export hibrid REGES‑Online (fișiere JSON) și integrare API. 
+Deliverables: balanță/bilanț, registre, state salarii, modul de export hibrid REGES‑Online (fișiere JSON) și integrare API.
 Criterii acceptare: verificări contabile standard, declarații exportabile, fișiere REGES generate fără erori și acceptate în portalul REGES‑Online, integrare API funcțională pentru clienții autorizați, jurnal de transmiteri și reconciliere de succes.
 
 F7 - Faza 7 — i‑WMS (Canvas: „i-wms.app”)
