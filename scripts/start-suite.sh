@@ -41,15 +41,17 @@ info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
+ROOT_COMPOSE_FILE="compose.yml"
+OBS_ENV_FILE="shared/observability/.observability.env"
+SUITE_ENV_FILE=".suite.general.env"
+BACKING_ENV_FILE=".backing-services.env"
+
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
     error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
     error "Rulează: cd /var/www/GeniusSuite && bash scripts/start-suite.sh"
     exit 1
 fi
-
-ROOT_COMPOSE_FILE="compose.yml"
-OBS_ENV_FILE="shared/observability/.observability.env"
 
 if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
     error "Nu am găsit $ROOT_COMPOSE_FILE în rădăcina repo-ului."
@@ -63,6 +65,8 @@ log "==================================================================="
 PROXY_ENV_FILE="proxy/.proxy.env"
 PROXY_ENV_LOADED=false
 OBS_ENV_LOADED=false
+SUITE_ENV_LOADED=false
+BACKING_ENV_LOADED=false
 
 command_exists() {
     command -v "$1" >/dev/null 2>&1
@@ -83,6 +87,40 @@ load_proxy_env() {
     source "$PROXY_ENV_FILE"
     set +a
     PROXY_ENV_LOADED=true
+}
+
+load_suite_env() {
+    if [ "${SUITE_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$SUITE_ENV_FILE" ]; then
+        error "Lipsește $SUITE_ENV_FILE. Copiază .suite.general.env.example și actualizează valorile necesare."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1091
+    source "$SUITE_ENV_FILE"
+    set +a
+    SUITE_ENV_LOADED=true
+}
+
+load_backing_env() {
+    if [ "${BACKING_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$BACKING_ENV_FILE" ]; then
+        error "Lipsește $BACKING_ENV_FILE. Copiază .backing-services.env.example și configurează secretele pentru DB/Kafka/Temporal."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1091
+    source "$BACKING_ENV_FILE"
+    set +a
+    BACKING_ENV_LOADED=true
 }
 
 load_obs_env() {
@@ -174,20 +212,15 @@ echo ""
 # ============================================================================
 # FAZA 3: Pornire Backing Services
 # ============================================================================
-log "FAZA 3: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens)..."
+log "FAZA 3: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens, Neo4j) + Exportere..."
 
-# Încărcăm variabilele de mediu
-if [ -f ".backing-services.env" ]; then
-    export $(cat .backing-services.env | grep -v '^#' | xargs)
-fi
-if [ -f ".suite.general.env" ]; then
-    export $(cat .suite.general.env | grep -v '^#' | xargs)
-fi
+load_suite_env
+load_backing_env
 
-# Pornire backing services
-docker compose -f docker-compose.backing-services.yml --env-file .suite.general.env up -d
+docker compose -f "$ROOT_COMPOSE_FILE" up -d postgres_server kafka temporal supertokens-core neo4j \
+    postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
 
-log "Așteptăm PostgreSQL să fie ready (30 secunde)..."
+log "Așteptăm PostgreSQL să fie ready (15 secunde)..."
 sleep 15
 
 # Verificare health PostgreSQL
@@ -204,7 +237,7 @@ for i in {1..10}; do
     sleep 5
 done
 
-log "Așteptăm Kafka, Temporal și SuperTokens să pornească (20 secunde)..."
+log "Așteptăm Kafka, Temporal, SuperTokens, Neo4j și exporterele să pornească (20 secunde)..."
 sleep 20
 
 log "✓ Backing Services pornite și funcționale"
@@ -278,7 +311,7 @@ PROM_HOST=${OBS_PROMETHEUS_DOMAIN:-"prometheus.${PROXY_DOMAIN:-geniuserp.app}"}
 log "Acces servicii:"
 log "  - Grafana:     https://${GRAFANA_HOST} (Traefik) / http://localhost:${OBS_GRAFANA_PORT:-3000}"
 log "  - Prometheus:  https://${PROM_HOST} (Traefik) / http://localhost:${OBS_PROMETHEUS_PORT:-9090}"
-log "  - Temporal UI: http://localhost:8233"
+log "  - Temporal UI: disponibil doar în net_backing_services"
 log "  - Identity:    http://localhost:6250"
 log "  - Licensing:   http://localhost:6300"
 log ""

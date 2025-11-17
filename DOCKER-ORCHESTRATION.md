@@ -11,16 +11,33 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  net_edge (172.20.0.0/16)                                   │
-│  - Gateway/Proxy (Traefik)                                   │
-└─────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  net_suite_internal (172.21.0.0/16)                         │
-│  - CP Services: identity, licensing, ai-hub, etc.            │
-└─────────────────────────────────────────────────────────────┘
-         │                                │
-         ▼                                ▼
+
+### Așteptat: ≥20 Containere
+
+- **4 Backing**: postgres, kafka, temporal, supertokens
+- **4 Exportere**: postgres-metrics, kafka-metrics, temporal-metrics, neo4j-metrics
+- **5 Observability**: prometheus, grafana, loki, promtail, otel-collector
+- **7 CP Services**: identity, licensing, suite-admin, suite-shell, suite-login, ai-hub, analytics-hub
+
+### Test Izolare & Export Metrici
+
+```bash
+# 1) Izolare – rulată din net_observability, trebuie să eșueze cu "bad address"
+docker run --rm --network geniuserp_net_observability busybox ping -c 1 postgres_server
+
+# 2) Exportere – rulările de mai jos trebuie să întoarcă payload Prometheus
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://postgres-metrics:9187/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://kafka-metrics:9308/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://temporal-metrics:8080/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://neo4j-metrics:8080/metrics | head -n 5
+```
+
+### Test Endpoints
+
 ┌──────────────────────────┐    ┌────────────────────────────┐
 │ net_backing_services     │    │  net_observability         │
 │ (172.22.0.0/16)          │    │  (172.23.0.0/16)           │
@@ -28,15 +45,21 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 │ - Kafka                  │    │  - Grafana                 │
 │ - Temporal               │    │  - Loki                    │
 │ - SuperTokens            │    │  - OTEL Collector          │
+│ - Neo4j                  │    │  - Metrics sidecars        │
 └──────────────────────────┘    └────────────────────────────┘
+
 ```
 
 ### Principii Zero-Trust
 
-- **Backing services** (PostgreSQL, Kafka, etc.) nu sunt expuse pe net_edge
+- **Backing services** (PostgreSQL, Kafka, etc.) nu sunt expuse pe net_edge și rămân exclusiv pe net_backing_services
 - **CP services** comunică cu backing services DOAR prin net_backing_services
-- **Observability** colectează metrici prin net_observability
+- **Observability** colectează metrici prin net_observability folosind sidecar/exporter-e dual-homed (ex. postgres-metrics)
 - **Izolare completă** între zone
+
+### Observability Sidecars
+
+Pentru a respecta cerința „acces doar din net_backing_services” și, simultan, pentru a expune metrici în net_observability, fiecare serviciu stateful are acum un **exporter** separat (ex. `postgres-metrics`, `temporal-metrics`). Exporter-ul se conectează la serviciul țintă prin net_backing_services și expune `/metrics` doar în net_observability, eliminând necesitatea de a atașa containerele de date la rețeaua de management.
 
 ## 🌐 Edge Proxy (Traefik)
 
@@ -107,9 +130,13 @@ docker compose -f compose.yml up -d proxy
 
 #### 3. **Pornire Backing Services**
 
+> Note: Asigură-te că există fișierele `.suite.general.env` și `.backing-services.env` (copiază din variantele `.example` dacă rulezi prima dată).
+
 ```bash
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml up -d
+docker compose -f compose.yml up -d \
+  postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
 ```
 
 Verifică healthy status:
@@ -118,7 +145,9 @@ Verifică healthy status:
 docker ps --filter name=geniuserp --format 'table {{.Names}}\t{{.Status}}'
 ```
 
-Așteptat: 4 containere (postgres, kafka, temporal, supertokens)
+Așteptat: 9 containere (postgres, kafka, temporal, supertokens, neo4j + exportere)
+
+> **Notă Neo4j:** pentru ca endpoint-ul Prometheus să fie acceptat de imagine, folosim `neo4j:5.23-enterprise` împreună cu `NEO4J_ACCEPT_LICENSE_AGREEMENT=yes`. Endpoint-ul intern rulează pe `0.0.0.0:2004`, iar sidecar-ul `neo4j-metrics` îl proxy-uiește spre `net_observability` pe portul 8080.
 
 #### 4. **Pornire Observability Stack**
 
@@ -132,7 +161,7 @@ Accesare UI:
 
 - **Grafana**: `http://localhost:3000 (admin/admin)`
 - **Prometheus**: `http://localhost:9090`
-- **Temporal UI**: `http://localhost:8233`
+- **Temporal UI**: disponibil doar în `geniuserp_net_backing_services` (nu este expus pe host) — metricile sunt expuse via `temporal-metrics`
 
 #### 5. **Pornire CP Services**
 
@@ -184,7 +213,10 @@ docker compose -f compose.yml rm -f otel-collector tempo prometheus grafana loki
 
 # Backing Services
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml down
+docker compose -f compose.yml stop postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
+docker compose -f compose.yml rm -f postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
 ```
 
 ⚠️ **NU folosiți `-v` flag** - volumele sunt externe și trebuie păstrate!

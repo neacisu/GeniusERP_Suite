@@ -42,23 +42,19 @@ info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
+ROOT_COMPOSE_FILE="compose.yml"
+PROXY_ENV_FILE="proxy/.proxy.env"
+
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
     error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
     error "Rulează: cd /var/www/GeniusSuite && bash scripts/stop-suite.sh"
     exit 1
 fi
 
-ROOT_COMPOSE_FILE="compose.yml"
-
 log "==================================================================="
 log "  OPRIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
-
-PROXY_ENV_FILE="proxy/.proxy.env"
-if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
-    warning "Nu am găsit $ROOT_COMPOSE_FILE în rădăcină. Este posibil ca proxy-ul/observability să nu fi fost pornite via orchestrator."
-fi
 
 # ============================================================================
 # FAZA 1: Oprire Control Plane Services
@@ -91,15 +87,11 @@ echo ""
 # ============================================================================
 log "FAZA 2: Oprire Observability Stack..."
 
-if [ -f "$ROOT_COMPOSE_FILE" ]; then
-    if ! docker compose -f "$ROOT_COMPOSE_FILE" stop otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1; then
-        warning "Stack-ul de observabilitate pare deja oprit."
-    else
-        docker compose -f "$ROOT_COMPOSE_FILE" rm -f otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1 || true
-        log "✓ Observability Stack oprit"
-    fi
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1; then
+    warning "Stack-ul de observabilitate pare deja oprit."
 else
-    warning "Nu pot opri Observability Stack (lipsește $ROOT_COMPOSE_FILE)."
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1 || true
+    log "✓ Observability Stack oprit"
 fi
 
 echo ""
@@ -109,9 +101,14 @@ echo ""
 # ============================================================================
 log "FAZA 3: Oprire Backing Services..."
 
-docker compose -f docker-compose.backing-services.yml down  # FĂRĂ -v
-
-log "✓ Backing Services oprite"
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop postgres_server kafka temporal supertokens-core neo4j \
+    postgres-metrics kafka-metrics temporal-metrics neo4j-metrics >/dev/null 2>&1; then
+    warning "Backing services par deja oprite."
+else
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f postgres_server kafka temporal supertokens-core neo4j \
+        postgres-metrics kafka-metrics temporal-metrics neo4j-metrics >/dev/null 2>&1 || true
+    log "✓ Backing Services oprite"
+fi
 echo ""
 
 # ============================================================================
@@ -119,23 +116,18 @@ echo ""
 # ============================================================================
 log "FAZA 4: Oprire Proxy (Traefik)..."
 
-if [ -f "$ROOT_COMPOSE_FILE" ]; then
-    if [ -f "$PROXY_ENV_FILE" ]; then
-        set -a
-        # shellcheck disable=SC1090
-        source "$PROXY_ENV_FILE"
-        set +a
-        if ! docker compose -f "$ROOT_COMPOSE_FILE" stop proxy >/dev/null 2>&1; then
-            warning "Nu am reușit să opresc proxy-ul (probabil nu era pornit)."
-        else
-            docker compose -f "$ROOT_COMPOSE_FILE" rm -f proxy >/dev/null 2>&1 || true
-            log "✓ Proxy oprit"
-        fi
-    else
-        warning "Lipsește $PROXY_ENV_FILE. Sar peste oprirea Traefik."
-    fi
+if [ -f "$PROXY_ENV_FILE" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$PROXY_ENV_FILE"
+    set +a
+fi
+
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop proxy >/dev/null 2>&1; then
+    warning "Nu am reușit să opresc proxy-ul (probabil nu era pornit)."
 else
-    warning "Nu am găsit $ROOT_COMPOSE_FILE în rădăcină. Sar peste oprirea Traefik."
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f proxy >/dev/null 2>&1 || true
+    log "✓ Proxy oprit"
 fi
 
 echo ""

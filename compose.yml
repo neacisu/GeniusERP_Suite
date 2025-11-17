@@ -53,6 +53,199 @@ services:
       - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-chain@file"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
 
+  postgres_server:
+    container_name: geniuserp-postgres
+    image: postgres:18
+    restart: unless-stopped
+    env_file:
+      - .suite.general.env
+      - .backing-services.env
+    environment:
+      POSTGRES_USER: ${SUITE_DB_POSTGRES_USER:-suite_admin}
+      POSTGRES_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
+      POSTGRES_DB: postgres
+      POSTGRES_MULTIPLE_DATABASES: identity_db,licensing_db,temporal_db,archify_db,cerniq_db,flowxify_db,iwms_db,mercantiq_db,numeriqo_db,triggerra_db,vettify_db,geniuserp_db,admin_db
+    volumes:
+      - ./scripts/postgres/init-multiple-databases.sh:/docker-entrypoint-initdb.d/10-multi-db.sh:ro
+      - gs_pgdata_identity:/var/lib/postgresql/data/identity
+      - gs_pgdata_licensing:/var/lib/postgresql/data/licensing
+      - gs_pgdata_temporal:/var/lib/postgresql/data/temporal
+      - gs_pgdata_archify:/var/lib/postgresql/data/archify
+      - gs_pgdata_cerniq:/var/lib/postgresql/data/cerniq
+      - gs_pgdata_flowxify:/var/lib/postgresql/data/flowxify
+      - gs_pgdata_iwms:/var/lib/postgresql/data/iwms
+      - gs_pgdata_mercantiq:/var/lib/postgresql/data/mercantiq
+      - gs_pgdata_numeriqo:/var/lib/postgresql/data/numeriqo
+      - gs_pgdata_triggerra:/var/lib/postgresql/data/triggerra
+      - gs_pgdata_vettify:/var/lib/postgresql/data/vettify
+      - gs_pgdata_geniuserp:/var/lib/postgresql/data/geniuserp
+      - gs_pgdata_admin:/var/lib/postgresql/data/admin
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SUITE_DB_POSTGRES_USER:-suite_admin} -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - geniuserp_net_backing_services
+
+  kafka:
+    container_name: geniuserp-kafka
+    image: apache/kafka:4.1.0
+    restart: unless-stopped
+    env_file:
+      - .suite.general.env
+      - .backing-services.env
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+    volumes:
+      - gs_kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - geniuserp_net_backing_services
+
+  temporal:
+    container_name: geniuserp-temporal
+    image: temporalio/auto-setup:latest
+    restart: unless-stopped
+    env_file:
+      - .suite.general.env
+      - .backing-services.env
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=${SUITE_DB_POSTGRES_USER:-suite_admin}
+      - POSTGRES_PWD=${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
+      - POSTGRES_SEEDS=postgres_server
+      - BIND_ON_IP=0.0.0.0
+      - PROMETHEUS_ENDPOINT=0.0.0.0:8000
+      - PROMETHEUS_TIMER_TYPE=histogram
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    networks:
+      - geniuserp_net_backing_services
+
+  supertokens-core:
+    container_name: geniuserp-supertokens
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:11.2
+    restart: unless-stopped
+    env_file:
+      - .suite.general.env
+      - .backing-services.env
+    environment:
+      POSTGRESQL_HOST: postgres_server
+      POSTGRESQL_PORT: 5432
+      POSTGRESQL_USER: ${SUITE_DB_POSTGRES_USER:-suite_admin}
+      POSTGRESQL_PASSWORD: ${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}
+      POSTGRESQL_DATABASE_NAME: identity_db
+      POSTGRESQL_TABLE_NAMES_PREFIX: supertokens_
+      API_KEYS: ${CP_IDT_AUTH_SUPERTOKENS_API_KEY:-ChangeThisSuperTokensKey}
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3567/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - geniuserp_net_backing_services
+
+  neo4j:
+    container_name: geniuserp-neo4j
+    image: neo4j:5.23-enterprise
+    restart: unless-stopped
+    env_file:
+      - .suite.general.env
+      - .backing-services.env
+    environment:
+      NEO4J_AUTH: ${VETFY_DB_NEO4J_USER:-neo4j}/${VETFY_DB_NEO4J_PASS:-ReplaceMeWithNeo4jPassword}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 1G
+      NEO4J_server_metrics_prometheus_enabled: "true"
+      NEO4J_server_metrics_prometheus_endpoint: "0.0.0.0:2004"
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    volumes:
+      - gs_neo4j_data:/data
+    networks:
+      - geniuserp_net_backing_services
+
+  postgres-metrics:
+    container_name: geniuserp-postgres-metrics
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
+    restart: unless-stopped
+    env_file:
+      - .backing-services.env
+    environment:
+      DATA_SOURCE_URI: "postgresql://${SUITE_DB_POSTGRES_USER:-suite_admin}:${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}@postgres_server:5432/postgres?sslmode=disable"
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "true"
+    depends_on:
+      postgres_server:
+        condition: service_healthy
+    networks:
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+
+  kafka-metrics:
+    container_name: geniuserp-kafka-metrics
+    image: danielqsj/kafka-exporter:v1.7.0
+    restart: unless-stopped
+    environment:
+      KAFKA_SERVER: kafka:9092
+      KAFKA_VERSION: "4.1.0"
+    depends_on:
+      kafka:
+        condition: service_started
+    networks:
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+
+  temporal-metrics:
+    container_name: geniuserp-temporal-metrics
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./shared/observability/exporters/temporal/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      temporal:
+        condition: service_started
+    networks:
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+
+  neo4j-metrics:
+    container_name: geniuserp-neo4j-metrics
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    volumes:
+      - ./shared/observability/exporters/neo4j/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      neo4j:
+        condition: service_started
+    networks:
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+
   otel-collector:
     container_name: geniussuite-otel-collector
     image: otel/opentelemetry-collector:latest
@@ -175,6 +368,9 @@ networks:
   geniuserp_net_suite_internal:
     external: true
     name: ${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
+  geniuserp_net_backing_services:
+    external: true
+    name: ${PROXY_NETWORK_BACKING_SERVICES:-geniuserp_net_backing_services}
   geniuserp_net_observability:
     external: true
     name: ${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}
@@ -194,4 +390,49 @@ volumes:
     driver: local
   gs_tempo_data:
     name: gs_tempo_data
+    driver: local
+  gs_pgdata_identity:
+    name: geniuserp_pgdata_identity
+    driver: local
+  gs_pgdata_licensing:
+    name: geniuserp_pgdata_licensing
+    driver: local
+  gs_pgdata_temporal:
+    name: geniuserp_pgdata_temporal
+    driver: local
+  gs_pgdata_archify:
+    name: geniuserp_pgdata_archify
+    driver: local
+  gs_pgdata_cerniq:
+    name: geniuserp_pgdata_cerniq
+    driver: local
+  gs_pgdata_flowxify:
+    name: geniuserp_pgdata_flowxify
+    driver: local
+  gs_pgdata_iwms:
+    name: geniuserp_pgdata_iwms
+    driver: local
+  gs_pgdata_mercantiq:
+    name: geniuserp_pgdata_mercantiq
+    driver: local
+  gs_pgdata_numeriqo:
+    name: geniuserp_pgdata_numeriqo
+    driver: local
+  gs_pgdata_triggerra:
+    name: geniuserp_pgdata_triggerra
+    driver: local
+  gs_pgdata_vettify:
+    name: geniuserp_pgdata_vettify
+    driver: local
+  gs_pgdata_geniuserp:
+    name: geniuserp_pgdata_geniuserp
+    driver: local
+  gs_pgdata_admin:
+    name: geniuserp_pgdata_admin
+    driver: local
+  gs_kafka_data:
+    name: geniuserp_kafka_data
+    driver: local
+  gs_neo4j_data:
+    name: geniuserp_neo4j_data
     driver: local
