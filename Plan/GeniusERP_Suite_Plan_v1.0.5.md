@@ -9214,8 +9214,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   ```
   
 > **Implementare practică:** Root compose izolează serviciile PostgreSQL/Kafka/Temporal/Neo4j/SuperTokens exclusiv pe `net_backing_services`. Metricile sunt expuse prin sidecar-uri dedicate (`postgres-metrics`, `kafka-metrics`, `temporal-metrics`, `neo4j-metrics`) care atașează simultan la `net_backing_services` (pentru acces la serviciul țintă) și `net_observability` (pentru scraping de către Prometheus). Astfel, regula „doar containere din net_backing_services pot accesa datele” este respectată literal, iar cerința F0.4.3 privind colectarea metricilor în `net_observability` rămâne satisfăcută. Neo4j folosește imaginea `neo4j:5.23-enterprise` și `NEO4J_ACCEPT_LICENSE_AGREEMENT=yes` pentru a activa endpoint-ul Prometheus pe `0.0.0.0:2004`, care este proxy-uit de sidecar pe portul 8080.
-
 > **Validare hands-on (executată în cadrul task-ului):**
+
 > - Izolare: `docker run --rm --network geniuserp_net_observability busybox ping -c 1 postgres_server` răspunde cu `bad address`, demonstrând că observability nu poate rezolva host-urile din `net_backing_services`.
 > - Export metrici: pentru fiecare sidecar rulează `docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 curl -s http://<exporter-host>:<port>/metrics | head -n 5` și se primește payload Prometheus (`postgres-metrics:9187`, `kafka-metrics:9308`, `temporal-metrics:8080`, `neo4j-metrics:8080`).
 
@@ -9235,6 +9235,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+##### F0.4.6
+
+```JSON
     {
       "F0.4.7": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-shell",
@@ -9244,6 +9247,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+  
     {
       "F0.4.8": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-admin",

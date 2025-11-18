@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_IDT_APP_PORT}:${CP_IDT_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.identity.env
     environment:
       - CP_IDT_APP_PORT=${CP_IDT_APP_PORT}

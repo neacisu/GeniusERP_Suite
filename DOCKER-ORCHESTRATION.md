@@ -34,7 +34,7 @@ docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
   curl -s http://temporal-metrics:8080/metrics | head -n 5
 docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
   curl -s http://neo4j-metrics:8080/metrics | head -n 5
-```
+```text
 
 ### Test Endpoints
 
