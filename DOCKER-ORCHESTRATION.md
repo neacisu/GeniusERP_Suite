@@ -187,6 +187,26 @@ set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub
 docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
 ```
 
+#### Validare CP Hybrid (Identity & Suite Shell)
+
+```bash
+# Identity (F0.4.5)
+set -a && source .suite.general.env && source cp/identity/.cp.identity.env && set +a && \
+  docker compose -f cp/identity/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-identity --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-identity nc -zv postgres_server 5432
+docker exec genius-suite-identity wget -qO- http://supertokens-core:3567/hello
+docker exec traefik wget -qO- http://identity:6250/health
+
+# Suite Shell (F0.4.6)
+set -a && source .suite.general.env && source cp/suite-shell/.cp.suite-shell.env && set +a && \
+  docker compose -f cp/suite-shell/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-shell --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-shell wget -qO- http://identity:6250/health
+curl -I http://localhost:6100/health
+docker exec traefik wget -qO- http://suite-shell:6100/health
+```
+
 ## 🛑 Oprire Infrastructure
 
 ### 1. Comandă Rapidă

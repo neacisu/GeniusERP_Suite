@@ -9214,8 +9214,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   ```
   
 > **Implementare practică:** Root compose izolează serviciile PostgreSQL/Kafka/Temporal/Neo4j/SuperTokens exclusiv pe `net_backing_services`. Metricile sunt expuse prin sidecar-uri dedicate (`postgres-metrics`, `kafka-metrics`, `temporal-metrics`, `neo4j-metrics`) care atașează simultan la `net_backing_services` (pentru acces la serviciul țintă) și `net_observability` (pentru scraping de către Prometheus). Astfel, regula „doar containere din net_backing_services pot accesa datele” este respectată literal, iar cerința F0.4.3 privind colectarea metricilor în `net_observability` rămâne satisfăcută. Neo4j folosește imaginea `neo4j:5.23-enterprise` și `NEO4J_ACCEPT_LICENSE_AGREEMENT=yes` pentru a activa endpoint-ul Prometheus pe `0.0.0.0:2004`, care este proxy-uit de sidecar pe portul 8080.
+>
 > **Validare hands-on (executată în cadrul task-ului):**
-
+>
 > - Izolare: `docker run --rm --network geniuserp_net_observability busybox ping -c 1 postgres_server` răspunde cu `bad address`, demonstrând că observability nu poate rezolva host-urile din `net_backing_services`.
 > - Export metrici: pentru fiecare sidecar rulează `docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 curl -s http://<exporter-host>:<port>/metrics | head -n 5` și se primește payload Prometheus (`postgres-metrics:9187`, `kafka-metrics:9308`, `temporal-metrics:8080`, `neo4j-metrics:8080`).
 
@@ -9235,11 +9236,21 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `cp/identity/compose/docker-compose.yml` importă acum atât `.suite.general.env`, cât și `.cp.identity.env`, iar serviciul `genius-suite-identity` este dual-homed pe `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` și `geniuserp_net_observability`. Postgres-ul dedicat a fost eliminat, aplicația consumă `postgres_server` și `supertokens-core` definite în orchestratorul root, iar toate rețelele sunt marcate `external: true` pentru a reutiliza infrastructura comună.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/identity/.cp.identity.env && set +a && docker compose -f cp/identity/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-identity --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-identity nc -zv postgres_server 5432`
+> 4. `docker exec genius-suite-identity wget -qO- http://supertokens-core:3567/hello`
+> 5. `docker exec traefik wget -qO- http://identity:6250/health`
+
 ##### F0.4.6
 
 ```JSON
     {
-      "F0.4.7": {
+      "F0.4.6": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-shell",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/suite-shell/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul BFF (port 6100 [1]) se conectează la 'net_suite_internal' (expus de Traefik) și 'net_observability'. Rețelele sunt marcate 'external: true'.",
@@ -9248,9 +9259,22 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
       }
     },
   ```
-  
+
+> **Implementare practică:** `cp/suite-shell/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.suite-shell.env`, ceea ce permite serviciului `genius-suite-shell` să folosească aceleași definiții de rețea și rute Traefik ca restul Control Plane-ului. Containerul este conectat exclusiv la `geniuserp_net_suite_internal` (trafic user-facing) și `geniuserp_net_observability`, iar configurația se bazează pe serviciul `identity` deja mutat în modelul hibrid.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/suite-shell/.cp.suite-shell.env && set +a && docker compose -f cp/suite-shell/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-shell --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-shell wget -qO- http://identity:6250/health`
+> 4. `curl -I http://localhost:6100/health`
+> 5. `docker exec traefik wget -qO- http://suite-shell:6100/health`
+
+##### F0.4.7
+
+```JSON
     {
-      "F0.4.8": {
+      "F0.4.7": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-admin",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/suite-admin/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6150 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9258,8 +9282,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.8
+
+```JSON
     {
-      "F0.4.9": {
+      "F0.4.8": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/licensing",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/licensing/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6300 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",

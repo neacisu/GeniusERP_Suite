@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_SHELL_APP_PORT}:${CP_SHELL_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.suite-shell.env
     environment:
       - CP_SHELL_APP_PORT=${CP_SHELL_APP_PORT}
