@@ -9567,6 +9567,16 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `scripts/compose/init-infra.sh` verifică prezența utilitarului Docker, încarcă `proxy/.proxy.env` pentru a reutiliza denumirile rețelelor și creează, într-o manieră idempotentă, cele patru rețele partajate (`geniuserp_net_edge`, `geniuserp_net_suite_internal`, `geniuserp_net_backing_services`, `geniuserp_net_observability`) precum și toate volumele persistente definite în root (`gs_traefik_certs`, `gs_pgdata_*`, `gs_kafka_data`, `gs_neo4j_data`, `gs_*observability`, plus volumele aplicației Archify). Scriptul poate fi rulat înainte de `docker compose up` pentru orice serviciu și este destinat atât dezvoltatorilor locali, cât și mediilor CI/CD care pornesc aplicații individuale.
+>
+> **Validare hands-on:**
+>
+> 1. `cd /var/www/GeniusSuite && bash scripts/compose/init-infra.sh`
+> 2. `docker network ls | grep geniuserp_net_`
+> 3. `docker volume ls | grep gs_`
+> 4. `docker volume ls | grep archify_storage_originals`
+> 5. Rularea repetată a scriptului nu produce erori, confirmând caracterul idempotent.
+
 ##### F0.4.20
 
 ```JSON

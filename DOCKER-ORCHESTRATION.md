@@ -187,6 +187,15 @@ set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub
 docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
 ```
 
+#### Pregătire Rețele & Volume (F0.4.19)
+
+```bash
+cd /var/www/GeniusSuite
+bash scripts/compose/init-infra.sh
+```
+
+Scriptul creează toate rețelele externe (`geniuserp_net_*`) și volumele marcate `external: true` înainte de a porni orice compose local. Rularea este idempotentă și poate fi repetată după un clean host sau pe CI.
+
 #### Validare CP Hybrid (Identity, Suite Shell & Suite Admin)
 
 ```bash
