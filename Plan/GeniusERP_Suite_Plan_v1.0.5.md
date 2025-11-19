@@ -9304,11 +9304,20 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/licensing/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6300 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
         "surse": [1, 2, 24],
-        "obiectiv_faza": "F0.4",
-        "status": "completed"
+        "obiectiv_faza": "F0.4"
       }
     },
   ```
+
+> **Implementare practică:** `cp/licensing/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.licensing.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-licensing` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Postgres) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/licensing/.cp.licensing.env && set +a && docker compose -f cp/licensing/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-licensing --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-licensing nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6300/health`
+> 5. `docker exec traefik wget -qO- http://licensing:6300/health`
 
 ##### F0.4.9
 
