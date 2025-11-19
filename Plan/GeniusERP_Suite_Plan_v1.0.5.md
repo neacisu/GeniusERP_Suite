@@ -9357,6 +9357,16 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `cp/ai-hub/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.ai-hub.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-ai-hub` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Postgres/VectorDB) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/ai-hub/.cp.ai-hub.env && set +a && docker compose -f cp/ai-hub/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-ai-hub --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-ai-hub nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6400/health`
+> 5. `docker exec traefik wget -qO- http://ai:6400/health`
+
 ##### F0.4.11
 
 ```JSON

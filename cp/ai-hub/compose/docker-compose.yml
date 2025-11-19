@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_AI_APP_PORT}:${CP_AI_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.ai-hub.env
     environment:
       - CP_AI_APP_PORT=${CP_AI_APP_PORT}
