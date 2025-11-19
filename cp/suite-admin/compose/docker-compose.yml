@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_ADMIN_APP_PORT}:${CP_ADMIN_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.suite-admin.env
     environment:
       - CP_ADMIN_APP_PORT=${CP_ADMIN_APP_PORT}
@@ -19,6 +20,7 @@ services:
       - LOG_LEVEL=info
     networks:
       - net_suite_internal
+      - net_backing_services
       - net_observability
     labels:
       - "traefik.enable=true"
@@ -41,6 +43,9 @@ networks:
   net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   net_observability:
     external: true
     name: geniuserp_net_observability

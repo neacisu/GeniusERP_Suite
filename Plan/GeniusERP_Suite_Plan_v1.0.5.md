@@ -9284,6 +9284,17 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `cp/suite-admin/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.suite-admin.env`, astfel încât toate variabilele comune (rețele, domenii, OTEL) sunt partajate cu restul Control Plane-ului. Serviciul `genius-suite-admin` este atașat simultan la `geniuserp_net_suite_internal` (trafic user-facing prin Traefik), `geniuserp_net_backing_services` (Postgres/servicii interne) și `geniuserp_net_observability` (Prometheus + OTEL), iar toate rețelele sunt marcate `external: true` pentru reutilizarea infrastructurii.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/suite-admin/.cp.suite-admin.env && set +a && docker compose -f cp/suite-admin/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-admin --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-admin nc -zv postgres_server 5432`
+> 4. `docker exec genius-suite-admin wget -qO- http://identity:6250/health`
+> 5. `curl -I http://localhost:6150/health`
+> 6. `docker exec traefik wget -qO- http://suite-admin:6150/health`
+
 ##### F0.4.8
 
 ```JSON

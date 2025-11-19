@@ -187,7 +187,7 @@ set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub
 docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
 ```
 
-#### Validare CP Hybrid (Identity & Suite Shell)
+#### Validare CP Hybrid (Identity, Suite Shell & Suite Admin)
 
 ```bash
 # Identity (F0.4.5)
@@ -205,6 +205,15 @@ docker ps --filter name=genius-suite-shell --format 'table {{.Names}}\t{{.Status
 docker exec genius-suite-shell wget -qO- http://identity:6250/health
 curl -I http://localhost:6100/health
 docker exec traefik wget -qO- http://suite-shell:6100/health
+
+# Suite Admin (F0.4.7)
+set -a && source .suite.general.env && source cp/suite-admin/.cp.suite-admin.env && set +a && \
+  docker compose -f cp/suite-admin/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-admin --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-admin nc -zv postgres_server 5432
+docker exec genius-suite-admin wget -qO- http://identity:6250/health
+curl -I http://localhost:6150/health
+docker exec traefik wget -qO- http://suite-admin:6150/health
 ```
 
 ## 🛑 Oprire Infrastructure
