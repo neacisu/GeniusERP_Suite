@@ -1,27 +1,36 @@
-version: '3.9'
+version: '3.8'
 
 services:
   flowxify-app:
     build:
       context: ../..
       dockerfile: flowxify.app/Dockerfile
-    container_name: flowxify-app
+    container_name: genius-suite-flowxify-app
     restart: unless-stopped
     env_file:
       - ../../.suite.general.env
       - ../.flowxify.env
     environment:
-      NODE_ENV: ${FLOWX_APP_NODE_ENV:-production}
-      PORT: ${FLOWX_APP_PORT:-6600}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
-      OTEL_SERVICE_NAME: flowxify.app
-    ports:
-      - "${FLOWX_APP_PORT:-6600}:${FLOWX_APP_PORT:-6600}"
+      - FLOWX_APP_PORT=${FLOWX_APP_PORT}
+      - FLOWX_APP_METRICS_PORT=${FLOWX_APP_METRICS_PORT}
+      - FLOWX_APP_REALTIME_GATEWAY_PORT=${FLOWX_APP_REALTIME_GATEWAY_PORT}
+      - FLOWX_APP_NODE_ENV=${FLOWX_APP_NODE_ENV}
+      - OTEL_SERVICE_NAME=flowxify.app
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.flowxify.rule=Host(`flowxify.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.flowxify.entrypoints=websecure"
+      - "traefik.http.routers.flowxify.tls=true"
+      - "traefik.http.routers.flowxify.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.flowxify.middlewares=global-chain@file"
+      - "traefik.http.services.flowxify.loadbalancer.server.port=${FLOWX_APP_PORT:-6600}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${FLOWX_APP_PORT:-6600}/health"]
       interval: 30s
@@ -30,15 +39,12 @@ services:
       start_period: 40s
 
 networks:
-  geniuserp_net_edge:
-    external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  net_backing_services:
     external: true
     name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  net_observability:
     external: true
     name: geniuserp_net_observability

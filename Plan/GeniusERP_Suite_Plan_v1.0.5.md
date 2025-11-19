@@ -9427,6 +9427,15 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `flowxify.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.flowxify.env`. Serviciul `genius-suite-flowxify-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Temporal/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source flowxify.app/.flowxify.env && set +a && docker compose -f flowxify.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-flowxify-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-flowxify-app curl -I http://localhost:6600/health`
+> 4. `docker exec traefik wget -qO- http://flowxify:6600/health`
+
 ##### F0.4.14
 
 ```JSON
