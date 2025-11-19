@@ -9542,6 +9542,15 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `vettify.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.vettify.env`. Serviciul `genius-suite-vettify-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Neo4j/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source vettify.app/.vettify.env && set +a && docker compose -f vettify.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-vettify-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-vettify-app curl -I http://localhost:6850/health`
+> 4. `docker exec traefik wget -qO- http://vettify:6850/health`
+
 ##### F0.4.19
 
 ```JSON
