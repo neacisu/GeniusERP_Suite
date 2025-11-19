@@ -9404,6 +9404,15 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `cerniq.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cerniq.env`. Serviciul `genius-suite-cerniq-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Kafka) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cerniq.app/.cerniq.env && set +a && docker compose -f cerniq.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-cerniq-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-cerniq-app curl -I http://localhost:6550/health`
+> 4. `docker exec traefik wget -qO- http://cerniq:6550/health`
+
 ##### F0.4.13
 
 ```JSON
