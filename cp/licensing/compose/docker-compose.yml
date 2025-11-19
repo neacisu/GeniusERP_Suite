@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_LIC_APP_PORT}:${CP_LIC_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.licensing.env
     environment:
       - CP_LIC_APP_PORT=${CP_LIC_APP_PORT}

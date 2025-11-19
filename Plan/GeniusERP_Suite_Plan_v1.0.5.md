@@ -9304,7 +9304,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/licensing/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6300 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
         "surse": [1, 2, 24],
-        "obiectiv_faza": "F0.4"
+        "obiectiv_faza": "F0.4",
+        "status": "completed"
       }
     },
   ```
