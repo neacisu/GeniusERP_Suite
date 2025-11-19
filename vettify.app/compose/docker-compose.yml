@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   vettify-app:
     build:
@@ -15,6 +13,7 @@ services:
       - VETFY_APP_METRICS_PORT=${VETFY_APP_METRICS_PORT}
       - VETFY_APP_WORKER_PORT=${VETFY_APP_WORKER_PORT}
       - VETFY_APP_NODE_ENV=${VETFY_APP_NODE_ENV}
+      - PORT=${VETFY_APP_PORT:-6850}
       - OTEL_SERVICE_NAME=vettify.app
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
       - LOG_LEVEL=info
