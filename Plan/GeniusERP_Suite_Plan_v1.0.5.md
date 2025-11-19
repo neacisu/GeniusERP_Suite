@@ -9519,6 +9519,15 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `triggerra.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.triggerra.env`. Serviciul `genius-suite-triggerra-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Temporal/Kafka/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source triggerra.app/.triggerra.env && set +a && docker compose -f triggerra.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-triggerra-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-triggerra-app curl -I http://localhost:6800/health`
+> 4. `docker exec traefik wget -qO- http://triggerra:6800/health`
+
 ##### F0.4.18
 
 ```JSON
