@@ -9333,6 +9333,16 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `cp/analytics-hub/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.analytics-hub.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-analytics-hub` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Kafka/DB) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub.env && set +a && docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-analytics-hub --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-analytics-hub nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6350/health`
+> 5. `docker exec traefik wget -qO- http://analytics:6350/health`
+
 ##### F0.4.10
 
 ```JSON

@@ -9,6 +9,7 @@ services:
     ports:
       - "${CP_ANLY_APP_PORT}:${CP_ANLY_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.analytics-hub.env
     environment:
       - CP_ANLY_APP_PORT=${CP_ANLY_APP_PORT}
