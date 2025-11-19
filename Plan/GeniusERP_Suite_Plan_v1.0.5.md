@@ -9450,6 +9450,15 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     },
   ```
 
+> **Implementare practică:** `i-wms.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.i-wms.env`. Serviciul `genius-suite-i-wms-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source i-wms.app/.i-wms.env && set +a && docker compose -f i-wms.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-i-wms-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-i-wms-app curl -I http://localhost:6650/health`
+> 4. `docker exec traefik wget -qO- http://iwms:6650/health`
+
 ##### F0.4.15
 
 ```JSON
@@ -9554,7 +9563,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     }
 ```
 
-#### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
+#### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod
 
 F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
 

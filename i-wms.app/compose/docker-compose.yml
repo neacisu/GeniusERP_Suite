@@ -1,44 +1,50 @@
-version: '3.9'
+version: '3.8'
 
 services:
   i-wms-app:
     build:
       context: ../..
       dockerfile: i-wms.app/Dockerfile
-    container_name: i-wms-app
+    container_name: genius-suite-i-wms-app
     restart: unless-stopped
     env_file:
       - ../../.suite.general.env
       - ../.i-wms.env
     environment:
-      NODE_ENV: ${IWMS_APP_NODE_ENV:-production}
-      PORT: ${IWMS_APP_PORT:-6650}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
-      OTEL_SERVICE_NAME: i-wms.app
-    ports:
-      - "${IWMS_APP_PORT:-6650}:${IWMS_APP_PORT:-6650}"
+      - IWMS_APP_PORT=${IWMS_APP_PORT}
+      - IWMS_APP_METRICS_PORT=${IWMS_APP_METRICS_PORT}
+      - IWMS_APP_RF_TERMINAL_PORT=${IWMS_APP_RF_TERMINAL_PORT}
+      - IWMS_APP_NODE_ENV=${IWMS_APP_NODE_ENV}
+      - OTEL_SERVICE_NAME=i-wms.app
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
+      - 'traefik.http.routers.iwms.rule=Host(`iwms.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
+      - 'traefik.http.routers.iwms.entrypoints=websecure'
+      - 'traefik.http.routers.iwms.tls=true'
+      - 'traefik.http.routers.iwms.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.iwms.middlewares=global-chain@file'
+      - 'traefik.http.services.iwms.loadbalancer.server.port=${IWMS_APP_PORT:-6650}'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${IWMS_APP_PORT:-6650}/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:${IWMS_APP_PORT:-6650}/health']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
 
 networks:
-  geniuserp_net_edge:
-    external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  net_backing_services:
     external: true
     name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  net_observability:
     external: true
     name: geniuserp_net_observability
