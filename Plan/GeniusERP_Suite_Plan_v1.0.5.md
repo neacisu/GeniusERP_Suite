@@ -9307,8 +9307,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.9
+
+```JSON
     {
-      "F0.4.10": {
+      "F0.4.9": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/analytics-hub",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/analytics-hub/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6350 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru Kafka/DB) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9316,8 +9321,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.10
+
+```JSON
     {
-      "F0.4.11": {
+      "F0.4.10": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/ai-hub",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/ai-hub/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6400 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9325,8 +9335,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.11
+
+```JSON
     {
-      "F0.4.12": {
+      "F0.4.11": {
         "denumire_task": "Refactorizare Compose Aplicație: archify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'archify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6500 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Volumul 'archify_storage_originals'  este definit în root (F0.4.2) și referit aici ca 'external: true'.",
@@ -9334,8 +9349,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.12
+
+```JSON
     {
-      "F0.4.13": {
+      "F0.4.12": {
         "denumire_task": "Refactorizare Compose Aplicație: cerniq.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cerniq.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6550 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru a consuma din Kafka/DBs) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9343,8 +9363,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.13
+
+```JSON
     {
-      "F0.4.14": {
+      "F0.4.13": {
         "denumire_task": "Refactorizare Compose Aplicație: flowxify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'flowxify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6600 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru Temporal/DB) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9352,8 +9377,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.14
+
+```JSON
     {
-      "F0.4.15": {
+      "F0.4.14": {
         "denumire_task": "Refactorizare Compose Aplicație: i-wms.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'i-wms.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6650 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9361,8 +9391,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.15
+
+```JSON
     {
-      "F0.4.16": {
+      "F0.4.15": {
         "denumire_task": "Refactorizare Compose Aplicație: mercantiq.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'mercantiq.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6700 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9370,8 +9405,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.16
+
+```JSON
     {
-      "F0.4.17": {
+      "F0.4.16": {
         "denumire_task": "Refactorizare Compose Aplicație: numeriqo.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'numeriqo.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6750 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9379,8 +9419,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.17
+
+```JSON
     {
-      "F0.4.18": {
+      "F0.4.17": {
         "denumire_task": "Refactorizare Compose Aplicație: triggerra.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'triggerra.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6800 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9388,8 +9433,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.18
+
+```JSON
     {
-      "F0.4.19": {
+      "F0.4.18": {
         "denumire_task": "Refactorizare Compose Aplicație: vettify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'vettify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6850 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru DB și Neo4j) și 'net_observability'. Rețelele și volumele (inclusiv 'gs_neo4j_data') sunt marcate 'external: true'.[24]",
@@ -9397,8 +9447,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+##### F0.4.19
+
+```JSON
     {
-      "F0.4.20": {
+      "F0.4.19": {
         "denumire_task": "Creare Script de Inițializare Infra (init-infra.sh)",
         "descriere_scurta_task": "Crearea unui script (ex. 'scripts/compose/init-infra.sh') care creează rețelele și volumele externe.",
         "detalii_tehnice": "Deoarece aplicațiile depind de rețele și volume 'external: true' [F0.4.6-F0.4.19], acestea trebuie să existe înainte ca 'docker compose up' să fie rulat pe o aplicație individuală. Acest script va rula 'docker network create...' și 'docker volume create...' pentru toate resursele definite în F0.4.1 și F0.4.2. Acest script este esențial pentru mediile de CI și pentru setup-ul local al dezvoltatorilor.",
@@ -9408,8 +9463,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "validare": "Scriptul rulează fără erori și creează toate rețelele și volumele necesare."
       }
     },
+  ```
+
+##### F0.4.20
+
+```JSON
     {
-      "F0.4.21": {
+      "F0.4.20": {
         "denumire_task": "Validare Segmentare Rețea (Zero-Trust)",
         "descriere_scurta_task": "Testarea și validarea faptului că segregarea rețelelor funcționează conform planului.",
         "detalii_tehnice": "După pornirea stack-ului (root compose), executați teste de conectivitate. Exemplu de test 1: 'docker exec [container_traefik] ping [container_postgres_identity]' TREBUIE să eșueze (Traefik nu este pe 'net_backing_services'). Exemplu de test 2: 'docker exec [container_api_identity] ping [container_postgres_identity]' TREBUIE să reușească (ambele sunt pe 'net_backing_services'). Documentați rezultatele ca dovadă a implementării Zero-Trust.",
@@ -9419,8 +9479,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "validare": "Testele de ping eșuează și reușesc exact așa cum este descris în 'detalii_tehnice'."
       }
     },
+  ```
+
+##### F0.4.21
+
+```JSON
     {
-      "F0.4.22": {
+      "F0.4.21": {
         "denumire_task": "Validare Persistență Volum (Test 'down -v')",
         "descriere_scurta_task": "Testarea strategiei de protecție a datelor PostgreSQL.[24]",
         "detalii_tehnice": "1. Porniți stack-ul root și o aplicație (ex. 'numeriqo.app'). 2. Adăugați date de test în baza de date 'numeriqo_db'. 3. Rulați 'docker compose down -v' în directorul 'numeriqo.app/compose/'. 4. Porniți din nou aplicația ('docker compose up' în același director). 5. Confirmați că datele de test persistă. Acest test validează că strategia 'external: true' [24] funcționează și previne pierderea accidentală a datelor.",
@@ -9430,10 +9495,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         "validare": "Datele persistă după rularea 'docker compose down -v' la nivel de aplicație."
       }
     }
-  ]
-}
+```
 
-F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
+#### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
 
 F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
 
