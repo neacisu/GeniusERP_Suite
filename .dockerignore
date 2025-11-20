@@ -1,0 +1,8 @@
+# Prevent heavyweight and permission-sensitive paths from entering Docker build contexts
+.git
+node_modules
+**/node_modules
+**/dist
+shared/observability/.ci/loki
+shared/observability/.ci/loki/*
+shared/observability/.ci/loki/**
