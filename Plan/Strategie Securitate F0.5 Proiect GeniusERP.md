@@ -27,7 +27,7 @@ Strategia curentă de configurare se bazează pe fișiere text care conțin pere
 
 #### 2.2.1. Puncte Forte: Guvernanța Nomenclaturii
 
-Standardizarea numelor variabilelor este un succes arhitectural care trebuie păstrat în era OpenBao. Convenția '<PREFIX>_<CATEGORIE>_<NUME>' (de exemplu, CP_IDT_AUTH_JWT_SECRET sau NUMQ_DB_PASS) previne coliziunile în spațiul global de variabile de mediu. Într-un sistem distribuit unde zeci de containere pot partaja rețele sau volume, un nume generic precum DB_PASSWORD ar fi dezastruos, ducând la situații în care aplicația archify s-ar conecta accidental la baza de date a aplicației numeriqo. Utilizarea prefixelor specifice componentei (ex: NUMQ_ pentru Numeriqo, CP_IDT_ pentru Identity Control Plane) asigură claritate și izolare logică.
+Standardizarea numelor variabilelor este un succes arhitectural care trebuie păstrat în era OpenBao. Convenția `<PREFIX>_<CATEGORIE>_<NUME>` (de exemplu, CP_IDT_AUTH_JWT_SECRET sau NUMQ_DB_PASS) previne coliziunile în spațiul global de variabile de mediu. Într-un sistem distribuit unde zeci de containere pot partaja rețele sau volume, un nume generic precum DB_PASSWORD ar fi dezastruos, ducând la situații în care aplicația archify s-ar conecta accidental la baza de date a aplicației numeriqo. Utilizarea prefixelor specifice componentei (ex: NUMQ_ pentru Numeriqo, CP_IDT_ pentru Identity Control Plane) asigură claritate și izolare logică.
 
 #### 2.2.2. Puncte Slabe: Amestecul Configurațiilor cu Secretele
 
@@ -80,11 +80,11 @@ Pentru a remedia această vulnerabilitate arhitecturală, raportul recomandă im
 - Configurația Agentului: Include un bloc exec care specifică comanda de lansare a aplicației copil.
 - Fluxul de Execuție:
 
-    - Containerul pornește, lansând Agentul OpenBao.
-    - Agentul se autentifică și descarcă secretele.
-    - Doar după ce secretele sunt pregătite, Agentul lansează procesul copil (node index.js).
-    - Secretele sunt injectate direct în variabilele de mediu ale procesului copil, fără a mai fi nevoie de scrierea lor pe disc într-un volum partajat (ceea ce este mai sigur).
-    - Agentul monitorizează ciclul de viață al aplicației și poate trimite semnale (ex: SIGTERM) pentru restartarea acesteia dacă secretele se schimbă (rotație).
+    > - Containerul pornește, lansând Agentul OpenBao.
+    > - Agentul se autentifică și descarcă secretele.
+    > - Doar după ce secretele sunt pregătite, Agentul lansează procesul copil (node index.js).
+    > - Secretele sunt injectate direct în variabilele de mediu ale procesului copil, fără a mai fi nevoie de scrierea lor pe disc într-un volum partajat (ceea ce este mai sigur).
+    > - Agentul monitorizează ciclul de viață al aplicației și poate trimite semnale (ex: SIGTERM) pentru restartarea acesteia dacă secretele se schimbă (rotație).
 
 Această abordare elimină complet condiția de cursă și simplifică definiția serviciilor în Docker Compose, transformând problema de coordonare distribuită într-una de ierarhie de procese locală.
 
