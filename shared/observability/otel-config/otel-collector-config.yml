@@ -8,7 +8,7 @@ receivers:
 
 exporters:
   otlp/tempo:
-    endpoint: "tempo:${OBS_TEMPO_PORT:-3200}"
+    endpoint: "tempo:${OBS_TEMPO_PORT}"
     tls:
       insecure: true
 

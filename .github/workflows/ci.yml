@@ -158,6 +158,7 @@ jobs:
           OBS_GRAFANA_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
           OBS_PROMETHEUS_RETENTION=7d
           OBS_LOKI_RETENTION=3d
+          OBS_TEMPO_PORT=3200
           OBS_LOKI_DATA_PATH=$(pwd)/shared/observability/.ci/loki
           EOF
           
