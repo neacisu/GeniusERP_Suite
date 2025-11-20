@@ -9616,6 +9616,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     }
 ```
 
+'
         > **Implementare practică:** Testul de persistență a fost rulat pe `numeriqo.app/compose/docker-compose.yml`, care montează volumul extern `geniuserp_pgdata_numeriqo`. După ce containerul Numeriqo a fost pornit (în prezent intră în restart din cauza lipsei modulului `@genius-suite/observability`, dar atașarea volumului funcționează), am creat tabela `f0421_persistence_test` în `numeriqo_db` și am introdus un rând de probă folosind `suite_admin`. Ulterior am executat `docker compose down -v` din directorul aplicației și am repornit serviciul; volumul extern nu a fost șters, astfel că rândul inserat a rămas prezent.
         >
         > **Validare hands-on:**
@@ -9624,12 +9625,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
         > 2. `cd numeriqo.app/compose && docker compose down -v` → containerul `genius-suite-numeriqo-app` este oprit/eliminat, volumul `geniuserp_pgdata_numeriqo` rămâne neatins (marcat `external: true`).
         > 3. `set -a && source .suite.general.env && source numeriqo.app/.numeriqo.env && set +a && docker compose -f numeriqo.app/compose/docker-compose.yml up -d` → serviciul este recreat și se reconectează la același volum.
         > 4. `docker exec -e PGPASSWORD=ReplaceMeWithStrongPostgresPassword geniuserp-postgres psql -U suite_admin -d numeriqo_db -c "SELECT id, note FROM f0421_persistence_test;"` → rândul inserat este prezent după ciclul `down -v`/`up`, confirmând că datele persistă.
+      `
 
 #### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod
 
-F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
+#### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
 
-F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db.
+#### F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db
 
 F0.8 CI & QA Scripts: smoke/load/security scripts, canary.
 
