@@ -71,6 +71,11 @@ jobs:
       (github.event_name == 'push' && 
         (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/staging'))
     timeout-minutes: 30
+    env:
+      CI_POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD || 'ci_test_pass_temp_123' }}
+      CI_KAFKA_PASSWORD: ci_kafka_pass_temp_456
+      CI_GRAFANA_PASSWORD: ci_grafana_pass_temp_789
+      CP_IDT_AUTH_SUPERTOKENS_API_KEY: MT10OM5PMOIHCUKF-MF87-OKJSIYXZT-LTEVZRQWEUFOM9TCI5MOQN9BGS8DYEIOGD2YXZSECAZ5SW2EZG3MD7NVTPF8DZUZ8LXQITVNXGIKW7H4AJOYMO-OV6UQLLIL
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -94,6 +99,8 @@ jobs:
           docker volume create gs_loki_data || true
           docker volume create gs_grafana_data || true
           docker volume create gs_tempo_data || true
+          # Archify document storage
+          docker volume create archify_storage_originals || true
           # Backing services volumes
           docker volume create gs_pgdata_identity || true
           docker volume create gs_pgdata_licensing || true
@@ -101,12 +108,18 @@ jobs:
           docker volume create gs_pgdata_vettify || true
           docker volume create gs_kafka_data || true
 
+          echo "Hardening volume permissions (Archify originals, Loki chunks)..."
+          docker run --rm -v archify_storage_originals:/data alpine:3.20 \
+            sh -c "chown -R 1001:1001 /data && chmod 750 /data" || true
+          docker run --rm -v gs_loki_data:/data alpine:3.20 \
+            sh -c "chown -R 10001:10001 /data && chmod 770 /data" || true
+
       - name: Create CI environment files from secrets
         env:
-          POSTGRES_PASSWORD: ${{ secrets.CI_POSTGRES_PASSWORD || 'ci_test_pass_temp_123' }}
-          KAFKA_PASSWORD: ${{ secrets.CI_KAFKA_PASSWORD || 'ci_kafka_pass_temp_456' }}
-          GRAFANA_PASSWORD: ${{ secrets.CI_GRAFANA_PASSWORD || 'ci_grafana_pass_temp_789' }}
-          SUPERTOKENS_API_KEY: ${{ secrets.CP_IDT_AUTH_SUPERTOKENS_API_KEY || 'MT10OM5PMOIHCUKF-MF87-OKJSIYXZT-LTEVZRQWEUFOM9TCI5MOQN9BGS8DYEIOGD2YXZSECAZ5SW2EZG3MD7NVTPF8DZUZ8LXQITVNXGIKW7H4AJOYMO-OV6UQLLIL' }}
+          POSTGRES_PASSWORD: ${{ env.CI_POSTGRES_PASSWORD }}
+          KAFKA_PASSWORD: ${{ env.CI_KAFKA_PASSWORD }}
+          GRAFANA_PASSWORD: ${{ env.CI_GRAFANA_PASSWORD }}
+          SUPERTOKENS_API_KEY: ${{ env.CP_IDT_AUTH_SUPERTOKENS_API_KEY }}
         run: |
           set -euo pipefail
 
@@ -121,8 +134,8 @@ jobs:
           cp .suite.general.env.example .suite.general.env
           update_env_var ".suite.general.env" "SUITE_DB_POSTGRES_PASS" "${POSTGRES_PASSWORD}"
           update_env_var ".suite.general.env" "SUITE_MQ_KAFKA_PASS" "${KAFKA_PASSWORD}"
-          update_env_var ".suite.general.env" "SUITE_OBS_OTEL_COLLECTOR_GRPC_URL" "http://geniuserp-otel-collector:4317"
-          update_env_var ".suite.general.env" "SUITE_OBS_OTEL_COLLECTOR_HTTP_URL" "http://geniuserp-otel-collector:4318"
+          update_env_var ".suite.general.env" "SUITE_OBS_OTEL_COLLECTOR_GRPC_URL" "http://geniuserp-otel-collector:3200"
+          update_env_var ".suite.general.env" "SUITE_OBS_OTEL_COLLECTOR_HTTP_URL" "http://geniuserp-otel-collector:3200"
           update_env_var ".suite.general.env" "SUITE_OBS_GRAFANA_URL" "http://grafana:3000"
           update_env_var ".suite.general.env" "SUITE_OBS_PROMETHEUS_URL" "http://prometheus:9090"
           update_env_var ".suite.general.env" "SUITE_OBS_LOKI_URL" "http://loki:3100"
@@ -145,6 +158,7 @@ jobs:
           OBS_GRAFANA_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
           OBS_PROMETHEUS_RETENTION=7d
           OBS_LOKI_RETENTION=3d
+          OBS_LOKI_DATA_PATH=$(pwd)/shared/observability/.ci/loki
           EOF
           
           echo "Creating Control Plane .env files..."
@@ -293,6 +307,8 @@ jobs:
         working-directory: shared/observability
         run: |
           echo "Starting observability stack..."
+          export OBS_LOKI_DATA_PATH="$(pwd)/.ci/loki"
+          mkdir -p "$OBS_LOKI_DATA_PATH"
           bash scripts/install.sh dev
           echo "Waiting for observability stack to be ready..."
           sleep 60

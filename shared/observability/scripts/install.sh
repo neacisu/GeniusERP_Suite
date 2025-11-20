@@ -18,6 +18,8 @@ MODE="${1:-dev}"
 
 COMPOSE_FILE=${COMPOSE_FILE:-"compose/profiles/compose.dev.yml"}
 ENV_FILE=${ENV_FILE:-".observability.env"}
+export OBS_LOKI_DATA_PATH=${OBS_LOKI_DATA_PATH:-"$(pwd)/.ci/loki"}
+mkdir -p "$OBS_LOKI_DATA_PATH"
 
 echo "[install] Verific profilul: ${COMPOSE_FILE}"
 ${DC[@]} -f "${COMPOSE_FILE}" --env-file "${ENV_FILE}" config >/dev/null

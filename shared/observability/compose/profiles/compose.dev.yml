@@ -43,7 +43,7 @@ services:
     networks:
       - observability
     volumes:
-      - gs_loki_data:/loki
+      - ${OBS_LOKI_DATA_PATH:-gs_loki_data}:/loki
     ports:
       - "${OBS_LOKI_PORT:-3100}:${OBS_LOKI_PORT:-3100}"
 

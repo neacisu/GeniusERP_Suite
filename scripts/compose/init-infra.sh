@@ -73,6 +73,28 @@ VOLUMES=(
   archify_storage_originals
 )
 
+declare -A VOLUME_PERMISSIONS=(
+  ["archify_storage_originals"]="1001|1001|750"
+  ["gs_loki_data"]="10001|10001|770"
+)
+
+ensure_volume_permissions() {
+  local volume="$1"
+  local spec="$2"
+  local uid gid mode
+
+  IFS='|' read -r uid gid mode <<<"$spec"
+
+  if ! docker volume inspect "$volume" >/dev/null 2>&1; then
+    warn "Volumul $volume nu există – sar peste configurarea permisiunilor"
+    return
+  fi
+
+  info "Aplic permisiuni ${uid}:${gid} (chmod ${mode}) pentru $volume"
+  docker run --rm -v "$volume":/data alpine:3.20 \
+    sh -c "chown -R ${uid}:${gid} /data && chmod ${mode} /data" >/dev/null
+}
+
 log "=== Verific rețelele Docker necesare (F0.4.2) ==="
 for network in "${!NETWORKS[@]}"; do
   subnet="${NETWORKS[$network]}"
@@ -92,6 +114,11 @@ for volume in "${VOLUMES[@]}"; do
     info "Creez volumul $volume"
     docker volume create "$volume" >/dev/null
   fi
+done
+
+log "=== Aplic permisiuni explicite pentru volume sensibile ==="
+for volume in "${!VOLUME_PERMISSIONS[@]}"; do
+  ensure_volume_permissions "$volume" "${VOLUME_PERMISSIONS[$volume]}"
 done
 
 log "✓ Infrastructura Docker (rețele + volume) este pregătită pentru modelul hibrid"

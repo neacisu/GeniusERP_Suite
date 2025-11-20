@@ -41,6 +41,24 @@ info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
+ensure_secure_volume() {
+    local volume_name=$1
+    local uid=$2
+    local gid=$3
+    local mode=$4
+
+    if ! docker volume inspect "$volume_name" >/dev/null 2>&1; then
+        log "Creez volumul $volume_name..."
+        docker volume create "$volume_name" >/dev/null
+    else
+        info "Volumul $volume_name există deja"
+    fi
+
+    log "Setez permisiuni ${uid}:${gid} (chmod ${mode}) pentru $volume_name"
+    docker run --rm -v "$volume_name":/data alpine:3.20 \
+        sh -c "chown -R ${uid}:${gid} /data && chmod ${mode} /data" >/dev/null
+}
+
 ROOT_COMPOSE_FILE="compose.yml"
 OBS_ENV_FILE="shared/observability/.observability.env"
 SUITE_ENV_FILE=".suite.general.env"
@@ -191,6 +209,12 @@ create_network_if_not_exists "geniuserp_net_backing_services" "172.22.0.0/16"
 create_network_if_not_exists "geniuserp_net_observability" "172.23.0.0/16"
 
 log "✓ Toate rețelele sunt create"
+echo ""
+
+log "FAZA 1.1: Verificare volume sensibile (Archify, Loki)..."
+ensure_secure_volume "archify_storage_originals" 1001 1001 750
+ensure_secure_volume "gs_loki_data" 10001 10001 770
+log "✓ Volumele critice au permisiuni aplicate"
 echo ""
 
 # ============================================================================

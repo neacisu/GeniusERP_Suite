@@ -130,8 +130,8 @@ Aceste variabile sunt destinate orchestratorului rădăcină (/var/www/GeniusSui
 
 `# -- OBSERVABILITATE  --`  
 `# Puncte finale pentru colectarea telemetriei`  
-`SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=http://otel-collector:4317`  
-`SUITE_OBS_OTEL_COLLECTOR_HTTP_URL=http://otel-collector:4318`  
+`SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=http://otel-collector:3200`  
+`SUITE_OBS_OTEL_COLLECTOR_HTTP_URL=http://otel-collector:3200`  
 `SUITE_OBS_LOKI_URL=http://loki:3100`
 
 #### **Șablon 2: .cp.identity.env (Serviciu Critic \- Auth)**
@@ -297,7 +297,7 @@ Tabelul 6 oferă o "Piatră de Rosetta" care demonstrează această sinergie pen
 | :---- | :---- | :---- | :---- |
 | .suite.general.env | SUITE\_MQ\_KAFKA\_BROKERS | kafka:9092 | Tabelul 4 |
 | .suite.general.env | SUITE\_BPM\_TEMPORAL\_HOST\_PORT | temporal:7233 | Tabelul 4 |
-| .suite.general.env | SUITE\_OBS\_OTEL\_COLLECTOR\_HTTP\_URL | [http://otel-collector:4318](http://otel-collector:4318) | Tabelul 4 |
+| .suite.general.env | SUITE\_OBS\_OTEL\_COLLECTOR\_HTTP\_URL | [http://otel-collector:3200](http://otel-collector:3200) | Tabelul 4 |
 | .observability.env | OBS\_GRAFANA\_PORT | 3000 | Tabelul 4 |
 | .observability.env | OBS\_PROMETHEUS\_PORT | 9090 | Tabelul 4 |
 | .cp.identity.env | CP\_IDT\_APP\_PORT | 6250 | Tabelul 5 (Plaja 6250-6299) |
