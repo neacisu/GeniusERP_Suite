@@ -3,6 +3,10 @@ services:
     image: otel/opentelemetry-collector:latest
     container_name: geniuserp-otel-collector
     command: ["--config=/etc/otel-collector-config.yml"]
+    environment:
+      OBS_TEMPO_PORT: ${OBS_TEMPO_PORT:-3200}
+      OBS_OTEL_GRPC_PORT: ${OBS_OTEL_GRPC_PORT:-4317}
+      OBS_OTEL_HTTP_PORT: ${OBS_OTEL_HTTP_PORT:-4318}
     volumes:
       - ../../otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro
     networks:

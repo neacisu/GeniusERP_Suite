@@ -23,7 +23,7 @@ mkdir -p "$OBS_LOKI_DATA_PATH"
 
 echo "[install] Ajustez permisiunile pentru path-ul Loki: $OBS_LOKI_DATA_PATH"
 docker run --rm -v "$OBS_LOKI_DATA_PATH":/data alpine:3.20 \
-  sh -c "chown -R 10001:10001 /data && chmod 770 /data" >/dev/null
+  sh -c "chown -R 10001:10001 /data && chmod 775 /data" >/dev/null
 
 echo "[install] Verific profilul: ${COMPOSE_FILE}"
 ${DC[@]} -f "${COMPOSE_FILE}" --env-file "${ENV_FILE}" config >/dev/null
