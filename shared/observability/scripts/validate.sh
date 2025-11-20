@@ -96,10 +96,77 @@ extract_port_from_url() {
   extract_port_from_hostport "$stripped" "$fallback"
 }
 
+extract_host_from_hostport() {
+  local value="$1"
+  local fallback="$2"
+  if [[ -z "$value" ]]; then
+    echo "$fallback"
+    return
+  fi
+  local first="${value%%,*}"
+  first="${first##*@}"
+  local host="${first%%:*}"
+  if [[ -z "$host" || "$host" == "$first" ]]; then
+    echo "$fallback"
+  else
+    echo "$host"
+  fi
+}
+
+extract_host_from_url() {
+  local value="$1"
+  local fallback="$2"
+  if [[ -z "$value" ]]; then
+    echo "$fallback"
+    return
+  fi
+  local stripped="${value#*://}"
+  if [[ "$stripped" == "$value" ]]; then
+    stripped="$value"
+  fi
+  stripped="${stripped%%/*}"
+  extract_host_from_hostport "$stripped" "$fallback"
+}
+
+BACKING_NETWORK=${BACKING_NETWORK:-geniuserp_net_backing_services}
+PROBER_IMAGE=${PROBER_IMAGE:-alpine:3.19}
+
+check_container_running() {
+  local container="$1"
+  local label="$2"
+  local state
+  if state=$(docker inspect -f '{{.State.Running}}' "$container" 2>/dev/null); then
+    if [[ "$state" == "true" ]]; then
+      check_ok "$label rulează"
+    else
+      check_fail "$label NU rulează"
+    fi
+  else
+    check_fail "$label lipsește"
+  fi
+}
+
+check_network_port() {
+  local network="$1"
+  local host="$2"
+  local port="$3"
+  local label="$4"
+  if docker run --rm --network "$network" "$PROBER_IMAGE" sh -c "nc -z -w5 $host $port" >/dev/null 2>&1; then
+    check_ok "$label accesibil pe $host:$port"
+  else
+    check_fail "$label indisponibil pe $host:$port"
+  fi
+}
+
 POSTGRES_PORT=$(numeric_or_default "$(read_env_var "$SUITE_ENV_FILE" "SUITE_DB_POSTGRES_PORT" "5432")" "5432")
 KAFKA_PORT=$(extract_port_from_hostport "$(read_env_var "$SUITE_ENV_FILE" "SUITE_MQ_KAFKA_BROKERS" "kafka:9092")" "9092")
 TEMPORAL_PORT=$(extract_port_from_hostport "$(read_env_var "$SUITE_ENV_FILE" "SUITE_BPM_TEMPORAL_HOST_PORT" "temporal:7233")" "7233")
 SUPERTOKENS_PORT=$(extract_port_from_url "$(read_env_var "$BACKING_ENV_FILE" "CP_IDT_AUTH_SUPERTOKENS_CONNECTION_URI" "http://supertokens-core:3567")" "3567")
+
+POSTGRES_HOST=$(read_env_var "$SUITE_ENV_FILE" "SUITE_DB_POSTGRES_HOST" "postgres_server")
+KAFKA_HOST=$(extract_host_from_hostport "$(read_env_var "$SUITE_ENV_FILE" "SUITE_MQ_KAFKA_BROKERS" "kafka:9092")" "kafka")
+TEMPORAL_HOST=$(extract_host_from_hostport "$(read_env_var "$SUITE_ENV_FILE" "SUITE_BPM_TEMPORAL_HOST_PORT" "temporal:7233")" "temporal")
+SUPERTOKENS_HOST=$(extract_host_from_url "$(read_env_var "$BACKING_ENV_FILE" "CP_IDT_AUTH_SUPERTOKENS_CONNECTION_URI" "http://supertokens-core:3567")" "supertokens-core")
 
 GRAFANA_PORT=$(numeric_or_default "$(read_env_var "$OBS_ENV_FILE" "OBS_GRAFANA_PORT" "3000")" "3000")
 PROMETHEUS_PORT=$(numeric_or_default "$(read_env_var "$OBS_ENV_FILE" "OBS_PROMETHEUS_PORT" "9090")" "9090")
@@ -140,17 +207,29 @@ fi
 # ==========================================
 step "Verific conformitatea porturilor cu strategia (Tabelul 4 & 5)"
 
-BACKING_SERVICES_PORTS=(
-  "$POSTGRES_PORT|PostgreSQL"
-  "$KAFKA_PORT|Kafka"
-  "$SUPERTOKENS_PORT|SuperTokens"
-  "$TEMPORAL_PORT|Temporal"
+BACKING_SERVICE_CONTAINERS=(
+  "geniuserp-postgres|PostgreSQL container"
+  "geniuserp-kafka|Kafka container"
+  "geniuserp-supertokens|SuperTokens container"
+  "geniuserp-temporal|Temporal container"
 )
 
-for entry in "${BACKING_SERVICES_PORTS[@]}"; do
-  port="${entry%%|*}"
+for entry in "${BACKING_SERVICE_CONTAINERS[@]}"; do
+  container="${entry%%|*}"
   label="${entry##*|}"
-  validate_port_binding "$label" "$port"
+  check_container_running "$container" "$label"
+done
+
+BACKING_SERVICE_ENDPOINTS=(
+  "$POSTGRES_HOST|$POSTGRES_PORT|PostgreSQL"
+  "$KAFKA_HOST|$KAFKA_PORT|Kafka"
+  "$SUPERTOKENS_HOST|$SUPERTOKENS_PORT|SuperTokens"
+  "$TEMPORAL_HOST|$TEMPORAL_PORT|Temporal"
+)
+
+for entry in "${BACKING_SERVICE_ENDPOINTS[@]}"; do
+  IFS='|' read -r host port label <<<"$entry"
+  check_network_port "$BACKING_NETWORK" "$host" "$port" "$label"
 done
 
 if docker ps --format "{{.Names}}" | grep -q "geniuserp-otel-collector"; then
