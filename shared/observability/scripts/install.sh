@@ -18,12 +18,20 @@ MODE="${1:-dev}"
 
 COMPOSE_FILE=${COMPOSE_FILE:-"compose/profiles/compose.dev.yml"}
 ENV_FILE=${ENV_FILE:-".observability.env"}
+
+if [[ -f "${ENV_FILE}" ]]; then
+  set -a
+  # shellcheck disable=SC1090
+  source "${ENV_FILE}"
+  set +a
+fi
+
 export OBS_LOKI_DATA_PATH=${OBS_LOKI_DATA_PATH:-"$(pwd)/.ci/loki"}
 mkdir -p "$OBS_LOKI_DATA_PATH"
 
 echo "[install] Ajustez permisiunile pentru path-ul Loki: $OBS_LOKI_DATA_PATH"
 docker run --rm -v "$OBS_LOKI_DATA_PATH":/data alpine:3.20 \
-  sh -c "chown -R 10001:10001 /data && chmod 775 /data" >/dev/null
+  sh -c "chown -R 10001:10001 /data && chmod -R 775 /data" >/dev/null
 
 echo "[install] Verific profilul: ${COMPOSE_FILE}"
 ${DC[@]} -f "${COMPOSE_FILE}" --env-file "${ENV_FILE}" config >/dev/null

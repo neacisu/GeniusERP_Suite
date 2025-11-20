@@ -2,9 +2,9 @@ receivers:
   otlp:
     protocols:
       http:
-        endpoint: "0.0.0.0:${OBS_OTEL_HTTP_PORT:-4318}"
+        endpoint: "0.0.0.0:${OBS_OTEL_HTTP_PORT}"
       grpc:
-        endpoint: "0.0.0.0:${OBS_OTEL_GRPC_PORT:-4317}"
+        endpoint: "0.0.0.0:${OBS_OTEL_GRPC_PORT}"
 
 exporters:
   otlp/tempo:
