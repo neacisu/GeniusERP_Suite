@@ -1,27 +1,35 @@
-version: '3.9'
-
 services:
   cerniq-app:
     build:
       context: ../..
       dockerfile: cerniq.app/Dockerfile
-    container_name: cerniq-app
+    container_name: genius-suite-cerniq-app
     restart: unless-stopped
     env_file:
       - ../../.suite.general.env
       - ../.cerniq.env
     environment:
-      NODE_ENV: ${CERNIQ_APP_NODE_ENV:-production}
-      PORT: ${CERNIQ_APP_PORT:-6550}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
-      OTEL_SERVICE_NAME: cerniq.app
-    ports:
-      - "${CERNIQ_APP_PORT:-6550}:${CERNIQ_APP_PORT:-6550}"
+      - CERNIQ_APP_PORT=${CERNIQ_APP_PORT}
+      - CERNIQ_APP_METRICS_PORT=${CERNIQ_APP_METRICS_PORT}
+      - CERNIQ_APP_CONSUMER_PORT=${CERNIQ_APP_CONSUMER_PORT}
+      - CERNIQ_APP_NODE_ENV=${CERNIQ_APP_NODE_ENV}
+      - PORT=${CERNIQ_APP_PORT:-6550}
+      - OTEL_SERVICE_NAME=cerniq.app
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.cerniq.rule=Host(`cerniq.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.cerniq.entrypoints=websecure"
+      - "traefik.http.routers.cerniq.tls=true"
+      - "traefik.http.routers.cerniq.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cerniq.middlewares=global-chain@file"
+      - "traefik.http.services.cerniq.loadbalancer.server.port=${CERNIQ_APP_PORT:-6550}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${CERNIQ_APP_PORT:-6550}/health"]
       interval: 30s
@@ -30,15 +38,12 @@ services:
       start_period: 40s
 
 networks:
-  geniuserp_net_edge:
-    external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  net_backing_services:
     external: true
     name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  net_observability:
     external: true
     name: geniuserp_net_observability

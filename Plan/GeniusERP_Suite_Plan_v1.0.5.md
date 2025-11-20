@@ -4489,7 +4489,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 13. Concluzie: DB comună vs. DB per aplicație
+### 13. Concluzie: DB comună vs. DB per aplicație
 
 - **Per aplicație (RECOMANDAT):**
 - ✅ Izolare clară → vânzare stand‑alone fără migrare dificilă.
@@ -4504,7 +4504,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 14. Convenții denumire & tipuri
+### 14. Convenții denumire & tipuri
 
 - Tabele `snake_case`, PK `id`, FK `<entity>_id`.
 - Timpuri `timestamptz`. Bani `numeric(18,2)`; cantități `numeric(18,3/4)`.
@@ -4513,7 +4513,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 15. Extensii PostgreSQL necesare
+### 15. Extensii PostgreSQL necesare
 
 `pgcrypto` (hash/encrypt), `citext`, `btree_gin`, `pg_trgm`, `pg_partman` (opțional), `postgis` (dacă e nevoie), `timescaledb` (opțional pentru events/time‑series).
 
@@ -4521,7 +4521,7 @@ await mod.default({ app, env, rest });
 
 ---
 
-## 16. Migrate & seeds (Drizzle)
+### 16. Migrate & seeds (Drizzle)
 
 - Migrations versionate pe fiecare DB; seeds minime: roluri default, planuri, chart of accounts (RO), VAT codes, payroll pay items.
 
@@ -6425,7 +6425,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry
+#### F0.2 CI/CD: pipeline build/test/lint, release semantice, versionare pachete, container registry
 
 #### F0.2.1
 
@@ -7598,7 +7598,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază
+#### F0.3 Observabilitate (skeleton): OTEL collector, Prometheus, Grafana, Loki/Tempo skeleton + dashboards de bază
 
 #### F0.3.1
 
@@ -8041,7 +8041,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   "F0.3.17": {
     "denumire_task": "Creare Configurație Datasource Grafana pentru Observabilitate",
     "descriere_scurta_task": "Adaugă un fișier de provisioning Grafana pentru data source-uri (Prometheus, Loki, Tempo) în `shared/observability/dashboards/grafana/` (ex. `datasources.yml`).",
-    "descriere_lunga_si_detaliata_task": "Pentru ca instanța Grafana să cunoască automat sursele de date (Prometheus pentru metrici, Loki pentru loguri, Tempo pentru trace-uri), vom folosi mecanismul de provisioning. Creăm un fișier YAML (`datasources.yml`) sub directorul `shared/observability/dashboards/grafana/`, cu conținut de forma:\n```yaml\napiVersion: 1\ndatasources:\n  - name: Prometheus\n    type: prometheus\n    url: http://prometheus:9090\n    access: proxy\n    isDefault: true\n  - name: Loki\n    type: loki\n    url: http://loki:3100\n    access: proxy\n  - name: Tempo\n    type: tempo\n    url: http://tempo:3100\n    access: proxy\n```\nAcest exemplu definește 3 surse: Prometheus, Loki și Tempo, indicând Grafanei cum să le acceseze (prin DNS-ul serviciilor respective în rețeaua Docker). Flagul `isDefault: true` face ca Prometheus să fie sursa implicită pentru panel-urile de grafice. Acest fișier va fi montat în containerul Grafana la pornire, asigurând configurarea automată a surselor de date.",
+    "descriere_lunga_si_detaliata_task": "Pentru ca instanța Grafana să cunoască automat sursele de date (Prometheus pentru metrici, Loki pentru loguri, Tempo pentru trace-uri), vom folosi mecanismul de provisioning. Creăm un fișier YAML (`datasources.yml`) sub directorul `shared/observability/dashboards/grafana/`, cu conținut de forma:\n```yaml\napiVersion: 1\ndatasources:\n  - name: Prometheus\n    type: prometheus\n    url: http://prometheus:9090\n    access: proxy\n    isDefault: true\n  - name: Loki\n    type: loki\n    url: http://loki:3100\n    access: proxy\n  - name: Tempo\n    type: tempo\n    url: http://tempo:3200\n    access: proxy\n```\nAcest exemplu definește 3 surse: Prometheus, Loki și Tempo, indicând Grafanei cum să le acceseze (prin DNS-ul serviciilor respective în rețeaua Docker). Flagul `isDefault: true` face ca Prometheus să fie sursa implicită pentru panel-urile de grafice. Acest fișier va fi montat în containerul Grafana la pornire, asigurând configurarea automată a surselor de date.",
     "directorul_directoarele": [
       "shared/observability/dashboards/grafana/"
     ],
@@ -9147,21 +9147,13 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
   }
 ```
 
-### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
+#### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
 
-JSON
+##### F0.4.1
 
-
-{
-  "F0.4_Orchestrare_Docker": Definește 4 rețele de tip 'bridge' în /var/www/GeniusSuite/compose.yml. Acestea vor fi referite ca 'external: true' de către aplicații.",
-        "surse": ,
-        "obiectiv_faza": "F0.4",
-        "rationale": "Stabilește fundația pentru Stratul 1 (Rețea) al strategiei Defense in Depth [45], impunând segmentarea traficului conform.",
-        "validare": "Comanda 'docker network ls' afișează cele 4 rețele după rularea scriptului de inițializare (F0.4.20)."
-      }
-    },
+```JSON
     {
-      "F0.4.2": {
+      "F0.4.1": {
         "denumire_task": "Definire Volumelor Numite Globale (Root compose.yml)",
         "descriere_scurta_task": "Definirea tuturor volumelor 'stateful' (PostgreSQL, Kafka, Observability, Traefik) în fișierul compose.yml de la rădăcină.",
         "detalii_tehnice": "Implementează Partea 2 din  (Strategia de Protecție a Datelor). Definește volumele numite (ex. 'gs_pgdata_identity', 'gs_kafka_data', 'gs_traefik_certs') în secțiunea 'volumes:' a fișierului root. Acest lucru previne ștergerea lor accidentală de către comenzi 'docker compose down -v' la nivel de aplicație.[24]",
@@ -9171,8 +9163,13 @@ JSON
         "validare": "Comanda 'docker volume ls' afișează volumele (ex. 'gs_pgdata_identity') după rularea scriptului de inițializare (F0.4.20)."
       }
     },
+  ```
+
+##### F0.4.2
+
+```JSON
     {
-      "F0.4.3": {
+      "F0.4.2": {
         "denumire_task": "Configurare Serviciu 'proxy' (Traefik) în Root Compose",
         "descriere_scurta_task": "Adăugarea serviciului Traefik în compose.yml de la rădăcină, expunerea porturilor 80/443 și conectarea la rețele.",
         "detalii_tehnice": "Serviciul 'proxy/traefik'  se conectează la 'net_edge' (pentru porturile 80/443), 'net_suite_internal' (pentru a ruta traficul către API-uri) și 'net_observability' (pentru a expune /metrics). Utilizează volumul 'gs_traefik_certs'  pentru stocarea certificatelor ACME.",
@@ -9182,8 +9179,13 @@ JSON
         "validare": "Traefik pornește, redirecționează HTTP->HTTPS și obține certificate ACME valide."
       }
     },
+  ```
+
+##### F0.4.3
+
+```JSON
     {
-      "F0.4.4": {
+      "F0.4.3": {
         "denumire_task": "Configurare Serviciu 'observability' în Root Compose",
         "descriere_scurta_task": "Adăugarea stack-ului de observabilitate (Prometheus, Grafana, Loki) în compose.yml de la rădăcină.",
         "detalii_tehnice": "Adaugă serviciile din 'shared/observability/compose/' (definite în F0.3) în orchestratorul root. Toate serviciile (Prometheus, Loki, Tempo) se conectează *exclusiv* la 'net_observability' și utilizează volumele 'stateful' dedicate (ex. 'gs_prometheus_data'). Grafana UI poate fi expusă prin Traefik pe 'net_suite_internal'.",
@@ -9193,8 +9195,13 @@ JSON
         "validare": "Serviciile Grafana și Prometheus sunt accesibile prin rutele Traefik."
       }
     },
+  ```
+
+##### F0.4.4
+
+```JSON
     {
-      "F0.4.5": {
+      "F0.4.4": {
         "denumire_task": "Implementare Servicii de Bază (Backing Services) în Root Compose",
         "descriere_scurta_task": "Adăugarea definițiilor de servicii pentru PostgreSQL (instanțe multiple), Kafka și Temporal în compose.yml de la rădăcină.",
         "detalii_tehnice": "Adaugă serviciile 'stateful' partajate în orchestratorul root. Fiecare serviciu (ex. 'postgres_identity', 'postgres_numeriqo', 'kafka', 'temporal', 'neo4j_vettify') trebuie să folosească volumul numit corespunzător (ex. 'gs_pgdata_identity' ) și să se conecteze *exclusiv* la 'net_backing_services' și 'net_observability'. Niciunul dintre aceste servicii nu trebuie să fie pe 'net_suite_internal' sau 'net_edge'.",
@@ -9204,8 +9211,20 @@ JSON
         "validare": "Containerele DB/Kafka pornesc și sunt accesibile *doar* din alte containere atașate la 'net_backing_services'."
       }
     },
+  ```
+  
+> **Implementare practică:** Root compose izolează serviciile PostgreSQL/Kafka/Temporal/Neo4j/SuperTokens exclusiv pe `net_backing_services`. Metricile sunt expuse prin sidecar-uri dedicate (`postgres-metrics`, `kafka-metrics`, `temporal-metrics`, `neo4j-metrics`) care atașează simultan la `net_backing_services` (pentru acces la serviciul țintă) și `net_observability` (pentru scraping de către Prometheus). Astfel, regula „doar containere din net_backing_services pot accesa datele” este respectată literal, iar cerința F0.4.3 privind colectarea metricilor în `net_observability` rămâne satisfăcută. Neo4j folosește imaginea `neo4j:5.23-enterprise` și `NEO4J_ACCEPT_LICENSE_AGREEMENT=yes` pentru a activa endpoint-ul Prometheus pe `0.0.0.0:2004`, care este proxy-uit de sidecar pe portul 8080.
+>
+> **Validare hands-on (executată în cadrul task-ului):**
+>
+> - Izolare: `docker run --rm --network geniuserp_net_observability busybox ping -c 1 postgres_server` răspunde cu `bad address`, demonstrând că observability nu poate rezolva host-urile din `net_backing_services`.
+> - Export metrici: pentru fiecare sidecar rulează `docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 curl -s http://<exporter-host>:<port>/metrics | head -n 5` și se primește payload Prometheus (`postgres-metrics:9187`, `kafka-metrics:9308`, `temporal-metrics:8080`, `neo4j-metrics:8080`).
+
+##### F0.4.5
+
+```JSON
     {
-      "F0.4.6": {
+      "F0.4.5": {
         "denumire_task": "Refactorizare Compose Aplicație (Model Hibrid): cp/identity",
         "descriere_scurta_task": "Actualizarea 'cp/identity/compose/docker-compose.yml' pentru a implementa modelul hibrid (rețele și volume externe).",
         "detalii_tehnice": "Acesta este șablonul pentru toate celelalte aplicații (F0.4.7 - F0.4.19). Serviciul local 'postgres_identity' este *eliminat* (deoarece este definit în root F0.4.5). Serviciul 'api' (identity) se conectează la rețelele externe: 'net_suite_internal' [1], 'net_backing_services' (pentru a accesa 'postgres_identity' și 'supertokens-core') și 'net_observability'. Rețelele sunt definite cu 'external: true'.",
@@ -9215,8 +9234,23 @@ JSON
         "validare": "Aplicația pornește local (folosind 'docker compose up' în 'cp/identity/compose') și se conectează cu succes la serviciile externe (DB, Traefik)."
       }
     },
+  ```
+
+> **Implementare practică:** `cp/identity/compose/docker-compose.yml` importă acum atât `.suite.general.env`, cât și `.cp.identity.env`, iar serviciul `genius-suite-identity` este dual-homed pe `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` și `geniuserp_net_observability`. Postgres-ul dedicat a fost eliminat, aplicația consumă `postgres_server` și `supertokens-core` definite în orchestratorul root, iar toate rețelele sunt marcate `external: true` pentru a reutiliza infrastructura comună.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/identity/.cp.identity.env && set +a && docker compose -f cp/identity/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-identity --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-identity nc -zv postgres_server 5432`
+> 4. `docker exec genius-suite-identity wget -qO- http://supertokens-core:3567/hello`
+> 5. `docker exec traefik wget -qO- http://identity:6250/health`
+
+##### F0.4.6
+
+```JSON
     {
-      "F0.4.7": {
+      "F0.4.6": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-shell",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/suite-shell/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul BFF (port 6100 [1]) se conectează la 'net_suite_internal' (expus de Traefik) și 'net_observability'. Rețelele sunt marcate 'external: true'.",
@@ -9224,8 +9258,23 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cp/suite-shell/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.suite-shell.env`, ceea ce permite serviciului `genius-suite-shell` să folosească aceleași definiții de rețea și rute Traefik ca restul Control Plane-ului. Containerul este conectat exclusiv la `geniuserp_net_suite_internal` (trafic user-facing) și `geniuserp_net_observability`, iar configurația se bazează pe serviciul `identity` deja mutat în modelul hibrid.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/suite-shell/.cp.suite-shell.env && set +a && docker compose -f cp/suite-shell/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-shell --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-shell wget -qO- http://identity:6250/health`
+> 4. `curl -I http://localhost:6100/health`
+> 5. `docker exec traefik wget -qO- http://suite-shell:6100/health`
+
+##### F0.4.7
+
+```JSON
     {
-      "F0.4.8": {
+      "F0.4.7": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/suite-admin",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/suite-admin/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6150 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9233,8 +9282,24 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cp/suite-admin/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.suite-admin.env`, astfel încât toate variabilele comune (rețele, domenii, OTEL) sunt partajate cu restul Control Plane-ului. Serviciul `genius-suite-admin` este atașat simultan la `geniuserp_net_suite_internal` (trafic user-facing prin Traefik), `geniuserp_net_backing_services` (Postgres/servicii interne) și `geniuserp_net_observability` (Prometheus + OTEL), iar toate rețelele sunt marcate `external: true` pentru reutilizarea infrastructurii.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/suite-admin/.cp.suite-admin.env && set +a && docker compose -f cp/suite-admin/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-admin --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-admin nc -zv postgres_server 5432`
+> 4. `docker exec genius-suite-admin wget -qO- http://identity:6250/health`
+> 5. `curl -I http://localhost:6150/health`
+> 6. `docker exec traefik wget -qO- http://suite-admin:6150/health`
+
+##### F0.4.8
+
+```JSON
     {
-      "F0.4.9": {
+      "F0.4.8": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/licensing",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/licensing/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6300 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9242,8 +9307,23 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cp/licensing/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.licensing.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-licensing` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Postgres) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/licensing/.cp.licensing.env && set +a && docker compose -f cp/licensing/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-licensing --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-licensing nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6300/health`
+> 5. `docker exec traefik wget -qO- http://licensing:6300/health`
+
+##### F0.4.9
+
+```JSON
     {
-      "F0.4.10": {
+      "F0.4.9": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/analytics-hub",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/analytics-hub/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6350 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru Kafka/DB) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9251,8 +9331,23 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cp/analytics-hub/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.analytics-hub.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-analytics-hub` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Kafka/DB) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub.env && set +a && docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-analytics-hub --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-analytics-hub nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6350/health`
+> 5. `docker exec traefik wget -qO- http://analytics:6350/health`
+
+##### F0.4.10
+
+```JSON
     {
-      "F0.4.11": {
+      "F0.4.10": {
         "denumire_task": "Refactorizare Compose Aplicație: cp/ai-hub",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cp/ai-hub/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6400 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9260,8 +9355,23 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cp/ai-hub/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cp.ai-hub.env`, permițând accesul la variabilele globale. Serviciul `genius-suite-ai-hub` este conectat la `geniuserp_net_suite_internal` (trafic user-facing), `geniuserp_net_backing_services` (Postgres/VectorDB) și `geniuserp_net_observability` (Prometheus/OTEL). Rețelele sunt marcate `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cp/ai-hub/.cp.ai-hub.env && set +a && docker compose -f cp/ai-hub/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-ai-hub --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-ai-hub nc -zv postgres_server 5432`
+> 4. `curl -I http://localhost:6400/health`
+> 5. `docker exec traefik wget -qO- http://ai:6400/health`
+
+##### F0.4.11
+
+```JSON
     {
-      "F0.4.12": {
+      "F0.4.11": {
         "denumire_task": "Refactorizare Compose Aplicație: archify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'archify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6500 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Volumul 'archify_storage_originals'  este definit în root (F0.4.2) și referit aici ca 'external: true'.",
@@ -9269,8 +9379,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `archify.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.archify.env`. Serviciul `genius-suite-archify-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` și `geniuserp_net_observability`. Volumul `archify_storage_originals` este montat ca `external: true`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source archify.app/.archify.env && set +a && docker compose -f archify.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-archify-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-archify-app curl -I http://localhost:6500/health`
+> 4. `docker exec traefik wget -qO- http://archify:6500/health`
+
+##### F0.4.12
+
+```JSON
     {
-      "F0.4.13": {
+      "F0.4.12": {
         "denumire_task": "Refactorizare Compose Aplicație: cerniq.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'cerniq.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6550 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru a consuma din Kafka/DBs) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9278,8 +9402,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `cerniq.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.cerniq.env`. Serviciul `genius-suite-cerniq-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Kafka) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source cerniq.app/.cerniq.env && set +a && docker compose -f cerniq.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-cerniq-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-cerniq-app curl -I http://localhost:6550/health`
+> 4. `docker exec traefik wget -qO- http://cerniq:6550/health`
+
+##### F0.4.13
+
+```JSON
     {
-      "F0.4.14": {
+      "F0.4.13": {
         "denumire_task": "Refactorizare Compose Aplicație: flowxify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'flowxify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6600 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru Temporal/DB) și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9287,8 +9425,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `flowxify.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.flowxify.env`. Serviciul `genius-suite-flowxify-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Temporal/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source flowxify.app/.flowxify.env && set +a && docker compose -f flowxify.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-flowxify-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-flowxify-app curl -I http://localhost:6600/health`
+> 4. `docker exec traefik wget -qO- http://flowxify:6600/health`
+
+##### F0.4.14
+
+```JSON
     {
-      "F0.4.15": {
+      "F0.4.14": {
         "denumire_task": "Refactorizare Compose Aplicație: i-wms.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'i-wms.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6650 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9296,8 +9448,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `i-wms.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.i-wms.env`. Serviciul `genius-suite-i-wms-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source i-wms.app/.i-wms.env && set +a && docker compose -f i-wms.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-i-wms-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-i-wms-app curl -I http://localhost:6650/health`
+> 4. `docker exec traefik wget -qO- http://iwms:6650/health`
+
+##### F0.4.15
+
+```JSON
     {
-      "F0.4.16": {
+      "F0.4.15": {
         "denumire_task": "Refactorizare Compose Aplicație: mercantiq.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'mercantiq.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6700 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9305,8 +9471,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `mercantiq.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.mercantiq.env`. Serviciul `genius-suite-mercantiq-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source mercantiq.app/.mercantiq.env && set +a && docker compose -f mercantiq.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-mercantiq-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-mercantiq-app curl -I http://localhost:6700/health`
+> 4. `docker exec traefik wget -qO- http://mercantiq:6700/health`
+
+##### F0.4.16
+
+```JSON
     {
-      "F0.4.17": {
+      "F0.4.16": {
         "denumire_task": "Refactorizare Compose Aplicație: numeriqo.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'numeriqo.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6750 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9314,8 +9494,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `numeriqo.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.numeriqo.env`. Serviciul `genius-suite-numeriqo-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source numeriqo.app/.numeriqo.env && set +a && docker compose -f numeriqo.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-numeriqo-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-numeriqo-app curl -I http://localhost:6750/health`
+> 4. `docker exec traefik wget -qO- http://numeriqo:6750/health`
+
+##### F0.4.17
+
+```JSON
     {
-      "F0.4.18": {
+      "F0.4.17": {
         "denumire_task": "Refactorizare Compose Aplicație: triggerra.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'triggerra.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6800 [1]) se conectează la 'net_suite_internal', 'net_backing_services' și 'net_observability'. Rețele și volume marcate 'external: true'.",
@@ -9323,8 +9517,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `triggerra.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.triggerra.env`. Serviciul `genius-suite-triggerra-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Temporal/Kafka/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source triggerra.app/.triggerra.env && set +a && docker compose -f triggerra.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-triggerra-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-triggerra-app curl -I http://localhost:6800/health`
+> 4. `docker exec traefik wget -qO- http://triggerra:6800/health`
+
+##### F0.4.18
+
+```JSON
     {
-      "F0.4.19": {
+      "F0.4.18": {
         "denumire_task": "Refactorizare Compose Aplicație: vettify.app",
         "descriere_scurta_task": "Aplicarea modelului hibrid pentru 'vettify.app/compose/docker-compose.yml'.",
         "detalii_tehnice": "Similar cu F0.4.6. Serviciul API (port 6850 [1]) se conectează la 'net_suite_internal', 'net_backing_services' (pentru DB și Neo4j) și 'net_observability'. Rețelele și volumele (inclusiv 'gs_neo4j_data') sunt marcate 'external: true'.[24]",
@@ -9332,8 +9540,22 @@ JSON
         "obiectiv_faza": "F0.4"
       }
     },
+  ```
+
+> **Implementare practică:** `vettify.app/compose/docker-compose.yml` încarcă acum `.suite.general.env` înaintea `.vettify.env`. Serviciul `genius-suite-vettify-app` este conectat la `geniuserp_net_suite_internal`, `geniuserp_net_backing_services` (pentru Neo4j/DB) și `geniuserp_net_observability`.
+>
+> **Validare hands-on:**
+>
+> 1. `set -a && source .suite.general.env && source vettify.app/.vettify.env && set +a && docker compose -f vettify.app/compose/docker-compose.yml up -d`
+> 2. `docker ps --filter name=genius-suite-vettify-app --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'`
+> 3. `docker exec genius-suite-vettify-app curl -I http://localhost:6850/health`
+> 4. `docker exec traefik wget -qO- http://vettify:6850/health`
+
+##### F0.4.19
+
+```JSON
     {
-      "F0.4.20": {
+      "F0.4.19": {
         "denumire_task": "Creare Script de Inițializare Infra (init-infra.sh)",
         "descriere_scurta_task": "Crearea unui script (ex. 'scripts/compose/init-infra.sh') care creează rețelele și volumele externe.",
         "detalii_tehnice": "Deoarece aplicațiile depind de rețele și volume 'external: true' [F0.4.6-F0.4.19], acestea trebuie să existe înainte ca 'docker compose up' să fie rulat pe o aplicație individuală. Acest script va rula 'docker network create...' și 'docker volume create...' pentru toate resursele definite în F0.4.1 și F0.4.2. Acest script este esențial pentru mediile de CI și pentru setup-ul local al dezvoltatorilor.",
@@ -9343,8 +9565,23 @@ JSON
         "validare": "Scriptul rulează fără erori și creează toate rețelele și volumele necesare."
       }
     },
+  ```
+
+> **Implementare practică:** `scripts/compose/init-infra.sh` verifică prezența utilitarului Docker, încarcă `proxy/.proxy.env` pentru a reutiliza denumirile rețelelor și creează, într-o manieră idempotentă, cele patru rețele partajate (`geniuserp_net_edge`, `geniuserp_net_suite_internal`, `geniuserp_net_backing_services`, `geniuserp_net_observability`) precum și toate volumele persistente definite în root (`gs_traefik_certs`, `gs_pgdata_*`, `gs_kafka_data`, `gs_neo4j_data`, `gs_*observability`, plus volumele aplicației Archify). Scriptul poate fi rulat înainte de `docker compose up` pentru orice serviciu și este destinat atât dezvoltatorilor locali, cât și mediilor CI/CD care pornesc aplicații individuale.
+>
+> **Validare hands-on:**
+>
+> 1. `cd /var/www/GeniusSuite && bash scripts/compose/init-infra.sh`
+> 2. `docker network ls | grep geniuserp_net_`
+> 3. `docker volume ls | grep gs_`
+> 4. `docker volume ls | grep archify_storage_originals`
+> 5. Rularea repetată a scriptului nu produce erori, confirmând caracterul idempotent.
+
+##### F0.4.20
+
+```JSON
     {
-      "F0.4.21": {
+      "F0.4.20": {
         "denumire_task": "Validare Segmentare Rețea (Zero-Trust)",
         "descriere_scurta_task": "Testarea și validarea faptului că segregarea rețelelor funcționează conform planului.",
         "detalii_tehnice": "După pornirea stack-ului (root compose), executați teste de conectivitate. Exemplu de test 1: 'docker exec [container_traefik] ping [container_postgres_identity]' TREBUIE să eșueze (Traefik nu este pe 'net_backing_services'). Exemplu de test 2: 'docker exec [container_api_identity] ping [container_postgres_identity]' TREBUIE să reușească (ambele sunt pe 'net_backing_services'). Documentați rezultatele ca dovadă a implementării Zero-Trust.",
@@ -9354,8 +9591,20 @@ JSON
         "validare": "Testele de ping eșuează și reușesc exact așa cum este descris în 'detalii_tehnice'."
       }
     },
+  ```
+
+> **Implementare practică:** Validarea Zero-Trust pornește de la stack-ul root complet operațional (Traefik + backing services + CP). Testele rulează direct în containere pentru a demonstra că doar serviciile atașate la `geniuserp_net_backing_services` pot atinge `postgres_server`. Traefik (edge) nu rezolvă host-ul DB, în timp ce `genius-suite-identity` (atașat la aceeași rețea) comunică fără restricții.
+>
+> **Validare hands-on:**
+>
+> 1. `docker exec traefik ping -c 1 postgres_server` → răspuns: `ping: bad address 'postgres_server'` (rezoluția este blocată deoarece Traefik nu se află pe `net_backing_services`).
+> 2. `docker exec genius-suite-identity ping -c 1 postgres_server` → succes (`64 bytes from 172.22.0.4...`, 0% packet loss), confirmând accesul permis numai serviciilor aprobate.
+
+##### F0.4.21
+
+```JSON
     {
-      "F0.4.22": {
+      "F0.4.21": {
         "denumire_task": "Validare Persistență Volum (Test 'down -v')",
         "descriere_scurta_task": "Testarea strategiei de protecție a datelor PostgreSQL.[24]",
         "detalii_tehnice": "1. Porniți stack-ul root și o aplicație (ex. 'numeriqo.app'). 2. Adăugați date de test în baza de date 'numeriqo_db'. 3. Rulați 'docker compose down -v' în directorul 'numeriqo.app/compose/'. 4. Porniți din nou aplicația ('docker compose up' în același director). 5. Confirmați că datele de test persistă. Acest test validează că strategia 'external: true' [24] funcționează și previne pierderea accidentală a datelor.",
@@ -9365,15 +9614,24 @@ JSON
         "validare": "Datele persistă după rularea 'docker compose down -v' la nivel de aplicație."
       }
     }
-  ]
-}
+```
 
+'
+        > **Implementare practică:** Testul de persistență a fost rulat pe `numeriqo.app/compose/docker-compose.yml`, care montează volumul extern `geniuserp_pgdata_numeriqo`. După ce containerul Numeriqo a fost pornit (în prezent intră în restart din cauza lipsei modulului `@genius-suite/observability`, dar atașarea volumului funcționează), am creat tabela `f0421_persistence_test` în `numeriqo_db` și am introdus un rând de probă folosind `suite_admin`. Ulterior am executat `docker compose down -v` din directorul aplicației și am repornit serviciul; volumul extern nu a fost șters, astfel că rândul inserat a rămas prezent.
+        >
+        > **Validare hands-on:**
+        >
+        > 1. `docker exec -e PGPASSWORD=ReplaceMeWithStrongPostgresPassword geniuserp-postgres psql -U suite_admin -d numeriqo_db -c "SELECT id, note FROM f0421_persistence_test;"` → returnează rândul `baseline row before down -v` inserat înainte de test.
+        > 2. `cd numeriqo.app/compose && docker compose down -v` → containerul `genius-suite-numeriqo-app` este oprit/eliminat, volumul `geniuserp_pgdata_numeriqo` rămâne neatins (marcat `external: true`).
+        > 3. `set -a && source .suite.general.env && source numeriqo.app/.numeriqo.env && set +a && docker compose -f numeriqo.app/compose/docker-compose.yml up -d` → serviciul este recreat și se reconectează la același volum.
+        > 4. `docker exec -e PGPASSWORD=ReplaceMeWithStrongPostgresPassword geniuserp-postgres psql -U suite_admin -d numeriqo_db -c "SELECT id, note FROM f0421_persistence_test;"` → rândul inserat este prezent după ciclul `down -v`/`up`, confirmând că datele persistă.
+      `
 
-F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
+#### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod
 
-F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
+#### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
 
-F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db.
+#### F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db
 
 F0.8 CI & QA Scripts: smoke/load/security scripts, canary.
 

@@ -41,16 +41,132 @@ info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
+ROOT_COMPOSE_FILE="compose.yml"
+OBS_ENV_FILE="shared/observability/.observability.env"
+SUITE_ENV_FILE=".suite.general.env"
+BACKING_ENV_FILE=".backing-services.env"
+
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
     error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
     error "Rulează: cd /var/www/GeniusSuite && bash scripts/start-suite.sh"
+    exit 1
+fi
+
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
+    error "Nu am găsit $ROOT_COMPOSE_FILE în rădăcina repo-ului."
     exit 1
 fi
 
 log "==================================================================="
 log "  PORNIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
+
+PROXY_ENV_FILE="proxy/.proxy.env"
+PROXY_ENV_LOADED=false
+OBS_ENV_LOADED=false
+SUITE_ENV_LOADED=false
+BACKING_ENV_LOADED=false
+
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+load_proxy_env() {
+    if [ "${PROXY_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$PROXY_ENV_FILE" ]; then
+        error "Lipsește $PROXY_ENV_FILE. Copiază proxy/.proxy.env.example și actualizează valorile necesare."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$PROXY_ENV_FILE"
+    set +a
+    PROXY_ENV_LOADED=true
+}
+
+load_suite_env() {
+    if [ "${SUITE_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$SUITE_ENV_FILE" ]; then
+        error "Lipsește $SUITE_ENV_FILE. Copiază .suite.general.env.example și actualizează valorile necesare."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1091
+    source "$SUITE_ENV_FILE"
+    set +a
+    SUITE_ENV_LOADED=true
+}
+
+load_backing_env() {
+    if [ "${BACKING_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$BACKING_ENV_FILE" ]; then
+        error "Lipsește $BACKING_ENV_FILE. Copiază .backing-services.env.example și configurează secretele pentru DB/Kafka/Temporal."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1091
+    source "$BACKING_ENV_FILE"
+    set +a
+    BACKING_ENV_LOADED=true
+}
+
+load_obs_env() {
+    if [ "${OBS_ENV_LOADED}" = true ]; then
+        return
+    fi
+
+    if [ ! -f "$OBS_ENV_FILE" ]; then
+        error "Lipsește $OBS_ENV_FILE. Copiază shared/observability/.observability.env.example și configurează valorile pentru stack-ul de observabilitate."
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$OBS_ENV_FILE"
+    set +a
+    OBS_ENV_LOADED=true
+}
+
+prepare_proxy_dashboard_auth() {
+    load_proxy_env
+    local dashboard_dir="proxy/traefik/secrets"
+    local dashboard_file="$dashboard_dir/dashboard-users"
+
+    mkdir -p "$dashboard_dir"
+
+    if [ -z "${PROXY_DASHBOARD_USER:-}" ] || [ -z "${PROXY_DASHBOARD_PASS:-}" ]; then
+        warning "PROXY_DASHBOARD_USER/PASS nu sunt setate. Dashboard-ul Traefik va rămâne inaccesibil."
+        : > "$dashboard_file"
+        chmod 600 "$dashboard_file"
+        return
+    fi
+
+    if ! command_exists openssl; then
+        warning "Nu pot genera hash basic-auth (openssl nu este instalat)."
+        : > "$dashboard_file"
+        chmod 600 "$dashboard_file"
+        return
+    fi
+
+    local hashed
+    hashed=$(openssl passwd -apr1 "$PROXY_DASHBOARD_PASS")
+    printf "%s:%s\n" "$PROXY_DASHBOARD_USER" "$hashed" > "$dashboard_file"
+    chmod 600 "$dashboard_file"
+    info "Credentialele basic-auth pentru Traefik dashboard au fost regenerate"
+}
 
 # ============================================================================
 # FAZA 1: Creare Rețele Docker (Dacă nu există deja)
@@ -78,22 +194,33 @@ log "✓ Toate rețelele sunt create"
 echo ""
 
 # ============================================================================
-# FAZA 2: Pornire Backing Services
+# FAZA 2: Pornire Proxy (Traefik)
 # ============================================================================
-log "FAZA 2: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens)..."
+log "FAZA 2: Pornire Proxy (Traefik)..."
 
-# Încărcăm variabilele de mediu
-if [ -f ".backing-services.env" ]; then
-    export $(cat .backing-services.env | grep -v '^#' | xargs)
-fi
-if [ -f ".suite.general.env" ]; then
-    export $(cat .suite.general.env | grep -v '^#' | xargs)
-fi
+load_proxy_env
+prepare_proxy_dashboard_auth
 
-# Pornire backing services
-docker compose -f docker-compose.backing-services.yml --env-file .suite.general.env up -d
+docker compose -f "$ROOT_COMPOSE_FILE" up -d proxy
 
-log "Așteptăm PostgreSQL să fie ready (30 secunde)..."
+log "Așteptăm Traefik să devină ready (10 secunde)..."
+sleep 10
+
+log "✓ Proxy pornit"
+echo ""
+
+# ============================================================================
+# FAZA 3: Pornire Backing Services
+# ============================================================================
+log "FAZA 3: Pornire Backing Services (PostgreSQL, Kafka, Temporal, SuperTokens, Neo4j) + Exportere..."
+
+load_suite_env
+load_backing_env
+
+docker compose -f "$ROOT_COMPOSE_FILE" up -d postgres_server kafka temporal supertokens-core neo4j \
+    postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
+
+log "Așteptăm PostgreSQL să fie ready (15 secunde)..."
 sleep 15
 
 # Verificare health PostgreSQL
@@ -110,20 +237,19 @@ for i in {1..10}; do
     sleep 5
 done
 
-log "Așteptăm Kafka, Temporal și SuperTokens să pornească (20 secunde)..."
+log "Așteptăm Kafka, Temporal, SuperTokens, Neo4j și exporterele să pornească (20 secunde)..."
 sleep 20
 
 log "✓ Backing Services pornite și funcționale"
 echo ""
 
 # ============================================================================
-# FAZA 3: Pornire Observability Stack
+# FAZA 4: Pornire Observability Stack
 # ============================================================================
-log "FAZA 3: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
+log "FAZA 4: Pornire Observability Stack (Prometheus, Loki, Grafana, Tempo, OTEL, Promtail)..."
 
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml --env-file ./.observability.env up -d
-cd /var/www/GeniusSuite
+load_obs_env
+docker compose -f "$ROOT_COMPOSE_FILE" up -d otel-collector tempo prometheus grafana loki promtail
 
 log "Așteptăm OTEL Collector să fie ready (10 secunde)..."
 sleep 10
@@ -132,9 +258,9 @@ log "✓ Observability Stack pornit"
 echo ""
 
 # ============================================================================
-# FAZA 4: Pornire Control Plane Services
+# FAZA 5: Pornire Control Plane Services
 # ============================================================================
-log "FAZA 4: Pornire Control Plane Services..."
+log "FAZA 5: Pornire Control Plane Services..."
 
 # Funcție pentru pornirea unui serviciu CP
 start_cp_service() {
@@ -179,10 +305,13 @@ log "==================================================================="
 log "  ✓ GENIUSSUITE PORNIT CU SUCCES"
 log "==================================================================="
 log ""
+GRAFANA_HOST=${OBS_GRAFANA_DOMAIN:-"grafana.${PROXY_DOMAIN:-geniuserp.app}"}
+PROM_HOST=${OBS_PROMETHEUS_DOMAIN:-"prometheus.${PROXY_DOMAIN:-geniuserp.app}"}
+
 log "Acces servicii:"
-log "  - Grafana:     http://localhost:3000"
-log "  - Prometheus:  http://localhost:9090"
-log "  - Temporal UI: http://localhost:8233"
+log "  - Grafana:     https://${GRAFANA_HOST} (Traefik) / http://localhost:${OBS_GRAFANA_PORT:-3000}"
+log "  - Prometheus:  https://${PROM_HOST} (Traefik) / http://localhost:${OBS_PROMETHEUS_PORT:-9090}"
+log "  - Temporal UI: disponibil doar în net_backing_services"
 log "  - Identity:    http://localhost:6250"
 log "  - Licensing:   http://localhost:6300"
 log ""

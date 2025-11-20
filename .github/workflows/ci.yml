@@ -280,10 +280,11 @@ jobs:
           echo "Verifying created files..."
           ls -la cp/suite-shell/.cp.suite-shell.env archify.app/.archify.env 2>/dev/null || echo "Warning: Some files may not exist"
 
-      - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
+      - name: Start backing services + exporters (PostgreSQL, Kafka, Temporal, SuperTokens, Neo4j)
         run: |
-          echo "Starting backing services on net_backing_services..."
-          docker compose -f docker-compose.backing-services.yml up -d
+          echo "Starting backing services via root compose..."
+          docker compose -f compose.yml up -d postgres_server kafka temporal supertokens-core neo4j \
+            postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
           echo "Waiting for backing services to be healthy..."
           sleep 60
         timeout-minutes: 5
@@ -390,7 +391,7 @@ jobs:
           echo "=== OTEL Collector logs ==="
           docker logs geniuserp-otel-collector --tail 100 || true
           echo "=== PostgreSQL logs ==="
-          docker logs postgres-backing-1 --tail 50 || true
+          docker logs geniuserp-postgres --tail 50 || true
           echo "=== Sample CP service logs ==="
           docker logs cp-identity-1 --tail 50 || true
           docker logs cp-suite-shell-1 --tail 50 || true
@@ -419,5 +420,8 @@ jobs:
           docker compose -f cp/analytics-hub/compose/docker-compose.yml down || true
           docker compose -f cp/ai-hub/compose/docker-compose.yml down || true
           docker compose -f shared/observability/compose/profiles/compose.dev.yml down || true
-          docker compose -f shared/backing-services/docker-compose.backing-services.yml down || true
+          docker compose -f compose.yml stop postgres_server kafka temporal supertokens-core neo4j \
+            postgres-metrics kafka-metrics temporal-metrics neo4j-metrics || true
+          docker compose -f compose.yml rm -f postgres_server kafka temporal supertokens-core neo4j \
+            postgres-metrics kafka-metrics temporal-metrics neo4j-metrics || true
           echo "Cleanup complete"

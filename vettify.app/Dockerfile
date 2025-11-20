@@ -16,13 +16,17 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter=@genius-suite/vettify.app build
+RUN pnpm --filter=@genius-suite/observability build && \
+    pnpm --filter=@genius-suite/common build && \
+    pnpm --filter=@genius-suite/vettify.app build
 
 FROM base AS deploy
-COPY package.json pnpm-workspace.yaml ./
+WORKDIR /app
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
 COPY vettify.app/package.json ./vettify.app/
-COPY shared/common ./shared/common
-COPY shared/observability ./shared/observability
+COPY shared/common/package.json ./shared/common/
+COPY shared/observability/package.json ./shared/observability/
+COPY --from=builder /app/shared ./shared
 RUN pnpm deploy --filter=@genius-suite/vettify.app --prod --legacy --ignore-scripts /deploy
 
 FROM node:22-alpine AS runner

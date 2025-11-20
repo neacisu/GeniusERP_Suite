@@ -20,11 +20,10 @@ ENV PATH="/usr/local/bin:$PATH"
 # Install all dependencies (including dev dependencies for building)
 RUN pnpm install --frozen-lockfile
 
-# Compile shared libraries
-RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build
-
-# Build the licensing service
-RUN cd cp/licensing && pnpm run build
+# Compile shared libraries and licensing service
+RUN pnpm --filter=@genius-suite/observability build && \
+	pnpm --filter=@genius-suite/common build && \
+	pnpm --filter=@genius-suite/cp-licensing build
 
 # Runtime stage
 FROM node:20-alpine

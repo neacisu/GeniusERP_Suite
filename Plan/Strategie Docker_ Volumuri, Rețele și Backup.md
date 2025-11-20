@@ -78,8 +78,8 @@ Aceste volume sunt critice pentru funcționarea întregii suite și trebuie defi
 * **Traefik ACME:** Serviciul proxy/traefik gestionează certificatele TLS/SSL prin ACME (Let's Encrypt). Pentru a preveni re-emiterea certificatelor la fiecare repornire și atingerea limitelor de rată ale autorității de certificare, fișierul acme.json trebuie să fie persistent.  
   * **Notă de Implementare:** O tentativă de a monta direct fișierul (ex: \-v./acme.json:/acme.json) va eșua, deoarece Docker va crea un *director* numit acme.json în container. Soluția corectă este montarea directorului părinte.  
   * **Volum:** gs\_traefik\_certs  
-  * **Cale Montare (în docker-compose.yml):** volumes: \- gs\_traefik\_certs:/etc/traefik/acme  
-  * **Configurare Traefik (în traefik.yml):** certificatesResolvers.myresolver.acme.storage=/etc/traefik/acme/acme.json
+  * **Cale Montare (în docker-compose.yml):** volumes: \- gs\_traefik\_certs:/letsencrypt  
+  * **Configurare Traefik (în traefik.yml):** certificatesResolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
 
 ### **2.3 Inventarul Volumelor Numite pentru Aplicațiile Stand-Alone**
 
@@ -123,7 +123,7 @@ Soluția strategică exploatează arhitectura hibridă pentru a crea un mecanism
 **Strategia de Implementare Prescriptivă:**
 
 1. **Definiția în Orchestratorul Root:** Toate volumele de date critice (întreaga listă de baze de date PostgreSQL, Kafka, Loki etc. din Partea 1\) *trebuie* definite exclusiv în secțiunea volumes: a fișierului compose.yml de la rădăcină (/var/www/GeniusSuite/compose.yml).  
-   `# /var/www/GeniusSuite/compose.yml`  
+  `# /var/www/GeniusSuite/compose.yml`  
    `version: "3.9"`
 
    `services:`  

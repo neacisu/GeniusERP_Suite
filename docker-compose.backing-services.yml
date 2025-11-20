@@ -1,7 +1,11 @@
 # ============================================================================
-# GeniusSuite - Orchestrator Central pentru Backing Services
+# GeniusSuite - Orchestrator Central pentru Backing Services (LEGACY)
 # ============================================================================
 # 
+# ⚠️ Începând cu F0.4.4, toate serviciile de mai jos sunt definite în `compose.yml`.
+# Acest fișier rămâne doar pentru referință istorică / migrarea treptată a aplicațiilor.
+# Folosește orchestratorul root pentru a porni backing services.
+#
 # Acest fișier definește serviciile de infrastructură critice pentru suită:
 # - PostgreSQL 18 (baze de date per aplicație)
 # - Apache Kafka 4.1.0 (broker mesaje)

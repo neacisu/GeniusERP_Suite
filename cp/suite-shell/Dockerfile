@@ -1,42 +1,43 @@
-# Build stage
-FROM node:24-alpine AS builder
-
+FROM node:24-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV CI=true
+RUN corepack enable
 WORKDIR /app
+COPY pnpm-lock.yaml ./
 
-# Copy workspace files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Copy source from workspace root
-COPY shared ./shared
-COPY cp ./cp
-
-# Install dependencies
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Add pnpm to PATH
-ENV PATH="/usr/local/bin:$PATH"
-
-# Install all dependencies (including dev dependencies for building)
+FROM base AS deps
+COPY pnpm-workspace.yaml package.json ./
+COPY cp/suite-shell/package.json ./cp/suite-shell/
+COPY shared/common/package.json ./shared/common/
+COPY shared/observability/package.json ./shared/observability/
 RUN pnpm install --frozen-lockfile
 
-# Compile shared libraries and suite-shell
-RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm run build && cd ../../cp/suite-shell && pnpm run build
+FROM base AS builder
+COPY . .
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter=@genius-suite/observability build && \
+	pnpm --filter=@genius-suite/common build && \
+	pnpm --filter=@genius-suite/cp-suite-shell build
 
-# Runtime stage
-FROM node:24-alpine
-
+FROM base AS deploy
 WORKDIR /app
-
-# Copy node_modules and source from builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/cp/suite-shell ./cp/suite-shell
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY cp/suite-shell/package.json ./cp/suite-shell/
+COPY shared/common/package.json ./shared/common/
+COPY shared/observability/package.json ./shared/observability/
 COPY --from=builder /app/shared ./shared
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+RUN pnpm deploy --filter=@genius-suite/cp-suite-shell --prod --legacy --ignore-scripts /deploy
 
-# Expose metrics and app port
+FROM base AS runner
+ENV NODE_ENV=production
+WORKDIR /app
+RUN apk add --no-cache curl && \
+	addgroup --system --gid 1001 nodejs && \
+	adduser --system --uid 1001 appuser
+COPY --from=builder --chown=appuser:nodejs /app/cp/suite-shell/dist ./dist
+COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
+COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
+USER appuser
 EXPOSE 6100
-
-# Start application with ts-node for TypeScript resolution
-CMD ["node", "-r", "ts-node/register", "cp/suite-shell/src/main.ts"]
+CMD ["node", "dist/main.js"]

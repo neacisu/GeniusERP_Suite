@@ -1,0 +1,33 @@
+server:
+  http_listen_port: 3200
+  grpc_listen_port: 0
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+compactor:
+  compaction:
+    block_retention: 720h
+
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/traces
+
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      replication_factor: 1
+      kvstore:
+        store: inmemory
+    tokens_file_path: /var/tempo/tokens.json

@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   licensing:
     build:
@@ -9,6 +7,7 @@ services:
     ports:
       - "${CP_LIC_APP_PORT}:${CP_LIC_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.licensing.env
     environment:
       - CP_LIC_APP_PORT=${CP_LIC_APP_PORT}
@@ -21,6 +20,15 @@ services:
       - net_suite_internal
       - net_backing_services
       - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.licensing.rule=Host(`licensing.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.licensing.entrypoints=websecure"
+      - "traefik.http.routers.licensing.tls=true"
+      - "traefik.http.routers.licensing.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.licensing.middlewares=global-chain@file"
+      - "traefik.http.services.licensing.loadbalancer.server.port=${CP_LIC_APP_PORT:-6300}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6300/health || exit 1"]

@@ -1,0 +1,48 @@
+services:
+  geniuserp-app:
+    build:
+      context: ../..
+      dockerfile: geniuserp.app/Dockerfile
+    container_name: genius-suite-geniuserp-app
+    restart: unless-stopped
+    env_file:
+      - ../../.suite.general.env
+      - ../.geniuserp.env
+    environment:
+      - GENERP_APP_PORT=${GENERP_APP_PORT:-6050}
+      - GENERP_APP_METRICS_PORT=${GENERP_APP_METRICS_PORT:-6051}
+      - GENERP_APP_NODE_ENV=${GENERP_APP_NODE_ENV:-production}
+      - PORT=${GENERP_APP_PORT:-6050}
+      - OTEL_SERVICE_NAME=geniuserp.app
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - LOG_LEVEL=info
+    networks:
+      - net_suite_internal
+      - net_backing_services
+      - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.geniuserp.rule=Host(`${SUITE_APP_DOMAIN:-geniuserp.app}`) || Host(`www.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.geniuserp.entrypoints=websecure"
+      - "traefik.http.routers.geniuserp.tls=true"
+      - "traefik.http.routers.geniuserp.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.geniuserp.middlewares=global-chain@file"
+      - "traefik.http.services.geniuserp.loadbalancer.server.port=${GENERP_APP_PORT:-6050}"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${GENERP_APP_PORT:-6050}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  net_suite_internal:
+    external: true
+    name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
+  net_observability:
+    external: true
+    name: geniuserp_net_observability

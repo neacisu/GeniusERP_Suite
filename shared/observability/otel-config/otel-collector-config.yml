@@ -7,10 +7,11 @@ receivers:
         endpoint: "0.0.0.0:4317"
 
 exporters:
-  # Tempo exporter commented out - Tempo service not deployed yet
-  # otlp/tempo:
-  #   endpoint: "tempo:4317"
-  
+  otlp/tempo:
+    endpoint: "tempo:4317"
+    tls:
+      insecure: true
+
   # Debug exporter for traces/metrics logging
   debug:
     verbosity: detailed
@@ -29,7 +30,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug]  # Changed from logging to debug
+      exporters: [otlp/tempo, debug]
     
     metrics:
       receivers: [otlp]

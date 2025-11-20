@@ -11,16 +11,33 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │  net_edge (172.20.0.0/16)                                   │
-│  - Gateway/Proxy (viitor)                                    │
-└─────────────────────────────────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────────────────────────┐
-│  net_suite_internal (172.21.0.0/16)                         │
-│  - CP Services: identity, licensing, ai-hub, etc.            │
-└─────────────────────────────────────────────────────────────┘
-         │                                │
-         ▼                                ▼
+
+### Așteptat: ≥20 Containere
+
+- **4 Backing**: postgres, kafka, temporal, supertokens
+- **4 Exportere**: postgres-metrics, kafka-metrics, temporal-metrics, neo4j-metrics
+- **5 Observability**: prometheus, grafana, loki, promtail, otel-collector
+- **7 CP Services**: identity, licensing, suite-admin, suite-shell, suite-login, ai-hub, analytics-hub
+
+### Test Izolare & Export Metrici
+
+```bash
+# 1) Izolare – rulată din net_observability, trebuie să eșueze cu "bad address"
+docker run --rm --network geniuserp_net_observability busybox ping -c 1 postgres_server
+
+# 2) Exportere – rulările de mai jos trebuie să întoarcă payload Prometheus
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://postgres-metrics:9187/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://kafka-metrics:9308/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://temporal-metrics:8080/metrics | head -n 5
+docker run --rm --network geniuserp_net_observability curlimages/curl:8.8.0 \
+  curl -s http://neo4j-metrics:8080/metrics | head -n 5
+```text
+
+### Test Endpoints
+
 ┌──────────────────────────┐    ┌────────────────────────────┐
 │ net_backing_services     │    │  net_observability         │
 │ (172.22.0.0/16)          │    │  (172.23.0.0/16)           │
@@ -28,15 +45,57 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 │ - Kafka                  │    │  - Grafana                 │
 │ - Temporal               │    │  - Loki                    │
 │ - SuperTokens            │    │  - OTEL Collector          │
+│ - Neo4j                  │    │  - Metrics sidecars        │
 └──────────────────────────┘    └────────────────────────────┘
+
 ```
 
 ### Principii Zero-Trust
 
-- **Backing services** (PostgreSQL, Kafka, etc.) nu sunt expuse pe net_edge
+- **Backing services** (PostgreSQL, Kafka, etc.) nu sunt expuse pe net_edge și rămân exclusiv pe net_backing_services
 - **CP services** comunică cu backing services DOAR prin net_backing_services
-- **Observability** colectează metrici prin net_observability
+- **Observability** colectează metrici prin net_observability folosind sidecar/exporter-e dual-homed (ex. postgres-metrics)
 - **Izolare completă** între zone
+
+### Observability Sidecars
+
+Pentru a respecta cerința „acces doar din net_backing_services” și, simultan, pentru a expune metrici în net_observability, fiecare serviciu stateful are acum un **exporter** separat (ex. `postgres-metrics`, `temporal-metrics`). Exporter-ul se conectează la serviciul țintă prin net_backing_services și expune `/metrics` doar în net_observability, eliminând necesitatea de a atașa containerele de date la rețeaua de management.
+
+## 🌐 Edge Proxy (Traefik)
+
+- **Fișier compose:** `compose.yml` definește serviciul Traefik și volumul persistent `gs_traefik_certs` montat la `/letsencrypt` pentru stocarea ACME (`acme.json`).
+- **Config statică/dinamică:** `proxy/traefik/traefik.yml` stabilește entrypoints (80/443/8080/9100) și `proxy/traefik/dynamic/middlewares.yml` oferă middleware-uri (security headers, rate limit, basic-auth chain pentru dashboard).
+- **Fișier env:** copiați `proxy/.proxy.env.example` în `proxy/.proxy.env`, setați `PROXY_DOMAIN`, `PROXY_DASHBOARD_DOMAIN`, `PROXY_DASHBOARD_USER/PASS`, email ACME și, opțional, token-urile DNS provider.
+- **Pornire manuală:**
+
+  ```bash
+  set -a && source proxy/.proxy.env && set +a
+  docker compose -f compose.yml up -d proxy
+  ```
+  
+  Scriptul `scripts/start-suite.sh` rulează acest pas în FAZA 2, generează hash-ul BasicAuth (folosind `openssl passwd -apr1`) în `proxy/traefik/secrets/dashboard-users` și expune dashboard-ul doar pe `PROXY_DASHBOARD_DOMAIN` via entrypoint `traefik` (localhost:8080).
+- **Observabilitate:** Traefik expune metrice Prometheus pe entrypoint `metrics` (9100) din `geniuserp_net_observability`, iar Prometheus le colectează prin job-ul `traefik`.
+
+### Validare rapidă Traefik
+
+```bash
+# container up & sănătos
+docker compose -f compose.yml ps proxy
+
+# redirect HTTP→HTTPS (folosește porturile din PROXY_HTTP/HTTPS_PORT)
+curl -I -H "Host: identity.${PROXY_DOMAIN}" http://127.0.0.1:${PROXY_HTTP_PORT}
+
+# dashboard protejat (SNI + basic-auth)
+curl -k -u "$PROXY_DASHBOARD_USER:$PROXY_DASHBOARD_PASS" \
+  --resolve "${PROXY_DASHBOARD_DOMAIN}:${PROXY_DASHBOARD_PORT}:127.0.0.1" \
+  https://${PROXY_DASHBOARD_DOMAIN}:${PROXY_DASHBOARD_PORT}/dashboard/ -o /dev/null -w '%{http_code}\n'
+
+# Prometheus metrics (din interiorul rețelei observability)
+docker exec traefik wget -qO- http://localhost:9100/metrics | head -n 10
+
+# verifică persistența acme.json
+docker exec traefik ls -l /letsencrypt
+```
 
 ## 🚀 Pornire Infrastructure
 
@@ -58,11 +117,26 @@ docker network create --driver bridge --subnet 172.22.0.0/16 geniuserp_net_backi
 docker network create --driver bridge --subnet 172.23.0.0/16 geniuserp_net_observability
 ```
 
-#### 2. **Pornire Backing Services**
+#### 2. **Pornire Proxy (Traefik)**
 
 ```bash
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml up -d
+cp proxy/.proxy.env.example proxy/.proxy.env  # doar prima dată, apoi actualizează valorile reale
+set -a && source proxy/.proxy.env && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml up -d proxy
+```
+
+> Notă: `gs_traefik_certs` păstrează `acme.json`. Scriptul `scripts/start-suite.sh` regenerează fișierul BasicAuth în `proxy/traefik/secrets/dashboard-users` înainte de fiecare pornire.
+
+#### 3. **Pornire Backing Services**
+
+> Note: Asigură-te că există fișierele `.suite.general.env` și `.backing-services.env` (copiază din variantele `.example` dacă rulezi prima dată).
+
+```bash
+cd /var/www/GeniusSuite
+docker compose -f compose.yml up -d \
+  postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
 ```
 
 Verifică healthy status:
@@ -71,22 +145,25 @@ Verifică healthy status:
 docker ps --filter name=geniuserp --format 'table {{.Names}}\t{{.Status}}'
 ```
 
-Așteptat: 4 containere (postgres, kafka, temporal, supertokens)
+Așteptat: 9 containere (postgres, kafka, temporal, supertokens, neo4j + exportere)
 
-#### 3. **Pornire Observability Stack**
+> **Notă Neo4j:** pentru ca endpoint-ul Prometheus să fie acceptat de imagine, folosim `neo4j:5.23-enterprise` împreună cu `NEO4J_ACCEPT_LICENSE_AGREEMENT=yes`. Endpoint-ul intern rulează pe `0.0.0.0:2004`, iar sidecar-ul `neo4j-metrics` îl proxy-uiește spre `net_observability` pe portul 8080.
+
+#### 4. **Pornire Observability Stack**
 
 ```bash
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml up -d
+cd /var/www/GeniusSuite
+set -a && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml up -d otel-collector tempo prometheus grafana loki promtail
 ```
 
 Accesare UI:
 
 - **Grafana**: `http://localhost:3000 (admin/admin)`
 - **Prometheus**: `http://localhost:9090`
-- **Temporal UI**: `http://localhost:8233`
+- **Temporal UI**: disponibil doar în `geniuserp_net_backing_services` (nu este expus pe host) — metricile sunt expuse via `temporal-metrics`
 
-#### 4. **Pornire CP Services**
+#### 5. **Pornire CP Services**
 
 ⚠️ **IMPORTANT**: Environment variables trebuie încărcate înainte de build/start:
 
@@ -110,6 +187,44 @@ set -a && source .suite.general.env && source cp/analytics-hub/.cp.analytics-hub
 docker compose -f cp/analytics-hub/compose/docker-compose.yml up -d
 ```
 
+#### Pregătire Rețele & Volume (F0.4.19)
+
+```bash
+cd /var/www/GeniusSuite
+bash scripts/compose/init-infra.sh
+```
+
+Scriptul creează toate rețelele externe (`geniuserp_net_*`) și volumele marcate `external: true` înainte de a porni orice compose local. Rularea este idempotentă și poate fi repetată după un clean host sau pe CI.
+
+#### Validare CP Hybrid (Identity, Suite Shell & Suite Admin)
+
+```bash
+# Identity (F0.4.5)
+set -a && source .suite.general.env && source cp/identity/.cp.identity.env && set +a && \
+  docker compose -f cp/identity/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-identity --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-identity nc -zv postgres_server 5432
+docker exec genius-suite-identity wget -qO- http://supertokens-core:3567/hello
+docker exec traefik wget -qO- http://identity:6250/health
+
+# Suite Shell (F0.4.6)
+set -a && source .suite.general.env && source cp/suite-shell/.cp.suite-shell.env && set +a && \
+  docker compose -f cp/suite-shell/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-shell --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-shell wget -qO- http://identity:6250/health
+curl -I http://localhost:6100/health
+docker exec traefik wget -qO- http://suite-shell:6100/health
+
+# Suite Admin (F0.4.7)
+set -a && source .suite.general.env && source cp/suite-admin/.cp.suite-admin.env && set +a && \
+  docker compose -f cp/suite-admin/compose/docker-compose.yml up -d
+docker ps --filter name=genius-suite-admin --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+docker exec genius-suite-admin nc -zv postgres_server 5432
+docker exec genius-suite-admin wget -qO- http://identity:6250/health
+curl -I http://localhost:6150/health
+docker exec traefik wget -qO- http://suite-admin:6150/health
+```
+
 ## 🛑 Oprire Infrastructure
 
 ### 1. Comandă Rapidă
@@ -129,12 +244,17 @@ docker compose -f cp/licensing/compose/docker-compose.yml down
 docker compose -f cp/identity/compose/docker-compose.yml down
 
 # Observability
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml down
+cd /var/www/GeniusSuite
+set -a && source shared/observability/.observability.env && set +a
+docker compose -f compose.yml stop otel-collector tempo prometheus grafana loki promtail
+docker compose -f compose.yml rm -f otel-collector tempo prometheus grafana loki promtail
 
 # Backing Services
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml down
+docker compose -f compose.yml stop postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
+docker compose -f compose.yml rm -f postgres_server kafka temporal supertokens-core neo4j \
+  postgres-metrics kafka-metrics temporal-metrics neo4j-metrics
 ```
 
 ⚠️ **NU folosiți `-v` flag** - volumele sunt externe și trebuie păstrate!

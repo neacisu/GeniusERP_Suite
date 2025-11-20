@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   suite-shell:
     build:
@@ -9,6 +7,7 @@ services:
     ports:
       - "${CP_SHELL_APP_PORT}:${CP_SHELL_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.suite-shell.env
     environment:
       - CP_SHELL_APP_PORT=${CP_SHELL_APP_PORT}
@@ -20,6 +19,15 @@ services:
     networks:
       - net_suite_internal
       - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.suite_shell.rule=Host(`shell.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.suite_shell.entrypoints=websecure"
+      - "traefik.http.routers.suite_shell.tls=true"
+      - "traefik.http.routers.suite_shell.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.suite_shell.middlewares=global-chain@file"
+      - "traefik.http.services.suite_shell.loadbalancer.server.port=${CP_SHELL_APP_PORT:-6100}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6100/health || exit 1"]

@@ -16,7 +16,9 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 COPY . .
 RUN pnpm install --frozen-lockfile
-RUN pnpm --filter=@genius-suite/flowxify.app build
+RUN pnpm --filter=@genius-suite/observability build && \
+    pnpm --filter=@genius-suite/common build && \
+    pnpm --filter=@genius-suite/flowxify.app build
 
 FROM base AS deploy
 WORKDIR /app

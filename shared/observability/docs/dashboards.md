@@ -49,12 +49,14 @@ The F0.3 observability stack provides **foundational monitoring infrastructure**
 
 ### Accessing Grafana
 
-**URL:** http://localhost:3000  
+**URL:** '[http]://localhost:3000'
 **Default Credentials:**
+
 - Username: `admin`
 - Password: `admin` (change on first login in production)
 
 **Environment Variables (optional override):**
+
 ```bash
 OBS_GRAFANA_ADMIN_USER=admin
 OBS_GRAFANA_ADMIN_PASS=admin
@@ -64,6 +66,7 @@ OBS_GRAFANA_PORT=3000
 ### First-Time Setup
 
 1. **Access Grafana:**
+
    ```bash
    open http://localhost:3000
    # or
@@ -73,9 +76,9 @@ OBS_GRAFANA_PORT=3000
 2. **Verify Datasources:**
    - Go to **Configuration** → **Data Sources**
    - Verify 3 datasources exist:
-     - ✅ Prometheus (default) - http://prometheus:9090
-     - ✅ Loki - http://loki:3100
-     - ⚠️ Tempo - http://tempo:3100 (configured but service not deployed)
+     - ✅ Prometheus (default) - '[http]://prometheus:9090'
+   - ✅ Loki - '[http]://loki:3100'
+   - ⚠️ Tempo - '[http]://tempo:3200' (configured but service not deployed)
 
 3. **Test Connectivity:**
    - Click each datasource
@@ -96,7 +99,7 @@ OBS_GRAFANA_PORT=3000
 
 ### Dashboard Provisioning Structure
 
-```
+```text
 shared/observability/dashboards/
 ├── grafana/
 │   ├── datasources.yml          # Auto-provisions Prometheus, Loki, Tempo
@@ -106,6 +109,7 @@ shared/observability/dashboards/
 ```
 
 **Provisioning Config:**
+
 - **Provider Name:** "Genius Suite Dashboards"
 - **Folder:** Root (no subfolder)
 - **Update Interval:** 60 seconds
@@ -123,6 +127,7 @@ While F0.3 lacks pre-built dashboards, here are the **essential metrics and quer
 
 **Metric:** `up`  
 **Query (PromQL):**
+
 ```promql
 # All services status
 up{job="genius_applications"}
@@ -132,7 +137,8 @@ up{job="genius_applications", instance=~"archify.app.*"}
 ```
 
 **Visualization:** Stat panel  
-**Thresholds:** 
+**Thresholds:**
+
 - Green: `1` (Up)
 - Red: `0` (Down)
 
@@ -142,6 +148,7 @@ up{job="genius_applications", instance=~"archify.app.*"}
 
 **Metric:** `http_server_requests_total`  
 **Query (PromQL):**
+
 ```promql
 # Requests per second (5m rate)
 rate(http_server_requests_total{job="genius_applications"}[5m])
@@ -159,6 +166,7 @@ sum by (service_name) (rate(http_server_requests_total[5m]))
 
 **Metric:** `http_server_requests_total`  
 **Query (PromQL):**
+
 ```promql
 # Error rate (4xx + 5xx) by service
 sum by (service_name) (
@@ -172,6 +180,7 @@ sum by (service_name) (
 **Visualization:** Graph  
 **Unit:** Percent (0-100)  
 **Thresholds:**
+
 - Green: < 1%
 - Yellow: 1-5%
 - Red: > 5%
@@ -182,6 +191,7 @@ sum by (service_name) (
 
 **Metric:** `http_server_request_duration_ms`  
 **Query (PromQL):**
+
 ```promql
 # p95 latency by service
 histogram_quantile(0.95, 
@@ -194,6 +204,7 @@ histogram_quantile(0.95,
 **Visualization:** Graph  
 **Unit:** milliseconds (ms)  
 **Thresholds:**
+
 - Green: < 200ms
 - Yellow: 200-500ms
 - Red: > 500ms
@@ -205,6 +216,7 @@ histogram_quantile(0.95,
 #### Panel: Prometheus Scrape Duration
 
 **Query (PromQL):**
+
 ```promql
 # Scrape duration by job
 scrape_duration_seconds{job="genius_applications"}
@@ -218,6 +230,7 @@ scrape_duration_seconds{job="genius_applications"}
 #### Panel: Prometheus Active Targets
 
 **Query (PromQL):**
+
 ```promql
 # Count of active targets
 count(up{job="genius_applications"} == 1)
@@ -233,6 +246,7 @@ count(up{job="genius_applications"} == 1)
 #### Panel: Log Volume by Service
 
 **Query (LogQL):**
+
 ```logql
 # Logs per second by container
 sum by (container_name) (
@@ -248,6 +262,7 @@ sum by (container_name) (
 #### Panel: Error Logs Count
 
 **Query (LogQL):**
+
 ```logql
 # Error-level logs in last 5 minutes
 sum(count_over_time({container_name=~".+-app"} |= "level" |= "error" [5m]))
@@ -255,6 +270,7 @@ sum(count_over_time({container_name=~".+-app"} |= "level" |= "error" [5m]))
 
 **Visualization:** Stat  
 **Thresholds:**
+
 - Green: 0
 - Yellow: 1-10
 - Red: > 10
@@ -266,6 +282,7 @@ sum(count_over_time({container_name=~".+-app"} |= "level" |= "error" [5m]))
 **Note:** OTEL Collector logs to stdout in F0.3. Metrics endpoint not exposed.
 
 **Container Logs:**
+
 ```bash
 docker logs geniuserp-otel-collector --tail 100
 ```
@@ -280,6 +297,7 @@ docker logs geniuserp-otel-collector --tail 100
 
 **Metric:** `traefik_entrypoint_requests_total`  
 **Query (PromQL):**
+
 ```promql
 # Requests per second
 rate(traefik_entrypoint_requests_total[5m])
@@ -293,6 +311,7 @@ rate(traefik_entrypoint_requests_total[5m])
 
 **Metric:** `traefik_entrypoint_request_duration_seconds`  
 **Query (PromQL):**
+
 ```promql
 # p95 latency
 histogram_quantile(0.95, 
@@ -318,16 +337,19 @@ histogram_quantile(0.95,
 2. **Example Queries:**
 
    **All services up:**
+
    ```promql
    up{job="genius_applications"}
    ```
 
    **CPU usage by service:**
+
    ```promql
    process_cpu_seconds_total{job="genius_applications"}
    ```
 
    **Memory usage:**
+
    ```promql
    process_resident_memory_bytes{job="genius_applications"}
    ```
@@ -348,21 +370,25 @@ histogram_quantile(0.95,
 2. **Example Queries:**
 
    **All logs from archify.app:**
+
    ```logql
    {container_name="archify-app"}
    ```
 
    **Error logs across all services:**
+
    ```logql
    {container_name=~".+-app"} |= "level" |= "error"
    ```
 
    **Logs containing "OTEL":**
+
    ```logql
    {container_name=~".+-app"} |~ "(?i)otel"
    ```
 
    **Logs from last 5 minutes with rate:**
+
    ```logql
    rate({container_name="archify-app"}[5m])
    ```
@@ -378,10 +404,12 @@ histogram_quantile(0.95,
 **Status:** Tempo datasource configured but service not deployed in F0.3.
 
 **Temporary Workaround:**
+
 - Traces are logged to OTEL Collector stdout
 - View traces: `docker logs geniuserp-otel-collector | grep -i trace`
 
 **Planned (F0.4):**
+
 - Deploy Tempo service
 - Query traces via Grafana Explore
 - Correlate traces with logs and metrics
@@ -401,7 +429,7 @@ histogram_quantile(0.95,
    - **Query:** `up{job="genius_applications"}`
    - **Visualization:** Stat
    - **Panel Title:** "Services Status"
-   - **Thresholds:** 
+   - **Thresholds:**
      - Base: Red
      - 1: Green
 
@@ -418,6 +446,7 @@ histogram_quantile(0.95,
 #### 1. Organize by Service Layer
 
 **Recommended Structure:**
+
 - **Infrastructure Dashboard:** Prometheus, Loki, OTEL Collector health
 - **Application Dashboard:** Per-service metrics (latency, errors, throughput)
 - **Business Dashboard:** Domain-specific metrics (documents created, users active)
@@ -425,12 +454,14 @@ histogram_quantile(0.95,
 #### 2. Use Variables for Flexibility
 
 **Example Variable (Service Selector):**
+
 - **Name:** `service`
 - **Type:** Query
 - **Datasource:** Prometheus
 - **Query:** `label_values(up{job="genius_applications"}, instance)`
 
 **Usage in Queries:**
+
 ```promql
 up{instance="$service"}
 ```
@@ -438,6 +469,7 @@ up{instance="$service"}
 #### 3. Set Meaningful Thresholds
 
 **SRE Golden Signals:**
+
 - **Latency:** < 200ms (good), 200-500ms (warning), > 500ms (critical)
 - **Error Rate:** < 1% (good), 1-5% (warning), > 5% (critical)
 - **Saturation:** < 70% (good), 70-85% (warning), > 85% (critical)
@@ -445,6 +477,7 @@ up{instance="$service"}
 #### 4. Add Links to Related Resources
 
 **Panel Links:**
+
 - Link to runbooks: `docs/runbooks.md#service-not-responding`
 - Link to logs: Grafana Explore with Loki query pre-filled
 - Link to source code: GitHub repository
@@ -461,6 +494,7 @@ up{instance="$service"}
    - Copy JSON
 
 2. **Save to Repository:**
+
    ```bash
    # Save dashboard JSON
    cat > shared/observability/dashboards/grafana/dashboards/services-overview.json <<'EOF'
@@ -522,10 +556,12 @@ up{instance="$service"}
 ### Problem: "Data source is not working" (Prometheus)
 
 **Symptoms:**
+
 - Grafana shows "Data source is not working" error
 - Queries return no data
 
 **Diagnosis:**
+
 ```bash
 # Check Prometheus is running
 docker ps | grep prometheus
@@ -538,6 +574,7 @@ docker exec -it $(docker ps -qf name=grafana) curl http://prometheus:9090/-/read
 ```
 
 **Solutions:**
+
 1. Restart Prometheus: `docker compose -f compose/profiles/compose.dev.yml restart prometheus`
 2. Check datasource URL in Grafana: Must be `http://prometheus:9090` (not `http://localhost:9090`)
 3. Verify both containers are on `geniuserp_net_observability` network
@@ -547,10 +584,12 @@ docker exec -it $(docker ps -qf name=grafana) curl http://prometheus:9090/-/read
 ### Problem: No Metrics Appearing in Queries
 
 **Symptoms:**
+
 - Query returns empty result
 - Expected services don't show in `up` metric
 
 **Diagnosis:**
+
 ```bash
 # Check Prometheus targets
 open http://localhost:9090/targets
@@ -560,13 +599,16 @@ curl http://localhost:6500/metrics  # Test individual service
 ```
 
 **Solutions:**
+
 1. **Target Down:** Service not running or unhealthy
+
    ```bash
    docker ps | grep archify-app
    docker logs archify-app
    ```
 
 2. **Wrong Port:** Check port in `prometheus.yml` matches service
+
    ```yaml
    # prometheus.yml
    - targets:
@@ -574,6 +616,7 @@ curl http://localhost:6500/metrics  # Test individual service
    ```
 
 3. **Network Issue:** Service not on `geniuserp_net_observability`
+
    ```bash
    docker inspect archify-app | grep -A 10 Networks
    ```
@@ -583,10 +626,12 @@ curl http://localhost:6500/metrics  # Test individual service
 ### Problem: Loki Logs Not Showing
 
 **Symptoms:**
+
 - Loki datasource works but queries return no logs
 - Recent logs missing
 
 **Diagnosis:**
+
 ```bash
 # Check Promtail is running
 docker ps | grep promtail
@@ -600,7 +645,9 @@ curl -G http://localhost:3100/loki/api/v1/query \
 ```
 
 **Solutions:**
-1. **Promtail Not Running:** 
+
+1. **Promtail Not Running:**
+
    ```bash
    cd shared/observability
    docker compose -f compose/profiles/compose.dev.yml up -d promtail
@@ -616,9 +663,11 @@ curl -G http://localhost:3100/loki/api/v1/query \
 ### Problem: Dashboard Not Auto-Loading
 
 **Symptoms:**
+
 - Dashboard JSON saved to `dashboards/` directory but not appearing in Grafana
 
 **Diagnosis:**
+
 ```bash
 # Check provisioning config
 cat shared/observability/dashboards/grafana/dashboards.yml
@@ -631,12 +680,15 @@ docker logs $(docker ps -qf name=grafana) | grep -i provision
 ```
 
 **Solutions:**
+
 1. **Restart Grafana:**
+
    ```bash
    docker compose -f compose/profiles/compose.dev.yml restart grafana
    ```
 
 2. **Verify JSON Syntax:**
+
    ```bash
    jq . shared/observability/dashboards/grafana/dashboards/your-dashboard.json
    ```
@@ -649,18 +701,21 @@ docker logs $(docker ps -qf name=grafana) | grep -i provision
 
 **Expected (F0.3):** Tempo is configured but **not deployed** in skeleton phase.
 
-**Status:** 
+**Status:**
+
 - ✅ Datasource configured in `datasources.yml`
 - ❌ Tempo container not in `compose.dev.yml`
 - ✅ OTEL Collector logs traces to stdout
 
 **Workaround:**
+
 ```bash
 # View traces in OTEL Collector logs
 docker logs geniuserp-otel-collector | grep -i "trace"
 ```
 
 **Planned (F0.4):**
+
 - Add Tempo service to `compose.dev.yml`
 - Configure OTEL Collector to export traces to Tempo
 - Enable trace queries in Grafana
@@ -696,30 +751,38 @@ docker logs geniuserp-otel-collector | grep -i "trace"
 
 ### Complete Service Health Dashboard
 
-**Row 1: Service Status**
+> **Row 1: Service Status**
+
 - Panel 1: Services Up/Down (Stat)
+
   ```promql
   count(up{job="genius_applications"} == 1)
   ```
   
 - Panel 2: Service List (Table)
+
   ```promql
   up{job="genius_applications"}
   ```
 
-**Row 2: Performance Metrics**
+> **Row 2: Performance Metrics**
+
 - Panel 3: Request Rate (Graph)
+
   ```promql
   sum by (instance) (rate(http_server_requests_total[5m]))
   ```
 
 - Panel 4: Error Rate (Graph)
+
   ```promql
   sum by (instance) (rate(http_server_requests_total{status_code=~"5.."}[5m]))
   ```
 
-**Row 3: Latency**
+> **Row 3: Latency**
+
 - Panel 5: p95 Latency (Graph)
+
   ```promql
   histogram_quantile(0.95, 
     sum by (instance, le) (rate(http_server_request_duration_ms_bucket[5m]))

@@ -42,8 +42,11 @@ info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
+ROOT_COMPOSE_FILE="compose.yml"
+PROXY_ENV_FILE="proxy/.proxy.env"
+
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
+if [ ! -f "$ROOT_COMPOSE_FILE" ]; then
     error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
     error "Rulează: cd /var/www/GeniusSuite && bash scripts/stop-suite.sh"
     exit 1
@@ -84,11 +87,13 @@ echo ""
 # ============================================================================
 log "FAZA 2: Oprire Observability Stack..."
 
-cd shared/observability/compose/profiles
-docker compose -f compose.dev.yml down  # FĂRĂ -v
-cd /var/www/GeniusSuite
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1; then
+    warning "Stack-ul de observabilitate pare deja oprit."
+else
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f otel-collector tempo prometheus grafana loki promtail >/dev/null 2>&1 || true
+    log "✓ Observability Stack oprit"
+fi
 
-log "✓ Observability Stack oprit"
 echo ""
 
 # ============================================================================
@@ -96,9 +101,35 @@ echo ""
 # ============================================================================
 log "FAZA 3: Oprire Backing Services..."
 
-docker compose -f docker-compose.backing-services.yml down  # FĂRĂ -v
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop postgres_server kafka temporal supertokens-core neo4j \
+    postgres-metrics kafka-metrics temporal-metrics neo4j-metrics >/dev/null 2>&1; then
+    warning "Backing services par deja oprite."
+else
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f postgres_server kafka temporal supertokens-core neo4j \
+        postgres-metrics kafka-metrics temporal-metrics neo4j-metrics >/dev/null 2>&1 || true
+    log "✓ Backing Services oprite"
+fi
+echo ""
 
-log "✓ Backing Services oprite"
+# ============================================================================
+# FAZA 4: Oprire Proxy (Traefik)
+# ============================================================================
+log "FAZA 4: Oprire Proxy (Traefik)..."
+
+if [ -f "$PROXY_ENV_FILE" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "$PROXY_ENV_FILE"
+    set +a
+fi
+
+if ! docker compose -f "$ROOT_COMPOSE_FILE" stop proxy >/dev/null 2>&1; then
+    warning "Nu am reușit să opresc proxy-ul (probabil nu era pornit)."
+else
+    docker compose -f "$ROOT_COMPOSE_FILE" rm -f proxy >/dev/null 2>&1 || true
+    log "✓ Proxy oprit"
+fi
+
 echo ""
 
 # ============================================================================

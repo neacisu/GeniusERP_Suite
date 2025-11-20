@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   suite-admin:
     build:
@@ -9,6 +7,7 @@ services:
     ports:
       - "${CP_ADMIN_APP_PORT}:${CP_ADMIN_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.suite-admin.env
     environment:
       - CP_ADMIN_APP_PORT=${CP_ADMIN_APP_PORT}
@@ -19,7 +18,17 @@ services:
       - LOG_LEVEL=info
     networks:
       - net_suite_internal
+      - net_backing_services
       - net_observability
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - "traefik.http.routers.suite_admin.rule=Host(`admin.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
+      - "traefik.http.routers.suite_admin.entrypoints=websecure"
+      - "traefik.http.routers.suite_admin.tls=true"
+      - "traefik.http.routers.suite_admin.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.suite_admin.middlewares=global-chain@file"
+      - "traefik.http.services.suite_admin.loadbalancer.server.port=${CP_ADMIN_APP_PORT:-6150}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6150/health || exit 1"]
@@ -32,6 +41,9 @@ networks:
   net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   net_observability:
     external: true
     name: geniuserp_net_observability
