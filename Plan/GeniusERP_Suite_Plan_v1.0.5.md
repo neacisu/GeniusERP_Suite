@@ -9629,20 +9629,561 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 
 #### F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod
 
-#### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
+##### F0.5.1
 
-#### F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db
+```JSON
+{
+  "F0.5.1": {
+    "denumire_task": "Analiza Strategie Configurare",
+    "descriere_scurta_task": "Document de audit care demonstrează riscurile fișierelor .env mixte.",
+    "descriere_lunga_si_detaliata_task": "Extinde documentul `Strategie Securitate F0.5` cu un capitol care corelează exemple reale (ex. `NUMQ_DB_PASS`) cu rapoartele ENV și cu regulile din `Strategii de Fișiere.env și Porturi.md`, pentru a fundamenta schimbarea arhitecturii.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/Plan",
+      "/var/www/GeniusSuite/docs/security"
+    ],
+    "contextul_taskurilor_anterioare": "Continuă F0.4 (guvernanță și infrastructură) și folosește rapoartele ENV.",
+    "contextul_general_al_aplicatiei": "Stabilește baza legală și tehnică pentru F0.5 înainte de a modifica compose-urile.",
+    "contextualizarea_directoarelor_si_cailor": "Editează `Plan/Strategie Securitate F0.5_OpenBao_ENV.md` și menționează explicit `Plan/Strategii de Fișiere.env și Porturi.md`.",
+    "restrictii_anti_halucinatie": "Folosește doar riscuri demonstrate (loguri CI, incidente reale), nu ipoteze nevalidate.",
+    "restrictii_de_iesire_din_contex": "Nu modifica alte planuri decât prin citare; păstrează stilul JSON existent.",
+    "validare": "Documentul include un capitol nou (Audit) cu legături către rapoartele ENV și exemple concrete.",
+    "outcome": "Există o analiză acceptată care descrie vectorii de risc .env.",
+    "componenta_de_CI_CD": "Serveste drept referință pentru controalele Pull Request (checklist securitate)."
+  },
+  ```
 
-F0.8 CI & QA Scripts: smoke/load/security scripts, canary.
+##### F0.5.2
 
-F0.9 Schemă DB Comună: Identity/Licensing/Gateway (crea/upgrade DB comune: uuidv7, RLS, indici).
+  ```JSON
+  "F0.5.2": {
+    "denumire_task": "Politica Config vs. Secrete",
+    "descriere_scurta_task": "Definirea regulilor hibride de guvernanță.",
+    "descriere_lunga_si_detaliata_task": "Creează `docs/security/F0.5-Politica-Config-vs-Secrete.md` cu matrice de clasificare, aplicații practice și reguli de code-review inspirate din inventarul variabilelor.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs/security"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de concluziile F0.5.1.",
+    "contextul_general_al_aplicatiei": "Asigură un standard comun pentru developers, DevSecOps și QA.",
+    "contextualizarea_directoarelor_si_cailor": "Documentul trebuie referențiat din README-urile orchestratorilor și din `docs/ENV-IMPLEMENTATION-SUMMARY.md`.",
+    "restrictii_anti_halucinatie": "Nu introduce categorii care nu există în proiect; folosește prefixele din `Strategii de Fișiere.env...`.",
+    "restrictii_de_iesire_din_contex": "Nu muta actualele fișiere .env, doar documentează regulile.",
+    "validare": "Politica este citată în șabloanele PR și acceptată de ownerii de domeniu.",
+    "outcome": "Există reguli aprobate pentru separarea config/secrete.",
+    "componenta_de_CI_CD": "Folosită de joburile lint pentru a respinge secrete noi în .env."
+  },
+  ```
 
-F0.10 Schemă DB per App: vettify, numeriqo, archify, flowxify, iwms, mercantiq, triggerra – aplicare scheme + seeds minime.
+##### F0.5.3
 
-F0.11 Schemă DB BI: cerniq_warehouse (metastore/cache) + joburi ETL inițiale.
+```JSON
+  "F0.5.3": {
+    "denumire_task": "Serviciu OpenBao în Root Compose",
+    "descriere_scurta_task": "Adăugarea serviciului OpenBao în `compose.yml` cu volume și rețele corecte.",
+    "descriere_lunga_si_detaliata_task": "Actualizează orchestratorul root pentru a include containerul `openbao/openbao`, definește volumul `gs_openbao_data` (external: true) și conectează serviciul strict la `net_backing_services` și `net_observability`, conform strategiei Docker.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită guvernanță definită (F0.5.1–F0.5.2).",
+    "contextul_general_al_aplicatiei": "Creează serviciul central de secrete pentru toate aplicațiile suitei.",
+    "contextualizarea_directoarelor_si_cailor": "Modifică `compose.yml` și secțiunea `volumes` pentru a adăuga `gs_openbao_data` definit la root.",
+    "restrictii_anti_halucinatie": "Nu expune OpenBao pe `net_edge`; nu inventa porturi externe.",
+    "restrictii_de_iesire_din_contex": "Nu șterge alte servicii; respectă schema existentă.",
+    "validare": "`docker compose up openbao` pornește cu succes, iar `docker network inspect` arată doar rețelele aprobate.",
+    "outcome": "OpenBao rulează în root stack cu volum persistent.",
+    "componenta_de_CI_CD": "CI poate porni serviciul pentru teste de integrare."
+  },
+```
 
-Deliverables: repo inițial, pipelines verzi, DB-uri funcționale (migrate & seed), „one‑command up” pentru profile dev.
-Criterii acceptare: pnpm i && pnpm build trece global; docker compose -f compose.yml up pornește Traefik+observability; gs db migrate funcțional.
+##### F0.5.4
+
+```JSON
+  "F0.5.4": {
+    "denumire_task": "Bootstrap & Unseal Script",
+    "descriere_scurta_task": "Automatizează inițializarea și unseal-ul OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Creează `scripts/security/openbao-init.sh` care detectează statusul, rulează `bao operator init`, salvează cheile într-un fișier ignorat (`.secrets/openbao.json`), execută unseal și verifică sănătatea endpoint-ului.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită OpenBao definit (F0.5.3).",
+    "contextul_general_al_aplicatiei": "Reduce fricțiunea pentru devs și CI, asigurând un bootstrap replicabil.",
+    "contextualizarea_directoarelor_si_cailor": "Scriptul trebuie să fie apelat din `scripts/start-suite.sh` și documentat în README.",
+    "restrictii_anti_halucinatie": "Nu persista cheile în Git; folosește doar căi gitignored.",
+    "restrictii_de_iesire_din_contex": "Nu modifica politicile de permisiuni ale sistemului; scriptul trebuie să fie idempotent.",
+    "validare": "Rularea scriptului pe un mediu curat generează cheile și raportează `initialized=true`.",
+    "outcome": "Bootstrap-ul OpenBao devine un singur pas documentat.",
+    "componenta_de_CI_CD": "Poate fi apelat în joburile CI înainte de teste care consumă secrete."
+  },
+```
+
+##### F0.5.5
+
+```JSON
+  "F0.5.5": {
+    "denumire_task": "Politici ACL și Namespace-uri",
+    "descriere_scurta_task": "Definirea politicilor HCL pentru fiecare domeniu.",
+    "descriere_lunga_si_detaliata_task": "Creează fișiere `scripts/security/policies/<component>.hcl` care aplică principiul least privilege pentru cp, apps și infrastructură, folosind namespace-urile planificate și mapând prefixele din `.env` la căi KV/DB.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security/policies"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită OpenBao operațional (F0.5.4).",
+    "contextul_general_al_aplicatiei": "Asigură controlul granular cerut de Zero Trust.",
+    "contextualizarea_directoarelor_si_cailor": "Politicile trebuie referite în documentul F0.5 și în scripturile de seed.",
+    "restrictii_anti_halucinatie": "Nu crea politici pentru componente inexistente.",
+    "restrictii_de_iesire_din_contex": "Nu acorda privilegii `sudo`/`root` generice; fiecare politică trebuie să fie scop-limitat.",
+    "validare": "`bao policy write` reușește pentru fiecare fișier și `bao token capabilities` confirmă permisiunile corecte.",
+    "outcome": "Politici versionate pentru toate domeniile aplicației.",
+    "componenta_de_CI_CD": "CI poate genera token-uri cu capabilități limitate pentru joburi specifice."
+  },
+```
+
+##### F0.5.6
+
+```JSON
+  "F0.5.6": {
+    "denumire_task": "Inventariere Secrete",
+    "descriere_scurta_task": "Catalogarea tuturor variabilelor .env și maparea lor către OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Produce `docs/security/F0.5-Secrets-Inventory-OpenBao.csv` (sau .md) cu coloane: componentă, variabila existentă, categorie (config/secret), cale KV/engine și status migrare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs/security",
+      "/var/www/GeniusSuite/*/.env"
+    ],
+    "contextul_taskurilor_anterioare": "Bazat pe politica F0.5.2.",
+    "contextul_general_al_aplicatiei": "Previne omisiunile și dă trasabilitate.",
+    "contextualizarea_directoarelor_si_cailor": "Inventarul trebuie referit de scripturile de seed și de QA.",
+    "restrictii_anti_halucinatie": "Nu inventaria variabile inexistente; verifică fiecare fișier real.",
+    "restrictii_de_iesire_din_contex": "Nu include valorile efective în document, doar numele și locațiile.",
+    "validare": "Inventarul este revizuit de ownerii componentelor și semnat.",
+    "outcome": "Lista completă a secretelor și a destinației lor în OpenBao.",
+    "componenta_de_CI_CD": "Servește ca sursă pentru verificări automate ale configurațiilor."
+  },
+```
+
+##### F0.5.7
+
+```JSON
+  "F0.5.7": {
+    "denumire_task": "Migrare Secrete Statice",
+    "descriere_scurta_task": "Script care înscrie secretele existente în OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Creează `scripts/security/seed_secrets.sh` (sau utilitar TypeScript) ce citește inventarul, solicită valorile actuale și execută `bao kv put` pentru fiecare cale, fără a scrie valorile pe disc.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită politicile (F0.5.5) și inventarul (F0.5.6).",
+    "contextul_general_al_aplicatiei": "Mută secret-zero din fișiere în seif.",
+    "contextualizarea_directoarelor_si_cailor": "Scriptul trebuie să funcționeze pentru profile dev/staging/prod prin argumente.",
+    "restrictii_anti_halucinatie": "Nu hardcoda valori; folosește input interactiv sau variabile de mediu temporare.",
+    "restrictii_de_iesire_din_contex": "Nu comite fișiere temporare generate.",
+    "validare": "`bao kv get` confirmă existența tuturor secretelor mapate.",
+    "outcome": "Toate secretele statice sunt populate în OpenBao.",
+    "componenta_de_CI_CD": "Permite joburilor CI să consume secrete via OIDC, fără GitHub Secrets persistente."
+  },
+```
+
+##### F0.5.8
+
+```JSON
+  "F0.5.8": {
+    "denumire_task": "Standard Criptografic Intern",
+    "descriere_scurta_task": "Documentarea regulilor pentru generarea și rotația cheilor.",
+    "descriere_lunga_si_detaliata_task": "Creează `docs/security/F0.5-Crypto-Standards-OpenBao.md` cu cerințe minime (≥256 biți entropie, algoritmi aprobați, proceduri rotate) și exemple de comenzi (`openssl`, `age`).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs/security"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită migrarea secretelor (F0.5.7) pentru a identifica lacunele.",
+    "contextul_general_al_aplicatiei": "Asigură consistență și auditabilitate pentru toate cheile generate intern.",
+    "contextualizarea_directoarelor_si_cailor": "Documentul trebuie legat din README-urile componentelor sensibile (identity, licensing).",
+    "restrictii_anti_halucinatie": "Nu menționa algoritmi neacceptați (ex. MD5).",
+    "restrictii_de_iesire_din_contex": "Păstrează formatul doc-urilor de securitate existente.",
+    "validare": "Documentul este aprobat de responsabilul de securitate.",
+    "outcome": "Standard criptografic intern publicat.",
+    "componenta_de_CI_CD": "Folosit pentru validări automate (ex. lint ce verifică lungimea cheilor)."
+  },
+
+##### F0.5.9
+
+```JSON
+  "F0.5.9": {
+    "denumire_task": "Implementare pgcrypto",
+    "descriere_scurta_task": "Activează pgcrypto și criptează coloanele sensibile.",
+    "descriere_lunga_si_detaliata_task": "Scrie migrații (Drizzle/SQL) pentru bazele critice (identity, numeriqo etc.) care adaugă `CREATE EXTENSION pgcrypto`, coloane criptate și funcții de utilitate; aplicațiile trebuie să ceară cheia din OpenBao.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/database/migrations",
+      "/var/www/GeniusSuite/shared/common"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită standardul criptografic și cheile (F0.5.7–F0.5.8).",
+    "contextul_general_al_aplicatiei": "Aplică Defense in Depth pentru PII.",
+    "contextualizarea_directoarelor_si_cailor": "Migrațiile trebuie să fie referite în `scripts/db` și în README-urile aplicațiilor.",
+    "restrictii_anti_halucinatie": "Nu presupune TDE disponibil; documentează fallback-urile.",
+    "restrictii_de_iesire_din_contex": "Nu rupe compatibilitatea cu seeds existente; folosește migrații backward-compatible.",
+    "validare": "Testele unitare demonstră criptarea/decriptarea și scriptul de migrare rulează fără erori.",
+    "outcome": "Coloanele sensibile sunt criptate la nivel de aplicație.",
+    "componenta_de_CI_CD": "Testele CI trebuie să ruleze noile migrații și să se conecteze prin secrete dinamice."
+  },
+```
+
+##### F0.5.10
+
+```JSON
+  "F0.5.10": {
+    "denumire_task": "Configurare Engine Dinamic DB",
+    "descriere_scurta_task": "Activează Database Secrets Engine în OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Scrie `scripts/security/openbao-enable-db-engine.sh` care configurează conexiunea administrativă către PostgreSQL (user dedicat), activează engine-ul `database/` și setează parametrizarea TTL.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security",
+      "/var/www/GeniusSuite/compose.yml"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.3 și F0.5.7.",
+    "contextul_general_al_aplicatiei": "Asigură generarea automată a credențialelor DB.",
+    "contextualizarea_directoarelor_si_cailor": "Scriptul trebuie să folosească variabile din `.suite.general.env` pentru conectare.",
+    "restrictii_anti_halucinatie": "Nu reutiliza contul `suite_admin`; creează un user separat conform `Strategie Docker`.",
+    "restrictii_de_iesire_din_contex": "Nu lăsa engine-ul fără policy; asociază-l cu politicile scrise la F0.5.5.",
+    "validare": "`bao secrets list` arată engine-ul activ, iar `bao write database/config/...` se finalizează.",
+    "outcome": "Engine-ul DB este disponibil pentru toate aplicațiile.",
+    "componenta_de_CI_CD": "CI poate genera credențiale efemere pentru testele e2e."
+  },
+```
+
+##### F0.5.11
+
+```JSON
+  "F0.5.11": {
+    "denumire_task": "Roluri Efemere per Aplicație",
+    "descriere_scurta_task": "Definirea rolurilor SQL și a politicilor asociate.",
+    "descriere_lunga_si_detaliata_task": "Creează scripturi SQL în `database/roles/` (ex. `numeriqo-role.sql`) care setează permisiuni limitate; configurează `bao write database/roles/<role>` pentru a lega SQL-ul de engine.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/database/roles",
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită engine activ (F0.5.10).",
+    "contextul_general_al_aplicatiei": "Aplică principiul least privilege la nivel DB.",
+    "contextualizarea_directoarelor_si_cailor": "Rolurile trebuie documentate în README-urile aplicațiilor și în inventar.",
+    "restrictii_anti_halucinatie": "Nu acorda privilegii globale (DROP DATABASE) rolurilor aplicațiilor.",
+    "restrictii_de_iesire_din_contex": "Folosește naming consistent (ex. `numeriqo_runtime`) pentru a evita coliziuni.",
+    "validare": "`bao read database/creds/<role>` returnează user/secret și TTL corect.",
+    "outcome": "Fiecare aplicație primește credențiale efemere limitate.",
+    "componenta_de_CI_CD": "Joburile CI pot solicita credențiale temporare per componentă."
+  },
+```
+
+##### F0.5.12
+
+```JSON
+  "F0.5.12": {
+    "denumire_task": "Rotație Automată Credite DB",
+    "descriere_scurta_task": "Watcher care reînnoiește și monitorizează lease-urile DB.",
+    "descriere_lunga_si_detaliata_task": "Implementă `scripts/security/watchers/db-creds-renew.sh` (sau serviciu) care rulează periodic `bao lease renew`, trimite semnale către Process Supervisor și expune metrici (lifetime, expiring leases) către stack-ul de observabilitate.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security/watchers",
+      "/var/www/GeniusSuite/shared/observability"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de rolurile efemere (F0.5.11).",
+    "contextul_general_al_aplicatiei": "Previne downtime cauzat de expirarea credențialelor.",
+    "contextualizarea_directoarelor_si_cailor": "Watcher-ul trebuie integrat în `shared/observability` pentru metrici.",
+    "restrictii_anti_halucinatie": "Nu stoca lease-id-uri pe disc; folosește storage securizat (tmpfs).",
+    "restrictii_de_iesire_din_contex": "Nu crea cron-uri separate per aplicație; suportă listă configurabilă.",
+    "validare": "Simularea expirării unui lease este detectată și reînnoită fără downtime.",
+    "outcome": "Lease-urile DB sunt rotite automat și monitorizate.",
+    "componenta_de_CI_CD": "CI poate testa scenarii de rotație în workflow-uri dedicate."
+  },
+```
+
+##### F0.5.13
+
+```JSON
+  "F0.5.13": {
+    "denumire_task": "Ingineria Imaginii de Bază (Unified Runtime)",
+    "descriere_scurta_task": "Crearea imaginii Docker hibride Node.js + OpenBao Agent.",
+    "descriere_lunga_si_detaliata_task": "Creează `shared/docker/node-openbao.Dockerfile` (sau similar) care pornește de la imaginea oficială Node.js și copiază binarul `bao` din `openbao/agent`. Această imagine va fi baza pentru toate aplicațiile care necesită Process Supervisor.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/shared/docker"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de decizia de arhitectură F0.5.1.",
+    "contextul_general_al_aplicatiei": "Rezolvă problema tehnică a rulării agentului și aplicației în același container.",
+    "contextualizarea_directoarelor_si_cailor": "Imaginea trebuie să fie build-uită și tag-uită local sau în registry-ul CI.",
+    "restrictii_anti_halucinatie": "Nu folosi `apk add openbao` dacă nu există pachet; folosește `COPY --from`.",
+    "restrictii_de_iesire_din_contex": "Păstrează versiunile de Node.js sincronizate cu restul proiectului.",
+    "validare": "`docker run ... bao --version && node --version` returnează ambele versiuni corect.",
+    "outcome": "Imagine de bază reutilizabilă disponibilă.",
+    "componenta_de_CI_CD": "Pipeline de build pentru imaginea de bază."
+  },
+```
+
+##### F0.5.14
+
+```JSON
+  "F0.5.14": {
+    "denumire_task": "Process Supervisor Pilot (Numeriqo)",
+    "descriere_scurta_task": "Integrează OpenBao Agent în `numeriqo.app` folosind imaginea unificată.",
+    "descriere_lunga_si_detaliata_task": "Actualizează `numeriqo.app/Dockerfile` (sau compose) pentru a folosi imaginea creată la F0.5.13. Configurează blocul `exec` care lansează aplicația Node.js și definește montările necesare pentru șabloane.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/numeriqo.app/compose",
+      "/var/www/GeniusSuite/shared/common"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.13 și secrete populate (F0.5.7–F0.5.12).",
+    "contextul_general_al_aplicatiei": "Demonstrează că aplicațiile pot rula fără secrete locale.",
+    "contextualizarea_directoarelor_si_cailor": "Actualizează README-ul `numeriqo.app` cu pașii noi de pornire.",
+    "restrictii_anti_halucinatie": "Nu păstra fallback `.env`; testul trebuie să folosească exclusiv secrete injectate.",
+    "restrictii_de_iesire_din_contex": "Asigură-te că healthcheck-urile existente nu sunt eliminate.",
+    "validare": "`docker compose up numeriqo` pornește cu secrete injectate și conectare reușită la DB cu credențiale efemere.",
+    "outcome": "Pilot funcțional pentru Process Supervisor.",
+    "componenta_de_CI_CD": "Workflow dedicat rulează `docker compose up numeriqo` cu agentul activ."
+  },
+```
+
+##### F0.5.15
+
+```JSON
+  "F0.5.15": {
+    "denumire_task": "Developer Experience & Training",
+    "descriere_scurta_task": "Documente și tooling pentru noile fluxuri Process Supervisor.",
+    "descriere_lunga_si_detaliata_task": "Creează ghiduri în `docs/devx/OpenBao-Process-Supervisor.md`, actualizează `scripts/start-suite.sh` și oferă comenzi helper (`pnpm dev:openbao`) pentru a masca complexitatea locală, inclusiv scenarii CLI/migrații.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs/devx",
+      "/var/www/GeniusSuite/scripts"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de implementarea pilotului (F0.5.14).",
+    "contextul_general_al_aplicatiei": "Protejează productivitatea descrisă în planul principal.",
+    "contextualizarea_directoarelor_si_cailor": "Link către ghid din README-ul root și din `Plan/GeniusERP_Suite_Plan_v1.0.5.md` (Capitol F0).",
+    "restrictii_anti_halucinatie": "Instrucțiunile trebuie testate pe un dev machine real.",
+    "restrictii_de_iesire_din_contex": "Nu elimina fluxurile vechi până când noile tool-uri sunt validate de echipă.",
+    "validare": "Cel puțin doi dezvoltatori folosesc ghidul și confirmă că pot porni aplicațiile fără `.env` locale.",
+    "outcome": "DX clar pentru F0.5, reducând workaround-urile per-app.",
+    "componenta_de_CI_CD": "README-ul CI menționează noile scripturi pentru rularea testelor locale."
+  },
+```
+
+##### F0.5.16
+
+```JSON
+  "F0.5.16": {
+    "denumire_task": "Templating Static",
+    "descriere_scurta_task": "Șabloane Consul pentru variabile statice.",
+    "descriere_lunga_si_detaliata_task": "Creează fișiere `.ctmpl` (ex. `numeriqo.app/env/openbao-static.ctmpl`) care mapază secrete KV la variabile NUMQ_* și sunt procesate de agent înainte de a porni aplicația.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/*/env",
+      "/var/www/GeniusSuite/shared/observability/templates"
+    ],
+    "contextul_taskurilor_anterioare": "Se bazează pe pilotul sidecar (F0.5.14).",
+    "contextul_general_al_aplicatiei": "Uniformizează modul în care secretele sunt expuse aplicațiilor.",
+    "contextualizarea_directoarelor_si_cailor": "Template-urile trebuie referite din compose și testate cu `consul-template` CLI.",
+    "restrictii_anti_halucinatie": "Nu miza pe fișiere temporare pe disc pentru secret final.",
+    "restrictii_de_iesire_din_contex": "Respectă naming-ul variabilelor din Strategia .env.",
+    "validare": "Rulează agentul în modul dry-run și verifică exportul variabilelor.",
+    "outcome": "Șabloane statice disponibile pentru toate componentele pilotate.",
+    "componenta_de_CI_CD": "Test static ce validează că toate placeholder-ele au secret disponibil."
+  },
+```
+
+##### F0.5.17
+
+```JSON
+  "F0.5.17": {
+    "denumire_task": "Templating Dinamic DB",
+    "descriere_scurta_task": "Extinde șabloanele pentru credențiale dinamice și TTL.",
+    "descriere_lunga_si_detaliata_task": "Update `.ctmpl` pentru a prelua output-ul `database/creds/<role>` și pentru a expune variabile suplimentare (lease_id, ttl) făcându-le disponibile Process Supervisor-ului și instrumentării.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/*/env"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.16 și rolurile efemere (F0.5.11).",
+    "contextul_general_al_aplicatiei": "Permite rotația fără restart complet.",
+    "contextualizarea_directoarelor_si_cailor": "Șabloanele trebuie compatibile cu `consul-template`/OpenBao Agent.",
+    "restrictii_anti_halucinatie": "Nu scrie lease info în loguri neprotejate.",
+    "restrictii_de_iesire_din_contex": "Menține compatibilitatea cu `shared/observability` pentru metrici.",
+    "validare": "Lease-ul se reînnoiește și variabilele actualizate sunt injectate fără re-build.",
+    "outcome": "Șabloane dinamice complet funcționale.",
+    "componenta_de_CI_CD": "Test e2e ce verifică rotația lease-urilor în pipeline."
+  },
+```
+
+##### F0.5.18
+
+```JSON
+  "F0.5.18": {
+    "denumire_task": "Script de Injecție Fallback",
+    "descriere_scurta_task": "Entry-point auxiliar pentru scenarii complexe.",
+    "descriere_lunga_si_detaliata_task": "Creează `scripts/security/inject.ts` (sau .js) care citește fișierele randate, validează completitudinea secretelor și pornește aplicații care nu pot fi controlate direct de agent (CLI, worker-e).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security",
+      "/var/www/GeniusSuite/shared/common"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de templating (F0.5.16).",
+    "contextul_general_al_aplicatiei": "Oferă fallback pentru servicii care nu suportă Process Supervisor complet.",
+    "contextualizarea_directoarelor_si_cailor": "Scriptul trebuie inclus în imaginea base și documentat în `scripts/start-suite.sh`.",
+    "restrictii_anti_halucinatie": "Nu păstra secrete în stdout/stderr; maschează output-ul.",
+    "restrictii_de_iesire_din_contex": "Fallback-ul trebuie să fie opțional și să logheze când este folosit.",
+    "validare": "Servicii CLI (ex. migrații) pot rula folosind scriptul fără `.env` locale.",
+    "outcome": "Există o cale suportată pentru cazuri neacoperite de agent.",
+    "componenta_de_CI_CD": "Folosit în joburile care rulează migrații DB."
+  },
+```
+
+##### F0.5.19
+
+```JSON
+  "F0.5.19": {
+    "denumire_task": "Configurare Trust OIDC",
+    "descriere_scurta_task": "Activează autentificarea GitHub OIDC în OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Configurează OpenBao Auth Method pentru OIDC, adaugă providerul GitHub, importă JWKS, setează claim mappings (repo, branch) și documentează fluxul în `docs/security/F0.5-OIDC.md`.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs/security",
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Necesită politici ACL (F0.5.5).",
+    "contextul_general_al_aplicatiei": "Elimină secret-zero din GitHub Secrets.",
+    "contextualizarea_directoarelor_si_cailor": "Documentul trebuie citat în `.github/` și în runbooks.",
+    "restrictii_anti_halucinatie": "Folosește doar `token.actions.githubusercontent.com` ca issuers; nu accepta wildcard claims.",
+    "restrictii_de_iesire_din_contex": "Nu lăsa metoda autentică activă fără politici asociate.",
+    "validare": "Un workflow de test primește token OpenBao folosind OIDC și este limitat la politicile desemnate.",
+    "outcome": "OpenBao acceptă OIDC și emite token-uri scurte pentru CI/CD.",
+    "componenta_de_CI_CD": "Workflow-urile GitHub folosesc OIDC în loc de secrete statice."
+  },
+```
+
+##### F0.5.20
+
+```JSON
+  "F0.5.20": {
+    "denumire_task": "Roluri și Politici Pipeline",
+    "descriere_scurta_task": "Script care leagă repo-urile/branch-urile de politici OIDC.",
+    "descriere_lunga_si_detaliata_task": "Creează `scripts/security/setup_oidc_roles.sh` pentru a defini roluri (release, build, e2e) cu bound claims (ex. repo=`neacisu/GeniusERP_Suite`, ref=`refs/heads/dev`) și pentru a atașa politicile minime.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.19.",
+    "contextul_general_al_aplicatiei": "Aplica principiul „least privilege” în pipeline.",
+    "contextualizarea_directoarelor_si_cailor": "Scriptul trebuie invocat după bootstrap-ul OpenBao în pipelines.",
+    "restrictii_anti_halucinatie": "Nu crea roluri globale; fiecare rol trebuie mapat la un branch sau environ specific.",
+    "restrictii_de_iesire_din_contex": "Nu salva token-uri rezultate; doar configurează politica.",
+    "validare": "Workflow-urile reușesc să obțină token doar când claims corespund; restul sunt respinse.",
+    "outcome": "Roluri pipeline cu politici bine definite.",
+    "componenta_de_CI_CD": "Asigură că doar joburile autorizate citesc secretele necesare."
+  },
+```
+
+##### F0.5.21
+
+```JSON
+  "F0.5.21": {
+    "denumire_task": "Actualizare Workflow Release",
+    "descriere_scurta_task": "Modifică `.github/workflows/release.yml` pentru a consuma secrete prin OIDC.",
+    "descriere_lunga_si_detaliata_task": "Actualizează workflow-ul pentru a folosi `hashicorp/vault-action` (compatibil OpenBao), elimină secretele statice, injectează secretele necesare (NPM_TOKEN, Docker creds) și adaugă verificări pentru lease TTL.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.19–F0.5.20.",
+    "contextul_general_al_aplicatiei": "Finalizează tranziția CI/CD către OpenBao.",
+    "contextualizarea_directoarelor_si_cailor": "README-ul de release trebuie actualizat cu noile cerințe.",
+    "restrictii_anti_halucinatie": "Nu păstra fallback secrete în GitHub; altfel compromite obiectivul.",
+    "restrictii_de_iesire_din_contex": "Păstrează gating-ul existent (tests, lint).",
+    "validare": "Workflow-ul rulează cap-coadă folosind doar OIDC și secrete efemere.",
+    "outcome": "Release pipeline securizat fără secrete persistente.",
+    "componenta_de_CI_CD": "Workflow-ul release este acum dependent de OpenBao pentru secrete."
+  },
+```
+
+##### F0.5.22
+
+```JSON
+  "F0.5.22": {
+    "denumire_task": "Revocarea și Curățarea Secretelor Vechi (Cleanup)",
+    "descriere_scurta_task": "Ștergerea secretelor statice și rotirea credențialelor migrate.",
+    "descriere_lunga_si_detaliata_task": "După migrarea completă la OIDC și OpenBao, acest task presupune ștergerea secretelor statice din GitHub Secrets și rotirea efectivă a tuturor parolelor/cheilor care au fost migrate în Vault (pentru a invalida vechile valori potențial compromise).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows",
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de finalizarea F0.5.21.",
+    "contextul_general_al_aplicatiei": "Asigură că nu rămân 'uși deschise' uitate.",
+    "contextualizarea_directoarelor_si_cailor": "Documentează acțiunea în `docs/security/F0.5-Cleanup.md`.",
+    "restrictii_anti_halucinatie": "Nu șterge secretele înainte de a valida că pipeline-ul OIDC funcționează.",
+    "restrictii_de_iesire_din_contex": "Asigură-te că rotirea nu blochează serviciile în producție (zero downtime).",
+    "validare": "GitHub Secrets este gol (cu excepția celor non-migrabile) și credențialele vechi nu mai sunt valide.",
+    "outcome": "Mediu curat și complet securizat.",
+    "componenta_de_CI_CD": "Manual trigger sau script one-off."
+  },
+```
+
+##### F0.5.23
+
+```JSON
+  "F0.5.23": {
+    "denumire_task": "Backup & Disaster Recovery OpenBao",
+    "descriere_scurta_task": "Integrare backup automat pentru volumul `gs_openbao_data`.",
+    "descriere_lunga_si_detaliata_task": "Aplică prevederile din `Strategie Docker` (pilonul backup) pentru OpenBao: definește jobul sidecar de backup, politica de retenție, restore playbook și integrarea cu `scripts/compose/postgres-backup`.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/compose.yml",
+      "/var/www/GeniusSuite/scripts/compose"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.5.3 (serviciul există).",
+    "contextul_general_al_aplicatiei": "Previne single point of failure pentru seiful de secrete.",
+    "contextualizarea_directoarelor_si_cailor": "Adaugă volumul în secțiunea `volumes` și un container `openbao-backup` sau job Cron, documentat în `docs/ops`.",
+    "restrictii_anti_halucinatie": "Nu copia datele în locații necriptate; folosește același mecanism de backup ca pentru PostgreSQL.",
+    "restrictii_de_iesire_din_contex": "Backup-ul trebuie să fie offline-friendly și testat periodic.",
+    "validare": "Rulează un exercițiu de restore într-un mediu izolat și verifică `bao status` după restaurare.",
+    "outcome": "Plan complet de backup/restore pentru OpenBao.",
+    "componenta_de_CI_CD": "CI poate rula testul de restore o dată pe săptămână (job programat)."
+  },
+```
+
+##### F0.5.24
+
+```JSON
+  "F0.5.24": {
+    "denumire_task": "Observabilitate & Alerte OpenBao",
+    "descriere_scurta_task": "Dashboard-uri și alerte pentru sănătatea OpenBao și lease-uri.",
+    "descriere_lunga_si_detaliata_task": "Extinde `shared/observability` pentru a colecta metrice (lease count, renew errors, seal status), configurează dashboards Grafana și alerte Prometheus bazate pe obiectivele din ENV report.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/shared/observability",
+      "/var/www/GeniusSuite/docs/observability"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de watchers (F0.5.12) și OIDC (F0.5.19).",
+    "contextul_general_al_aplicatiei": "Asigură vizibilitate asupra serviciului critic.",
+    "contextualizarea_directoarelor_si_cailor": "Actualizează dashboard-urile din `shared/observability/grafana` și documentația din `docs/observability`.",
+    "restrictii_anti_halucinatie": "Folosește doar metrice reale (OpenBao telemetry, watcher logs).",
+    "restrictii_de_iesire_din_contex": "Nu emite alerte care expun secrete (log scrubbing obligatoriu).",
+    "validare": "Alertă `OpenBaoLeaseExpiry` se declanșează într-un test controlat, iar dashboard-ul arată starea actuală.",
+    "outcome": "Observabilitate completă pentru F0.5.",
+    "componenta_de_CI_CD": "Joburi programate verifică sănătatea și raportează statusul în pipeline."
+  },
+```
+
+##### F0.5.25
+
+```JSON
+  "F0.5.25": {
+    "denumire_task": "Testare Integrare & Chaos pentru F0.5",
+    "descriere_scurta_task": "Suite de teste care validează noile mecanisme (Process Supervisor, OIDC, backup).",
+    "descriere_lunga_si_detaliata_task": "Adaugă scenarii în `__tests__/workflows` sau creează un workflow GitHub (`ci-f05-validation.yml`) care pornește stack-ul, verifică injecția secretelor, forțează expirarea lease-urilor, simulează `openbao down` și validează reacțiile aplicațiilor.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/__tests__/workflows",
+      "/var/www/GeniusSuite/.github/workflows"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de întregul set F0.5, inclusiv taskurile noi.",
+    "contextul_general_al_aplicatiei": "Asigură că schimbările de securitate nu introduc regresii.",
+    "contextualizarea_directoarelor_si_cailor": "Testele trebuie să fie documentate în `docs/security/F0.5-Validation.md`.",
+    "restrictii_anti_halucinatie": "Simulările trebuie să folosească comenzi reale (docker, bao), nu mock-uri.",
+    "restrictii_de_iesire_din_contex": "Nu lăsa workflow-ul să ruleze necontrolat; marchează-l ca `manual` sau `nightly`.",
+    "validare": "Workflow-ul rulează și raportează explicit starea fiecărui scenariu (pass/fail).",
+    "outcome": "Există acoperire automată pentru principalele riscuri F0.5.",
+    "componenta_de_CI_CD": "Devine parte a `CI Validation` înainte de promovarea în fazele superioare."
+  },
+}
+```
+
+##### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
+
+##### F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db
+
+##### F0.8 CI & QA Scripts: smoke/load/security scripts, canary
+
+##### F0.9 Schemă DB Comună: Identity/Licensing/Gateway (crea/upgrade DB comune: uuidv7, RLS, indici)
+
+##### F0.10 Schemă DB per App: vettify, numeriqo, archify, flowxify, iwms, mercantiq, triggerra – aplicare scheme + seeds minime
+
+##### F0.11 Schemă DB BI: cerniq_warehouse (metastore/cache) + joburi ETL inițiale
+
+> Deliverables: repo inițial, pipelines verzi, DB-uri funcționale (migrate & seed), „one‑command up” pentru profile dev.
+> Criterii acceptare: pnpm i && pnpm build trece global; docker compose -f compose.yml up pornește Traefik+observability; gs db migrate funcțional.
 
 F1 - Faza 1 — Shared (Canvas: „Shared”)
 Obiectiv: biblioteci comune reutilizabile.
