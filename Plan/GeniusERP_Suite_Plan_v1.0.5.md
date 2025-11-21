@@ -9911,7 +9911,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu crea cron-uri separate per aplicație; suportă listă configurabilă.",
     "validare": "Simularea expirării unui lease este detectată și reînnoită fără downtime.",
     "outcome": "Lease-urile DB sunt rotite automat și monitorizate.",
-    "componenta_de_CI_CD": "CI poate testa scenarii de rotație în workflow-uri dedicate."
+    "componenta_de_CI_CD": "CI poate testa scenarii de rotație în workflow-uri dedicate.",
+    "status": "completed",
+    "note_implementare": "Watcher-ul `scripts/security/watchers/db-creds-renew.sh` citește manifestul `database/roles/roles.json`, listează lease-urile din `sys/leases/lookup/database/creds/<role>`, rulează `bao lease lookup/renew` sub un prag configurabil și emite metrice Prometheus (textfile) în `shared/observability/metrics/watchers/db-creds-renew.prom`. Scriptul funcționează fără a persista lease-uri pe disc, permite filtrarea prin `WATCHER_ROLES`, poate trimite `HUP` către Process Supervisor după un ciclu cu reînnoiri și are documentație dedicată în `scripts/security/watchers/README.md` pentru integrarea în CI/supervisor.",
+    "validare_hands_on": "1. `BAO_ADDR=http://127.0.0.1:8200 BAO_TOKEN=$(jq -r '.root_token' .secrets/openbao-keys.json) bao read -format=json database/creds/numeriqo_runtime | tee /tmp/numeriqo-lease.json` → generează lease-ul ce va fi urmărit (user `v-root-numeriqo-*`). 2. `WATCHER_ROLES=numeriqo_runtime LEASE_THRESHOLD_SECONDS=4000 ./scripts/security/watchers/db-creds-renew.sh` → forțează detectarea lease-ului ca fiind expirat și execută `bao lease renew`, logând `renewed (ttl=3600s)`. 3. `bao lease lookup -format=json database/creds/numeriqo_runtime/djDKcTDkxezFTYoqtmew10yp` confirmă `last_renewal` actualizat și `ttl≈3580s`. 4. `docker exec -e PGPASSWORD="$(jq -r '.data.password' /tmp/numeriqo-lease.json)` geniuserp-postgres psql -U "$(jq -r '.data.username' /tmp/numeriqo-lease.json)" -d numeriqo_db -tAc "SELECT current_database();"` demonstrează că aceleași credențiale rămân valide (fără downtime). 5. `cat shared/observability/metrics/watchers/db-creds-renew.prom` arată metricele `openbao_db_leases_*`, iar la final `bao lease revoke database/creds/numeriqo_runtime/djDKcTDkxezFTYoqtmew10yp` curăță lease-ul de test."
   },
 ```
 

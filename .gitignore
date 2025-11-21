@@ -19,6 +19,9 @@ build/
 *.log
 logs/
 
+# Watcher metrics (generated)
+shared/observability/metrics/watchers/*.prom
+
 # OS generated files
 .DS_Store
 .DS_Store?
