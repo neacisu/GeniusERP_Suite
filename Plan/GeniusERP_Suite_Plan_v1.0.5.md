@@ -9811,7 +9811,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Păstrează formatul doc-urilor de securitate existente.",
     "validare": "Documentul este aprobat de responsabilul de securitate.",
     "outcome": "Standard criptografic intern publicat.",
-    "componenta_de_CI_CD": "Folosit pentru validări automate (ex. lint ce verifică lungimea cheilor)."
+    "componenta_de_CI_CD": "Folosit pentru validări automate (ex. lint ce verifică lungimea cheilor).",
+    "status": "completed",
+    "note_implementare": "S-a creat documentul complet `docs/security/F0.5-Crypto-Standards-OpenBao.md` definind standardele criptografice obligatorii pentru întreaga suită: **Cerințe minime** (≥256 biți entropie, rotație max 90 zile, TLS 1.3+), **Algoritmi aprobați** (Symmetric: AES-256-GCM/ChaCha20-Poly1305, Asymmetric: RSA 4096/Ed25519/ECDSA P-256, Hashing: SHA-256/SHA-512/BLAKE2b, Password: Argon2id), **Algoritmi interzisi** (MD5, SHA-1, DES, RC4, RSA < 2048), **Proceduri complete** de generare chei (openssl, age, ssh-keygen cu exemple), **Rotație** (automatizată pentru DB credentials via OpenBao, manuală la max 90 zile pentru KV secrets), **Integrare OpenBao** (KV v2, Dynamic DB, Transit engine pentru encryption-as-a-service), **Compliance** (GDPR, PCI DSS, SOC 2, HIPAA) și **Practici prohibite** (commit în Git, < 12 caractere, hardcode). Documentul este complet și urmează să fie aprobat de Security Officer.",
+    "validare_hands_on": "Documentul conține toate cerințele specificate: (1) ≥256 biți entropie obligatoriu, (2) Lista completă de algoritmi aprobați cu justificări, (3) Proceduri detaliate de rotație automată (OpenBao dynamic credentials) și manuală (90 zile), (4) Exemple funcționale de comenzi pentru toate scenariile (JWT, API keys, DB passwords, TLS certs, SSH keys), (5) Integrare completă cu OpenBao (KV v2, database engine, transit engine). Format consistent cu documentele de securitate existente. Gata pentru aprobare conform validării din JSON."
   },
 
 ##### F0.5.9
