@@ -9693,8 +9693,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_anti_halucinatie": "Nu expune OpenBao pe `net_edge`; nu inventa porturi externe.",
     "restrictii_de_iesire_din_contex": "Nu șterge alte servicii; respectă schema existentă.",
     "validare": "`docker compose up openbao` pornește cu succes, iar `docker network inspect` arată doar rețelele aprobate.",
-    "outcome": "OpenBao rulează în root stack cu volum persistent.",
-    "componenta_de_CI_CD": "CI poate porni serviciul pentru teste de integrare."
+    "outcome": "Serviciul OpenBao este activ și izolat.",
+    "componenta_de_CI_CD": "Nu se aplică direct, dar pregătește terenul pentru OIDC.",
+    "status": "completed",
+    "note_implementare": "S-a adăugat serviciul `openbao` în `compose.yml` (root), conectat la `geniuserp_net_backing_services` și `geniuserp_net_observability`. S-a definit volumul persistent `gs_openbao_data` și s-a creat configurația de bază în `shared/security/openbao/config/openbao.hcl`."
   },
 ```
 

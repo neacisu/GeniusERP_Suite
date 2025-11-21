@@ -17,15 +17,15 @@ services:
     env_file:
       - proxy/.proxy.env
     ports:
-      - "${PROXY_HTTP_PORT:-80}:80"
-      - "${PROXY_HTTPS_PORT:-443}:443"
-      - "127.0.0.1:${PROXY_DASHBOARD_PORT:-8080}:8080"
+      - '${PROXY_HTTP_PORT:-80}:80'
+      - '${PROXY_HTTPS_PORT:-443}:443'
+      - '127.0.0.1:${PROXY_DASHBOARD_PORT:-8080}:8080'
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./proxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "./proxy/traefik/dynamic:/etc/traefik/dynamic:ro"
-      - "./proxy/traefik/secrets:/etc/traefik/secrets:ro"
-      - "gs_traefik_certs:/letsencrypt"
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - './proxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
+      - './proxy/traefik/dynamic:/etc/traefik/dynamic:ro'
+      - './proxy/traefik/secrets:/etc/traefik/secrets:ro'
+      - 'gs_traefik_certs:/letsencrypt'
     networks:
       geniuserp_net_edge:
         aliases:
@@ -39,19 +39,19 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
       - 'traefik.http.routers.traefik-dashboard.rule=Host("${PROXY_DASHBOARD_DOMAIN:-traefik.${PROXY_DOMAIN:-geniuserp.app}}")'
-      - "traefik.http.routers.traefik-dashboard.entrypoints=traefik"
-      - "traefik.http.routers.traefik-dashboard.tls=true"
-      - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-chain@file"
-      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - 'traefik.http.routers.traefik-dashboard.entrypoints=traefik'
+      - 'traefik.http.routers.traefik-dashboard.tls=true'
+      - 'traefik.http.routers.traefik-dashboard.middlewares=dashboard-chain@file'
+      - 'traefik.http.routers.traefik-dashboard.service=api@internal'
 
   postgres_server:
     container_name: geniuserp-postgres
@@ -81,7 +81,7 @@ services:
       - gs_pgdata_geniuserp:/var/lib/postgresql/data/geniuserp
       - gs_pgdata_admin:/var/lib/postgresql/data/admin
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SUITE_DB_POSTGRES_USER:-suite_admin} -d postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U ${SUITE_DB_POSTGRES_USER:-suite_admin} -d postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -113,7 +113,11 @@ services:
     volumes:
       - gs_kafka_data:/var/lib/kafka/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092"]
+      test:
+        [
+          'CMD-SHELL',
+          '/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092',
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -162,13 +166,39 @@ services:
       postgres_server:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3567/hello"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3567/hello']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     networks:
       - geniuserp_net_backing_services
+
+  openbao:
+    container_name: geniuserp-openbao
+    image: openbao/openbao:2.0.0
+    restart: unless-stopped
+    environment:
+      BAO_ADDR: '0.0.0.0:8200'
+      BAO_API_ADDR: 'http://0.0.0.0:8200'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - gs_openbao_data:/bao/file
+      - ./shared/security/openbao/config:/bao/config:ro
+      - ./shared/security/openbao/logs:/bao/logs
+    command: server -config=/bao/config/openbao.hcl
+    ports:
+      - '127.0.0.1:8200:8200'
+    networks:
+      - geniuserp_net_backing_services
+      - geniuserp_net_observability
+    healthcheck:
+      test: ['CMD', 'bao', 'status']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   neo4j:
     container_name: geniuserp-neo4j
@@ -182,9 +212,9 @@ services:
       NEO4J_PLUGINS: '["apoc"]'
       NEO4J_dbms_memory_heap_initial__size: 512m
       NEO4J_dbms_memory_heap_max__size: 1G
-      NEO4J_server_metrics_prometheus_enabled: "true"
-      NEO4J_server_metrics_prometheus_endpoint: "0.0.0.0:2004"
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_server_metrics_prometheus_enabled: 'true'
+      NEO4J_server_metrics_prometheus_endpoint: '0.0.0.0:2004'
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: 'yes'
     volumes:
       - gs_neo4j_data:/data
     networks:
@@ -197,8 +227,8 @@ services:
     env_file:
       - .backing-services.env
     environment:
-      DATA_SOURCE_URI: "postgresql://${SUITE_DB_POSTGRES_USER:-suite_admin}:${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}@postgres_server:5432/postgres?sslmode=disable"
-      PG_EXPORTER_AUTO_DISCOVER_DATABASES: "true"
+      DATA_SOURCE_URI: 'postgresql://${SUITE_DB_POSTGRES_USER:-suite_admin}:${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}@postgres_server:5432/postgres?sslmode=disable'
+      PG_EXPORTER_AUTO_DISCOVER_DATABASES: 'true'
     depends_on:
       postgres_server:
         condition: service_healthy
@@ -212,7 +242,7 @@ services:
     restart: unless-stopped
     environment:
       KAFKA_SERVER: kafka:9092
-      KAFKA_VERSION: "4.1.0"
+      KAFKA_VERSION: '4.1.0'
     depends_on:
       kafka:
         condition: service_started
@@ -250,11 +280,11 @@ services:
     container_name: geniussuite-otel-collector
     image: otel/opentelemetry-collector:latest
     restart: unless-stopped
-    command: ["--config=/etc/otel-collector-config.yml"]
+    command: ['--config=/etc/otel-collector-config.yml']
     env_file:
       - shared/observability/.observability.env
     volumes:
-      - "./shared/observability/otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro"
+      - './shared/observability/otel-config/otel-collector-config.yml:/etc/otel-collector-config.yml:ro'
     depends_on:
       - tempo
     networks:
@@ -264,12 +294,12 @@ services:
     container_name: geniussuite-tempo
     image: grafana/tempo:2.5.0
     restart: unless-stopped
-    command: ["-config.file=/etc/tempo.yml"]
+    command: ['-config.file=/etc/tempo.yml']
     env_file:
       - shared/observability/.observability.env
     volumes:
-      - "./shared/observability/traces/tempo-config.yml:/etc/tempo.yml:ro"
-      - "gs_tempo_data:/var/tempo"
+      - './shared/observability/traces/tempo-config.yml:/etc/tempo.yml:ro'
+      - 'gs_tempo_data:/var/tempo'
     networks:
       - geniuserp_net_observability
 
@@ -280,27 +310,27 @@ services:
     env_file:
       - shared/observability/.observability.env
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--storage.tsdb.retention.time=${OBS_PROMETHEUS_RETENTION_TIME:-15d}"
-      - "--storage.tsdb.retention.size=${OBS_PROMETHEUS_RETENTION_SIZE:-50GB}"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${OBS_PROMETHEUS_RETENTION_TIME:-15d}'
+      - '--storage.tsdb.retention.size=${OBS_PROMETHEUS_RETENTION_SIZE:-50GB}'
     volumes:
-      - "./shared/observability/compose/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
-      - "./shared/observability/metrics/rules:/etc/prometheus/rules:ro"
-      - "gs_prometheus_data:/prometheus"
+      - './shared/observability/compose/prometheus.yml:/etc/prometheus/prometheus.yml:ro'
+      - './shared/observability/metrics/rules:/etc/prometheus/rules:ro'
+      - 'gs_prometheus_data:/prometheus'
     ports:
-      - "127.0.0.1:${OBS_PROMETHEUS_PORT:-9090}:9090"
+      - '127.0.0.1:${OBS_PROMETHEUS_PORT:-9090}:9090'
     networks:
       - geniuserp_net_observability
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}"
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=${PROXY_NETWORK_OBSERVABILITY:-geniuserp_net_observability}'
       - 'traefik.http.routers.prometheus.rule=Host("${OBS_PROMETHEUS_DOMAIN:-prometheus.${PROXY_DOMAIN:-geniuserp.app}}")'
-      - "traefik.http.routers.prometheus.entrypoints=websecure"
-      - "traefik.http.routers.prometheus.tls=true"
-      - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.prometheus.middlewares=global-chain@file"
-      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - 'traefik.http.routers.prometheus.entrypoints=websecure'
+      - 'traefik.http.routers.prometheus.tls=true'
+      - 'traefik.http.routers.prometheus.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.prometheus.middlewares=global-chain@file'
+      - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
 
   grafana:
     container_name: geniussuite-grafana
@@ -314,24 +344,24 @@ services:
       - GF_SERVER_HTTP_PORT=3000
       - GF_SERVER_ROOT_URL=https://${OBS_GRAFANA_DOMAIN:-grafana.${PROXY_DOMAIN:-geniuserp.app}}
     volumes:
-      - "./shared/observability/dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro"
-      - "./shared/observability/dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro"
-      - "./shared/observability/dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro"
-      - "gs_grafana_data:/var/lib/grafana"
+      - './shared/observability/dashboards/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro'
+      - './shared/observability/dashboards/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro'
+      - './shared/observability/dashboards/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro'
+      - 'gs_grafana_data:/var/lib/grafana'
     ports:
-      - "127.0.0.1:${OBS_GRAFANA_PORT:-3000}:3000"
+      - '127.0.0.1:${OBS_GRAFANA_PORT:-3000}:3000'
     networks:
       - geniuserp_net_observability
       - geniuserp_net_suite_internal
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
       - 'traefik.http.routers.grafana.rule=Host("${OBS_GRAFANA_DOMAIN:-grafana.${PROXY_DOMAIN:-geniuserp.app}}")'
-      - "traefik.http.routers.grafana.entrypoints=websecure"
-      - "traefik.http.routers.grafana.tls=true"
-      - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.grafana.middlewares=global-chain@file"
-      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - 'traefik.http.routers.grafana.entrypoints=websecure'
+      - 'traefik.http.routers.grafana.tls=true'
+      - 'traefik.http.routers.grafana.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.grafana.middlewares=global-chain@file'
+      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
 
   loki:
     container_name: geniussuite-loki
@@ -340,9 +370,9 @@ services:
     env_file:
       - shared/observability/.observability.env
     volumes:
-      - "gs_loki_data:/loki"
+      - 'gs_loki_data:/loki'
     ports:
-      - "127.0.0.1:${OBS_LOKI_PORT:-3100}:3100"
+      - '127.0.0.1:${OBS_LOKI_PORT:-3100}:3100'
     networks:
       - geniuserp_net_observability
 
@@ -354,8 +384,8 @@ services:
     env_file:
       - shared/observability/.observability.env
     volumes:
-      - "./shared/observability/logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - './shared/observability/logs/ingestion/promtail-config.yml:/etc/promtail/promtail-config.yml:ro'
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
     depends_on:
       - loki
     networks:
@@ -435,4 +465,7 @@ volumes:
     driver: local
   gs_neo4j_data:
     name: geniuserp_neo4j_data
+    driver: local
+  gs_openbao_data:
+    name: geniuserp_openbao_data
     driver: local
