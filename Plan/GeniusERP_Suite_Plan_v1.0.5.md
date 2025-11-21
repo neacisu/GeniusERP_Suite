@@ -9717,7 +9717,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu modifica politicile de permisiuni ale sistemului; scriptul trebuie să fie idempotent.",
     "validare": "Rularea scriptului pe un mediu curat generează cheile și raportează `initialized=true`.",
     "outcome": "Bootstrap-ul OpenBao devine un singur pas documentat.",
-    "componenta_de_CI_CD": "Poate fi apelat în joburile CI înainte de teste care consumă secrete."
+    "componenta_de_CI_CD": "Poate fi apelat în joburile CI înainte de teste care consumă secrete.",
+    "status": "completed",
+    "note_implementare": "S-a creat `scripts/security/openbao-init.sh` care automatizează procesul de `init` și `unseal`. Cheile sunt salvate local în `.secrets/openbao-keys.json` (ignorat de git). S-au rezolvat problemele de permisiuni pe volumul de date."
   },
 ```
 

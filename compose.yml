@@ -176,10 +176,10 @@ services:
 
   openbao:
     container_name: geniuserp-openbao
-    image: openbao/openbao:2.0.0
+    image: openbao/openbao:latest
     restart: unless-stopped
     environment:
-      BAO_ADDR: '0.0.0.0:8200'
+      BAO_ADDR: 'http://127.0.0.1:8200'
       BAO_API_ADDR: 'http://0.0.0.0:8200'
     cap_add:
       - IPC_LOCK
