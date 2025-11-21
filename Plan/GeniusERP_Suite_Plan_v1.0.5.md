@@ -9764,7 +9764,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu include valorile efective în document, doar numele și locațiile.",
     "validare": "Inventarul este revizuit de ownerii componentelor și semnat.",
     "outcome": "Lista completă a secretelor și a destinației lor în OpenBao.",
-    "componenta_de_CI_CD": "Servește ca sursă pentru verificări automate ale configurațiilor."
+    "componenta_de_CI_CD": "Servește ca sursă pentru verificări automate ale configurațiilor.",
+    "status": "completed",
+    "note_implementare": "S-a realizat audit complet al tuturor fișierelor .env existente (20 fișiere). S-a creat inventarul exhaustiv în `docs/security/F0.5-Secrets-Inventory-OpenBao.md` catalogând 200 variabile totale: **80 secrete** (18 JWT secrets, 18 DB URLs pentru dynamic credentials, 15 API keys, 8 service passwords, 21 altele) și **120 configurații** pentru Git. Toate secretele au fost mapate la căi OpenBao KV v2 sau role-uri de dynamic database credentials."
   },
 ```
 
