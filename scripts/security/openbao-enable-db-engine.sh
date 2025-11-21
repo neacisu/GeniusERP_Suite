@@ -5,14 +5,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Shared Postgres connection metadata
-POSTGRES_HOST="${SUITE_DB_POSTGRES_HOST:-postgres_server}"
-POSTGRES_PORT="${SUITE_DB_POSTGRES_PORT:-5432}"
-POSTGRES_DB="${SUITE_DB_POSTGRES_DB:-postgres}"
-POSTGRES_SUPERUSER="${SUITE_DB_POSTGRES_USER:-suite_admin}"
-POSTGRES_SUPERPASS="${SUITE_DB_POSTGRES_PASS:-ChangeThisPostgresPassword}"
-CONNECTION_URL="postgresql://{{username}}:{{password}}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+SECRETS_DIR="${REPO_ROOT}/.secrets"
+DB_ADMIN_PASS_FILE="${SECRETS_DIR}/openbao-db-admin.pass"
 
 # Colors
 RED='\033[0;31m'
@@ -20,6 +15,63 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[0;33m'
 NC='\033[0;0m'
+
+# Load shared suite environment variables when available (avoids hard-coded defaults)
+SUITE_GENERAL_ENV="${REPO_ROOT}/.suite.general.env"
+if [[ -f "${SUITE_GENERAL_ENV}" ]]; then
+    set -a
+    # shellcheck disable=SC1090
+    source "${SUITE_GENERAL_ENV}"
+    set +a
+fi
+
+REQUIRED_VARS=(
+    SUITE_DB_POSTGRES_HOST
+    SUITE_DB_POSTGRES_PORT
+    SUITE_DB_POSTGRES_DB
+    SUITE_DB_POSTGRES_USER
+    SUITE_DB_POSTGRES_PASS
+)
+
+MISSING_VARS=()
+for VAR in "${REQUIRED_VARS[@]}"; do
+    if [[ -z "${!VAR:-}" ]]; then
+        MISSING_VARS+=("$VAR")
+    fi
+done
+
+if (( ${#MISSING_VARS[@]} > 0 )); then
+    echo -e "${RED}✗ Missing required Postgres env vars: ${MISSING_VARS[*]}${NC}"
+    echo -e "${YELLOW}  Load them via: set -a && source .suite.general.env && set +a${NC}"
+    exit 1
+fi
+
+# Shared Postgres connection metadata (populated strictly from env)
+POSTGRES_HOST="${SUITE_DB_POSTGRES_HOST}"
+POSTGRES_PORT="${SUITE_DB_POSTGRES_PORT}"
+POSTGRES_DB="${SUITE_DB_POSTGRES_DB}"
+POSTGRES_SUPERUSER="${SUITE_DB_POSTGRES_USER}"
+POSTGRES_SUPERPASS="${SUITE_DB_POSTGRES_PASS}"
+CONNECTION_URL="postgresql://{{username}}:{{password}}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+
+# Determine OpenBao admin password (never hard-code)
+OPENBAO_DB_ADMIN_PASSWORD="${OPENBAO_DB_ADMIN_PASSWORD:-}"
+if [[ -z "${OPENBAO_DB_ADMIN_PASSWORD}" && -f "${DB_ADMIN_PASS_FILE}" ]]; then
+    OPENBAO_DB_ADMIN_PASSWORD="$(<"${DB_ADMIN_PASS_FILE}")"
+fi
+
+if [[ -z "${OPENBAO_DB_ADMIN_PASSWORD}" ]]; then
+    if ! command -v openssl >/dev/null 2>&1; then
+        echo -e "${RED}✗ openssl not found for password generation${NC}"
+        exit 1
+    fi
+    OPENBAO_DB_ADMIN_PASSWORD="$(openssl rand -base64 32 | tr -d '\n')"
+    mkdir -p "${SECRETS_DIR}"
+    umask 077 && printf '%s' "${OPENBAO_DB_ADMIN_PASSWORD}" > "${DB_ADMIN_PASS_FILE}"
+    echo -e "${YELLOW}  Generated OpenBao DB admin password at ${DB_ADMIN_PASS_FILE}${NC}"
+fi
+
+export OPENBAO_DB_ADMIN_PASSWORD
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  OpenBao Database Secrets Engine Configuration${NC}"
@@ -61,14 +113,17 @@ echo -e "${BLUE}[Step 2/5] Configuring PostgreSQL connection...${NC}"
 # Create dedicated database admin user if it doesn't exist
 echo -e "  Creating dedicated openbao_admin user in PostgreSQL..."
 
-docker exec -e PGPASSWORD="${POSTGRES_SUPERPASS}" geniuserp-postgres \
-    psql -U "${POSTGRES_SUPERUSER}" -d "${POSTGRES_DB}" <<EOF 2>/dev/null || true
--- Create dedicated user for OpenBao database management
+ESCAPED_PASS="${OPENBAO_DB_ADMIN_PASSWORD//\'/''}"
+
+cat <<EOF | docker exec -i -e PGPASSWORD="${POSTGRES_SUPERPASS}" geniuserp-postgres \
+    psql -U "${POSTGRES_SUPERUSER}" -d "${POSTGRES_DB}" -v ON_ERROR_STOP=1 1>/dev/null || true
 DO \$\$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'openbao_admin') THEN
-        CREATE ROLE openbao_admin WITH LOGIN PASSWORD 'openbao-admin-password-change-me' SUPERUSER;
+        EXECUTE 'CREATE ROLE openbao_admin WITH LOGIN PASSWORD ''${ESCAPED_PASS}'' SUPERUSER';
         COMMENT ON ROLE openbao_admin IS 'OpenBao database secrets engine admin user';
+    ELSE
+        EXECUTE 'ALTER ROLE openbao_admin WITH LOGIN PASSWORD ''${ESCAPED_PASS}'' SUPERUSER';
     END IF;
 END
 \$\$;
@@ -84,7 +139,7 @@ bao write database/config/postgresql \
     allowed_roles="*" \
     connection_url="${CONNECTION_URL}" \
     username="openbao_admin" \
-    password="openbao-admin-password-change-me" \
+    password="${OPENBAO_DB_ADMIN_PASSWORD}" \
     verify_connection=true
 
 echo -e "${GREEN}  ✓ PostgreSQL connection configured${NC}"
@@ -99,7 +154,7 @@ bao write database/config/postgresql \
     allowed_roles="*" \
     connection_url="${CONNECTION_URL}" \
     username="openbao_admin" \
-    password="openbao-admin-password-change-me" \
+    password="${OPENBAO_DB_ADMIN_PASSWORD}" \
     verify_connection=true \
     default_ttl=1h \
     max_ttl=24h
@@ -146,7 +201,9 @@ if CREDS=$(bao read database/creds/example-readonly 2>&1); then
     if [[ -n "$USERNAME" ]]; then
         echo ""
         echo -e "${YELLOW}  Cleaning up test user: $USERNAME${NC}"
-        docker exec geniuserp-postgres psql -U suite_admin -d postgres -c "DROP ROLE IF EXISTS \"$USERNAME\";" 2>/dev/null || true
+        docker exec -e PGPASSWORD="${POSTGRES_SUPERPASS}" geniuserp-postgres \
+            psql -U "${POSTGRES_SUPERUSER}" -d "${POSTGRES_DB}" \
+            -c "REVOKE ALL PRIVILEGES ON DATABASE ${POSTGRES_DB} FROM \"$USERNAME\"; DROP ROLE IF EXISTS \"$USERNAME\";" 2>/dev/null || true
     fi
 else
     echo -e "${RED}  ✗ Failed to generate credentials${NC}"

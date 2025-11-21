@@ -1,0 +1,109 @@
+{
+  "defaults": {
+    "plugin_name": "postgresql-database-plugin",
+    "default_ttl": "1h",
+    "max_ttl": "8h",
+    "schema": "public"
+  },
+  "roles": [
+    {
+      "name": "archify_runtime",
+      "db_name": "archify_db",
+      "connection": "archify_archify_db",
+      "sql_file": "archify_runtime.sql",
+      "description": "Archify content runtime"
+    },
+    {
+      "name": "cerniq_runtime",
+      "db_name": "cerniq_db",
+      "connection": "cerniq_cerniq_db",
+      "sql_file": "cerniq_runtime.sql",
+      "description": "Cerniq analytics runtime"
+    },
+    {
+      "name": "flowxify_runtime",
+      "db_name": "flowxify_db",
+      "connection": "flowxify_flowxify_db",
+      "sql_file": "flowxify_runtime.sql",
+      "description": "Flowxify automation runtime"
+    },
+    {
+      "name": "geniuserp_runtime",
+      "db_name": "geniuserp_db",
+      "connection": "geniuserp_geniuserp_db",
+      "sql_file": "geniuserp_runtime.sql",
+      "description": "GeniusERP core runtime"
+    },
+    {
+      "name": "iwms_runtime",
+      "db_name": "iwms_db",
+      "connection": "iwms_iwms_db",
+      "sql_file": "iwms_runtime.sql",
+      "description": "i-WMS logistics runtime"
+    },
+    {
+      "name": "mercantiq_runtime",
+      "db_name": "mercantiq_db",
+      "connection": "mercantiq_mercantiq_db",
+      "sql_file": "mercantiq_runtime.sql",
+      "description": "Mercantiq commerce runtime"
+    },
+    {
+      "name": "numeriqo_runtime",
+      "db_name": "numeriqo_db",
+      "connection": "numeriqo_numeriqo_db",
+      "sql_file": "numeriqo_runtime.sql",
+      "description": "Numeriqo payroll runtime"
+    },
+    {
+      "name": "triggerra_runtime",
+      "db_name": "triggerra_db",
+      "connection": "triggerra_triggerra_db",
+      "sql_file": "triggerra_runtime.sql",
+      "description": "Triggerra events runtime"
+    },
+    {
+      "name": "vettify_runtime",
+      "db_name": "vettify_db",
+      "connection": "vettify_vettify_db",
+      "sql_file": "vettify_runtime.sql",
+      "description": "Vettify vet-care runtime"
+    },
+    {
+      "name": "cp_aihub_runtime",
+      "db_name": "ai_hub_db",
+      "connection": "cp_aihub_ai_hub_db",
+      "sql_file": "cp_aihub_runtime.sql",
+      "description": "Control Plane AI Hub runtime"
+    },
+    {
+      "name": "cp_aihub_vectors_runtime",
+      "db_name": "ai_vectors_db",
+      "connection": "cp_aihub_ai_vectors_db",
+      "sql_file": "cp_aihub_vectors_runtime.sql",
+      "description": "Control Plane AI Hub RAG vector store",
+      "extensions": ["vector"]
+    },
+    {
+      "name": "cp_analytics_runtime",
+      "db_name": "analytics_hub_db",
+      "connection": "cp_analytics_analytics_hub_db",
+      "sql_file": "cp_analytics_runtime.sql",
+      "description": "Control Plane Analytics Hub runtime"
+    },
+    {
+      "name": "cp_identity_runtime",
+      "db_name": "identity_db",
+      "connection": "cp_identity_identity_db",
+      "sql_file": "cp_identity_runtime.sql",
+      "description": "Control Plane Identity runtime"
+    },
+    {
+      "name": "cp_licensing_runtime",
+      "db_name": "licensing_db",
+      "connection": "cp_licensing_licensing_db",
+      "sql_file": "cp_licensing_runtime.sql",
+      "description": "Control Plane Licensing runtime"
+    }
+  ]
+}

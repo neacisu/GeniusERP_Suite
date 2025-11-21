@@ -55,7 +55,10 @@ services:
 
   postgres_server:
     container_name: geniuserp-postgres
-    image: postgres:18
+    build:
+      context: .
+      dockerfile: scripts/postgres/Dockerfile.pgvector
+    image: geniuserp/postgres-pgvector:local
     restart: unless-stopped
     env_file:
       - .suite.general.env
