@@ -9787,7 +9787,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu comite fișiere temporare generate.",
     "validare": "`bao kv get` confirmă existența tuturor secretelor mapate.",
     "outcome": "Toate secretele statice sunt populate în OpenBao.",
-    "componenta_de_CI_CD": "Permite joburilor CI să consume secrete via OIDC, fără GitHub Secrets persistente."
+    "componenta_de_CI_CD": "Permite joburilor CI să consume secrete via OIDC, fără GitHub Secrets persistente.",
+    "status": "completed",
+    "note_implementare": "S-a creat scriptul `scripts/security/seed-secrets.sh` (5.5KB) care citește inventarul CSV și migrează secretele statice în OpenBao KV v2. Scriptul suportă mod interactiv (prompt pentru fiecare secret) sau non-interactiv (`--non-interactive` generează secrete aleatorii de 32 caractere). Au fost migrate cu succes **42 secrete statice** în OpenBao la căile `kv/data/...`, organizate pe componente (cp/, apps, infrastructure). Cele 16 credențiale dinamice de bază de date au fost omise corect (vor fi gestionate de database secrets engine).",
+    "validare_hands_on": "1. `./scripts/security/seed-secrets.sh --non-interactive --profile dev` → **Migration Summary: Total 58, Succeeded 42, Skipped (dynamic) 16, Failed 0**. 2. `docker exec geniuserp-openbao bao kv list kv/data/` → returnează 11 directoare (cp/, archify/, cerniq/, flowxify/, geniuserp/, i-wms/, infrastructure/, mercantiq/, numeriqo/, triggerra/, vettify/). 3. `docker exec geniuserp-openbao bao kv get kv/data/cp/identity/jwt-secret` și `kv/data/infrastructure/postgres/root-password` → ambele returnează valori generate de 33 caractere (32 + newline), confirmând seed-ul corect."
   },
 ```
 
