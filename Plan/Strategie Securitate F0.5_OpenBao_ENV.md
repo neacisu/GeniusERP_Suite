@@ -9,6 +9,10 @@ Soluția propusă, care implică adoptarea OpenBao ca manager de secrete, implem
 Totuși, raportul identifică provocări tehnice majore care nu au fost detaliate suficient în planul inițial, în special problema "race condition" în orchestratorul Docker Compose, unde containerele aplicației pot porni înainte ca agentul sidecar să livreze secretele. De asemenea, se clarifică distincția critică între criptarea transparentă a datelor (TDE) la nivel de disc și criptarea la nivel de coloană (pgcrypto), recomandând o abordare stratificată.
 În final, raportul detaliază o strategie hibridă clară: configurațiile non-sensibile rămân în Git pentru trasabilitate, în timp ce secretele sunt gestionate exclusiv de OpenBao și injectate efemer. Se propune o arhitectură de tip "Process Supervisor" pentru a rezolva limitările Docker Compose și se definește un set secvențial de task-uri (F0.5.x) pentru execuție.
 
+### 1.1. Audit și Analiză de Risc (F0.5.1)
+
+Ca parte a fazei de fundamentare, a fost redactat documentul **[Analiza Strategie Configurare](docs/security/Configuration_Strategy.md)**. Acesta corelează constatările din auditul curent (25 fișiere `.env` fragmentate, 18 lipsă) cu riscurile de securitate (stocare pe disk, lipsă audit). Documentul stabilește clar distincția între **Configurație** (Git) și **Secret** (OpenBao), fiind baza legală pentru modificările arhitecturale ulterioare.
+
 ## 2. Analiza Arhitecturală a Stării Curente și a Vectorilor de Risc
 
 Pentru a justifica necesitatea tranziției către OpenBao, este imperativ să deconstruim arhitectura actuală a suitei GeniusERP și să analizăm modul în care deciziile de design influențează postura de securitate.
