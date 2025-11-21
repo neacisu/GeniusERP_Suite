@@ -9816,6 +9816,7 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "note_implementare": "S-a creat documentul complet `docs/security/F0.5-Crypto-Standards-OpenBao.md` definind standardele criptografice obligatorii pentru întreaga suită: **Cerințe minime** (≥256 biți entropie, rotație max 90 zile, TLS 1.3+), **Algoritmi aprobați** (Symmetric: AES-256-GCM/ChaCha20-Poly1305, Asymmetric: RSA 4096/Ed25519/ECDSA P-256, Hashing: SHA-256/SHA-512/BLAKE2b, Password: Argon2id), **Algoritmi interzisi** (MD5, SHA-1, DES, RC4, RSA < 2048), **Proceduri complete** de generare chei (openssl, age, ssh-keygen cu exemple), **Rotație** (automatizată pentru DB credentials via OpenBao, manuală la max 90 zile pentru KV secrets), **Integrare OpenBao** (KV v2, Dynamic DB, Transit engine pentru encryption-as-a-service), **Compliance** (GDPR, PCI DSS, SOC 2, HIPAA) și **Practici prohibite** (commit în Git, < 12 caractere, hardcode). Documentul este complet și urmează să fie aprobat de Security Officer.",
     "validare_hands_on": "Documentul conține toate cerințele specificate: (1) ≥256 biți entropie obligatoriu, (2) Lista completă de algoritmi aprobați cu justificări, (3) Proceduri detaliate de rotație automată (OpenBao dynamic credentials) și manuală (90 zile), (4) Exemple funcționale de comenzi pentru toate scenariile (JWT, API keys, DB passwords, TLS certs, SSH keys), (5) Integrare completă cu OpenBao (KV v2, database engine, transit engine). Format consistent cu documentele de securitate existente. Gata pentru aprobare conform validării din JSON."
   },
+```
 
 ##### F0.5.9
 
@@ -9860,7 +9861,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu lăsa engine-ul fără policy; asociază-l cu politicile scrise la F0.5.5.",
     "validare": "`bao secrets list` arată engine-ul activ, iar `bao write database/config/...` se finalizează.",
     "outcome": "Engine-ul DB este disponibil pentru toate aplicațiile.",
-    "componenta_de_CI_CD": "CI poate genera credențiale efemere pentru testele e2e."
+    "componenta_de_CI_CD": "CI poate genera credențiale efemere pentru testele e2e.",
+    "status": "completed",
+    "note_implementare": "S-a finalizat scriptul automatizat `scripts/security/openbao-enable-db-engine.sh`, acum parametrizat după `.suite.general.env` (host `postgres_server`, port 5432, DB `postgres`). Scriptul creează userul dedicat `openbao_admin`, configurează `database/` secrets engine cu `postgresql-database-plugin`, setează TTL-urile implicite (1h/24h), instalează CLI-ul `bao` pe host și generează un rol de probă `example-readonly` pentru a valida fluxul. Toate operațiile sunt idempotente și curăță contul temporar generat după test, pregătind terenul pentru F0.5.11 și F0.5.12.",
+    "validare_hands_on": "1. `export BAO_ADDR=http://127.0.0.1:8200 BAO_TOKEN=$(jq -r '.root_token' .secrets/openbao-keys.json) && ./scripts/security/openbao-enable-db-engine.sh` → scriptul rulează cap-coadă și afișează sumarul *Database Engine: ACTIVE*, *Default TTL: 1 hour*, *Example Role: example-readonly*. 2. `docker exec -e BAO_TOKEN=… -e BAO_ADDR=http://127.0.0.1:8200 geniuserp-openbao bao secrets list` → include montajul `database/` alături de `kv/`, confirmând activarea engine-ului. 3. `docker exec -e BAO_TOKEN=… -e BAO_ADDR=http://127.0.0.1:8200 geniuserp-openbao bao read database/creds/example-readonly` → emite utilizatorul efemer `v-root-example--*` cu `lease_duration=1h`, iar scriptul șterge automat rolul creat (verificat în logul Postgres)."
   },
 ```
 
