@@ -9671,7 +9671,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu muta actualele fișiere .env, doar documentează regulile.",
     "validare": "Politica este citată în șabloanele PR și acceptată de ownerii de domeniu.",
     "outcome": "Există reguli aprobate pentru separarea config/secrete.",
-    "componenta_de_CI_CD": "Folosită de joburile lint pentru a respinge secrete noi în .env."
+    "componenta_de_CI_CD": "Folosită de joburile lint pentru a respinge secrete noi în .env.",
+    "status": "completed",
+    "note_implementare": "S-a creat `docs/security/F0.5-Politica-Config-vs-Secrete.md` care definește matricea de clasificare (Config vs Secret), standardele de naming și checklist-ul de securitate pentru Code Review."
   },
   ```
 
