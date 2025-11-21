@@ -9740,7 +9740,9 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu acorda privilegii `sudo`/`root` generice; fiecare politică trebuie să fie scop-limitat.",
     "validare": "`bao policy write` reușește pentru fiecare fișier și `bao token capabilities` confirmă permisiunile corecte.",
     "outcome": "Politici versionate pentru toate domeniile aplicației.",
-    "componenta_de_CI_CD": "CI poate genera token-uri cu capabilități limitate pentru joburi specifice."
+    "componenta_de_CI_CD": "CI poate genera token-uri cu capabilități limitate pentru joburi specifice.",
+    "status": "completed",
+    "note_implementare": "S-au creat 25 politici ACL HCL complete pentru întreaga suită în `scripts/security/policies/`: **9 aplicații** (archify, cerniq, flowxify, i-wms, mercantiq, numeriqo, triggerra, vettify, geniuserp), **6 module CP** (suite-shell, suite-admin, suite-login, identity, licensing, analytics-hub, ai-hub), **7 componente infrastructură** (neo4j, temporal, supertokens, proxy, observability, postgres, kafka), **3 utilități** (admin-write, ci-read, identity-read). Toate politicile au fost încărcate cu succes în OpenBao și verificate."
   },
 ```
 
