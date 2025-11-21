@@ -9935,7 +9935,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Păstrează versiunile de Node.js sincronizate cu restul proiectului.",
     "validare": "`docker run ... bao --version && node --version` returnează ambele versiuni corect.",
     "outcome": "Imagine de bază reutilizabilă disponibilă.",
-    "componenta_de_CI_CD": "Pipeline de build pentru imaginea de bază."
+    "componenta_de_CI_CD": "Pipeline de build pentru imaginea de bază.",
+    "status": "completed",
+    "note_implementare": "Directorul `shared/docker/` găzduiește acum `node-openbao.Dockerfile`, un multi-stage build ce pornește din `node:24-bookworm-slim`, copiază binarul `bao` din `openbao/openbao` și instalează `tini`, `ca-certificates` și `corepack` pentru suport pnpm. Helperul `shared/docker/scripts/entrypoint-supervisor.sh` (invocat prin `tini`) rulează în mod implicit `bao agent -config $BAO_AGENT_CONFIG`, dar delegă orice comandă custom (`docker run image bash`). README-ul explică build args (`NODE_VERSION`, `OPENBAO_IMAGE`, `OPENBAO_IMAGE_TAG`) și modul de folosire, astfel încât toate aplicațiile să poată re-utiliza aceeași imagine pentru Process Supervisor.",
+    "validare_hands_on": "1. `docker build -f shared/docker/node-openbao.Dockerfile -t geniuserp/node-openbao:local .` → imaginea se construiește din sursele repo-ului și copiază binarul `bao`. 2. `docker run --rm --entrypoint bao geniuserp/node-openbao:local --version` afișează `OpenBao v2.4.3` confirmând că agentul este disponibil în PATH. 3. `docker run --rm --entrypoint node geniuserp/node-openbao:local --version` returnează `v24.11.1`, demonstrând că runtime-ul Node rămâne sincronizat cu monorepo-ul. Aceste comenzi constituie validarea minimă cerută de task (pre-req pentru pilotul Numeriqo din F0.5.14)."
   },
 ```
 
