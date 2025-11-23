@@ -14,9 +14,42 @@ set -euo pipefail
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
-APP="numeriqo" # Target app for testing
+APP="numeriqo" # Human readable target
+APP_SERVICE="numeriqo-app"
+APP_DIR="numeriqo.app"
+APP_COMPOSE_DIR="$APP_DIR/compose"
+APP_ENV_FILE="$APP_DIR/.numeriqo.env"
+SUITE_ENV_FILE=".suite.general.env"
+PROXY_ENV_FILE="proxy/.proxy.env"
+
+if [ ! -d "$APP_COMPOSE_DIR" ]; then
+    echo -e "${RED}App compose directory missing: $APP_COMPOSE_DIR${NC}" >&2
+    exit 1
+fi
+
+load_env_file() {
+    local file=$1
+    if [ ! -f "$file" ]; then
+        echo -e "${RED}Missing required env file: $file${NC}" >&2
+        exit 1
+    fi
+
+    set -a
+    # shellcheck disable=SC1090
+    source "$file"
+    set +a
+}
+
+run_app_compose() {
+    (cd "$APP_COMPOSE_DIR" && docker compose "$@")
+}
+
+load_env_file "$SUITE_ENV_FILE"
+load_env_file "$PROXY_ENV_FILE"
+load_env_file "$APP_ENV_FILE"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo -e "${BLUE}  F0.5 Chaos Testing: $APP${NC}"
@@ -25,7 +58,7 @@ echo ""
 
 # 1. Secret Injection Verification
 echo -e "${BLUE}[1/3] Verifying Secret Injection...${NC}"
-if docker compose exec $APP ls /app/secrets/db-creds.json > /dev/null 2>&1; then
+if run_app_compose exec -T "$APP_SERVICE" sh -c 'test -f /app/secrets/db-creds.json'; then
     echo -e "${GREEN}  ✓ Secrets file exists${NC}"
 else
     echo -e "${RED}  ✗ Secrets file missing${NC}"
@@ -45,7 +78,7 @@ echo "  Waiting 10s..."
 sleep 10
 
 echo "  Checking app status (should be running, Agent caches secrets)..."
-if docker compose ps $APP | grep -q "Up"; then
+if run_app_compose ps "$APP_SERVICE" | grep -q "Up"; then
     echo -e "${GREEN}  ✓ App is still running (resilient)${NC}"
 else
     echo -e "${RED}  ✗ App crashed${NC}"

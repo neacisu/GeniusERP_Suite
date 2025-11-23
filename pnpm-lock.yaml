@@ -437,6 +437,10 @@ importers:
       pino:
         specifier: ^10.1.0
         version: 10.1.0
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.11.6
+        version: 8.15.6
 
   shared/observability:
     dependencies:

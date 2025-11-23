@@ -1,9 +1,6 @@
 # Policy: suite-shell-read
 # Description: Read-only access to Suite Shell (CP) secrets
-path "secret/data/cp/suite-shell/*" {
-  capabilities = ["read", "list"]
-}
-path "database/creds/suite-shell-role" {
+path "kv/data/cp/suite-shell" {
   capabilities = ["read"]
 }
 path "auth/token/renew-self" {

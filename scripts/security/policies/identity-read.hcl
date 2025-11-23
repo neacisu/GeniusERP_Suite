@@ -3,12 +3,12 @@
 # Principle: Least privilege
 
 # KV v2 secrets for Identity Control Plane
-path "secret/data/cp/identity/*" {
-  capabilities = ["read", "list"]
+path "kv/data/cp/identity" {
+  capabilities = ["read"]
 }
 
 # Database dynamic credentials for Identity
-path "database/creds/identity-role" {
+path "database/creds/cp_identity_runtime" {
   capabilities = ["read"]
 }
 

@@ -9,13 +9,20 @@ services:
     env_file:
       - ../../../.suite.general.env
       - ../.cp.analytics-hub.env
+      # ⚠️ Secretele rămân în OpenBao; .env conține doar configurări publice
     environment:
       - CP_ANLY_APP_PORT=${CP_ANLY_APP_PORT}
       - CP_ANLY_APP_METRICS_PORT=${CP_ANLY_APP_METRICS_PORT}
       - CP_ANLY_APP_NODE_ENV=${CP_ANLY_APP_NODE_ENV}
       - CP_ANLY_OBS_SERVICE_NAME=${CP_ANLY_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - BAO_AGENT_CONFIG=${CP_ANLY_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
       - LOG_LEVEL=info
+    volumes:
+      - ${CP_ANLY_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CP_ANLY_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services

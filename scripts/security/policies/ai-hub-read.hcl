@@ -1,9 +1,12 @@
 # Policy: ai-hub-read
 # Description: Read-only access to AI Hub (CP) secrets
-path "secret/data/cp/ai-hub/*" {
-  capabilities = ["read", "list"]
+path "kv/data/cp/ai-hub" {
+  capabilities = ["read"]
 }
-path "database/creds/ai-hub-role" {
+path "database/creds/cp_aihub_runtime" {
+  capabilities = ["read"]
+}
+path "database/creds/cp_aihub_vectors_runtime" {
   capabilities = ["read"]
 }
 path "auth/token/renew-self" {

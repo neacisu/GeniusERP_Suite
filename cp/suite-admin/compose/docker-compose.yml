@@ -9,13 +9,18 @@ services:
     env_file:
       - ../../../.suite.general.env
       - ../.cp.suite-admin.env
+      # ⚠️ Secretele sunt gestionate de OpenBao (AppRole + agent)
     environment:
       - CP_ADMIN_APP_PORT=${CP_ADMIN_APP_PORT}
       - CP_ADMIN_APP_METRICS_PORT=${CP_ADMIN_APP_METRICS_PORT}
       - CP_ADMIN_APP_NODE_ENV=${CP_ADMIN_APP_NODE_ENV}
       - CP_ADMIN_OBS_SERVICE_NAME=${CP_ADMIN_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - BAO_AGENT_CONFIG=${CP_ADMIN_BAO_AGENT_CONFIG}
       - LOG_LEVEL=info
+    volumes:
+      - ${CP_ADMIN_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CP_ADMIN_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
@@ -31,7 +36,7 @@ services:
       - "traefik.http.services.suite_admin.loadbalancer.server.port=${CP_ADMIN_APP_PORT:-6150}"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6150/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:6150/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -9,13 +9,20 @@ services:
     env_file:
       - ../../../.suite.general.env
       - ../.cp.identity.env
+      # ⚠️ Secretele sunt injectate de OpenBao; fișierele de mai sus conțin doar configurări non-secrete
     environment:
       - CP_IDT_APP_PORT=${CP_IDT_APP_PORT}
       - CP_IDT_APP_METRICS_PORT=${CP_IDT_APP_METRICS_PORT}
       - CP_IDT_APP_NODE_ENV=${CP_IDT_APP_NODE_ENV}
       - CP_IDT_OBS_SERVICE_NAME=${CP_IDT_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - BAO_AGENT_CONFIG=${CP_IDT_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
       - LOG_LEVEL=info
+    volumes:
+      - ${CP_IDT_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CP_IDT_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
@@ -31,7 +38,7 @@ services:
       - "traefik.http.services.identity.loadbalancer.server.port=${CP_IDT_APP_PORT:-6250}"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6250/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:6250/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

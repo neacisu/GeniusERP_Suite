@@ -9,13 +9,20 @@ services:
     env_file:
       - ../../../.suite.general.env
       - ../.cp.ai-hub.env
+      # ⚠️ Secretele sunt gestionate de OpenBao; aceste fișiere conțin doar configurări
     environment:
       - CP_AI_APP_PORT=${CP_AI_APP_PORT}
       - CP_AI_APP_METRICS_PORT=${CP_AI_APP_METRICS_PORT}
       - CP_AI_APP_NODE_ENV=${CP_AI_APP_NODE_ENV}
       - CP_AI_OBS_SERVICE_NAME=${CP_AI_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - BAO_AGENT_CONFIG=${CP_AI_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
       - LOG_LEVEL=info
+    volumes:
+      - ${CP_AI_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CP_AI_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services

@@ -313,24 +313,31 @@ log "FAZA 5: Pornire Control Plane Services..."
 start_cp_service() {
     local service_name=$1
     local service_path=$2
-    
+    local env_file_rel=${3:-}
+
     log "Pornesc $service_name..."
-    cd "$service_path"
-    docker compose up -d --build
-    cd /var/www/GeniusSuite
+    pushd "$service_path" >/dev/null
+
+    if [ -n "$env_file_rel" ] && [ -f "$env_file_rel" ]; then
+        docker compose --env-file "$env_file_rel" up -d --build
+    else
+        docker compose up -d --build
+    fi
+
+    popd >/dev/null
     sleep 3
 }
 
 # Pornire în ordine conform dependențelor
-start_cp_service "Identity (Auth Core)" "cp/identity/compose"
+start_cp_service "Identity (Auth Core)" "cp/identity/compose" "../.cp.identity.env"
 sleep 5  # Identity trebuie să fie ready pentru celelalte servicii
 
-start_cp_service "Licensing" "cp/licensing/compose"
-start_cp_service "Suite Admin" "cp/suite-admin/compose"
-start_cp_service "Suite Shell" "cp/suite-shell/compose"
-start_cp_service "Suite Login" "cp/suite-login/compose"
-start_cp_service "AI Hub" "cp/ai-hub/compose"
-start_cp_service "Analytics Hub" "cp/analytics-hub/compose"
+start_cp_service "Licensing" "cp/licensing/compose" "../.cp.licensing.env"
+start_cp_service "Suite Admin" "cp/suite-admin/compose" "../.cp.suite-admin.env"
+start_cp_service "Suite Shell" "cp/suite-shell/compose" "../.cp.suite-shell.env"
+start_cp_service "Suite Login" "cp/suite-login/compose" "../.cp.suite-login.env"
+start_cp_service "AI Hub" "cp/ai-hub/compose" "../.cp.ai-hub.env"
+start_cp_service "Analytics Hub" "cp/analytics-hub/compose" "../.cp.analytics-hub.env"
 
 log "Așteptăm toate serviciile CP să pornească complet (15 secunde)..."
 sleep 15

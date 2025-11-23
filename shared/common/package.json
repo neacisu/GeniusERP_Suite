@@ -12,5 +12,8 @@
   },
   "dependencies": {
     "pino": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.6"
   }
 }

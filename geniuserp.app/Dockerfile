@@ -29,15 +29,36 @@ COPY shared/observability/package.json ./shared/observability/
 COPY --from=builder /app/shared ./shared
 RUN pnpm deploy --filter=@genius-suite/geniuserp.app --prod --legacy --ignore-scripts /deploy
 
-FROM base AS runner
+
+# Final stage: Use geniuserp/node-openbao for Process Supervisor
+FROM geniuserp/node-openbao:local AS runner
+
 ENV NODE_ENV=production
-WORKDIR /app
-RUN apk add --no-cache curl && \
+ENV BAO_AGENT_CONFIG=/openbao/agent-config.hcl
+
+# Create necessary directories
+RUN mkdir -p /app/secrets /app/scripts /openbao/templates && \
     addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 appuser
+    adduser --system --uid 1001 appuser && \
+    chown -R appuser:nodejs /app /openbao
+
+WORKDIR /app
+
+# Copy built application
 COPY --from=builder --chown=appuser:nodejs /app/geniuserp.app/dist ./dist
 COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
+
+# Copy OpenBao Agent configuration and templates
+COPY --chown=appuser:nodejs /var/www/GeniusSuite/geniuserp.app/openbao/agent-config.hcl /openbao/
+COPY --chown=appuser:nodejs /var/www/GeniusSuite/geniuserp.app/openbao/templates/ /openbao/templates/
+
+# Copy Process Supervisor script
+COPY --chown=appuser:nodejs /var/www/GeniusSuite/geniuserp.app/scripts/start-app.sh /app/scripts/
+RUN chmod +x /app/scripts/start-app.sh
+
 USER appuser
 EXPOSE 6050
-CMD ["node", "dist/geniuserp.app/src/index.js"]
+
+# Start OpenBao Agent (will exec start-app.sh after rendering secrets)
+CMD ["bao", "agent", "-config", "/openbao/agent-config.hcl"]

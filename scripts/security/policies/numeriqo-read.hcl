@@ -2,13 +2,18 @@
 # Description: Read-only access to Numeriqo secrets (KV and dynamic DB)
 # Principle: Least privilege
 
-# KV v2 secrets for Numeriqo
-path "secret/data/numeriqo/*" {
-  capabilities = ["read", "list"]
+# KV v2 secrets for Numeriqo (apps namespace)
+path "kv/data/apps/numeriqo" {
+  capabilities = ["read"]
 }
 
-# Database dynamic credentials for Numeriqo
-path "database/creds/numeriqo-role" {
+# Allow metadata lookups for troubleshooting (optional)
+path "kv/metadata/apps/numeriqo" {
+  capabilities = ["read"]
+}
+
+# Database dynamic credentials for Numeriqo runtime role
+path "database/creds/numeriqo_runtime" {
   capabilities = ["read"]
 }
 

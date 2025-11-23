@@ -1,9 +1,9 @@
 # Policy: licensing-read
 # Description: Read-only access to Licensing (CP) secrets
-path "secret/data/cp/licensing/*" {
-  capabilities = ["read", "list"]
+path "kv/data/cp/licensing" {
+  capabilities = ["read"]
 }
-path "database/creds/licensing-role" {
+path "database/creds/cp_licensing_runtime" {
   capabilities = ["read"]
 }
 path "auth/token/renew-self" {
