@@ -203,6 +203,20 @@ services:
       retries: 3
       start_period: 10s
 
+  openbao-backup:
+    container_name: geniuserp-openbao-backup
+    image: alpine:latest
+    restart: unless-stopped
+    volumes:
+      - gs_openbao_data:/bao/file:ro
+      - ./backups/openbao:/backup
+      - ./scripts/compose/openbao-backup.sh:/usr/local/bin/backup.sh:ro
+    command: /bin/sh /usr/local/bin/backup.sh 86400
+    depends_on:
+      - openbao
+    networks:
+      - geniuserp_net_backing_services
+
   neo4j:
     container_name: geniuserp-neo4j
     image: neo4j:5.23-enterprise
