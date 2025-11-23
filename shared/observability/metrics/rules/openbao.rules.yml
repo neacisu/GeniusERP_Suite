@@ -1,0 +1,38 @@
+groups:
+  - name: openbao
+    rules:
+      - alert: OpenBaoSealed
+        expr: vault_core_sealed == 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'OpenBao is sealed'
+          description: 'OpenBao instance {{ $labels.instance }} is sealed. Unseal immediately.'
+
+      - alert: OpenBaoHighErrorRate
+        expr: rate(vault_core_handle_request_count{success="false"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'OpenBao high error rate'
+          description: 'OpenBao instance {{ $labels.instance }} has a high error rate (> 10%).'
+
+      - alert: OpenBaoHighLeaseCount
+        expr: vault_expire_num_leases > 1000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'OpenBao high lease count'
+          description: 'OpenBao instance {{ $labels.instance }} has {{ $value }} active leases.'
+
+      - alert: OpenBaoDown
+        expr: up{job="openbao"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'OpenBao is down'
+          description: 'OpenBao instance {{ $labels.instance }} is not reachable.'

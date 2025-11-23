@@ -27,5 +27,13 @@ scrape_configs:
       - targets:
           - 'traefik:9100'
 
+  - job_name: 'openbao'
+    metrics_path: /v1/sys/metrics
+    params:
+      format: ['prometheus']
+    static_configs:
+      - targets: ['openbao:8200']
+
 rule_files:
   - rules/traefik.rules.yml
+  - rules/openbao.rules.yml

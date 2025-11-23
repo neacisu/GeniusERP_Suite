@@ -10207,7 +10207,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Nu emite alerte care expun secrete (log scrubbing obligatoriu).",
     "validare": "Alertă `OpenBaoLeaseExpiry` se declanșează într-un test controlat, iar dashboard-ul arată starea actuală.",
     "outcome": "Observabilitate completă pentru F0.5.",
-    "componenta_de_CI_CD": "Joburi programate verifică sănătatea și raportează statusul în pipeline."
+    "componenta_de_CI_CD": "Joburi programate verifică sănătatea și raportează statusul în pipeline.",
+    "status": "completed",
+    "note_implementare": "S-a implementat stack-ul complet de **Observabilitate pentru OpenBao**: (1) **Telemetry activat** în `openbao.hcl` pentru expunerea metricilor Prometheus (`/v1/sys/metrics`), (2) **Job Prometheus** configurat în `prometheus.yml` pentru scraping la 15s, (3) **Reguli de Alertare** (`openbao.rules.yml`) pentru stări critice (Sealed, Down) și warning-uri (High Error Rate, High Lease Count), (4) **Dashboard Grafana** (`openbao.json`) creat cu panouri pentru status, lease trends și request rates, (5) **Documentație** (`docs/observability/openbao-monitoring.md`) care descrie metricile cheie, semnificația alertelor și proceduri de troubleshooting. Aceasta asigură vizibilitate completă asupra sănătății și performanței serviciului de secrete.",
+    "validare_hands_on": "1. Verificare telemetry: `grep 'telemetry {' shared/security/openbao/config/openbao.hcl` confirmă activarea. 2. Verificare scrape job: `grep 'job_name: .openbao.' shared/observability/compose/prometheus.yml` confirmă configurarea Prometheus. 3. Verificare alerte: `ls -lh shared/observability/metrics/rules/openbao.rules.yml` și conținutul său confirmă regulile pentru Sealed/Down/Errors. 4. Verificare dashboard: `ls -lh shared/observability/dashboards/grafana/dashboards/openbao.json` confirmă existența dashboard-ului JSON. 5. Verificare documentație: `ls -lh docs/observability/openbao-monitoring.md` confirmă ghidul de monitorizare. Validare completă - observabilitate integrată în stack-ul existent."
   },
 ```
 
