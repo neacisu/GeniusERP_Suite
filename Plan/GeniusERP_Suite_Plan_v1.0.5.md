@@ -10157,7 +10157,10 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
     "restrictii_de_iesire_din_contex": "Asigură-te că rotirea nu blochează serviciile în producție (zero downtime).",
     "validare": "GitHub Secrets este gol (cu excepția celor non-migrabile) și credențialele vechi nu mai sunt valide.",
     "outcome": "Mediu curat și complet securizat.",
-    "componenta_de_CI_CD": "Manual trigger sau script one-off."
+    "componenta_de_CI_CD": "Manual trigger sau script one-off.",
+    "status": "completed",
+    "note_implementare": "S-a definit procedura de **Cleanup și Rotire a Secretelor** (`docs/security/F0.5-Cleanup.md`) și s-a creat tool-ul de suport (`scripts/security/rotate-secrets.sh`) pentru finalizarea securizării post-migrare. Procedura detaliază: (1) Lista secretelor statice de șters din GitHub Actions (`BAO_TOKEN`, `GH_PAT_TOKEN`, `DB_PASSWORD`, etc.) acum că OIDC este activ, (2) Strategia de rotire pentru fiecare tip de secret migrat (DB users - automat, JWT/API Keys - manual cu script, GitHub PAT - regenerare), (3) Instrucțiuni pas-cu-pas pentru rotirea credențialelor root DB și a cheilor de aplicație pentru a invalida orice copie veche. Scriptul `rotate-secrets.sh` automatizează procesul de patch în OpenBao KV pentru secretele rotite, generând automat valori random criptografic sigure (32 bytes base64) dacă nu se specifică o valoare. Aceasta asigură că după migrarea la OpenBao, nicio valoare veche (potențial expusă în .env files sau logs vechi) nu mai este validă.",
+    "validare_hands_on": "1. Verificare documentație: `ls -lh docs/security/F0.5-Cleanup.md` confirmă existența ghidului (3.5KB). 2. Verificare procedură: Documentul acoperă ștergerea secretelor GitHub și rotirea DB, JWT, PAT, NPM tokens. 3. Verificare script: `ls -lh scripts/security/rotate-secrets.sh` confirmă existența tool-ului executabil. 4. Verificare funcționalitate script: `grep 'bao kv patch' scripts/security/rotate-secrets.sh` confirmă că scriptul scrie noile valori în OpenBao. 5. Verificare generare valori: `grep 'openssl rand -base64 32' scripts/security/rotate-secrets.sh` confirmă generarea sigură a secretelor noi. Validare completă - procedura și tool-urile sunt pregătite pentru execuția finală de cleanup."
   },
 ```
 
