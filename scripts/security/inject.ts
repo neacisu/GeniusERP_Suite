@@ -85,7 +85,8 @@ class SecretInjector {
         }
       } catch (error) {
         result.valid = false;
-        result.errors.push(`Failed to parse db-creds.json: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        result.errors.push(`Failed to parse db-creds.json: ${errorMessage}`);
       }
     }
 
@@ -102,7 +103,8 @@ class SecretInjector {
         }
       } catch (error) {
         result.valid = false;
-        result.errors.push(`Failed to parse app-secrets.json: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        result.errors.push(`Failed to parse app-secrets.json: ${errorMessage}`);
       }
     }
 
@@ -158,9 +160,10 @@ class SecretInjector {
       });
       console.log(`[SecretInjector] ----------------------------------------`);
       console.log(`[SecretInjector] ✓ Command completed successfully`);
-    } catch (error) {
-      console.error(`[SecretInjector] ✗ Command failed with exit code ${error.status}`);
-      process.exit(error.status || 1);
+    } catch (error: any) {
+      const exitCode = error?.status || 1;
+      console.error(`[SecretInjector] ✗ Command failed with exit code ${exitCode}`);
+      process.exit(exitCode);
     }
   }
 
