@@ -230,7 +230,30 @@ docker compose -f "$ROOT_COMPOSE_FILE" up -d proxy
 log "Așteptăm Traefik să devină ready (10 secunde)..."
 sleep 10
 
-log "✓ Proxy pornit"
+log \"✓ Proxy pornit\"
+echo ""
+
+# ============================================================================
+# FAZA 2.5: Pornire și Inițializare OpenBao
+# ============================================================================
+log "FAZA 2.5: Pornire OpenBao (Secrets Management)..."
+
+load_suite_env
+
+docker compose -f "$ROOT_COMPOSE_FILE" up -d openbao
+
+log "Așteptăm OpenBao să pornească (10 secunde)..."
+sleep 10
+
+# Verificare dacă OpenBao este inițializat
+if [ ! -f ".secrets/openbao-keys.json" ]; then
+    log "OpenBao nu este inițializat. Rulăm openbao-init.sh..."
+    bash scripts/security/openbao-init.sh
+else
+    info "OpenBao este deja inițializat (.secrets/openbao-keys.json există)"
+fi
+
+log "✓ OpenBao pornit și inițializat"
 echo ""
 
 # ============================================================================

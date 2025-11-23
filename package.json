@@ -13,7 +13,13 @@
     "lint:fix": "nx run-many -t lint --all --fix",
     "format:check": "nx format:check",
     "format:write": "nx format:write",
-    "publish:issues": "node scripts/publish-issues.js"
+    "publish:issues": "node scripts/publish-issues.js",
+    "openbao:init": "bash scripts/security/openbao-init.sh",
+    "openbao:login": "export BAO_TOKEN=$(jq -r '.root_token' .secrets/openbao-keys.json) && export BAO_ADDR=http://127.0.0.1:8200 && echo 'OpenBao logged in. BAO_TOKEN and BAO_ADDR exported.'",
+    "openbao:seed": "bash scripts/security/seed-secrets.sh --profile dev --non-interactive",
+    "openbao:db-engine": "bash scripts/security/openbao-enable-db-engine.sh",
+    "openbao:sync-roles": "bash scripts/security/openbao-sync-app-roles.sh",
+    "dev:openbao": "pnpm openbao:init && pnpm openbao:seed && pnpm openbao:db-engine && pnpm openbao:sync-roles"
   },
   "keywords": [],
   "author": "",
