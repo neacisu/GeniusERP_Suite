@@ -3,41 +3,49 @@ services:
     build:
       context: ../..
       dockerfile: archify.app/Dockerfile
-    container_name: genius-suite-archify-app
-    restart: unless-stopped
+    container_name: ${ARCHY_CONTAINER_NAME}
+    restart: ${ARCHY_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.archify.env
+      # NOTE: Secrets (DB passwords, JWT secrets, API keys) injected via OpenBao Agent
+      # NOTE: Non-secret configs (ports, hostnames, log levels) loaded from .env files above
     environment:
       - ARCHY_APP_PORT=${ARCHY_APP_PORT}
       - ARCHY_APP_METRICS_PORT=${ARCHY_APP_METRICS_PORT}
       - ARCHY_APP_WORKER_PORT=${ARCHY_APP_WORKER_PORT}
       - ARCHY_APP_NODE_ENV=${ARCHY_APP_NODE_ENV}
-      - PORT=${ARCHY_APP_PORT:-6500}
-      - OTEL_SERVICE_NAME=archify.app
+      - PORT=${ARCHY_APP_PORT}
+      - OTEL_SERVICE_NAME=${ARCHY_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${ARCHY_LOG_LEVEL}
+      - BAO_AGENT_CONFIG=${ARCHY_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
     volumes:
       - archify_storage_originals:/var/archify/documents
+      # OpenBao AppRole credentials (mounted from host)
+      - ${ARCHY_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${ARCHY_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
-      - "traefik.http.routers.archify.rule=Host(`archify.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
-      - "traefik.http.routers.archify.entrypoints=websecure"
-      - "traefik.http.routers.archify.tls=true"
-      - "traefik.http.routers.archify.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.archify.middlewares=global-chain@file"
-      - "traefik.http.services.archify.loadbalancer.server.port=${ARCHY_APP_PORT:-6500}"
+      - traefik.enable=${ARCHY_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.archify.rule=Host(`${ARCHY_TRAEFIK_HOST}`)
+      - traefik.http.routers.archify.entrypoints=${ARCHY_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.archify.tls=${ARCHY_TRAEFIK_TLS}
+      - traefik.http.routers.archify.tls.certresolver=${ARCHY_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.archify.middlewares=${ARCHY_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.archify.loadbalancer.server.port=${ARCHY_APP_PORT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${ARCHY_APP_PORT:-6500}/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${ARCHY_APP_PORT}/health']
+      interval: ${ARCHY_HEALTHCHECK_INTERVAL}
+      timeout: ${ARCHY_HEALTHCHECK_TIMEOUT}
+      retries: ${ARCHY_HEALTHCHECK_RETRIES}
+      start_period: ${ARCHY_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:
