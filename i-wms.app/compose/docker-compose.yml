@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: i-wms.app/Dockerfile
-    container_name: genius-suite-i-wms-app
-    restart: unless-stopped
+    container_name: ${IWMS_CONTAINER_NAME}
+    restart: ${IWMS_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.i-wms.env
@@ -13,29 +13,35 @@ services:
       - IWMS_APP_METRICS_PORT=${IWMS_APP_METRICS_PORT}
       - IWMS_APP_RF_TERMINAL_PORT=${IWMS_APP_RF_TERMINAL_PORT}
       - IWMS_APP_NODE_ENV=${IWMS_APP_NODE_ENV}
-      - PORT=${IWMS_APP_PORT:-6650}
+      - PORT=${IWMS_APP_PORT}
       - OTEL_SERVICE_NAME=i-wms.app
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${IWMS_LOG_LEVEL}
+          - BAO_AGENT_CONFIG=${IWMS_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${IWMS_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${IWMS_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
-      - 'traefik.http.routers.iwms.rule=Host(`iwms.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
-      - 'traefik.http.routers.iwms.entrypoints=websecure'
-      - 'traefik.http.routers.iwms.tls=true'
-      - 'traefik.http.routers.iwms.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.iwms.middlewares=global-chain@file'
-      - 'traefik.http.services.iwms.loadbalancer.server.port=${IWMS_APP_PORT:-6650}'
+      - traefik.enable=${IWMS_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.iwms.rule=Host(`iwms.${SUITE_APP_DOMAIN:-geniuserp.app}`)
+      - traefik.http.routers.i-wms.entrypoints=${IWMS_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.i-wms.tls=${IWMS_TRAEFIK_TLS}
+      - traefik.http.routers.i-wms.tls.certresolver=${IWMS_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.i-wms.middlewares=${IWMS_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.iwms.loadbalancer.server.port=${IWMS_APP_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${IWMS_APP_PORT:-6650}/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${IWMS_APP_PORT}/health']
+      interval: ${IWMS_HEALTHCHECK_INTERVAL}
+      timeout: ${IWMS_HEALTHCHECK_TIMEOUT}
+      retries: ${IWMS_HEALTHCHECK_RETRIES}
+      start_period: ${IWMS_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

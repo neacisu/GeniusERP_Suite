@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: triggerra.app/Dockerfile
-    container_name: genius-suite-triggerra-app
-    restart: unless-stopped
+    container_name: ${TRIG_CONTAINER_NAME}
+    restart: ${TRIG_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.triggerra.env
@@ -13,29 +13,35 @@ services:
       - TRIGR_APP_METRICS_PORT=${TRIGR_APP_METRICS_PORT}
       - TRIGR_APP_ENGINES_PORT=${TRIGR_APP_ENGINES_PORT}
       - TRIGR_APP_NODE_ENV=${TRIGR_APP_NODE_ENV}
-      - PORT=${TRIGR_APP_PORT:-6800}
-      - OTEL_SERVICE_NAME=triggerra.app
+      - PORT=${TRIGR_APP_PORT}
+      - OTEL_SERVICE_NAME=${TRIG_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${TRIG_LOG_LEVEL}
+          - BAO_AGENT_CONFIG=${TRIG_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${TRIG_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${TRIG_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
-      - 'traefik.http.routers.triggerra.rule=Host(`triggerra.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
-      - 'traefik.http.routers.triggerra.entrypoints=websecure'
-      - 'traefik.http.routers.triggerra.tls=true'
-      - 'traefik.http.routers.triggerra.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.triggerra.middlewares=global-chain@file'
-      - 'traefik.http.services.triggerra.loadbalancer.server.port=${TRIGR_APP_PORT:-6800}'
+      - traefik.enable=${TRIG_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.triggerra.rule=Host(`triggerra.${SUITE_APP_DOMAIN:-geniuserp.app}`)
+      - traefik.http.routers.triggerra.entrypoints=${TRIG_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.triggerra.tls=${TRIG_TRAEFIK_TLS}
+      - traefik.http.routers.triggerra.tls.certresolver=${TRIG_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.triggerra.middlewares=${TRIG_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.triggerra.loadbalancer.server.port=${TRIGR_APP_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${TRIGR_APP_PORT:-6800}/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${TRIGR_APP_PORT}/health']
+      interval: ${TRIG_HEALTHCHECK_INTERVAL}
+      timeout: ${TRIG_HEALTHCHECK_TIMEOUT}
+      retries: ${TRIG_HEALTHCHECK_RETRIES}
+      start_period: ${TRIG_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

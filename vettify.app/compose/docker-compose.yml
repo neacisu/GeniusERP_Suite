@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: vettify.app/Dockerfile
-    container_name: genius-suite-vettify-app
-    restart: unless-stopped
+    container_name: ${VETT_CONTAINER_NAME}
+    restart: ${VETT_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.vettify.env
@@ -13,29 +13,35 @@ services:
       - VETFY_APP_METRICS_PORT=${VETFY_APP_METRICS_PORT}
       - VETFY_APP_WORKER_PORT=${VETFY_APP_WORKER_PORT}
       - VETFY_APP_NODE_ENV=${VETFY_APP_NODE_ENV}
-      - PORT=${VETFY_APP_PORT:-6850}
-      - OTEL_SERVICE_NAME=vettify.app
+      - PORT=${VETFY_APP_PORT}
+      - OTEL_SERVICE_NAME=${VETT_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${VETT_LOG_LEVEL}
+          - BAO_AGENT_CONFIG=${VETT_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${VETT_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${VETT_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
-      - 'traefik.http.routers.vettify.rule=Host(`vettify.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
-      - 'traefik.http.routers.vettify.entrypoints=websecure'
-      - 'traefik.http.routers.vettify.tls=true'
-      - 'traefik.http.routers.vettify.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.vettify.middlewares=global-chain@file'
-      - 'traefik.http.services.vettify.loadbalancer.server.port=${VETFY_APP_PORT:-6850}'
+      - traefik.enable=${VETT_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.vettify.rule=Host(`vettify.${SUITE_APP_DOMAIN:-geniuserp.app}`)
+      - traefik.http.routers.vettify.entrypoints=${VETT_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.vettify.tls=${VETT_TRAEFIK_TLS}
+      - traefik.http.routers.vettify.tls.certresolver=${VETT_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.vettify.middlewares=${VETT_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.vettify.loadbalancer.server.port=${VETFY_APP_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${VETFY_APP_PORT:-6850}/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${VETFY_APP_PORT}/health']
+      interval: ${VETT_HEALTHCHECK_INTERVAL}
+      timeout: ${VETT_HEALTHCHECK_TIMEOUT}
+      retries: ${VETT_HEALTHCHECK_RETRIES}
+      start_period: ${VETT_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

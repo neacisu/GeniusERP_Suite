@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: flowxify.app/Dockerfile
-    container_name: genius-suite-flowxify-app
-    restart: unless-stopped
+    container_name: ${FLOWX_CONTAINER_NAME}
+    restart: ${FLOWX_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.flowxify.env
@@ -13,29 +13,35 @@ services:
       - FLOWX_APP_METRICS_PORT=${FLOWX_APP_METRICS_PORT}
       - FLOWX_APP_REALTIME_GATEWAY_PORT=${FLOWX_APP_REALTIME_GATEWAY_PORT}
       - FLOWX_APP_NODE_ENV=${FLOWX_APP_NODE_ENV}
-      - PORT=${FLOWX_APP_PORT:-6600}
-      - OTEL_SERVICE_NAME=flowxify.app
+      - PORT=${FLOWX_APP_PORT}
+      - OTEL_SERVICE_NAME=${FLOWX_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${FLOWX_LOG_LEVEL}
+      - BAO_AGENT_CONFIG=${FLOWX_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${FLOWX_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${FLOWX_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
-      - "traefik.http.routers.flowxify.rule=Host(`flowxify.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
-      - "traefik.http.routers.flowxify.entrypoints=websecure"
-      - "traefik.http.routers.flowxify.tls=true"
-      - "traefik.http.routers.flowxify.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.flowxify.middlewares=global-chain@file"
-      - "traefik.http.services.flowxify.loadbalancer.server.port=${FLOWX_APP_PORT:-6600}"
+      - traefik.enable=${FLOWX_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.flowxify.rule=Host(`${FLOWX_TRAEFIK_HOST}`)
+      - traefik.http.routers.flowxify.entrypoints=${FLOWX_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.flowxify.tls=${FLOWX_TRAEFIK_TLS}
+      - traefik.http.routers.flowxify.tls.certresolver=${FLOWX_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.flowxify.middlewares=${FLOWX_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.flowxify.loadbalancer.server.port=${FLOWX_APP_PORT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${FLOWX_APP_PORT:-6600}/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${FLOWX_APP_PORT}/health']
+      interval: ${FLOWX_HEALTHCHECK_INTERVAL}
+      timeout: ${FLOWX_HEALTHCHECK_TIMEOUT}
+      retries: ${FLOWX_HEALTHCHECK_RETRIES}
+      start_period: ${FLOWX_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

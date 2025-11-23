@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: cerniq.app/Dockerfile
-    container_name: genius-suite-cerniq-app
-    restart: unless-stopped
+    container_name: ${CERN_CONTAINER_NAME}
+    restart: ${CERN_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.cerniq.env
@@ -13,29 +13,35 @@ services:
       - CERNIQ_APP_METRICS_PORT=${CERNIQ_APP_METRICS_PORT}
       - CERNIQ_APP_CONSUMER_PORT=${CERNIQ_APP_CONSUMER_PORT}
       - CERNIQ_APP_NODE_ENV=${CERNIQ_APP_NODE_ENV}
-      - PORT=${CERNIQ_APP_PORT:-6550}
-      - OTEL_SERVICE_NAME=cerniq.app
+      - PORT=${CERNIQ_APP_PORT}
+      - OTEL_SERVICE_NAME=${CERN_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${CERN_LOG_LEVEL}
+          - BAO_AGENT_CONFIG=${CERN_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${CERN_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CERN_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}"
-      - "traefik.http.routers.cerniq.rule=Host(`cerniq.${SUITE_APP_DOMAIN:-geniuserp.app}`)"
-      - "traefik.http.routers.cerniq.entrypoints=websecure"
-      - "traefik.http.routers.cerniq.tls=true"
-      - "traefik.http.routers.cerniq.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.cerniq.middlewares=global-chain@file"
-      - "traefik.http.services.cerniq.loadbalancer.server.port=${CERNIQ_APP_PORT:-6550}"
+      - traefik.enable=true
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.cerniq.rule=Host(`cerniq.${SUITE_APP_DOMAIN:-geniuserp.app}`)
+      - traefik.http.routers.cerniq.entrypoints=websecure
+      - traefik.http.routers.cerniq.tls=true
+      - traefik.http.routers.cerniq.tls.certresolver=letsencrypt
+      - traefik.http.routers.cerniq.middlewares=global-chain@file
+      - traefik.http.services.cerniq.loadbalancer.server.port=${CERNIQ_APP_PORT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${CERNIQ_APP_PORT:-6550}/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ["CMD", "curl", "-f", "http://localhost:${CERNIQ_APP_PORT}/health"]
+      interval: ${CERN_HEALTHCHECK_INTERVAL}
+      timeout: ${CERN_HEALTHCHECK_TIMEOUT}
+      retries: ${CERN_HEALTHCHECK_RETRIES}
+      start_period: ${CERN_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:
