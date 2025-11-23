@@ -5,6 +5,11 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+  id-token: write
+  pull-requests: write
+
 jobs:
   publish:
     name: Publish Packages
@@ -48,6 +53,18 @@ jobs:
       - name: Build affected projects
         run: pnpm exec nx affected -t build
 
+      # OpenBao OIDC Authentication
+      - name: Get Secrets from OpenBao
+        id: openbao
+        uses: hashicorp/vault-action@v2
+        with:
+          url: ${{ secrets.OPENBAO_ADDR }}
+          role: ci-release
+          method: jwt
+          secrets: |
+            kv/data/deployments/github pat_token | GH_PAT_TOKEN ;
+            kv/data/deployments/npm token | NPM_TOKEN
+
       - name: Configure Git user
         run: |
           git config user.name "github-actions[bot]"
@@ -58,7 +75,6 @@ jobs:
         with:
           version: pnpm exec changeset version
           # publish: pnpm -r publish --access public --no-git-checks
-          # Publishing disabled - this is a private monorepo, not a public npm registry
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
-          # NPM_TOKEN: ${{ secrets.NPM_TOKEN }}  # Not needed for private monorepo
+          GITHUB_TOKEN: ${{ steps.openbao.outputs.GH_PAT_TOKEN }}
+          # NPM_TOKEN: ${{ steps.openbao.outputs.NPM_TOKEN }}
