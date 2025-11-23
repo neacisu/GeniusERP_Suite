@@ -10,7 +10,7 @@ Numeriqo is the **pilot application** for the Process Supervisor pattern, demons
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  Container: genius-suite-numeriqo-app                   │
 │                                                          │
@@ -40,12 +40,14 @@ Numeriqo is the **pilot application** for the Process Supervisor pattern, demons
 ## Prerequisites
 
 1. **OpenBao running and initialized**:
+
    ```bash
    docker compose up openbao -d
    ./scripts/security/openbao-init.sh
    ```
 
 2. **Database secrets engine configured**:
+
    ```bash
    export BAO_TOKEN=$(jq -r '.root_token' .secrets/openbao-keys.json)
    export BAO_ADDR=http://127.0.0.1:8200
@@ -53,11 +55,13 @@ Numeriqo is the **pilot application** for the Process Supervisor pattern, demons
    ```
 
 3. **Application secrets seeded**:
+
    ```bash
    ./scripts/security/seed-secrets.sh --profile dev --non-interactive
    ```
 
 4. **AppRole credentials generated**:
+
    ```bash
    cd numeriqo.app
    ./scripts/setup-approle.sh
@@ -144,11 +148,13 @@ NODE_ENV=production
 ### Container exits immediately
 
 Check OpenBao Agent logs:
+
 ```bash
 docker logs genius-suite-numeriqo-app
 ```
 
 Common issues:
+
 - AppRole credentials missing or invalid
 - OpenBao not accessible from container
 - Secrets not seeded in OpenBao
@@ -156,11 +162,13 @@ Common issues:
 ### Secrets not injected
 
 Verify templates are rendering:
+
 ```bash
 docker exec genius-suite-numeriqo-app ls -la /app/secrets/
 ```
 
 Should show:
+
 - `.env`
 - `db-creds.json`
 - `app-secrets.json`
@@ -168,18 +176,20 @@ Should show:
 ### Database connection fails
 
 Check dynamic credentials:
+
 ```bash
 docker exec genius-suite-numeriqo-app cat /app/secrets/db-creds.json
 ```
 
 Verify user exists in PostgreSQL:
+
 ```bash
 docker exec geniuserp-postgres psql -U suite_admin -d numeriqo_db -c "\du"
 ```
 
 ## Files Structure
 
-```
+```text
 numeriqo.app/
 ├── Dockerfile                    # Multi-stage build with OpenBao Agent
 ├── compose/

@@ -3,46 +3,48 @@ services:
     build:
       context: ../..
       dockerfile: numeriqo.app/Dockerfile
-    container_name: genius-suite-numeriqo-app
-    restart: unless-stopped
+    container_name: ${NUMQ_CONTAINER_NAME}
+    restart: ${NUMQ_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
-      # NOTE: .numeriqo.env removed - secrets now injected via OpenBao Agent
+      - ../.numeriqo.env
+      # NOTE: Secrets (DB passwords, JWT secrets, API keys) injected via OpenBao Agent
+      # NOTE: Non-secret configs (ports, hostnames, log levels) loaded from .env files above
     environment:
-      - NUMQ_APP_PORT=${NUMQ_APP_PORT:-6750}
-      - NUMQ_APP_METRICS_PORT=${NUMQ_APP_METRICS_PORT:-9090}
-      - NUMQ_APP_WORKER_PORT=${NUMQ_APP_WORKER_PORT:-6751}
-      - NUMQ_APP_NODE_ENV=${NUMQ_APP_NODE_ENV:-production}
-      - PORT=${NUMQ_APP_PORT:-6750}
-      - OTEL_SERVICE_NAME=numeriqo.app
+      - NUMQ_APP_PORT=${NUMQ_APP_PORT}
+      - NUMQ_APP_METRICS_PORT=${NUMQ_APP_METRICS_PORT}
+      - NUMQ_APP_WORKER_PORT=${NUMQ_APP_WORKER_PORT}
+      - NUMQ_APP_NODE_ENV=${NUMQ_APP_NODE_ENV}
+      - PORT=${NUMQ_APP_PORT}
+      - OTEL_SERVICE_NAME=${NUMQ_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
-      - BAO_AGENT_CONFIG=/openbao/agent-config.hcl
+      - LOG_LEVEL=${NUMQ_LOG_LEVEL}
+      - BAO_AGENT_CONFIG=${NUMQ_BAO_AGENT_CONFIG}
       - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
       - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
     volumes:
       # OpenBao AppRole credentials (mounted from host)
-      - ../../.secrets/approle/numeriqo/role-id:/openbao/role-id:ro
-      - ../../.secrets/approle/numeriqo/secret-id:/openbao/secret-id:ro
+      - ${NUMQ_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${NUMQ_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
-      - 'traefik.http.routers.numeriqo.rule=Host(`numeriqo.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
-      - 'traefik.http.routers.numeriqo.entrypoints=websecure'
-      - 'traefik.http.routers.numeriqo.tls=true'
-      - 'traefik.http.routers.numeriqo.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.numeriqo.middlewares=global-chain@file'
-      - 'traefik.http.services.numeriqo.loadbalancer.server.port=${NUMQ_APP_PORT:-6750}'
+      - traefik.enable=${NUMQ_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.numeriqo.rule=Host(`${NUMQ_TRAEFIK_HOST}`)
+      - traefik.http.routers.numeriqo.entrypoints=${NUMQ_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.numeriqo.tls=${NUMQ_TRAEFIK_TLS}
+      - traefik.http.routers.numeriqo.tls.certresolver=${NUMQ_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.numeriqo.middlewares=${NUMQ_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.numeriqo.loadbalancer.server.port=${NUMQ_APP_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${NUMQ_APP_PORT:-6750}/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s # Increased to allow OpenBao Agent to render secrets
+      test: ['CMD', 'curl', '-f', 'http://localhost:${NUMQ_APP_PORT}/health']
+      interval: ${NUMQ_HEALTHCHECK_INTERVAL}
+      timeout: ${NUMQ_HEALTHCHECK_TIMEOUT}
+      retries: ${NUMQ_HEALTHCHECK_RETRIES}
+      start_period: ${NUMQ_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

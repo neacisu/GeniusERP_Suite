@@ -31,7 +31,7 @@ The **Process Supervisor pattern** eliminates the need for local `.env` files by
 
 ### Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │  Developer Machine                                   │
 │                                                       │
@@ -71,12 +71,14 @@ The **Process Supervisor pattern** eliminates the need for local `.env` files by
 
 1. **Docker and Docker Compose** installed
 2. **OpenBao running**:
+
    ```bash
    docker compose up openbao -d
    ./scripts/security/openbao-init.sh
    ```
 
 3. **Secrets seeded**:
+
    ```bash
    export BAO_TOKEN=$(jq -r '.root_token' .secrets/openbao-keys.json)
    export BAO_ADDR=http://127.0.0.1:8200
@@ -211,11 +213,13 @@ docker compose -f numeriqo.app/compose/docker-compose.yml up --build
 ```
 
 **Pros**:
+
 - ✅ Production parity
 - ✅ Tests secret injection
 - ✅ No local `.env` files
 
 **Cons**:
+
 - ❌ Slower startup (Agent needs to fetch secrets)
 - ❌ Requires OpenBao running
 
@@ -236,10 +240,12 @@ pnpm dev
 ```
 
 **Pros**:
+
 - ✅ Fast iteration
 - ✅ No Docker overhead
 
 **Cons**:
+
 - ❌ Not production-like
 - ❌ Manual secret management
 - ❌ Secrets in Git history risk
@@ -346,11 +352,13 @@ bao read database/creds/numeriqo_runtime
 **Symptoms**: Container starts then exits with code 1
 
 **Causes**:
+
 1. AppRole credentials missing
 2. OpenBao not accessible
 3. Secrets not seeded
 
 **Solution**:
+
 ```bash
 # Check AppRole files exist
 ls -la .secrets/approle/numeriqo/
@@ -368,11 +376,13 @@ docker run --rm --network geniuserp_net_backing_services alpine \
 **Symptoms**: Application logs show "ERROR: Database credentials not injected!"
 
 **Causes**:
+
 1. Templates not rendering
 2. Wrong AppRole permissions
 3. Secrets not in OpenBao
 
 **Solution**:
+
 ```bash
 # Check if secret files were created
 docker exec genius-suite-numeriqo-app ls -la /app/secrets/
@@ -390,11 +400,13 @@ bao token capabilities kv/data/apps/numeriqo
 **Symptoms**: "ECONNREFUSED" or "authentication failed"
 
 **Causes**:
+
 1. Dynamic credentials not generated
 2. PostgreSQL not accessible
 3. Database doesn't exist
 
 **Solution**:
+
 ```bash
 # Check DB credentials were injected
 docker exec genius-suite-numeriqo-app cat /app/secrets/db-creds.json
@@ -425,16 +437,19 @@ For **dynamic credentials** (database), the Agent can auto-renew leases, but you
 ### Q: How do I add a new secret?
 
 1. Add secret to OpenBao:
+
    ```bash
    bao kv put kv/apps/numeriqo new_secret="value"
    ```
 
 2. Update template (`openbao/templates/app-secrets.tpl`):
+
    ```hcl
    "new_secret": "{{ .Data.data.new_secret }}"
    ```
 
 3. Rebuild and restart:
+
    ```bash
    docker compose -f numeriqo.app/compose/docker-compose.yml up --build
    ```
@@ -485,6 +500,7 @@ alias bao-approle='cd $1 && ./scripts/setup-approle.sh && cd -'
 ```
 
 Usage:
+
 ```bash
 bao-login
 bao-secrets numeriqo
