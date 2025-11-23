@@ -1,4 +1,7 @@
-FROM node:22-alpine AS base
+# Numeriqo Application - Multi-stage Dockerfile with OpenBao Agent Integration
+# Uses geniuserp/node-openbao:local base image for Process Supervisor pattern
+
+FROM node:24-bookworm-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV CI=true
@@ -29,15 +32,35 @@ COPY shared/observability/package.json ./shared/observability/
 COPY --from=builder /app/shared ./shared
 RUN pnpm deploy --filter=@genius-suite/numeriqo.app --prod --legacy --ignore-scripts /deploy
 
-FROM node:22-alpine AS runner
+# Final stage: Use geniuserp/node-openbao for Process Supervisor
+FROM geniuserp/node-openbao:local AS runner
+
 ENV NODE_ENV=production
-RUN apk add --no-cache curl && \
+ENV BAO_AGENT_CONFIG=/openbao/agent-config.hcl
+
+# Create necessary directories
+RUN mkdir -p /app/secrets /app/scripts /openbao/templates && \
     addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 appuser
+    adduser --system --uid 1001 appuser && \
+    chown -R appuser:nodejs /app /openbao
+
 WORKDIR /app
+
+# Copy built application
 COPY --from=builder --chown=appuser:nodejs /app/numeriqo.app/dist ./dist
 COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
+
+# Copy OpenBao Agent configuration and templates
+COPY --chown=appuser:nodejs numeriqo.app/openbao/agent-config.hcl /openbao/
+COPY --chown=appuser:nodejs numeriqo.app/openbao/templates/ /openbao/templates/
+
+# Copy Process Supervisor script
+COPY --chown=appuser:nodejs numeriqo.app/scripts/start-app.sh /app/scripts/
+RUN chmod +x /app/scripts/start-app.sh
+
 USER appuser
-EXPOSE 6900
-CMD ["node", "dist/numeriqo.app/src/index.js"]
+EXPOSE 6750
+
+# Start OpenBao Agent (will exec start-app.sh after rendering secrets)
+CMD ["bao", "agent", "-config", "/openbao/agent-config.hcl"]
