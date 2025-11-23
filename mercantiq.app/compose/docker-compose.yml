@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: mercantiq.app/Dockerfile
-    container_name: genius-suite-mercantiq-app
-    restart: unless-stopped
+    container_name: ${MERCQ_CONTAINER_NAME}
+    restart: ${MERCQ_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.mercantiq.env
@@ -13,29 +13,35 @@ services:
       - MERCQ_APP_METRICS_PORT=${MERCQ_APP_METRICS_PORT}
       - MERCQ_APP_ENGINES_PORT=${MERCQ_APP_ENGINES_PORT}
       - MERCQ_APP_NODE_ENV=${MERCQ_APP_NODE_ENV}
-      - PORT=${MERCQ_APP_PORT:-6700}
-      - OTEL_SERVICE_NAME=mercantiq.app
+      - PORT=${MERCQ_APP_PORT}
+      - OTEL_SERVICE_NAME=${MERCQ_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=info
+      - LOG_LEVEL=${MERCQ_LOG_LEVEL}
+      - BAO_AGENT_CONFIG=${MERCQ_BAO_AGENT_CONFIG}
+      - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
+      - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
+    volumes:
+      - ${MERCQ_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${MERCQ_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
       - net_observability
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}'
-      - 'traefik.http.routers.mercantiq.rule=Host(`mercantiq.${SUITE_APP_DOMAIN:-geniuserp.app}`)'
-      - 'traefik.http.routers.mercantiq.entrypoints=websecure'
-      - 'traefik.http.routers.mercantiq.tls=true'
-      - 'traefik.http.routers.mercantiq.tls.certresolver=letsencrypt'
-      - 'traefik.http.routers.mercantiq.middlewares=global-chain@file'
-      - 'traefik.http.services.mercantiq.loadbalancer.server.port=${MERCQ_APP_PORT:-6700}'
+      - traefik.enable=${MERCQ_TRAEFIK_ENABLE}
+      - traefik.docker.network=${PROXY_NETWORK_INTERNAL}
+      - traefik.http.routers.mercantiq.rule=Host(`${MERCQ_TRAEFIK_HOST}`)
+      - traefik.http.routers.mercantiq.entrypoints=${MERCQ_TRAEFIK_ENTRYPOINT}
+      - traefik.http.routers.mercantiq.tls=${MERCQ_TRAEFIK_TLS}
+      - traefik.http.routers.mercantiq.tls.certresolver=${MERCQ_TRAEFIK_CERTRESOLVER}
+      - traefik.http.routers.mercantiq.middlewares=${MERCQ_TRAEFIK_MIDDLEWARES}
+      - traefik.http.services.mercantiq.loadbalancer.server.port=${MERCQ_APP_PORT}
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${MERCQ_APP_PORT:-6700}/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      test: ['CMD', 'curl', '-f', 'http://localhost:${MERCQ_APP_PORT}/health']
+      interval: ${MERCQ_HEALTHCHECK_INTERVAL}
+      timeout: ${MERCQ_HEALTHCHECK_TIMEOUT}
+      retries: ${MERCQ_HEALTHCHECK_RETRIES}
+      start_period: ${MERCQ_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:
