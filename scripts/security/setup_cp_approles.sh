@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup_cp_approles.sh - Provision AppRole credentials for Control Plane services
+# setup_cp_approles.sh - Provision AppRole credentials for Control Plane & infra services
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -21,14 +21,11 @@ cp-identity:identity-read
 cp-licensing:licensing-read
 cp-suite-admin:suite-admin-read
 cp-suite-shell:suite-shell-read
+cp-suite-login:suite-login-read
 cp-ai-hub:ai-hub-read
 cp-analytics-hub:analytics-hub-read
+proxy:proxy-read
 EOF
-
-if ! command -v bao >/dev/null 2>&1; then
-  echo -e "${RED}✗ 'bao' CLI is required but not found in PATH${NC}" >&2
-  exit 1
-fi
 
 if ! command -v jq >/dev/null 2>&1; then
   echo -e "${RED}✗ 'jq' is required to read OpenBao tokens${NC}" >&2
@@ -51,8 +48,25 @@ fi
 
 mkdir -p "${SECRETS_ROOT}"
 
+bao_exec() {
+  docker exec \
+    -e BAO_ADDR="${VAULT_ADDR}" \
+    -e BAO_TOKEN="${BAO_TOKEN}" \
+    geniuserp-openbao bao "$@"
+}
+
+copy_policy_into_openbao() {
+  local policy_file="$1"
+  local policy_name="$2"
+  local remote_path="/tmp/${policy_name}.hcl"
+
+  docker cp "${policy_file}" "geniuserp-openbao:${remote_path}"
+  bao_exec policy write "${policy_name}" "${remote_path}" >/dev/null
+  docker exec geniuserp-openbao rm -f "${remote_path}" >/dev/null 2>&1 || true
+}
+
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
-echo -e "${BLUE}  Control Plane AppRole Provisioning${NC}"
+echo -e "${BLUE}  Control Plane & Infra AppRole Provisioning${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════${NC}"
 
 while IFS=':' read -r ROLE_NAME POLICY_NAME; do
@@ -64,10 +78,10 @@ while IFS=':' read -r ROLE_NAME POLICY_NAME; do
   fi
 
   echo -e "${BLUE}▶ Ensuring policy ${POLICY_NAME}${NC}"
-  bao policy write "${POLICY_NAME}" "${POLICY_FILE}" >/dev/null
+  copy_policy_into_openbao "${POLICY_FILE}" "${POLICY_NAME}"
 
   echo -e "${BLUE}▶ Provisioning AppRole ${ROLE_NAME}${NC}"
-  bao write "auth/approle/role/${ROLE_NAME}" \
+  bao_exec write "auth/approle/role/${ROLE_NAME}" \
     token_policies="${POLICY_NAME}" \
     token_ttl="1h" \
     token_max_ttl="4h" \
@@ -77,8 +91,8 @@ while IFS=':' read -r ROLE_NAME POLICY_NAME; do
   ROLE_DIR="${SECRETS_ROOT}/${ROLE_NAME}"
   mkdir -p "${ROLE_DIR}"
 
-  ROLE_ID=$(bao read -field=role_id "auth/approle/role/${ROLE_NAME}/role-id")
-  SECRET_ID=$(bao write -field=secret_id -f "auth/approle/role/${ROLE_NAME}/secret-id")
+  ROLE_ID=$(bao_exec read -field=role_id "auth/approle/role/${ROLE_NAME}/role-id")
+  SECRET_ID=$(bao_exec write -field=secret_id -f "auth/approle/role/${ROLE_NAME}/secret-id")
 
   printf '%s' "${ROLE_ID}" > "${ROLE_DIR}/role-id"
   printf '%s' "${SECRET_ID}" > "${ROLE_DIR}/secret-id"
@@ -91,4 +105,4 @@ while IFS=':' read -r ROLE_NAME POLICY_NAME; do
   echo ""
 done <<< "${ROLE_MATRIX}"
 
-echo -e "${GREEN}All Control Plane AppRoles provisioned successfully.${NC}"
+echo -e "${GREEN}All AppRoles provisioned successfully.${NC}"

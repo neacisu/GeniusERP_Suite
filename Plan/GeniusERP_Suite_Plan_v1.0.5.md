@@ -10240,7 +10240,465 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 }
 ```
 
-##### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
+#### F0.6 Bootstrap Scripts: init local/dev, seeds, demo data
+
+##### F0.6.1
+
+```JSON
+  "F0.6.1": {
+    "denumire_task": "Infra: Setup Bootstrap Runner Container",
+    "descriere_scurta_task": "Definire serviciu utilitar `bootstrap-runner` în `compose.yml`.",
+    "descriere_lunga_si_detaliata_task": "Adaugă serviciul `bootstrap-runner` în `compose.yml` cu profilul `tools` (nu pornește automat). Acesta va folosi o imagine `node:20-alpine`, va monta volumul curent în `/app` și va avea acces la rețeaua `geniuserp_net_backing_services` pentru a comunica cu Postgres, Kafka și OpenBao. Entrypoint-ul va fi un script shell care așteaptă disponibilitatea serviciilor.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/compose.yml",
+      "/var/www/GeniusSuite/scripts/bootstrap"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de existența `compose.yml`.",
+    "contextul_general_al_aplicatiei": "Punctul central de execuție pentru toate scripturile de inițializare, garantând mediul consistent.",
+    "contextualizarea_directoarelor_si_cailor": "Serviciul trebuie să vadă `scripts/bootstrap` montat.",
+    "restrictii_anti_halucinatie": "Nu folosi `docker-compose.backing-services.yml` (legacy).",
+    "restrictii_de_iesire_din_contex": "Nu expune porturi pentru acest container.",
+    "validare": "`docker compose run --rm bootstrap-runner node -v` returnează versiunea corectă și are acces la rețea.",
+    "outcome": "Container capabil să ruleze scripturi TS în rețeaua internă.",
+    "componenta_de_CI_CD": "Folosit în CI pentru setup.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.2
+
+```JSON
+  "F0.6.2": {
+    "denumire_task": "CLI: Bootstrap Entrypoint Script",
+    "descriere_scurta_task": "Crearea `scripts/bootstrap/main.ts` cu Commander.js.",
+    "descriere_lunga_si_detaliata_task": "Implementează punctul de intrare CLI folosind `commander`. Va suporta comenzi precum `init`, `seed`, `reset` și flag-uri globale `--verbose`, `--force`. **CRITIC:** Trebuie să suporte flag-ul `--scope` (ex: `--scope=numeriqo`) pentru a rula doar pentru o anumită aplicație și flag-ul `--production` care dezactivează seed-urile demo și operațiunile distructive.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.1.",
+    "contextul_general_al_aplicatiei": "Interfața principală pentru dezvoltatori pentru inițializarea mediului.",
+    "contextualizarea_directoarelor_si_cailor": "Va fi rulat din interiorul containerului `bootstrap-runner`.",
+    "restrictii_anti_halucinatie": "Folosește `tsx` pentru execuție directă fără compilare prealabilă.",
+    "restrictii_de_iesire_din_contex": "Nu implementa logica de business aici, doar orchestrare.",
+    "validare": "Rularea `scripts/bootstrap/main.ts --help` afișează comenzile și flag-urile `--scope` și `--production`.",
+    "outcome": "CLI funcțional și sigur pentru administrarea mediului.",
+    "componenta_de_CI_CD": "Nu se aplică direct.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.3
+
+```JSON
+  "F0.6.3": {
+    "denumire_task": "Security: Host-Level Secret Generator",
+    "descriere_scurta_task": "Script host-level pentru generarea `.env` din `.env.example`.",
+    "descriere_lunga_si_detaliata_task": "Script Python sau Bash care rulează pe host (înainte de Docker), scanează `.env.example` și `.suite.general.env.example`, generează valori criptografice sigure (high-entropy) pentru chei lipsă și creează fișierele `.env` finale. Trebuie să fie idempotent (nu suprascrie valori existente).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/security"
+    ],
+    "contextul_taskurilor_anterioare": "Critic pentru pornirea stack-ului (F0.6.1).",
+    "contextul_general_al_aplicatiei": "Asigură că niciun mediu nu pornește cu parole default.",
+    "contextualizarea_directoarelor_si_cailor": "Trebuie să scrie în rădăcină și în subdirectoarele aplicațiilor.",
+    "restrictii_anti_halucinatie": "Nu comite niciodată fișierele `.env` generate.",
+    "restrictii_de_iesire_din_contex": "Nu genera secrete pentru servicii externe (ex. Stripe), lasă placeholder.",
+    "validare": "Rularea scriptului creează fișiere `.env` valide și populate.",
+    "outcome": "Mediu securizat implicit.",
+    "componenta_de_CI_CD": "Folosit în CI pentru a genera env de test.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.4
+
+```JSON
+  "F0.6.4": {
+    "denumire_task": "Core: Service Wait & Healthcheck Logic",
+    "descriere_scurta_task": "Modul de așteptare inteligentă a serviciilor (Postgres, Kafka, OpenBao).",
+    "descriere_lunga_si_detaliata_task": "Implementează o clasă `Waiter` în `scripts/bootstrap/core` care verifică disponibilitatea serviciilor critice. Va folosi verificări TCP pentru porturi și verificări HTTP/App-level (ex. `pg_isready`, `/sys/health` pentru Vault) pentru a garanta că dependențele sunt gata înainte de a rula logica de seed.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/core"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.2.",
+    "contextul_general_al_aplicatiei": "Previne erorile de conexiune la pornirea rece a stack-ului.",
+    "contextualizarea_directoarelor_si_cailor": "Folosit de toate comenzile din CLI.",
+    "restrictii_anti_halucinatie": "Nu folosi `sleep` arbitrar. Folosește exponential backoff.",
+    "restrictii_de_iesire_din_contex": "Timeout după un timp rezonabil (ex. 60s).",
+    "validare": "Test unitar sau manual: oprește DB, rulează waiter, pornește DB -> waiter detectează și continuă.",
+    "outcome": "Robustete la inițializare.",
+    "componenta_de_CI_CD": "Esențial pentru stabilitatea pipeline-urilor.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.5
+
+```JSON
+  "F0.6.5": {
+    "denumire_task": "Infra: OpenBao Auto-Configurator",
+    "descriere_scurta_task": "Script de auto-unseal și configurare OpenBao.",
+    "descriere_lunga_si_detaliata_task": "Script integrat în bootstrap care verifică starea OpenBao. Dacă este sealed, încearcă unseal folosind cheile din `.secrets` (dacă există). Dacă este neinițializat, îl inițializează, salvează cheile și configurează engine-urile de bază (KV, Transit).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/infra"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.4.",
+    "contextul_general_al_aplicatiei": "Automatizează setup-ul de securitate.",
+    "contextualizarea_directoarelor_si_cailor": "Interacționează cu API-ul OpenBao din rețeaua internă.",
+    "restrictii_anti_halucinatie": "Nu loga niciodată root token-ul în consolă.",
+    "restrictii_de_iesire_din_contex": "Gestionează cazul în care OpenBao este deja configurat.",
+    "validare": "După rulare, OpenBao este unsealed și gata de lucru.",
+    "outcome": "Vault operațional fără intervenție manuală.",
+    "componenta_de_CI_CD": "Critic pentru teste care necesită secrete.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.6
+
+```JSON
+  "F0.6.6": {
+    "denumire_task": "DB: Centralized Drizzle Migrator",
+    "descriere_scurta_task": "Orchestrator de migrări Drizzle pentru toate aplicațiile.",
+    "descriere_lunga_si_detaliata_task": "Utilitar care iterează prin configurațiile Drizzle ale tuturor aplicațiilor și librăriilor partajate. Execută `drizzle-kit migrate` pentru fiecare, respectând ordinea de dependență (Shared -> Identity -> Business Apps). **CRITIC:** Trebuie să suporte filtrarea (ex: doar `identity`) dacă este invocat cu `--scope` din CLI.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/db"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.4.",
+    "contextul_general_al_aplicatiei": "Asigură schema DB actualizată.",
+    "contextualizarea_directoarelor_si_cailor": "Trebuie să localizeze corect folderele `drizzle` din monorepo.",
+    "restrictii_anti_halucinatie": "Nu rula migrări distructive pe producție fără confirmare explicită.",
+    "restrictii_de_iesire_din_contex": "Loghează clar ce bază de date este migrată.",
+    "validare": "Toate tabelele sunt create în Postgres conform schemelor.",
+    "outcome": "Structura DB sincronizată cu codul.",
+    "componenta_de_CI_CD": "Rulat la fiecare deploy.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.7
+
+```JSON
+  "F0.6.7": {
+    "denumire_task": "Seed System: Identity (RBAC)",
+    "descriere_scurta_task": "Populare roluri și permisiuni de sistem.",
+    "descriere_lunga_si_detaliata_task": "Script care populează tabelele `roles` și `permissions` în baza de date Identity. Definește rolurile imuabile (`SuperAdmin`, `TenantAdmin`, `User`) și permisiunile granulare asociate fiecărui modul.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/system"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.6.",
+    "contextul_general_al_aplicatiei": "Baza sistemului de autorizare.",
+    "contextualizarea_directoarelor_si_cailor": "Folosește Drizzle pentru insert-uri type-safe.",
+    "restrictii_anti_halucinatie": "Folosește `ON CONFLICT DO NOTHING` sau `UPDATE` pentru a fi idempotent.",
+    "restrictii_de_iesire_din_contex": "Nu șterge roluri custom create de utilizatori.",
+    "validare": "Tabelele conțin rolurile standard.",
+    "outcome": "Sistem RBAC inițializat.",
+    "componenta_de_CI_CD": "Mandatory seed.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.8
+
+```JSON
+  "F0.6.8": {
+    "denumire_task": "Seed System: Identity (SuperAdmin)",
+    "descriere_scurta_task": "Creare cont SuperAdmin default.",
+    "descriere_lunga_si_detaliata_task": "Asigură existența unui utilizator SuperAdmin. Dacă nu există, îl creează cu o parolă generată (sau una default în dev). Dacă există, poate reseta parola dacă se cere explicit prin flag.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/system"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.7.",
+    "contextul_general_al_aplicatiei": "Permite primul login în sistem.",
+    "contextualizarea_directoarelor_si_cailor": "Integrare cu SuperTokens core sau direct în DB (cu hash corect).",
+    "restrictii_anti_halucinatie": "Nu hardcodata parola în cod.",
+    "restrictii_de_iesire_din_contex": "Loghează credențialele generate doar în mod explicit și securizat.",
+    "validare": "Login posibil cu contul SuperAdmin.",
+    "outcome": "Acces administrativ asigurat.",
+    "componenta_de_CI_CD": "Necesar pentru teste E2E.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.9
+
+```JSON
+  "F0.6.9": {
+    "denumire_task": "Seed System: Nomenclatoare Geografice (Vettify)",
+    "descriere_scurta_task": "Import date geografice (Județe, Localități).",
+    "descriere_lunga_si_detaliata_task": "Import optimizat (batch insert) pentru datele SIRUTA (Județe, Localități) în schema Vettify. Aceste date sunt statice dar voluminoase.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/system"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.6.",
+    "contextul_general_al_aplicatiei": "Necesar pentru adrese și validări.",
+    "contextualizarea_directoarelor_si_cailor": "Datele sursă pot fi JSON/CSV în `scripts/bootstrap/data`.",
+    "restrictii_anti_halucinatie": "Verifică performanța, nu face insert linie cu linie.",
+    "restrictii_de_iesire_din_contex": "Idempotent.",
+    "validare": "Tabelele geografice sunt populate.",
+    "outcome": "Date de referință disponibile.",
+    "componenta_de_CI_CD": "Poate fi skip-uit în teste rapide dacă nu e necesar.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.10
+
+```JSON
+  "F0.6.10": {
+    "denumire_task": "Seed System: Plan Conturi & Fiscalitate (Numeriqo)",
+    "descriere_scurta_task": "Populare Plan Conturi General și Cote TVA.",
+    "descriere_lunga_si_detaliata_task": "Populează Planul de Conturi General (Clasa 1-9) conform legislației RO și cotele de TVA standard în schema Numeriqo.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/system"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.6.",
+    "contextul_general_al_aplicatiei": "Esențial pentru modulul contabil.",
+    "contextualizarea_directoarelor_si_cailor": "Folosește date de referință standard.",
+    "restrictii_anti_halucinatie": "Asigură corectitudinea contabilă a datelor.",
+    "restrictii_de_iesire_din_contex": "Idempotent.",
+    "validare": "Planul de conturi este populat.",
+    "outcome": "Sistem contabil gata de utilizare.",
+    "componenta_de_CI_CD": "Mandatory.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.11
+
+```JSON
+  "F0.6.11": {
+    "denumire_task": "Infra: Kafka Topics Init",
+    "descriere_scurta_task": "Creare topic-uri Kafka.",
+    "descriere_lunga_si_detaliata_task": "Script care folosește clientul Kafka (kafkajs) pentru a verifica și crea topic-urile necesare (`user.events`, `invoice.events`, etc.) cu numărul corect de partiții și factor de replicare.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/infra"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.4.",
+    "contextul_general_al_aplicatiei": "Asigură infrastructura de mesagerie.",
+    "contextualizarea_directoarelor_si_cailor": "Topic-urile ar trebui definite într-un config centralizat.",
+    "restrictii_anti_halucinatie": "Nu recrea topic-uri existente (pierdere date).",
+    "restrictii_de_iesire_din_contex": "Gestionează erorile de conexiune la broker.",
+    "validare": "Lista topic-urilor din Kafka corespunde cu config-ul.",
+    "outcome": "Event bus pregătit.",
+    "componenta_de_CI_CD": "Critic pentru teste de integrare.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.12
+
+```JSON
+  "F0.6.12": {
+    "denumire_task": "Infra: MinIO Buckets Init",
+    "descriere_scurta_task": "Inițializare bucket-uri S3.",
+    "descriere_lunga_si_detaliata_task": "Script care inițializează bucket-urile necesare în MinIO (`archify-storage`, `public-assets`) și aplică politicile de acces (public/private).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/infra"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.4.",
+    "contextul_general_al_aplicatiei": "Stocare fișiere.",
+    "contextualizarea_directoarelor_si_cailor": "Folosește `aws-sdk` sau client S3 compatibil.",
+    "restrictii_anti_halucinatie": "Verifică existența înainte de creare.",
+    "restrictii_de_iesire_din_contex": "Setează corect politicile CORS dacă e cazul.",
+    "validare": "Bucket-urile există și sunt accesibile.",
+    "outcome": "Storage layer pregătit.",
+    "componenta_de_CI_CD": "Critic pentru teste upload.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.13
+
+```JSON
+  "F0.6.13": {
+    "denumire_task": "Demo Data: Factory Engine",
+    "descriere_scurta_task": "Motor generare date demo (FakerJS).",
+    "descriere_lunga_si_detaliata_task": "Implementează un motor de generare date sintetice folosind FakerJS. Trebuie să gestioneze dependențele între entități (ex. User -> Org -> Invoice) pentru a menține integritatea referențială distribuită.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/demo"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.6.",
+    "contextul_general_al_aplicatiei": "Populare mediu de dev/staging.",
+    "contextualizarea_directoarelor_si_cailor": "Factories separate per domeniu.",
+    "restrictii_anti_halucinatie": "Datele trebuie să pară reale, nu 'asdf'.",
+    "restrictii_de_iesire_din_contex": "Nu rula pe producție.",
+    "validare": "Funcțiile factory generează obiecte valide.",
+    "outcome": "Capabilitate de seed demo.",
+    "componenta_de_CI_CD": "Util pentru load testing.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.14
+
+```JSON
+  "F0.6.14": {
+    "denumire_task": "Demo Data: Tenants & Organizations",
+    "descriere_scurta_task": "Generare organizații și useri demo.",
+    "descriere_lunga_si_detaliata_task": "Folosește engine-ul (F0.6.13) pentru a crea 3 organizații demo complete, cu ierarhii de utilizatori (CEO, Manager, Angajat) și setările aferente.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/demo"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.13.",
+    "contextul_general_al_aplicatiei": "Scenarii de test UI.",
+    "contextualizarea_directoarelor_si_cailor": "Creează useri în Identity și Org în Identity/Vettify.",
+    "restrictii_anti_halucinatie": "Asigură consistența datelor cross-service.",
+    "restrictii_de_iesire_din_contex": "Opțional (flag `--seed-demo`).",
+    "validare": "Userii demo se pot loga și văd organizația.",
+    "outcome": "Mediu populat pentru demo.",
+    "componenta_de_CI_CD": "Util pentru E2E.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.15
+
+```JSON
+  "F0.6.15": {
+    "denumire_task": "Demo Data: Commercial Flows",
+    "descriere_scurta_task": "Generare fluxuri comerciale demo.",
+    "descriere_lunga_si_detaliata_task": "Generează produse, stocuri, parteneri și comenzi/facturi de test. Simulează un flux complet de business pentru a valida integrările.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts/bootstrap/seeds/demo"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.14.",
+    "contextul_general_al_aplicatiei": "Testare funcțională complexă.",
+    "contextualizarea_directoarelor_si_cailor": "Atinge Mercantiq, I-WMS, Numeriqo.",
+    "restrictii_anti_halucinatie": "Date coerente (total factură = sumă linii).",
+    "restrictii_de_iesire_din_contex": "Opțional.",
+    "validare": "Rapoartele arată date.",
+    "outcome": "Mediu bogat în date.",
+    "componenta_de_CI_CD": "Util pentru performance testing.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.16
+
+```JSON
+  "F0.6.16": {
+    "denumire_task": "Tooling: Nuke Script (Reset)",
+    "descriere_scurta_task": "Script de resetare completă a mediului.",
+    "descriere_lunga_si_detaliata_task": "Implementează comanda `pnpm nuke` care oprește containerele, șterge volumele Docker și curăță fișierele generate (ex. `.env`), permițând un start curat.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/scripts"
+    ],
+    "contextul_taskurilor_anterioare": "Independent.",
+    "contextul_general_al_aplicatiei": "Developer experience.",
+    "contextualizarea_directoarelor_si_cailor": "Trebuie să fie foarte distructiv dar sigur (confirmare).",
+    "restrictii_anti_halucinatie": "Cere confirmare explicită.",
+    "restrictii_de_iesire_din_contex": "Nu șterge fișiere sursă, doar artefacte și date.",
+    "validare": "Mediul este complet curățat.",
+    "outcome": "Reset rapid.",
+    "componenta_de_CI_CD": "Util pentru clean builds.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.17
+
+```JSON
+  "F0.6.17": {
+    "denumire_task": "Docs: Ghid de Utilizare Bootstrap",
+    "descriere_scurta_task": "Documentare proces bootstrap.",
+    "descriere_lunga_si_detaliata_task": "Actualizează `CONTRIBUTING.md` și `README.md` cu instrucțiuni despre cum se folosește noul CLI de bootstrap, explicând flag-urile și pașii de troubleshooting.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/docs",
+      "/var/www/GeniusSuite/CONTRIBUTING.md"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de finalizarea tool-urilor.",
+    "contextul_general_al_aplicatiei": "Onboarding developeri.",
+    "contextualizarea_directoarelor_si_cailor": "Documentație clară și concisă.",
+    "restrictii_anti_halucinatie": "Documentează ce există, nu ce va fi.",
+    "restrictii_de_iesire_din_contex": "-",
+    "validare": "Un developer nou poate porni proiectul urmând ghidul.",
+    "outcome": "Documentație up-to-date.",
+    "componenta_de_CI_CD": "-",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.18
+
+```JSON
+  "F0.6.18": {
+    "denumire_task": "CI: Github Actions Integration",
+    "descriere_scurta_task": "Integrare bootstrap în CI.",
+    "descriere_lunga_si_detaliata_task": "Configurează workflow-urile Github Actions pentru a folosi noul mecanism de bootstrap (`pnpm bootstrap --seed-system`) înainte de rularea testelor, înlocuind scripturile ad-hoc anterioare. **CRITIC:** Trebuie să integreze `nx affected` pentru a rula bootstrap-ul doar pentru aplicațiile afectate de schimbări (scoping dinamic).",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite/.github/workflows"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de F0.6.1 - F0.6.16.",
+    "contextul_general_al_aplicatiei": "Automatizare pipeline.",
+    "contextualizarea_directoarelor_si_cailor": "Update la fișierele YAML din `.github`.",
+    "restrictii_anti_halucinatie": "Asigură-te că CI-ul are acces la imagini și secrete.",
+    "restrictii_de_iesire_din_contex": "Nu crește timpul de execuție nejustificat.",
+    "validare": "Pipeline-ul trece verde cu noul bootstrap.",
+    "outcome": "CI robust.",
+    "componenta_de_CI_CD": "Core component.",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
+
+##### F0.6.19
+
+```JSON
+  "F0.6.19": {
+    "denumire_task": "Cleanup: Remove Legacy Config",
+    "descriere_scurta_task": "Ștergere `docker-compose.backing-services.yml`.",
+    "descriere_lunga_si_detaliata_task": "După migrarea completă a funcționalității în `compose.yml` și verificarea stabilității, șterge fișierul `docker-compose.backing-services.yml` pentru a elimina confuzia și datoria tehnică.",
+    "directorul_directoarele": [
+      "/var/www/GeniusSuite"
+    ],
+    "contextul_taskurilor_anterioare": "Depinde de succesul tuturor taskurilor F0.6.",
+    "contextul_general_al_aplicatiei": "Curățenie proiect.",
+    "contextualizarea_directoarelor_si_cailor": "Ștergere fișier.",
+    "restrictii_anti_halucinatie": "Verifică de două ori că nimic nu mai depinde de el.",
+    "restrictii_de_iesire_din_contex": "-",
+    "validare": "Proiectul pornește corect doar cu `compose.yml`.",
+    "outcome": "Configurație unificată.",
+    "componenta_de_CI_CD": "-",
+    "status": "pending",
+    "note_implementare": "",
+    "validare_hands_on": ""
+  },
+```
 
 ##### F0.7 DB Scripts: create/migrate/seed per app, orchestrare cross‑db
 

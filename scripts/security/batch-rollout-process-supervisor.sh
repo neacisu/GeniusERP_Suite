@@ -21,6 +21,7 @@ CP_MODULES=(
     "licensing"
     "suite-admin"
     "suite-shell"
+    "suite-login"
     "ai-hub"
     "analytics-hub"
 )

@@ -7,8 +7,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INVENTORY_CSV="${SCRIPT_DIR}/../../docs/security/F0.5-Secrets-Inventory-OpenBao.csv"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 PROFILE="${PROFILE:-dev}"
 NON_INTERACTIVE=false
+BAO_ADDR=${BAO_ADDR:-"http://127.0.0.1:8200"}
+OPENBAO_CONTAINER=${OPENBAO_CONTAINER:-geniuserp-openbao}
 
 # Colors
 RED='\033[0;31m'
@@ -73,9 +76,39 @@ echo ""
 
 # Enable KV v2 secrets engine if not already enabled
 echo -e "${BLUE}Enabling KV v2 secrets engine...${NC}"
-docker exec -e BAO_ADDR="http://127.0.0.1:8200" -e BAO_TOKEN="${BAO_TOKEN}" \
-  geniuserp-openbao bao secrets enable -version=2 kv 2>/dev/null || \
+bao_exec() {
+  docker exec -e BAO_ADDR="${BAO_ADDR}" -e BAO_TOKEN="${BAO_TOKEN}" "${OPENBAO_CONTAINER}" bao "$@"
+}
+
+bao_exec secrets enable -version=2 kv 2>/dev/null || \
   echo -e "${YELLOW}  KV engine already enabled (or error ignored)${NC}"
+
+normalize_kv_cli_path() {
+  local path="$1"
+  if [[ "$path" == kv/data/* ]]; then
+    echo "kv/${path#kv/data/}"
+  else
+    echo "$path"
+  fi
+}
+
+split_kv_target() {
+  local cli_path="$1"
+  if [[ "$cli_path" != kv/* ]]; then
+    SECRET_DOC_PATH="$cli_path"
+    SECRET_FIELD=""
+    return
+  fi
+
+  local rel="${cli_path#kv/}"
+  if [[ "$rel" == */* ]]; then
+    SECRET_DOC_PATH="kv/${rel%/*}"
+    SECRET_FIELD="${rel##*/}"
+  else
+    SECRET_DOC_PATH="$cli_path"
+    SECRET_FIELD=""
+  fi
+}
 
 # Function to generate secure random secret
 generate_secret() {
@@ -115,14 +148,32 @@ seed_secret() {
   fi
   
   # Write secret to OpenBao
-  if docker exec -e BAO_ADDR="http://127.0.0.1:8200" -e BAO_TOKEN="${BAO_TOKEN}" \
-    geniuserp-openbao bao kv put "$path" value="$secret_value" &>/dev/null; then
-    echo -e "${GREEN}  ✓ Seeded: ${path}${NC}"
-    return 0
+  local cli_path
+  cli_path=$(normalize_kv_cli_path "$path")
+  split_kv_target "$cli_path"
+  local field_canon="${SECRET_FIELD//-/_}"
+
+  if [[ -n "$field_canon" ]]; then
+    if bao_exec kv get "$SECRET_DOC_PATH" >/dev/null 2>&1; then
+      if bao_exec kv patch "$SECRET_DOC_PATH" "${field_canon}=${secret_value}" &>/dev/null; then
+        echo -e "${GREEN}  ✓ Seeded: ${SECRET_DOC_PATH} (${field_canon})${NC}"
+        return 0
+      fi
+    else
+      if bao_exec kv put "$SECRET_DOC_PATH" "${field_canon}=${secret_value}" &>/dev/null; then
+        echo -e "${GREEN}  ✓ Seeded: ${SECRET_DOC_PATH} (${field_canon})${NC}"
+        return 0
+      fi
+    fi
   else
-    echo -e "${RED}  ✗ Failed to seed: ${path}${NC}"
-    return 1
+    if bao_exec kv put "$SECRET_DOC_PATH" value="$secret_value" &>/dev/null; then
+      echo -e "${GREEN}  ✓ Seeded: ${SECRET_DOC_PATH}${NC}"
+      return 0
+    fi
   fi
+
+  echo -e "${RED}  ✗ Failed to seed: ${path}${NC}"
+  return 1
 }
 
 # Process CSV inventory

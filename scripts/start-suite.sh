@@ -86,10 +86,6 @@ OBS_ENV_LOADED=false
 SUITE_ENV_LOADED=false
 BACKING_ENV_LOADED=false
 
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 load_proxy_env() {
     if [ "${PROXY_ENV_LOADED}" = true ]; then
         return
@@ -158,34 +154,6 @@ load_obs_env() {
     OBS_ENV_LOADED=true
 }
 
-prepare_proxy_dashboard_auth() {
-    load_proxy_env
-    local dashboard_dir="proxy/traefik/secrets"
-    local dashboard_file="$dashboard_dir/dashboard-users"
-
-    mkdir -p "$dashboard_dir"
-
-    if [ -z "${PROXY_DASHBOARD_USER:-}" ] || [ -z "${PROXY_DASHBOARD_PASS:-}" ]; then
-        warning "PROXY_DASHBOARD_USER/PASS nu sunt setate. Dashboard-ul Traefik va rămâne inaccesibil."
-        : > "$dashboard_file"
-        chmod 600 "$dashboard_file"
-        return
-    fi
-
-    if ! command_exists openssl; then
-        warning "Nu pot genera hash basic-auth (openssl nu este instalat)."
-        : > "$dashboard_file"
-        chmod 600 "$dashboard_file"
-        return
-    fi
-
-    local hashed
-    hashed=$(openssl passwd -apr1 "$PROXY_DASHBOARD_PASS")
-    printf "%s:%s\n" "$PROXY_DASHBOARD_USER" "$hashed" > "$dashboard_file"
-    chmod 600 "$dashboard_file"
-    info "Credentialele basic-auth pentru Traefik dashboard au fost regenerate"
-}
-
 # ============================================================================
 # FAZA 1: Creare Rețele Docker (Dacă nu există deja)
 # ============================================================================
@@ -223,7 +191,6 @@ echo ""
 log "FAZA 2: Pornire Proxy (Traefik)..."
 
 load_proxy_env
-prepare_proxy_dashboard_auth
 
 docker compose -f "$ROOT_COMPOSE_FILE" up -d proxy
 

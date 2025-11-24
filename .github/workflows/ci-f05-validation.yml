@@ -16,21 +16,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Start OpenBao Stack
+      - name: Prepare env templates
         run: |
-          # Start minimal stack for validation
-          docker compose up -d openbao postgres
-          # Wait for healthy
-          sleep 10
+          cp -f .suite.general.env.example .suite.general.env
+          cp -f proxy/.proxy.env.example proxy/.proxy.env
 
-      - name: Run Chaos Tests
+      - name: Install required packages
         run: |
-          # In CI, we might need to adjust the script or run specific commands
-          # For now, we'll just lint the script as we can't fully simulate the env without secrets
-          shellcheck scripts/security/test-f05-chaos.sh
+          sudo apt-get update
+          sudo apt-get install -y jq
 
-      - name: Verify Secret Injection (Simulation)
+      - name: Build node-openbao base image
+        run: docker build -f shared/docker/node-openbao.Dockerfile -t geniuserp/node-openbao:local .
+
+      - name: Bootstrap OpenBao (init, approles, secrets)
+        env:
+          BAO_ADDR: http://127.0.0.1:8200
         run: |
-          echo "Verifying secret injection logic..."
-          # This would run actual tests if we had a full ephemeral env
-          true
+          chmod +x scripts/security/ci-bootstrap-openbao.sh
+          scripts/security/ci-bootstrap-openbao.sh ci
+
+      - name: Start Traefik proxy for chaos test
+        run: docker compose up -d proxy
+
+      - name: Verify Process Supervisor artifacts
+        run: |
+          chmod +x scripts/security/verify_all_apps.sh
+          scripts/security/verify_all_apps.sh
+
+      - name: Validate OpenBao KV inventory
+        env:
+          BAO_ADDR: http://127.0.0.1:8200
+        run: |
+          chmod +x scripts/security/test-openbao-secrets.sh
+          scripts/security/test-openbao-secrets.sh
+
+      - name: Run chaos scenario (proxy)
+        env:
+          BAO_ADDR: http://127.0.0.1:8200
+        run: |
+          chmod +x scripts/security/test-f05-chaos.sh
+          scripts/security/test-f05-chaos.sh proxy

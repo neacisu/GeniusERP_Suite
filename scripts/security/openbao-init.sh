@@ -2,8 +2,10 @@
 set -e
 
 # Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BAO_ADDR=${BAO_ADDR:-"http://127.0.0.1:8200"}
-SECRETS_DIR="/var/www/GeniusSuite/.secrets"
+SECRETS_DIR="${REPO_ROOT}/.secrets"
 KEYS_FILE="${SECRETS_DIR}/openbao-keys.json"
 
 # Colors

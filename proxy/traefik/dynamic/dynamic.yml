@@ -24,7 +24,7 @@ http:
           - rate-limit-default
     dashboard-auth:
       basicAuth:
-        usersFile: "/etc/traefik/secrets/dashboard-users"
+        usersFile: "/run/traefik/secrets/dashboard-users"
     dashboard-chain:
       chain:
         middlewares:

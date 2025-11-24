@@ -11,63 +11,69 @@ GeniusSuite este o suită modulară de aplicații enterprise, construită pe sta
 ## Module Principale
 
 ### Control Plane (CP)
-- **geniuserp.app** – Orchestrator suitei, portal public, customer portal, status & docs.
-- **suite-shell** – Micro-frontend host pentru MF remote loading.
-- **suite-admin** – Portal administrare centrală (users, roles, tenants, licenses).
-- **suite-login** – PKCE + OIDC login.
-- **identity** – SuperTokens + OIDC provider + RBAC + multi-tenant.
-- **licensing** – Entitlements, metering, billing (Stripe/Revolut).
-- **analytics-hub** – BI pentru suită (ingestion Kafka → warehouse → semantic layer).
-- **ai-hub** – Servicii AI centralizate (inference, RAG, assistants).
+
+* **geniuserp.app** – Orchestratorul suitei, portal public, customer portal, status & docs.
+* **suite-shell** – Micro-frontend host pentru MF remote loading.
+* **suite-admin** – Portal administrare centrală (users, roles, tenants, licenses).
+* **suite-login** – PKCE + OIDC login.
+* **identity** – SuperTokens + OIDC provider + RBAC + multi-tenant.
+* **licensing** – Entitlements, metering, billing (Stripe/Revolut).
+* **analytics-hub** – BI pentru suită (ingestion Kafka → warehouse → semantic layer).
+* **ai-hub** – Servicii AI centralizate (inference, RAG, assistants).
 
 ### Aplicații Stand-Alone
-- **archify.app** – Document Management (DMS): upload, OCR, versionare, ACL, șabloane, e-semnătură, workflows.
-- **cerniq.app** – Advanced BI & Data Mesh: consumator "Produse de Date", semantic layer, dashboards, governance.
-- **flowxify.app** – BPM + Collaboration + iPaaS: Temporal workflows, AI agents (CrewAI/LangGraph), MCP server.
-- **i-wms.app** – Warehouse & Inventory: multi-depozit, AI slotting, picking optimization, WES, 3PL billing.
-- **mercantiq.app** – Commerce & Sales Ops: cataloage, cotații B2B, checkout, orders, AI recommendations.
-- **numeriqo.app** – Accounting (RO) + HR/Payroll: partidă dublă, TVA, SAF-T, CIM, D112, e-Factura.
-- **triggerra.app** – Marketing Automation: CDP, journeys (Temporal), attribution (MTA/MMM), clean rooms.
-- **vettify.app** – CRM & Firmographics: leads/accounts/contacts, enrichment (RO/EU), scoring ML, outreach.
+
+* **archify.app** – Document Management (DMS): upload, OCR, versionare, ACL, șabloane, e-semnătură, workflows.
+* **cerniq.app** – Advanced BI & Data Mesh: consumator "Produse de Date", semantic layer, dashboards, governance.
+* **flowxify.app** – BPM + Collaboration + iPaaS: Temporal workflows, AI agents (CrewAI/LangGraph), MCP server.
+* **i-wms.app** – Warehouse & Inventory: multi-depozit, AI slotting, picking optimization, WES, 3PL billing.
+* **mercantiq.app** – Commerce & Sales Ops: cataloage, cotații B2B, checkout, orders, AI recommendations.
+* **numeriqo.app** – Accounting (RO) + HR/Payroll: partidă dublă, TVA, SAF-T, CIM, D112, e-Factura.
+* **triggerra.app** – Marketing Automation: CDP, journeys (Temporal), attribution (MTA/MMM), clean rooms.
+* **vettify.app** – CRM & Firmographics: leads/accounts/contacts, enrichment (RO/EU), scoring ML, outreach.
 
 ### Infrastructură Comună
-- **shared/** – Librării comune: UI design system, auth-client, types, integrations, observability.
-- **gateway/** – API Gateway + BFF: agregare tRPC/OpenAPI, policy enforcement (RBAC + entitlements), caching, rate-limit.
-- **proxy/** – Traefik edge proxy: TLS ACME, routing, forward-auth, WAF, observabilitate.
-- **scripts/** – DevOps tooling: bootstrap, compose orchestration, DB lifecycle, QA (e2e/load/security), CI/CD.
+
+* **shared/** – Librării comune: UI design system, auth-client, types, integrations, observability.
+* **gateway/** – API Gateway + BFF: agregare tRPC/OpenAPI, policy enforcement (RBAC + entitlements), caching, rate-limit.
+* **proxy/** – Traefik edge proxy: TLS ACME, routing, forward-auth, WAF, observabilitate.
+* **scripts/** – DevOps tooling: bootstrap, compose orchestration, DB lifecycle, QA (e2e/load/security), CI/CD.
 
 ## Stack Tehnologic
 
-- **Frontend:** React 19 LTS, TypeScript latest, tRPC 3.1.0, Tailwind CSS.
-- **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM latest + Drizzle-kit, PostgreSQL 18.
-- **Auth:** SuperTokens 11.2.0 LTS (PKCE → JWT), OIDC, RBAC, multi-tenant.
-- **BPM:** Temporal TS SDK 1.13.1.
-- **Broker:** Apache Kafka 4.1.0 LTS.
-- **Observabilitate:** OpenTelemetry, Prometheus, Grafana, Loki, Tempo.
-- **Containerizare:** pnpm, NX, Docker Compose (model hibrid: per-app + orchestrator root).
+* **Frontend:** React 19 LTS, TypeScript latest, tRPC 3.1.0, Tailwind CSS.
+* **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM latest + Drizzle-kit, PostgreSQL 18.
+* **Auth:** SuperTokens 11.2.0 LTS (PKCE → JWT), OIDC, RBAC, multi-tenant.
+* **BPM:** Temporal TS SDK 1.13.1.
+* **Broker:** Apache Kafka 4.1.0 LTS.
+* **Observabilitate:** OpenTelemetry, Prometheus, Grafana, Loki, Tempo.
+* **Containerizare:** pnpm, NX, Docker Compose (model hibrid: per-app + orchestrator root).
 
 ## Arhitectură Generală
 
-- **Model Hibrid:** Compose per aplicație (izolare, ownership clar) + compose orchestrator root (rețele shared, Traefik, observability).
-- **Micro-Frontends:** Module Federation pentru încărcare dinamică în suite-shell.
-- **Data Mesh:** Aplicațiile produc "Produse de Date" pe Kafka; cerniq consumă pentru BI unificat.
-- **Multi-Tenant:** Subdomenii per tenant, RLS pe DB, entitlements per plan.
-- **Securitate:** PKCE→OIDC→JWT, RBAC/ABAC, entitlements, observabilitate completă.
+* **Model Hibrid:** Compose per aplicație (izolare, ownership clar) + compose orchestrator root (rețele shared, Traefik, observability).
+* **Micro-Frontends:** Module Federation pentru încărcare dinamică în suite-shell.
+* **Data Mesh:** Aplicațiile produc "Produse de Date" pe Kafka; cerniq consumă pentru BI unificat.
+* **Multi-Tenant:** Subdomenii per tenant, RLS pe DB, entitlements per plan.
+* **Securitate:** PKCE→OIDC→JWT, RBAC/ABAC, entitlements, observabilitate completă.
 
 ## Instalare și Pornire
 
 ### Cerințe
-- Node.js 24 LTS
-- pnpm latest
-- Docker & Docker Compose
-- PostgreSQL 18 (sau via Docker)
+
+* Node.js 24 LTS
+* pnpm latest
+* Docker & Docker Compose
+* PostgreSQL 18 (sau via Docker)
 
 ### Initialization
+
 ```bash
 pnpm install
 ```
 
 ### Common Commands
+
 ```bash
 # Run linting on all projects
 pnpm lint
@@ -80,6 +86,7 @@ pnpm format:write
 ```
 
 ### Pornire Suită
+
 ```bash
 # Pornire core (proxy + gateway + CP + geniuserp)
 pnpm run compose:up --profile core
@@ -92,10 +99,10 @@ Accesează la `https://geniuserp.app` (portal public) sau `https://app.geniuserp
 
 ## Dezvoltare
 
-- **NX Monorepo:** `pnpm nx run <app>:<task>` pentru build/test per app.
-- **Hot Reload:** `pnpm run dev --app <app>` pentru dezvoltare locală.
-- **Testare:** Unit (Jest), integration, e2e (Playwright), load (k6), security (ZAP/Semgrep).
-- **Linting:** ESLint, Prettier, TypeScript strict.
+* **NX Monorepo:** `pnpm nx run <app>:<task>` pentru build/test per app.
+* **Hot Reload:** `pnpm run dev --app <app>` pentru dezvoltare locală.
+* **Testare:** Unit (Jest), integration, e2e (Playwright), load (k6), security (ZAP/Semgrep).
+* **Linting:** ESLint, Prettier, TypeScript strict.
 
 ## CI/CD Pipeline
 
@@ -103,9 +110,9 @@ Accesează la `https://geniuserp.app` (portal public) sau `https://app.geniuserp
 
 Proiectul folosește **git-flow** cu 3 branch-uri principale:
 
-- **`dev`** – Development (integrare continuă, PR-uri de feature)
-- **`staging`** – Pre-production (testare QA, UAT)
-- **`master`** – Production (releases stabile)
+* **`dev`** – Development (integrare continuă, PR-uri de feature)
+* **`staging`** – Pre-production (testare QA, UAT)
+* **`master`** – Production (releases stabile)
 
 ### Workflow-uri GitHub Actions
 
@@ -115,11 +122,12 @@ Proiectul folosește **git-flow** cu 3 branch-uri principale:
 **Scope**: Validare automată a codului
 
 **Pași**:
-- ✅ Format check (Prettier)
-- ✅ Lint (ESLint)
-- ✅ Test (Jest)
-- ✅ Build (Nx affected)
-- ✅ Nx Cloud (opțional, pentru remote caching)
+
+* ✅ Format check (Prettier)
+* ✅ Lint (ESLint)
+* ✅ Test (Jest)
+* ✅ Build (Nx affected)
+* ✅ Nx Cloud (opțional, pentru remote caching)
 
 **Status**: Pipeline-ul va eșua dacă oricare din verificări nu trece.
 
@@ -129,11 +137,13 @@ Proiectul folosește **git-flow** cu 3 branch-uri principale:
 **Scope**: Validare changesets pentru versionare semantică
 
 **Comportament**:
-- Detectează modificări în pachete (`shared/*`, `cp/*`, aplicații)
-- Cere adăugarea unui changeset prin comentariu automat
-- Eșuează PR-ul dacă lipsește changeset
+
+* Detectează modificări în pachete (`shared/*`, `cp/*`, aplicații)
+* Cere adăugarea unui changeset prin comentariu automat
+* Eșuează PR-ul dacă lipsește changeset
 
 **Cum să adaugi changeset**:
+
 ```bash
 pnpm exec changeset
 # Urmează instrucțiunile interactive
@@ -147,11 +157,12 @@ git commit -m "chore: add changeset"
 **Scope**: Versionare automată și publicare pachete
 
 **Pași**:
-- Validare cod (lint, test, build)
-- Calcul versiuni noi (changesets)
-- Actualizare `package.json` și `CHANGELOG.md`
-- Publicare pe npm registry
-- Creare commit de release
+
+* Validare cod (lint, test, build)
+* Calcul versiuni noi (changesets)
+* Actualizare `package.json` și `CHANGELOG.md`
+* Publicare pe npm registry
+* Creare commit de release
 
 #### 4. **Deploy Staging** (`.github/workflows/deploy-staging.yml`)
 
@@ -181,13 +192,14 @@ Pentru funcționarea completă a pipeline-urilor, configurează următoarele sec
 
 ### Ghiduri
 
-- **[Testare CI/CD](.github/CI_TESTING_GUIDE.md)** – Cum să testezi pipeline-urile
-- **[Configurare Nx Cloud](.github/NX_CLOUD_SETUP.md)** – Setup remote caching (opțional)
-- **[Checklist Secrete](.github/SECRETS_CHECKLIST.md)** – Configurare token-uri GitHub
+* **[Testare CI/CD](.github/CI_TESTING_GUIDE.md)** – Cum să testezi pipeline-urile
+* **[Configurare Nx Cloud](.github/NX_CLOUD_SETUP.md)** – Setup remote caching (opțional)
+* **[Checklist Secrete](.github/SECRETS_CHECKLIST.md)** – Configurare token-uri GitHub
 
 ### Flow de Dezvoltare Recomandat
 
 1. **Feature Development**:
+
    ```bash
    git checkout dev
    git checkout -b feature/my-feature
@@ -198,11 +210,13 @@ Pentru funcționarea completă a pipeline-urilor, configurează următoarele sec
    ```
 
 2. **Pull Request către `dev`**:
-   - CI Validation rulează automat
-   - Changeset Bot verifică prezența changesets
-   - După aprobare, merge în `dev`
+
+   * CI Validation rulează automat
+   * Changeset Bot verifică prezența changesets
+   * După aprobare, merge în `dev`
 
 3. **Promovare la Staging**:
+
    ```bash
    git checkout staging
    git merge dev
@@ -211,6 +225,7 @@ Pentru funcționarea completă a pipeline-urilor, configurează următoarele sec
    ```
 
 4. **Release Production**:
+
    ```bash
    # După testare în staging
    git checkout master
@@ -229,15 +244,15 @@ Pentru funcționarea completă a pipeline-urilor, configurează următoarele sec
 
 Vezi `scripts/README.md` pentru tooling complet.
 
-## CI/CD Pipeline
+## CI/CD Overview
 
 GeniusSuite folosește GitHub Actions pentru CI/CD complet automatizat:
 
-- **Branch Strategy:** `dev` → `staging` → `master`
-- **Auto PR:** dev→staging (semi-automat cu label `ready-for-staging`)
-- **Nx Cloud:** Dezactivat temporar până la adăugarea primelor proiecte reale
-  - **nxCloudId:** TODO:`691268eb369b28a97cc96512` (păstrat pentru reactivare)
-  - **Reactivare:** Adaugă `nxCloudId` în `nx.json` și decomentează în CI workflow când ai apps/libs
+* **Branch Strategy:** `dev` → `staging` → `master`
+* **Auto PR:** dev→staging (semi-automat cu label `ready-for-staging`)
+* **Nx Cloud:** Dezactivat temporar până la adăugarea primelor proiecte reale
+  * **nxCloudId:** TODO:`691268eb369b28a97cc96512` (păstrat pentru reactivare)
+  * **Reactivare:** Adaugă `nxCloudId` în `nx.json` și decomentează în CI workflow când ai apps/libs
 
 Workflow-uri: `.github/workflows/` - CI validation, auto-PR, deploy staging/prod.
 
@@ -247,6 +262,6 @@ Proprietate privată – contactați echipa pentru licențiere.
 
 ## Suport
 
-- Docs: `https://docs.geniuserp.app`
-- Status: `https://status.geniuserp.app`
-- Contact: admin@geniuserp.app
+* Docs: <https://docs.geniuserp.app>
+* Status: <https://status.geniuserp.app>
+* Contact: <admin@geniuserp.app>

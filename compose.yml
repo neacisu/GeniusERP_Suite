@@ -3,17 +3,11 @@ name: geniussuite
 services:
   proxy:
     container_name: traefik
-    image: traefik:v3.0
+    build:
+      context: .
+      dockerfile: proxy/Dockerfile
+    image: geniuserp/traefik-openbao:local
     restart: unless-stopped
-    command:
-      - --configFile=/etc/traefik/traefik.yml
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.network=${PROXY_NETWORK_INTERNAL:-geniuserp_net_suite_internal}
-      - --providers.docker.endpoint=unix:///var/run/docker.sock
-      - --certificatesresolvers.letsencrypt.acme.email=${PROXY_TLS_ACME_EMAIL}
-      - --certificatesresolvers.letsencrypt.acme.storage=${PROXY_ACME_STORAGE:-/letsencrypt/acme.json}
-      - --certificatesresolvers.letsencrypt.acme.caserver=${PROXY_TLS_ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
-      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
     env_file:
       - proxy/.proxy.env
     ports:
@@ -24,7 +18,8 @@ services:
       - '/var/run/docker.sock:/var/run/docker.sock:ro'
       - './proxy/traefik/traefik.yml:/etc/traefik/traefik.yml:ro'
       - './proxy/traefik/dynamic:/etc/traefik/dynamic:ro'
-      - './proxy/traefik/secrets:/etc/traefik/secrets:ro'
+      - '${PROXY_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro'
+      - '${PROXY_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro'
       - 'gs_traefik_certs:/letsencrypt'
     networks:
       geniuserp_net_edge:

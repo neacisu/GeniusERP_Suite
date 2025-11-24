@@ -3,12 +3,16 @@
 # test-f05-chaos.sh - Chaos testing for F0.5 Security Architecture
 #
 # Scenarios:
-# 1. Secret Injection: Verify apps have secrets.
-# 2. OpenBao Down: Stop OpenBao and verify app behavior.
-# 3. Recovery: Start OpenBao and verify recovery.
+# 1. Secret Injection: Verify target container rendered secrets from OpenBao.
+# 2. Chaos: Stop OpenBao, ensure target stays healthy with cached secrets.
+# 3. Recovery: Restart & auto-unseal OpenBao, confirm target still running.
 #
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+ROOT_COMPOSE_FILE="${REPO_ROOT}/compose.yml"
 
 # Colors
 RED='\033[0;31m'
@@ -17,87 +21,94 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-APP="numeriqo" # Human readable target
-APP_SERVICE="numeriqo-app"
-APP_DIR="numeriqo.app"
-APP_COMPOSE_DIR="$APP_DIR/compose"
-APP_ENV_FILE="$APP_DIR/.numeriqo.env"
-SUITE_ENV_FILE=".suite.general.env"
-PROXY_ENV_FILE="proxy/.proxy.env"
+TARGET="${1:-proxy}"
 
-if [ ! -d "$APP_COMPOSE_DIR" ]; then
-    echo -e "${RED}App compose directory missing: $APP_COMPOSE_DIR${NC}" >&2
-    exit 1
-fi
-
-load_env_file() {
-    local file=$1
-    if [ ! -f "$file" ]; then
-        echo -e "${RED}Missing required env file: $file${NC}" >&2
+case "$TARGET" in
+    proxy)
+        APP="proxy"
+        APP_SERVICE="proxy"
+        COMPOSE_FILE="${ROOT_COMPOSE_FILE}"
+        REQUIRED_ENV_FILES=("proxy/.proxy.env")
+        SECRET_FILE="/run/traefik/secrets/dashboard-users"
+        ;;
+    numeriqo)
+        APP="numeriqo"
+        APP_SERVICE="numeriqo-app"
+        COMPOSE_FILE="${REPO_ROOT}/numeriqo.app/compose/docker-compose.yml"
+        REQUIRED_ENV_FILES=(".suite.general.env" "numeriqo.app/.numeriqo.env")
+        SECRET_FILE="/app/secrets/db-creds.json"
+        ;;
+    *)
+        echo -e "${RED}Unknown chaos target: ${TARGET}${NC}" >&2
         exit 1
-    fi
+        ;;
+esac
 
-    set -a
-    # shellcheck disable=SC1090
-    source "$file"
-    set +a
+compose_cmd() {
+    docker compose -f "$COMPOSE_FILE" "$@"
 }
 
-run_app_compose() {
-    (cd "$APP_COMPOSE_DIR" && docker compose "$@")
+ensure_env_files() {
+    for rel in "$@"; do
+        local path="${REPO_ROOT}/${rel}"
+        if [[ ! -f "$path" ]]; then
+            echo -e "${RED}Missing required env file: ${rel}${NC}" >&2
+            exit 1
+        fi
+    done
 }
 
-load_env_file "$SUITE_ENV_FILE"
-load_env_file "$PROXY_ENV_FILE"
-load_env_file "$APP_ENV_FILE"
+ensure_service_running() {
+    echo -e "${BLUE}▶ Ensuring ${APP} service is running...${NC}"
+    compose_cmd up -d "$APP_SERVICE"
+    sleep 8
+}
+
+check_service_up() {
+    compose_cmd ps "$APP_SERVICE" | grep -q "Up"
+}
+
+ensure_env_files "${REQUIRED_ENV_FILES[@]}"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}  F0.5 Chaos Testing: $APP${NC}"
+echo -e "${BLUE}  F0.5 Chaos Testing: ${APP}${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo ""
 
-# 1. Secret Injection Verification
-echo -e "${BLUE}[1/3] Verifying Secret Injection...${NC}"
-if run_app_compose exec -T "$APP_SERVICE" sh -c 'test -f /app/secrets/db-creds.json'; then
-    echo -e "${GREEN}  ✓ Secrets file exists${NC}"
+ensure_service_running
+
+echo -e "${BLUE}[1/3] Verifying secret injection...${NC}"
+if compose_cmd exec -T "$APP_SERVICE" sh -c "test -f ${SECRET_FILE}"; then
+    echo -e "${GREEN}  ✓ Secret artifact present (${SECRET_FILE})${NC}"
 else
-    echo -e "${RED}  ✗ Secrets file missing${NC}"
+    echo -e "${RED}  ✗ Secret artifact missing (${SECRET_FILE})${NC}"
     exit 1
 fi
 
-# Check env vars (indirectly via script or checking process)
-# We can't easily see process env vars from outside without root/proc access, 
-# but existence of file implies Agent is working.
-
 echo ""
-echo -e "${BLUE}[2/3] Simulating OpenBao Outage...${NC}"
-echo "  Stopping OpenBao..."
-docker compose stop openbao
-
-echo "  Waiting 10s..."
+echo -e "${BLUE}[2/3] Simulating OpenBao outage...${NC}"
+echo "  Stopping OpenBao container..."
+docker compose -f "$ROOT_COMPOSE_FILE" stop openbao
 sleep 10
 
-echo "  Checking app status (should be running, Agent caches secrets)..."
-if run_app_compose ps "$APP_SERVICE" | grep -q "Up"; then
-    echo -e "${GREEN}  ✓ App is still running (resilient)${NC}"
+if check_service_up; then
+    echo -e "${GREEN}  ✓ ${APP} container stayed up while OpenBao was offline${NC}"
 else
-    echo -e "${RED}  ✗ App crashed${NC}"
-    # Note: If app crashes, it might be intended if it can't renew lease. 
-    # But for short outage, it should survive.
+    echo -e "${RED}  ✗ ${APP} container exited during outage${NC}"
+    exit 1
 fi
 
 echo ""
-echo -e "${BLUE}[3/3] Recovery...${NC}"
-echo "  Starting OpenBao..."
-docker compose start openbao
-echo "  Waiting for OpenBao to be ready..."
+echo -e "${BLUE}[3/3] Recovery and auto-unseal...${NC}"
+docker compose -f "$ROOT_COMPOSE_FILE" start openbao
 sleep 5
-# Unseal would be needed here in real scenario if not auto-unseal
-# For this test, we assume unseal is handled or we do it manually if needed.
-# In dev mode (file backend), it stays sealed on restart.
+BAO_ADDR=${BAO_ADDR:-"http://127.0.0.1:8200"} bash "${SCRIPT_DIR}/openbao-init.sh"
 
-echo -e "${YELLOW}  Note: OpenBao needs unseal after restart!${NC}"
-echo "  Please run: bao operator unseal <keys>"
+if check_service_up; then
+    echo -e "${GREEN}  ✓ ${APP} container healthy after OpenBao recovery${NC}"
+else
+    echo -e "${YELLOW}  ⚠ ${APP} container exited after recovery - check logs${NC}"
+fi
 
 echo ""
-echo -e "${GREEN}✓ Chaos test sequence completed.${NC}"
+echo -e "${GREEN}✓ Chaos test sequence completed for ${APP}.${NC}"

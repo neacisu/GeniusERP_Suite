@@ -7,6 +7,7 @@ services:
     ports:
       - "${CP_LOGIN_APP_PORT}:${CP_LOGIN_APP_PORT}"
     env_file:
+      - ../../../.suite.general.env
       - ../.cp.suite-login.env
     environment:
       - CP_LOGIN_APP_PORT=${CP_LOGIN_APP_PORT}
@@ -14,9 +15,14 @@ services:
       - CP_LOGIN_APP_NODE_ENV=${CP_LOGIN_APP_NODE_ENV}
       - CP_LOGIN_OBS_SERVICE_NAME=${CP_LOGIN_OBS_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - BAO_AGENT_CONFIG=${CP_LOGIN_BAO_AGENT_CONFIG}
       - LOG_LEVEL=info
+    volumes:
+      - ${CP_LOGIN_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CP_LOGIN_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
+      - net_backing_services
       - net_observability
     labels:
       - "traefik.enable=true"
@@ -39,6 +45,9 @@ networks:
   net_suite_internal:
     external: true
     name: geniuserp_net_suite_internal
+  net_backing_services:
+    external: true
+    name: geniuserp_net_backing_services
   net_observability:
     external: true
     name: geniuserp_net_observability

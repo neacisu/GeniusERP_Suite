@@ -15,6 +15,7 @@ APPS=(
     "cp/licensing"
     "cp/suite-admin"
     "cp/suite-shell"
+    "cp/suite-login"
     "cp/ai-hub"
     "cp/analytics-hub"
 )
