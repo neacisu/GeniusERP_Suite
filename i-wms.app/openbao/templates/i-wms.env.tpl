@@ -1,5 +1,5 @@
 {{- /* Template for I-wms .env file with all secrets injected */ -}}
-{{- with secret "database/creds/i-wms_runtime" -}}
+{{- with secret "database/creds/iwms_runtime" -}}
 # Database credentials (dynamic from OpenBao)
 I_WMS_DB_USER={{ .Data.username }}
 I_WMS_DB_PASS={{ .Data.password }}

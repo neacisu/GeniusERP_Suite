@@ -1,14 +1,22 @@
 # Policy: geniuserp-read
-# Description: Read-only access to GeniusERP secrets
-path "secret/data/geniuserp/*" {
-  capabilities = ["read", "list"]
-}
-path "database/creds/geniuserp-role" {
+# Description: Read-only access to GeniusERP KV + runtime DB creds
+
+path "kv/data/apps/geniuserp" {
   capabilities = ["read"]
 }
+
+path "kv/metadata/apps/geniuserp" {
+  capabilities = ["read"]
+}
+
+path "database/creds/geniuserp_runtime" {
+  capabilities = ["read"]
+}
+
 path "auth/token/renew-self" {
   capabilities = ["update"]
 }
+
 path "auth/token/lookup-self" {
   capabilities = ["read"]
 }

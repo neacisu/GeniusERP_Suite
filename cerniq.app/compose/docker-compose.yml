@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: cerniq.app/Dockerfile
-    container_name: ${CERN_CONTAINER_NAME}
-    restart: ${CERN_RESTART_POLICY}
+    container_name: ${CERNIQ_CONTAINER_NAME}
+    restart: ${CERNIQ_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.cerniq.env
@@ -14,15 +14,15 @@ services:
       - CERNIQ_APP_CONSUMER_PORT=${CERNIQ_APP_CONSUMER_PORT}
       - CERNIQ_APP_NODE_ENV=${CERNIQ_APP_NODE_ENV}
       - PORT=${CERNIQ_APP_PORT}
-      - OTEL_SERVICE_NAME=${CERN_OTEL_SERVICE_NAME}
+      - OTEL_SERVICE_NAME=${CERNIQ_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=${CERN_LOG_LEVEL}
-          - BAO_AGENT_CONFIG=${CERN_BAO_AGENT_CONFIG}
+        - LOG_LEVEL=${CERNIQ_LOG_LEVEL}
+        - BAO_AGENT_CONFIG=${CERNIQ_BAO_AGENT_CONFIG}
       - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
       - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
     volumes:
-      - ${CERN_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
-      - ${CERN_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
+      - ${CERNIQ_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${CERNIQ_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
@@ -38,10 +38,10 @@ services:
       - traefik.http.services.cerniq.loadbalancer.server.port=${CERNIQ_APP_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${CERNIQ_APP_PORT}/health"]
-      interval: ${CERN_HEALTHCHECK_INTERVAL}
-      timeout: ${CERN_HEALTHCHECK_TIMEOUT}
-      retries: ${CERN_HEALTHCHECK_RETRIES}
-      start_period: ${CERN_HEALTHCHECK_START_PERIOD}
+      interval: ${CERNIQ_HEALTHCHECK_INTERVAL}
+      timeout: ${CERNIQ_HEALTHCHECK_TIMEOUT}
+      retries: ${CERNIQ_HEALTHCHECK_RETRIES}
+      start_period: ${CERNIQ_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:

@@ -46,14 +46,14 @@ WORKDIR /app
 
 # Copy built application
 COPY --from=deploy --chown=appuser:nodejs /deploy /app
-COPY --from=builder --chown=appuser:nodejs /app/vettify.app/dist /app/vettify.app/dist
+COPY --from=builder --chown=appuser:nodejs /app/vettify.app/dist ./dist
 
 # Copy OpenBao Agent configuration and templates
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/vettify.app/openbao/agent-config.hcl /openbao/
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/vettify.app/openbao/templates/ /openbao/templates/
+COPY --chown=appuser:nodejs vettify.app/openbao/agent-config.hcl /openbao/
+COPY --chown=appuser:nodejs vettify.app/openbao/templates/ /openbao/templates/
 
 # Copy Process Supervisor script
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/vettify.app/scripts/start-app.sh /app/scripts/
+COPY --chown=appuser:nodejs vettify.app/scripts/start-app.sh /app/scripts/
 RUN chmod +x /app/scripts/start-app.sh
 
 USER appuser

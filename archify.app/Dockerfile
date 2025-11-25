@@ -50,11 +50,11 @@ COPY --from=deploy --chown=appuser:nodejs /deploy/node_modules ./node_modules
 COPY --from=deploy --chown=appuser:nodejs /deploy/package.json ./package.json
 
 # Copy OpenBao Agent configuration and templates
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/archify.app/openbao/agent-config.hcl /openbao/
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/archify.app/openbao/templates/ /openbao/templates/
+COPY --chown=appuser:nodejs archify.app/openbao/agent-config.hcl /openbao/
+COPY --chown=appuser:nodejs archify.app/openbao/templates/ /openbao/templates/
 
 # Copy Process Supervisor script
-COPY --chown=appuser:nodejs /var/www/GeniusSuite/archify.app/scripts/start-app.sh /app/scripts/
+COPY --chown=appuser:nodejs archify.app/scripts/start-app.sh /app/scripts/
 RUN chmod +x /app/scripts/start-app.sh
 
 USER appuser

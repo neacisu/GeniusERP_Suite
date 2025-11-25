@@ -3,8 +3,8 @@ services:
     build:
       context: ../..
       dockerfile: geniuserp.app/Dockerfile
-    container_name: ${GERP_CONTAINER_NAME}
-    restart: ${GERP_RESTART_POLICY}
+    container_name: ${GENERP_CONTAINER_NAME}
+    restart: ${GENERP_RESTART_POLICY}
     env_file:
       - ../../.suite.general.env
       - ../.geniuserp.env
@@ -13,15 +13,15 @@ services:
       - GENERP_APP_METRICS_PORT=${GENERP_APP_METRICS_PORT}
       - GENERP_APP_NODE_ENV=${GENERP_APP_NODE_ENV:-production}
       - PORT=${GENERP_APP_PORT}
-      - OTEL_SERVICE_NAME=${GERP_OTEL_SERVICE_NAME}
+      - OTEL_SERVICE_NAME=${GENERP_OTEL_SERVICE_NAME}
       - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
-      - LOG_LEVEL=${GERP_LOG_LEVEL}
-          - BAO_AGENT_CONFIG=${GERP_BAO_AGENT_CONFIG}
+        - LOG_LEVEL=${GENERP_LOG_LEVEL}
+        - BAO_AGENT_CONFIG=${GENERP_BAO_AGENT_CONFIG}
       - SUITE_DB_POSTGRES_HOST=${SUITE_DB_POSTGRES_HOST}
       - SUITE_DB_POSTGRES_PORT=${SUITE_DB_POSTGRES_PORT}
     volumes:
-      - ${GERP_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
-      - ${GERP_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
+      - ${GENERP_APPROLE_ROLE_ID_PATH}:/openbao/role-id:ro
+      - ${GENERP_APPROLE_SECRET_ID_PATH}:/openbao/secret-id:ro
     networks:
       - net_suite_internal
       - net_backing_services
@@ -37,10 +37,10 @@ services:
       - traefik.http.services.geniuserp.loadbalancer.server.port=${GENERP_APP_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${GENERP_APP_PORT}/health"]
-      interval: ${GERP_HEALTHCHECK_INTERVAL}
-      timeout: ${GERP_HEALTHCHECK_TIMEOUT}
-      retries: ${GERP_HEALTHCHECK_RETRIES}
-      start_period: ${GERP_HEALTHCHECK_START_PERIOD}
+      interval: ${GENERP_HEALTHCHECK_INTERVAL}
+      timeout: ${GENERP_HEALTHCHECK_TIMEOUT}
+      retries: ${GENERP_HEALTHCHECK_RETRIES}
+      start_period: ${GENERP_HEALTHCHECK_START_PERIOD}
 
 networks:
   net_suite_internal:
