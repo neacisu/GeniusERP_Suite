@@ -1,42 +1,38 @@
 import Fastify from 'fastify';
-import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
+import { initTracing, initMetrics, startMetricsServer } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
-// Initialize observability
-initTracing({ serviceName: 'mercantiq.app' });
-initMetrics({ serviceName: 'mercantiq.app' });
+async function main() {
+  initTracing({ serviceName: 'mercantiq.app' });
+  initMetrics({ serviceName: 'mercantiq.app' });
 
-const PORT = parseInt(process.env.PORT || '6750', 10);
+  const PORT = parseInt(process.env.PORT || '6700', 10);
+  const metricsPort = parseInt(process.env.MERCQ_APP_METRICS_PORT || String(PORT + 1), 10);
 
-const app = Fastify({
-  logger: {
-    level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        colorize: false,
-        translateTime: 'SYS:standard',
-        ignore: 'pid,hostname',
+  const app = Fastify({
+    logger: {
+      level: 'info',
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          colorize: false,
+          translateTime: 'SYS:standard',
+          ignore: 'pid,hostname',
+        },
       },
     },
-  },
-});
+  });
 
-// Health check endpoint
-app.get('/health', async () => {
-  return { status: 'ok', service: 'mercantiq.app' };
-});
+  app.get('/health', async () => {
+    return { status: 'ok', service: 'mercantiq.app' };
+  });
 
-// Metrics endpoint for Prometheus
-app.get('/metrics', async (_request, reply) => {
-  reply.type('text/plain');
-  return metricsHandler();
-});
-
-app.listen({ port: PORT, host: '0.0.0.0' }, (err) => {
-  if (err) {
-    logger.error(err);
-    process.exit(1);
-  }
+  await startMetricsServer({ port: metricsPort });
+  await app.listen({ port: PORT, host: '0.0.0.0' });
   logger.info({ port: PORT, service: 'mercantiq.app' }, 'Mercantiq App started');
+}
+
+main().catch((err) => {
+  logger.error(err);
+  process.exit(1);
 });

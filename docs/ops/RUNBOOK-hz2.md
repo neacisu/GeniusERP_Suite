@@ -34,7 +34,9 @@ Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo}`. Resto
 3. Copiază în loc, păstrează UID: OpenBao `100:1000`, Loki/Tempo `10001:10001`, Kafka `1000:1000`.
 4. Pornește containerul. OpenBao va fi sealed → `systemctl start openbao-unseal` (sau `/opt/openbao/unseal.sh`).
 
-Disaster-recovery secrete: restic include `/opt/platform.env` (repo criptat). Condiție: parola restic să nu stea pe același disc ca backup-ul.
+Disaster-recovery secrete: restic include `/opt/platform.env` (repo criptat). **Parola restic trebuie să existe și off-host** (password manager / telefon). Dacă trăiește doar pe hz2.65, moartea mașinii face arhivele indescifrabile — backupul e atunci decor. Copiază `RESTIC_PASSWORD` (ideal și `platform.env`) într-un singur loc din afara discului. Valorile nu stau în acest runbook.
+
+Definiția platformei (fără git pe `/opt`): restic acoperă și `/opt/{openbao,temporal,supertokens,kafka,observability,traefik}` (compose, `unseal.sh`, HCL) plus `/etc/systemd/system/openbao-unseal.service`. Volumele de date rămân pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo}`.
 
 ## Restore Postgres (baze GeniusERP)
 
@@ -74,3 +76,7 @@ docker compose --env-file /opt/platform.env -f /opt/traefik/docker-compose.yml u
 ```
 
 Rollback: `image: traefik:v3.7.11` (imagine păstrată local) + același `up -d`.
+
+## Metrici Tabelul 5
+
+API = bază, Prometheus = bază+1, path `/metrics`. Implementare: `startMetricsServer` în `shared/observability` (listener HTTP separat). Job-ul `geniuserp-apps` din `/opt/observability/prometheus/prometheus.yml` scrape-uiește baza+1. Reload: `docker kill -s HUP prometheus`. `gateway` și `geniuserp-app` nu există în repo — rămân down.

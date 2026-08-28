@@ -1,6 +1,5 @@
 import fastify from 'fastify';
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
+import { initTracing, initMetrics, startMetricsServer } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
 async function main() {
@@ -26,15 +25,12 @@ async function main() {
     return { status: 'ok', service: 'vettify.app' };
   });
 
-  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
-    const body = await metricsHandler();
-    reply.type('text/plain; version=0.0.4').send(body);
-  });
-
   app.get('/', async () => {
     return { message: 'Vettify App - Vendor Management System' };
   });
 
+  const metricsPort = parseInt(process.env.VETFY_APP_METRICS_PORT || String(port + 1), 10);
+  await startMetricsServer({ port: metricsPort });
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: serviceName }, 'Vettify App started');
 }

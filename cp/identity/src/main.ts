@@ -1,6 +1,11 @@
 import fastify from 'fastify';
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
+import {
+  initTracing,
+  initMetrics,
+  startMetricsServer,
+  requireListenPort,
+} from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
 async function main() {
@@ -23,21 +28,8 @@ async function main() {
     return { status: 'ok', service: 'identity' };
   });
 
-  // Metrics endpoint for Prometheus scraping
-  // Exposes Prometheus metrics in text/plain format
-  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
-    const body = await metricsHandler();
-    reply.type('text/plain; version=0.0.4').send(body);
-  });
-
-  // Identity service routes will be added here
-  // TODO: Implement authentication/identity logic
-
-  const portString = process.env.CP_IDT_APP_PORT;
-  if (!portString) {
-    throw new Error('CP_IDT_APP_PORT environment variable is required');
-  }
-  const port = parseInt(portString, 10);
+  const port = requireListenPort('CP_IDT_APP_PORT');
+  await startMetricsServer({ port: requireListenPort('CP_IDT_APP_METRICS_PORT') });
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: 'identity' }, 'Server started');
 }

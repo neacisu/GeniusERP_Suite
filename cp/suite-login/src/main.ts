@@ -1,7 +1,7 @@
 import Fastify from 'fastify';
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { initTracing } from '@genius-suite/observability';
-import { initMetrics, metricsHandler } from '@genius-suite/observability';
+import { initMetrics, startMetricsServer, requireListenPort } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
 const app = Fastify({ loggerInstance: logger });
@@ -17,23 +17,12 @@ async function main() {
   await initTracing({ serviceName });
   await initMetrics({ serviceName });
 
-  // Metrics endpoint
-  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
-    reply.type('text/plain');
-    return metricsHandler();
-  });
-
-  // Health endpoint
   app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {
     return { status: 'ok', service: 'suite-login' };
   });
 
-  // Start server
-  const portString = process.env.CP_LOGIN_APP_PORT;
-  if (!portString) {
-    throw new Error('CP_LOGIN_APP_PORT environment variable is required');
-  }
-  const port = parseInt(portString, 10);
+  const port = requireListenPort('CP_LOGIN_APP_PORT');
+  await startMetricsServer({ port: requireListenPort('CP_LOGIN_APP_METRICS_PORT') });
 
   try {
     await app.listen({ port, host: '0.0.0.0' });

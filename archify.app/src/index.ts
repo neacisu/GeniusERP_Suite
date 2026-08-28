@@ -1,6 +1,5 @@
 import fastify from 'fastify';
-import type { FastifyRequest, FastifyReply } from 'fastify';
-import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
+import { initTracing, initMetrics, startMetricsServer } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
 async function main() {
@@ -31,18 +30,12 @@ async function main() {
     return { status: 'ok', service: 'archify.app' };
   });
 
-  // Metrics endpoint for Prometheus scraping
-  // Exposes Prometheus metrics in text/plain format
-  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
-    const body = await metricsHandler();
-    reply.type('text/plain; version=0.0.4').send(body);
-  });
-
-  // Application routes will be added here
   app.get('/', async () => {
     return { message: 'Archify App - Document Management System' };
   });
 
+  const metricsPort = parseInt(process.env.ARCHY_APP_METRICS_PORT || String(port + 1), 10);
+  await startMetricsServer({ port: metricsPort });
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: serviceName }, 'Archify App started');
 }

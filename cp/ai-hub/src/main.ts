@@ -3,7 +3,12 @@ import type { FastifyRequest, FastifyReply } from 'fastify';
 // TODO: Update to use sub-path imports when F0.3.7, F0.3.9, F0.3.10 are implemented
 // import { initTracing } from '@genius-suite/observability/traces/otel';
 // import { metricsRegistry, initDefaultMetrics } from '@genius-suite/observability/metrics/recorders/prometheus';
-import { initTracing, initMetrics, metricsHandler } from '@genius-suite/observability';
+import {
+  initTracing,
+  initMetrics,
+  startMetricsServer,
+  requireListenPort,
+} from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
 async function main() {
@@ -46,23 +51,8 @@ async function main() {
     return { status: 'ok', service: 'ai-hub' };
   });
 
-  // Metrics endpoint for Prometheus scraping
-  app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {
-    // TODO: Update to use metricsRegistry.metrics() when available
-    // reply.type('text/plain');
-    // return metricsRegistry.metrics();
-    const body = await metricsHandler();
-    reply.type('text/plain; version=0.0.4').send(body);
-  });
-
-  // AI Hub service routes will be added here
-  // TODO: Implement AI logic (model inference, data processing, analytics)
-
-  const portString = process.env.CP_AI_APP_PORT;
-  if (!portString) {
-    throw new Error('CP_AI_APP_PORT environment variable is required');
-  }
-  const port = parseInt(portString, 10);
+  const port = requireListenPort('CP_AI_APP_PORT');
+  await startMetricsServer({ port: requireListenPort('CP_AI_APP_METRICS_PORT') });
   await app.listen({ port, host: '0.0.0.0' });
   logger.info({ port, service: 'ai-hub' }, 'Server started');
 }
