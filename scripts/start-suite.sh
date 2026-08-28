@@ -42,9 +42,9 @@ info() {
 }
 
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
-    error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
-    error "Rulează: cd /var/www/GeniusSuite && bash scripts/start-suite.sh"
+if [ ! -f "shared/backing-services/docker-compose.backing-services.yml" ]; then
+    error "Nu suntem în directorul root al GeniusSuite"
+    error "Rulează din rădăcina repo-ului: bash scripts/start-suite.sh"
     exit 1
 fi
 
@@ -91,7 +91,7 @@ if [ -f ".suite.general.env" ]; then
 fi
 
 # Pornire backing services
-docker compose -f docker-compose.backing-services.yml --env-file .suite.general.env up -d
+docker compose -f shared/backing-services/docker-compose.backing-services.yml --env-file .suite.general.env up -d
 
 log "Așteptăm PostgreSQL să fie ready (30 secunde)..."
 sleep 15

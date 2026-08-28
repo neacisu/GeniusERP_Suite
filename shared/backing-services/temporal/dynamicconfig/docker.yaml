@@ -1,0 +1,8 @@
+# Dynamic config pentru temporalio/server:1.31.2 (calea default din imagine).
+# Fără acest fișier, serverul refuză start-ul (stat docker.yaml: no such file).
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
+system.forceSearchAttributesCacheRefreshOnRead:
+  - value: true
+    constraints: {}

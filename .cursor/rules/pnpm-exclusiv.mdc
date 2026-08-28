@@ -1,0 +1,35 @@
+---
+description: GeniusERP Suite folosește exclusiv pnpm. Interzis npm, yarn și bun.
+alwaysApply: true
+---
+
+# Package manager: exclusiv pnpm
+
+Decizie de proiect (28.08.2026): **doar pnpm**. Nu folosi `npm`, `yarn` sau `bun` pentru instalare, scripturi, lockfile, CI sau Docker.
+
+## Obligativ
+
+- Instalează, actualizează și rulează scripturi **doar** cu `pnpm` / `pnpm exec` / `pnpm dlx`.
+- Lockfile-ul canonic este `pnpm-lock.yaml`. Nu crea `package-lock.json`, `yarn.lock` sau `bun.lock`.
+- `packageManager` din `package.json` trebuie să rămână `pnpm@…` (câmpul Corepack).
+- În Dockerfile, CI și scripturi: `corepack enable` + pnpm, sau `pnpm/action-setup`. Nu `npm ci`. Nu `npm install` pentru dependențele aplicației.
+- **Excepție Node 26+:** Corepack nu mai e în imaginea oficială Node. `npm install -g corepack` e permis **doar** ca bootstrap al binarului, apoi tot `corepack prepare pnpm@…`. Vezi `Plan/CALENDAR-P2-STACK-2026-08-28.md`.
+- Workspace-uri: `pnpm-workspace.yaml`. Un singur lockfile la rădăcina monorepo-ului.
+
+## Exemple
+
+```bash
+# ❌ BAD
+npm install
+npm i -g nx
+npx nx build identity
+yarn add fastify
+
+# ✅ GOOD
+pnpm install
+pnpm add -w -D nx
+pnpm exec nx build identity
+pnpm add fastify --filter @genius-suite/cp-identity
+```
+
+Dacă găsești `packageManager: "pnpm@9…"` în pachete nested sau lockfile-uri extra (`cp/suite-login/pnpm-lock.yaml`), aliniază-le la pnpm-ul din rădăcină; nu trece pe alt manager.

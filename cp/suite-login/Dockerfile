@@ -12,7 +12,7 @@ COPY cp/suite-login ./cp/suite-login
 
 # Install dependencies
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 
 # Add pnpm to PATH
 ENV PATH="/usr/local/bin:$PATH"
@@ -33,7 +33,7 @@ FROM node:24-alpine
 WORKDIR /app
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 
 # Add pnpm to PATH
 ENV PATH="/usr/local/bin:$PATH"

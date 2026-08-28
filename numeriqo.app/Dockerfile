@@ -1,8 +1,8 @@
-FROM node:22-alpine AS base
+FROM node:24-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV CI=true
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 WORKDIR /app
 COPY pnpm-lock.yaml ./
 
@@ -25,7 +25,7 @@ COPY shared/common ./shared/common
 COPY shared/observability ./shared/observability
 RUN pnpm deploy --filter=@genius-suite/numeriqo.app --prod --legacy --ignore-scripts /deploy
 
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 RUN apk add --no-cache curl && \
     addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 appuser

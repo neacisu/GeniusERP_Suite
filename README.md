@@ -1,6 +1,6 @@
 # GeniusSuite – Suită Modulară Enterprise (PERN, NX Monorepo, Docker)
 
-GeniusSuite este o suită modulară de aplicații enterprise, construită pe stack modern: **React 19 LTS**, **Node.js 24 LTS**, **TypeScript latest**, **Fastify v5.6.1**, **Drizzle ORM**, **PostgreSQL 18**, **NX monorepo**, **Docker Compose** (model hibrid). Este vândută fie ca suită completă **GeniusERP.app**, fie ca aplicații stand-alone: **archify.app**, **cerniq.app**, **flowxify.app**, **i-wms.app**, **mercantiq.app**, **numeriqo.app**, **triggerra.app**, **vettify.app**.
+GeniusSuite este o suită modulară de aplicații enterprise, construită pe stack modern: **React 19.2.8**, **Node.js 24 LTS**, **TypeScript 5.9.3** (bridge TS 6 → 7.1 planificat), **Fastify 5.12.1**, **Drizzle ORM 0.45.2**, **PostgreSQL 18.6**, **NX 22.7.8**, **pnpm 10.34.5**, **Docker Compose** (model hibrid). Este vândută fie ca suită completă **GeniusERP.app**, fie ca aplicații stand-alone: **archify.app**, **cerniq.app**, **flowxify.app**, **i-wms.app**, **mercantiq.app**, **numeriqo.app**, **triggerra.app**, **vettify.app**.
 
 ## Stack Principal
 
@@ -38,17 +38,19 @@ GeniusSuite este o suită modulară de aplicații enterprise, construită pe sta
 
 ## Stack Tehnologic
 
-- **Frontend:** React 19 LTS, TypeScript latest, tRPC 3.1.0, Tailwind CSS.
-- **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM latest + Drizzle-kit, PostgreSQL 18.
-- **Auth:** SuperTokens 11.2.0 LTS (PKCE → JWT), OIDC, RBAC, multi-tenant.
-- **BPM:** Temporal TS SDK 1.13.1.
-- **Broker:** Apache Kafka 4.1.0 LTS.
-- **Observabilitate:** OpenTelemetry, Prometheus, Grafana, Loki, Tempo.
-- **Containerizare:** pnpm, NX, Docker Compose (model hibrid: per-app + orchestrator root).
+- **Frontend:** React 19.2.8, TypeScript 5.9.3, tRPC 11.18.0, Zod 4.5.1, Tailwind CSS.
+- **Backend:** Node.js 24 LTS, Fastify 5.12.1, Drizzle ORM 0.45.2 + drizzle-kit 0.31.10, PostgreSQL 18.6.
+- **Auth:** SuperTokens Core 12.1.1 + `supertokens-node` 24.0.3 (PKCE → JWT), OIDC, RBAC, multi-tenant.
+- **BPM:** Temporal server 1.31.2 (GA 28.08.2026; 1.32.x nu era release stabil), Temporal TS SDK 1.23.0.
+- **Broker:** Apache Kafka 4.3.1.
+- **Edge:** Traefik v3.7.12.
+- **Secrets:** OpenBao 2.6.2 (Namespace Sealing per tenant — v2.6).
+- **Observabilitate:** OpenTelemetry Collector 0.159.0, SDK Node 0.221.0, Prometheus v3.14.0, Grafana 13.2.0, Loki 3.7.7, Promtail 3.6.4.
+- **Containerizare:** pnpm 10.34.5, NX 22.7.8, Docker Compose (model hibrid: per-app + backing services în `shared/backing-services/`).
 
 ## Arhitectură Generală
 
-- **Model Hibrid:** Compose per aplicație (izolare, ownership clar) + compose orchestrator root (rețele shared, Traefik, observability).
+- **Model Hibrid:** Compose per aplicație + **backing services canonice** în `shared/backing-services/` (nu în rădăcina repo) + Traefik în `proxy/compose/` + observability în `shared/observability/`. Vezi `shared/backing-services/README.md`.
 - **Micro-Frontends:** Module Federation pentru încărcare dinamică în suite-shell.
 - **Data Mesh:** Aplicațiile produc "Produse de Date" pe Kafka; cerniq consumă pentru BI unificat.
 - **Multi-Tenant:** Subdomenii per tenant, RLS pe DB, entitlements per plan.
@@ -58,9 +60,9 @@ GeniusSuite este o suită modulară de aplicații enterprise, construită pe sta
 
 ### Cerințe
 - Node.js 24 LTS
-- pnpm latest
+- pnpm 10.34.5 (exclusiv; Corepack)
 - Docker & Docker Compose
-- PostgreSQL 18 (sau via Docker)
+- PostgreSQL 18.6 (sau via Docker)
 
 ### Initialization
 ```bash
@@ -95,7 +97,7 @@ Accesează la `https://geniuserp.app` (portal public) sau `https://app.geniuserp
 - **NX Monorepo:** `pnpm nx run <app>:<task>` pentru build/test per app.
 - **Hot Reload:** `pnpm run dev --app <app>` pentru dezvoltare locală.
 - **Testare:** Unit (Jest), integration, e2e (Playwright), load (k6), security (ZAP/Semgrep).
-- **Linting:** ESLint, Prettier, TypeScript strict.
+- **Linting:** ESLint 10.9.1, Prettier, TypeScript 5.9.3 strict. Calendar P2: `Plan/CALENDAR-P2-STACK-2026-08-28.md`.
 
 ## CI/CD Pipeline
 

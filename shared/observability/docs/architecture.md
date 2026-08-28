@@ -71,7 +71,7 @@ Critical data protected via named Docker volumes:
 
 ### 1. OTEL Collector
 
-**Image:** `otel/opentelemetry-collector:latest`  
+**Image:** `otel/opentelemetry-collector:0.159.0`  
 **Container:** `geniuserp-otel-collector`  
 **Ports:**
 - `4317` - gRPC (OTLP protocol)

@@ -3,16 +3,17 @@
 Aceste reguli definesc comportamentul și ghidurile pentru agentul Copilot (Grok Code) în proiectul GeniusSuite. Agentul trebuie să le urmeze pentru a menține consistența și calitatea codului.
 
 ## Stack Tehnologic și Convenții
-- **Limbaj:** TypeScript strict (noUncheckedIndexedAccess, exactOptionalPropertyTypes).
-- **Frontend:** React 19 LTS, tRPC 3.1.0, Tailwind CSS.
-- **Backend:** Node.js 24 LTS, Fastify v5.6.1, Drizzle ORM latest.
-- **Bază de date:** PostgreSQL 18.
-- **Monorepo:** NX workspace cu pnpm.
-- **Containerizare:** Docker Compose (model hibrid).
-- **Auth:** SuperTokens + OIDC + RBAC.
-- **BPM:** Temporal TS SDK.
-- **Broker:** Apache Kafka.
-- **Observabilitate:** OpenTelemetry, Prometheus, Grafana.
+- **Limbaj:** TypeScript 5.9.3 strict (noUncheckedIndexedAccess, exactOptionalPropertyTypes).
+- **Frontend:** React 19.2.8, tRPC 11.18.0, Zod 4.5.1, Tailwind CSS.
+- **Backend:** Node.js 24 LTS, Fastify 5.12.1, Drizzle ORM 0.45.2.
+- **Bază de date:** PostgreSQL 18.6.
+- **Monorepo:** NX 22.7.8 cu pnpm 10.34.5 (exclusiv pnpm).
+- **Containerizare:** Docker Compose (model hibrid). Backing services: `shared/backing-services/`.
+- **Auth:** SuperTokens Core 12.1.1 + OIDC + RBAC.
+- **BPM:** Temporal server 1.31.2, Temporal TS SDK 1.23.0.
+- **Broker:** Apache Kafka 4.3.1.
+- **Edge:** Traefik v3.7.12. Secrets: OpenBao 2.6.2.
+- **Observabilitate:** OpenTelemetry Collector 0.159.0, Prometheus v3.14.0, Grafana 13.2.0, Loki 3.7.7.
 
 ## Convenții de Cod
 - **Naming:** kebab-case pentru directoare, PascalCase pentru componente React, camelCase pentru funcții/variabile.
@@ -26,7 +27,7 @@ Aceste reguli definesc comportamentul și ghidurile pentru agentul Copilot (Grok
 - **Data Mesh:** Aplicațiile produc "Produse de Date" pe Kafka; cerniq consumă pentru BI.
 - **Multi-Tenant:** Subdomenii per tenant, RLS pe DB, entitlements per plan.
 - **Securitate:** PKCE→OIDC→JWT, RBAC/ABAC, entitlements.
-- **Model Hibrid:** Compose per-app + orchestrator root.
+- **Model Hibrid:** Compose per-app + backing services în `shared/backing-services/` (nu root) + Traefik `proxy/compose/` + observability.
 
 ## Comenzi Comune
 - **Instalare:** `pnpm install`

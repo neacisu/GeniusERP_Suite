@@ -19,7 +19,7 @@ async function main() {
         },
       },
       timestamp: () => `,"time":"${new Date().toISOString()}"`,
-    }
+    },
   });
 
   app.get('/health', async () => {

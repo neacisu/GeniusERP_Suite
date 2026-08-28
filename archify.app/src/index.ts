@@ -23,7 +23,7 @@ async function main() {
         },
       },
       timestamp: () => `,"time":"${new Date().toISOString()}"`,
-    }
+    },
   });
 
   // Health endpoint for Docker/Kubernetes health checks

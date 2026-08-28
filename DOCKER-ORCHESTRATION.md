@@ -28,6 +28,7 @@ GeniusSuite folosește 4 zone de rețea izolate conform Tabelul 3:
 │ - Kafka                  │    │  - Grafana                 │
 │ - Temporal               │    │  - Loki                    │
 │ - SuperTokens            │    │  - OTEL Collector          │
+│ - OpenBao                │    │                            │
 └──────────────────────────┘    └────────────────────────────┘
 ```
 
@@ -62,7 +63,7 @@ docker network create --driver bridge --subnet 172.23.0.0/16 geniuserp_net_obser
 
 ```bash
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml up -d
+docker compose -f shared/backing-services/docker-compose.backing-services.yml up -d
 ```
 
 Verifică healthy status:
@@ -71,7 +72,9 @@ Verifică healthy status:
 docker ps --filter name=geniuserp --format 'table {{.Names}}\t{{.Status}}'
 ```
 
-Așteptat: 4 containere (postgres, kafka, temporal, supertokens)
+Așteptat: postgres, kafka, temporal (+ schema job + UI), SuperTokens, OpenBao.
+
+⚠️ **SuperTokens Core 12.1.1** e major față de 11.2. Pe volum PostgreSQL existent: backup `identity_db` + [SCHEMA-REWORK.md](https://github.com/supertokens/supertokens-core/blob/master/SCHEMA-REWORK.md) înainte de primul `up`. Vezi `shared/backing-services/README.md`.
 
 #### 3. **Pornire Observability Stack**
 
@@ -134,7 +137,7 @@ docker compose -f compose.dev.yml down
 
 # Backing Services
 cd /var/www/GeniusSuite
-docker compose -f docker-compose.backing-services.yml down
+docker compose -f shared/backing-services/docker-compose.backing-services.yml down
 ```
 
 ⚠️ **NU folosiți `-v` flag** - volumele sunt externe și trebuie păstrate!
@@ -178,9 +181,9 @@ Acestea sunt definite cu `external: true` în compose files, deci nu se șterg l
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
 
-### Așteptat: 16 Containere
+### Așteptat: backing + obs + CP
 
-- **4 Backing**: postgres, kafka, temporal, supertokens
+- **Backing (running):** postgres, kafka, temporal, temporal-ui, SuperTokens, OpenBao. Job-ul `temporal-schema` e oneshot (iese după migrare).
 - **5 Observability**: prometheus, grafana, loki, promtail, otel-collector
 - **7 CP Services**: identity, licensing, suite-admin, suite-shell, suite-login, ai-hub, analytics-hub
 

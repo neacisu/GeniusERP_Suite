@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY cp ./cp
 
 # Install dependencies
 # Install pnpm
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 
 # Add pnpm to PATH
 ENV PATH="/usr/local/bin:$PATH"
@@ -27,12 +27,12 @@ RUN cd shared/observability && pnpm run build && cd ../../shared/common && pnpm 
 RUN cd cp/licensing && pnpm run build
 
 # Runtime stage
-FROM node:20-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm
+RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
 
 # Add pnpm to PATH
 ENV PATH="/usr/local/bin:$PATH"

@@ -43,9 +43,9 @@ info() {
 }
 
 # Verificare că suntem în directorul corect
-if [ ! -f "docker-compose.backing-services.yml" ]; then
-    error "Nu suntem în directorul root al GeniusSuite (/var/www/GeniusSuite)"
-    error "Rulează: cd /var/www/GeniusSuite && bash scripts/stop-suite.sh"
+if [ ! -f "shared/backing-services/docker-compose.backing-services.yml" ]; then
+    error "Nu suntem în directorul root al GeniusSuite"
+    error "Rulează din rădăcina repo-ului: bash scripts/stop-suite.sh"
     exit 1
 fi
 
@@ -96,7 +96,7 @@ echo ""
 # ============================================================================
 log "FAZA 3: Oprire Backing Services..."
 
-docker compose -f docker-compose.backing-services.yml down  # FĂRĂ -v
+docker compose -f shared/backing-services/docker-compose.backing-services.yml down  # FĂRĂ -v
 
 log "✓ Backing Services oprite"
 echo ""

@@ -16,10 +16,10 @@ const app = Fastify({
       options: {
         colorize: false,
         translateTime: 'SYS:standard',
-        ignore: 'pid,hostname'
-      }
-    }
-  }
+        ignore: 'pid,hostname',
+      },
+    },
+  },
 });
 
 // Health check endpoint

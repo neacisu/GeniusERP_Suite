@@ -1,8 +1,0 @@
-packages:
-  - 'shared/*'
-  - 'cp/*'
-  - '*.app'
-  - 'gateway'
-  - 'proxy'
-  - 'scripts'
-  - 'docs'

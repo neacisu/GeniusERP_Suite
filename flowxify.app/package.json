@@ -13,11 +13,11 @@
   "dependencies": {
     "@genius-suite/common": "workspace:*",
     "@genius-suite/observability": "workspace:*",
-    "fastify": "^5.2.1"
+    "fastify": "^5.12.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
   }
 }

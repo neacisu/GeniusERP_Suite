@@ -27,7 +27,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 10
+          version: 10.34.5
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
@@ -283,7 +283,7 @@ jobs:
       - name: Start backing services (PostgreSQL, Kafka, Temporal, SuperTokens)
         run: |
           echo "Starting backing services on net_backing_services..."
-          docker compose -f docker-compose.backing-services.yml up -d
+          docker compose -f shared/backing-services/docker-compose.backing-services.yml up -d
           echo "Waiting for backing services to be healthy..."
           sleep 60
         timeout-minutes: 5

@@ -9149,6 +9149,8 @@ Obiectiv: fundație comună, baze de date și scripturi de bază pentru toate pr
 
 ### F0.4 Orchestrare Docker (hibrid): compose per app + orchestrator root, rețele partajate, Traefik routing
 
+> **Implementare de facto (28.08.2026):** nu există `compose.yml` orchestrator în rădăcina repo-ului. Intentul F0.4 (rețele shared + Traefik + observability) e împărțit pe trei fișiere: backing `shared/backing-services/docker-compose.backing-services.yml` (sursă unică — nu duplicat în root), Traefik `proxy/compose/docker-compose.yml`, observability `shared/observability/compose/profiles/compose.dev.yml`. Detalii: `shared/backing-services/README.md`.
+
 F0.5 Securitate & Secrets: Vault/1Password/SSM, rotație chei, profile dev/staging/prod.
 
 F0.6 Bootstrap Scripts: init local/dev, seeds, demo data.
