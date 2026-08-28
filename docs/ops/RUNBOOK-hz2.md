@@ -27,26 +27,23 @@ Cheile și token-urile **nu** se scriu în acest runbook, în git, sau în chat.
 
 ## Restore volume (OpenBao / Kafka / Loki / Tempo)
 
-Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo}`. Restore:
+Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo,postgres,…}`. Backup zilnic incremental: restic pe StorageBox **u655966**, retenție 3 zile (`restic-volume-sb.timer`). Secret: `RESTIC_NOU_PASSWORD` în `/opt/stacks/.env` și `/opt/secrets/restic-nou.env` — copiază parola **off-host**. Valorile nu stau în acest runbook.
 
-1. Oprește containerul (`docker compose -f /opt/<serviciu>/docker-compose.yml stop`).
-2. `restic restore <snapshot> --target /tmp/restore --include /mnt/HC_Volume_106669639/<serviciu>`
-3. Copiază în loc, păstrează UID: OpenBao `100:1000`, Loki/Tempo `10001:10001`, Kafka `1000:1000`.
-4. Pornește containerul. OpenBao va fi sealed → `systemctl start openbao-unseal` (sau `/opt/openbao/unseal.sh`).
+Restore volum hz2.65:
 
-Disaster-recovery secrete: restic include `/opt/platform.env` (repo criptat). **Parola restic trebuie să existe și off-host** (password manager / telefon). Dacă trăiește doar pe hz2.65, moartea mașinii face arhivele indescifrabile — backupul e atunci decor. Copiază `RESTIC_PASSWORD` (ideal și `platform.env`) într-un singur loc din afara discului. Valorile nu stau în acest runbook.
+```bash
+set -a; . /opt/secrets/restic-nou.env; set +a
+restic snapshots
+restic restore latest --target /tmp/restore
+```
 
-Definiția platformei (fără git pe `/opt`): restic acoperă și `/opt/{openbao,temporal,supertokens,kafka,observability,traefik}` (compose, `unseal.sh`, HCL) plus `/etc/systemd/system/openbao-unseal.service`. Volumele de date rămân pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo}`.
+Apoi oprește containerul, copiază din `/tmp/restore/mnt/HC_Volume_106669639/<serviciu>` în loc (UID: OpenBao `100:1000`, Loki/Tempo `10001:10001`, Kafka `1000:1000`, Postgres Docker `999`), pornește. OpenBao sealed → `systemctl start openbao-unseal`.
+
+hz2.124 (PGDATA + WAL): `/opt/secrets/restic-nou.env` pe acel host, repo `restic/hz2.124-volume`.
 
 ## Restore Postgres (baze GeniusERP)
 
-Dump-uri zilnice: `/mnt/HC_Volume_106669639/pgdumps/geniuserp/<db>.dump` (custom format), retenție 7 zile în director + restic `keep-daily 7 keep-weekly 4`.
-
-```bash
-docker exec -i postgres pg_restore -U postgres -d <db> --clean --if-exists < /mnt/HC_Volume_106669639/pgdumps/geniuserp/<db>.dump
-```
-
-Baze: `temporal`, `temporal_visibility`, `supertokens`, `identity_db`, `licensing_db`, `archify_db`, `cerniq_db`, `flowxify_db`, `iwms_db`, `mercantiq_db`, `numeriqo_db`, `triggerra_db`, `vettify_db`, `geniuserp_db`, `admin_db`.
+Nu mai există dump-uri `pgdumps/` (jobul vechi spre u382766 e oprit). Restore din snapshot-ul de volum (directorul `postgres/` pe hz2.65) sau din restic de pe hz2.124 pentru clusterul dedicat.
 
 ## Temporal / SuperTokens
 
