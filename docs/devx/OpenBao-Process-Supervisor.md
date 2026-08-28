@@ -1,5 +1,8 @@
 # OpenBao Process Supervisor - Developer Guide
 
+> **Context hz2.65:** modelul de deployment s-a schimbat la platformă `/opt` (OpenBao/Traefik nu mai pornesc din repo). Vezi `docs/ops/RUNBOOK-hz2.md`. Process Supervisor / node-openbao rămân doar în tag-ul `archive/feat-F0.5_Securitate_OpenBao_ENV-2026-08-29`.
+
+
 > **Audience**: GeniusERP Suite Developers  
 > **Last Updated**: 2025-11-23  
 > **Status**: Official Developer Experience Guide

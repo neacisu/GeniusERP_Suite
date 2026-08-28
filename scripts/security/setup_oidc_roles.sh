@@ -26,11 +26,9 @@ if [[ -z "${BAO_TOKEN:-}" ]]; then
     exit 1
 fi
 
-if [[ -z "${BAO_ADDR:-}" ]]; then
-    echo -e "${RED}✗ BAO_ADDR not set${NC}"
-    echo -e "  Export it: export BAO_ADDR=http://127.0.0.1:8200"
-    exit 1
-fi
+# hz2.65: OpenBao is platform (/opt/openbao) on Docker network backing.
+: "${BAO_ADDR:=http://openbao:8200}"
+echo -e "${BLUE}BAO_ADDR=${BAO_ADDR}${NC}"
 
 # Repository configuration
 REPO="neacisu/GeniusERP_Suite"

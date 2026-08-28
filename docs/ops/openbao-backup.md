@@ -1,5 +1,8 @@
 # OpenBao Backup & Disaster Recovery
 
+> **Context hz2.65:** modelul de deployment s-a schimbat la platformă `/opt` (OpenBao/Traefik nu mai pornesc din repo). Vezi `docs/ops/RUNBOOK-hz2.md`. Process Supervisor / node-openbao rămân doar în tag-ul `archive/feat-F0.5_Securitate_OpenBao_ENV-2026-08-29`.
+
+
 ## Overview
 
 This document describes the backup and disaster recovery strategy for the OpenBao service in the GeniusERP Suite.

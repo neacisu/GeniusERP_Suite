@@ -1,5 +1,8 @@
 # PGCrypto Integration Guide for GeniusERP Suite
 
+> **Context hz2.65:** modelul de deployment s-a schimbat la platformă `/opt` (OpenBao/Traefik nu mai pornesc din repo). Vezi `docs/ops/RUNBOOK-hz2.md`. Process Supervisor / node-openbao rămân doar în tag-ul `archive/feat-F0.5_Securitate_OpenBao_ENV-2026-08-29`.
+
+
 > **Version**: 1.0  
 > **Last Updated**: 2025-11-21  
 > **Scope**: All 15 databases across CP modules and applications

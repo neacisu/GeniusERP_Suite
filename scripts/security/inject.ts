@@ -5,6 +5,10 @@
  * Provides fallback mechanism for scenarios where Process Supervisor pattern
  * cannot be used directly (CLI commands, migrations, workers).
  *
+ * hz2.65: OpenBao lives on the platform (/opt/openbao).
+ * Prefer BAO_ADDR=http://openbao:8200 on the Docker network `backing`.
+ * Process Supervisor (bao agent as PID 1) is NOT used on this host.
+ *
  * Usage:
  *   ./scripts/security/inject.ts <app-name> <command>
  *
