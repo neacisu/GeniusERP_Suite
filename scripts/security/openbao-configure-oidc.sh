@@ -28,11 +28,7 @@ fi
 
 # hz2.65: OpenBao is platform (/opt/openbao) on Docker network backing.
 : "${BAO_ADDR:=http://openbao:8200}"
-if [[ -z "${BAO_ADDR:-}" ]]; then
-    echo -e "${RED}✗ BAO_ADDR not set${NC}"
-    echo -e "  Export it: export BAO_ADDR=http://openbao:8200"
-    exit 1
-fi
+echo -e "${BLUE}BAO_ADDR=${BAO_ADDR}${NC}"
 
 echo -e "${BLUE}[1/5] Enabling JWT/OIDC auth method...${NC}"
 
