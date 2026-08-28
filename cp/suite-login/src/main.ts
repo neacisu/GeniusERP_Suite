@@ -4,7 +4,7 @@ import { initTracing } from '@genius-suite/observability';
 import { initMetrics, metricsHandler } from '@genius-suite/observability';
 import { logger } from '@genius-suite/common';
 
-const app = Fastify({ logger });
+const app = Fastify({ loggerInstance: logger });
 
 async function main() {
   // Validate required environment variables

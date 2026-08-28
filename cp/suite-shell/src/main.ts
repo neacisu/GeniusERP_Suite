@@ -14,7 +14,7 @@ async function main() {
   initTracing({ serviceName });
   initMetrics({ serviceName });
 
-  const app = fastify({ logger: logger as any });
+  const app = fastify({ loggerInstance: logger });
 
   // Health endpoint
   app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {

@@ -171,7 +171,27 @@ Toate variabilele respectă convenția: `<PREFIX>_<CATEGORIE>_<NUME_VARIABILA>`
 | PostgreSQL | PostgreSQL 18 | 5432 | `SUITE_DB_POSTGRES_HOST` | net_backing_services |
 | Kafka | Apache Kafka 4.1.0 | 9092 | `SUITE_MQ_KAFKA_BROKERS` | net_backing_services |
 | SuperTokens Core | SuperTokens 11.2.0 | 3567 | `CP_IDT_AUTH_SUPERTOKENS_CONNECTION_URI` | net_backing_services |
-| Temporal | Temporal TS SDK 1.13.1 | 7233 | `SUITE_BPM_TEMPORAL_HOST_PORT` | net_backing_services |
+| Temporal | Temporal server 1.31.2 | 7233 intern | `SUITE_BPM_TEMPORAL_HOST_PORT` | backing |
+
+## 6.1 Împărțire platformă vs. suită (hz2.65, 2026-08-29)
+
+Pe hz2.65 infrastructura **nu** mai e pornită din repo. Tabelul 4 se împarte astfel:
+
+| Rol | Unde rulează | Rețea | Publicare host |
+|-----|----------------|-------|----------------|
+| Traefik 80/443 | `/opt/traefik` (v3.7.11 live; compose pinuit v3.7.12, restart neaprobat) | `traefik_default` | 80/443 |
+| PostgreSQL 5432 | `/opt/postgres` | `data` | doar `127.0.0.1:5432` |
+| Grafana / Prometheus / Alertmanager | `/opt/observability` | `observability` | prin Traefik |
+| Loki 3100, Tempo 3200, OTEL 4317/4318 | `/opt/observability` (completat 2026-08-29) | `observability` | niciuna |
+| OpenBao 8200 | `/opt/openbao` | `backing` + `observability` | niciuna |
+| Kafka 9092 | `/opt/kafka` | `backing` | niciuna |
+| Temporal 7233 + UI intern | `/opt/temporal` | `backing` + `data` | niciuna |
+| SuperTokens 3567 | `/opt/supertokens` | `backing` + `data` | niciuna |
+| API-uri Tabelul 5 (6000–6899) | containere de produs | intern Docker | **niciuna** (lege) |
+
+DNS intern: `postgres:5432`, `kafka:9092`, `temporal:7233`, `supertokens:3567`, `openbao:8200`, `otel-collector:4317/4318`.
+
+`shared/observability/compose/profiles/compose.dev.yml` = **dev-only, nu pe hz2.65**.
 
 ## 7. Securitate și Guvernanță
 

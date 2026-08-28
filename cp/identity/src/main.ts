@@ -16,7 +16,7 @@ async function main() {
   initMetrics({ serviceName });
 
   // Create Fastify instance with shared logger for JSON-structured logs
-  const app = fastify({ logger: logger as any });
+  const app = fastify({ loggerInstance: logger });
 
   // Health endpoint for Kubernetes/Docker health checks
   app.get('/health', async (_request: FastifyRequest, _reply: FastifyReply) => {

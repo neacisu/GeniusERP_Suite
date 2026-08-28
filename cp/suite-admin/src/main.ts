@@ -14,7 +14,7 @@ async function main() {
   initTracing({ serviceName });
   await initMetrics({ serviceName });
 
-  const app = fastify({ logger: logger as any });
+  const app = fastify({ loggerInstance: logger });
 
   // Metrics endpoint for Prometheus scraping
   app.get('/metrics', async (_request: FastifyRequest, reply: FastifyReply) => {

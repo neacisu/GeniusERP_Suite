@@ -6,8 +6,6 @@ services:
       context: ../../..
       dockerfile: cp/licensing/Dockerfile
     container_name: genius-suite-licensing
-    ports:
-      - "${CP_LIC_APP_PORT}:${CP_LIC_APP_PORT}"
     env_file:
       - ../.cp.licensing.env
     environment:
@@ -15,12 +13,21 @@ services:
       - CP_LIC_APP_METRICS_PORT=${CP_LIC_APP_METRICS_PORT}
       - CP_LIC_APP_NODE_ENV=${CP_LIC_APP_NODE_ENV}
       - CP_LIC_OBS_SERVICE_NAME=${CP_LIC_OBS_SERVICE_NAME}
-      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL:-http://otel-collector:4317}
       - LOG_LEVEL=info
     networks:
-      - net_suite_internal
-      - net_backing_services
-      - net_observability
+      - traefik_default
+      - observability
+      - backing
+      - data
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.licensing.rule=Host(`licensing.geniuserp.app`)
+      - traefik.http.routers.licensing.entrypoints=websecure
+      - traefik.http.routers.licensing.tls.certresolver=cloudflare
+      - traefik.http.routers.licensing.middlewares=security-headers@file
+      - traefik.http.services.licensing.loadbalancer.server.port=6300
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6300/health || exit 1"]
@@ -29,13 +36,17 @@ services:
       retries: 3
       start_period: 40s
 
+
 networks:
-  net_suite_internal:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_suite_internal
-  net_backing_services:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_backing_services
-  net_observability:
+  backing:
+    name: backing
     external: true
-    name: geniuserp_net_observability
+  data:
+    name: data
+    external: true

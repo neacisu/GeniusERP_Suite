@@ -1,3 +1,4 @@
+# DEV-ONLY. NU pe hz2.65 — Grafana/Prometheus/Loki/OTEL de platformă sunt în /opt/observability.
 services:
   otel-collector:
     image: otel/opentelemetry-collector:0.159.0

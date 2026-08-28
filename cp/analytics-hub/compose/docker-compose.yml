@@ -6,8 +6,6 @@ services:
       context: ../../../
       dockerfile: cp/analytics-hub/Dockerfile
     container_name: genius-suite-analytics-hub
-    ports:
-      - "${CP_ANLY_APP_PORT}:${CP_ANLY_APP_PORT}"
     env_file:
       - ../.cp.analytics-hub.env
     environment:
@@ -15,12 +13,20 @@ services:
       - CP_ANLY_APP_METRICS_PORT=${CP_ANLY_APP_METRICS_PORT}
       - CP_ANLY_APP_NODE_ENV=${CP_ANLY_APP_NODE_ENV}
       - CP_ANLY_OBS_SERVICE_NAME=${CP_ANLY_OBS_SERVICE_NAME}
-      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL:-http://otel-collector:4317}
       - LOG_LEVEL=info
     networks:
-      - net_suite_internal
-      - net_backing_services
-      - net_observability
+      - traefik_default
+      - observability
+      - backing
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.analytics-hub.rule=Host(`analytics.geniuserp.app`)
+      - traefik.http.routers.analytics-hub.entrypoints=websecure
+      - traefik.http.routers.analytics-hub.tls.certresolver=cloudflare
+      - traefik.http.routers.analytics-hub.middlewares=security-headers@file
+      - traefik.http.services.analytics-hub.loadbalancer.server.port=6350
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${CP_ANLY_APP_PORT}/health"]
@@ -29,13 +35,17 @@ services:
       retries: 3
       start_period: 40s
 
+
 networks:
-  net_suite_internal:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_suite_internal
-  net_backing_services:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_backing_services
-  net_observability:
+  backing:
+    name: backing
     external: true
-    name: geniuserp_net_observability
+  data:
+    name: data
+    external: true

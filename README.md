@@ -50,7 +50,8 @@ GeniusSuite este o suită modulară de aplicații enterprise, construită pe sta
 
 ## Arhitectură Generală
 
-- **Model Hibrid:** Compose per aplicație + **backing services canonice** în `shared/backing-services/` (nu în rădăcina repo) + Traefik în `proxy/compose/` + observability în `shared/observability/`. Vezi `shared/backing-services/README.md`.
+- **Pe hz2.65:** tenant pe platformă. Traefik, Grafana, Prometheus, Postgres, OpenBao, Kafka, Temporal, SuperTokens, Loki, Tempo, OTEL Collector sunt în `/opt`. `shared/observability/compose/profiles/compose.dev.yml` și `proxy/compose/` **nu se pornesc**. Porturile Tabelului 5 rămân interne (fără `ports:` pe host).
+- **Alte medii (CI/dev):** Compose per aplicație + backing services în `shared/backing-services/` + Traefik în `proxy/compose/` + observability în `shared/observability/`.
 - **Micro-Frontends:** Module Federation pentru încărcare dinamică în suite-shell.
 - **Data Mesh:** Aplicațiile produc "Produse de Date" pe Kafka; cerniq consumă pentru BI unificat.
 - **Multi-Tenant:** Subdomenii per tenant, RLS pe DB, entitlements per plan.

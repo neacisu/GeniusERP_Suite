@@ -17,6 +17,9 @@
 
 set -e  # Exit on error
 
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
 # Culori pentru output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -52,6 +55,18 @@ log "==================================================================="
 log "  PORNIRE ORCHESTRATĂ GENIUSSUITE"
 log "==================================================================="
 
+# hz2.65: infrastructura de platformă trăiește în /opt. Nu o mai pornim din repo.
+if docker network inspect backing >/dev/null 2>&1 && docker inspect postgres >/dev/null 2>&1; then
+    log "Detectat host de platformă (rețea backing + postgres). Skip Traefik/Grafana/Postgres/Kafka/Temporal/ST/OpenBao din repo."
+    log "Aplicațiile se atașează la traefik_default, observability, backing, data."
+    SKIP_PLATFORM_INFRA=1
+else
+    SKIP_PLATFORM_INFRA=0
+fi
+
+if [ "${SKIP_PLATFORM_INFRA:-0}" = "1" ]; then
+    log "FAZA 1–3: skip rețele geniuserp_net_* / backing-services / compose.dev.yml (dev-only, nu pe hz2.65)"
+else
 # ============================================================================
 # FAZA 1: Creare Rețele Docker (Dacă nu există deja)
 # ============================================================================
@@ -123,7 +138,7 @@ log "FAZA 3: Pornire Observability Stack (Prometheus, Loki, Grafana, OTEL)..."
 
 cd shared/observability/compose/profiles
 docker compose -f compose.dev.yml --env-file ./.observability.env up -d
-cd /var/www/GeniusSuite
+cd "$ROOT"
 
 log "Așteptăm OTEL Collector să fie ready (10 secunde)..."
 sleep 10
@@ -131,21 +146,31 @@ sleep 10
 log "✓ Observability Stack pornit"
 echo ""
 
+fi  # SKIP_PLATFORM_INFRA
+
 # ============================================================================
 # FAZA 4: Pornire Control Plane Services
 # ============================================================================
 log "FAZA 4: Pornire Control Plane Services..."
 
-# Funcție pentru pornirea unui serviciu CP
-start_cp_service() {
+start_compose_build() {
     local service_name=$1
     local service_path=$2
-    
     log "Pornesc $service_name..."
-    cd "$service_path"
-    docker compose up -d --build
-    cd /var/www/GeniusSuite
+    cd "$ROOT/$service_path"
+    local envfile
+    envfile=$(find .. -maxdepth 1 -name '.*.env' ! -name '*.example' | head -1 || true)
+    if [ -n "${envfile:-}" ]; then
+        docker compose --env-file "$ROOT/.suite.general.env" --env-file "$envfile" up -d --build
+    else
+        docker compose --env-file "$ROOT/.suite.general.env" up -d --build
+    fi
+    cd "$ROOT"
     sleep 3
+}
+
+start_cp_service() {
+    start_compose_build "$1" "$2"
 }
 
 # Pornire în ordine conform dependențelor
@@ -163,6 +188,21 @@ log "Așteptăm toate serviciile CP să pornească complet (15 secunde)..."
 sleep 15
 
 log "✓ Control Plane Services pornite"
+echo ""
+
+# ============================================================================
+# FAZA 5: Aplicații produs (hz2.65)
+# ============================================================================
+log "FAZA 5: Pornire aplicații produs..."
+start_compose_build "Archify" "archify.app/compose"
+start_compose_build "Cerniq" "cerniq.app/compose"
+start_compose_build "Flowxify" "flowxify.app/compose"
+start_compose_build "i-WMS" "i-wms.app/compose"
+start_compose_build "Mercantiq" "mercantiq.app/compose"
+start_compose_build "Numeriqo" "numeriqo.app/compose"
+start_compose_build "Triggerra" "triggerra.app/compose"
+start_compose_build "Vettify" "vettify.app/compose"
+log "✓ Aplicații produs pornite (gateway și geniuserp.app nu au compose în repo)"
 echo ""
 
 # ============================================================================

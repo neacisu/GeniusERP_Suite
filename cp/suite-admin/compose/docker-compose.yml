@@ -6,8 +6,6 @@ services:
       context: ../../..
       dockerfile: cp/suite-admin/Dockerfile
     container_name: genius-suite-admin
-    ports:
-      - "${CP_ADMIN_APP_PORT}:${CP_ADMIN_APP_PORT}"
     env_file:
       - ../.cp.suite-admin.env
     environment:
@@ -15,11 +13,20 @@ services:
       - CP_ADMIN_APP_METRICS_PORT=${CP_ADMIN_APP_METRICS_PORT}
       - CP_ADMIN_APP_NODE_ENV=${CP_ADMIN_APP_NODE_ENV}
       - CP_ADMIN_OBS_SERVICE_NAME=${CP_ADMIN_OBS_SERVICE_NAME}
-      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL}
+      - SUITE_OBS_OTEL_COLLECTOR_GRPC_URL=${SUITE_OBS_OTEL_COLLECTOR_GRPC_URL:-http://otel-collector:4317}
       - LOG_LEVEL=info
     networks:
-      - net_suite_internal
-      - net_observability
+      - traefik_default
+      - observability
+      - data
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.suite-admin.rule=Host(`admin.geniuserp.app`)
+      - traefik.http.routers.suite-admin.entrypoints=websecure
+      - traefik.http.routers.suite-admin.tls.certresolver=cloudflare
+      - traefik.http.routers.suite-admin.middlewares=security-headers@file
+      - traefik.http.services.suite-admin.loadbalancer.server.port=6150
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6150/health || exit 1"]
@@ -28,10 +35,17 @@ services:
       retries: 3
       start_period: 40s
 
+
 networks:
-  net_suite_internal:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_suite_internal
-  net_observability:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_observability
+  backing:
+    name: backing
+    external: true
+  data:
+    name: data
+    external: true

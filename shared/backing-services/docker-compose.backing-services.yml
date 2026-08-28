@@ -1,6 +1,7 @@
 # ============================================================================
-# GeniusSuite - Backing Services (sursă unică)
-# Verificat 28.08.2026. Fișierul legacy din rădăcină a fost eliminat (split-brain).
+# GeniusSuite - Backing Services (sursă pentru CI/dev, NU pentru hz2.65)
+# Pe hz2.65 infrastructura e în /opt/{openbao,kafka,temporal,supertokens,postgres,observability,traefik}.
+# NU porni acest compose pe hz2.65: dublează Postgres/OpenBao și publică 0.0.0.0.
 # ============================================================================
 
 services:

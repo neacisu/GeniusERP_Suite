@@ -342,3 +342,12 @@ Respectarea acestui proces asigură că suita GeniusERP rămâne organizată, se
 1\. Loki: Getting Started \- DEV Community ([dev.to](https://dev.to/joachim8675309/loki-getting-started-n8o))
 2\. How to Set Up Grafana, Loki, and Prometheus Locally with Docker Compose: Part 1 of 3 \| by Ahmad Bilal \| Medium ([medium.com](https://medium.com/@ahmadbilalch891/how-to-set-up-grafana-loki-and-prometheus-locally-with-docker-compose-part-1-of-3-62fb25e51d92))
 3\. Manage authentication \| Grafana Loki documentation ([grafana.com](https://grafana.com/docs/loki/latest/operations/authentication/))
+
+
+## Addendum hz2.65 (2026-08-29) — platformă vs. suită
+
+Pe hz2.65, Tabelul 4 se aplică ca **porturi interne de container**, nu ca bind pe host.
+
+- **Platformă (`/opt`):** Traefik 80/443, PostgreSQL 5432 (loopback), Grafana/Prometheus, Loki 3100, Tempo 3200, OTEL 4317/4318, OpenBao 8200, Kafka 9092, Temporal 7233, SuperTokens 3567.
+- **Suită:** doar containerele de produs. Tabelul 5 (6000–6899) rămâne lege internă: API = baza plajei, metrici = bază+1. **Zero** `ports:` pe host pentru aceste plaje.
+- Rețele Docker de platformă: `traefik_default`, `observability`, `backing` (internal, 172.26.0.0/16), `data`.

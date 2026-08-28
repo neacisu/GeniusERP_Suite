@@ -6,6 +6,14 @@ services:
       context: ../..
       dockerfile: i-wms.app/Dockerfile
     container_name: i-wms-app
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.i-wms-app.rule=Host(`iwms.geniuserp.app`)
+      - traefik.http.routers.i-wms-app.entrypoints=websecure
+      - traefik.http.routers.i-wms-app.tls.certresolver=cloudflare
+      - traefik.http.routers.i-wms-app.middlewares=security-headers@file
+      - traefik.http.services.i-wms-app.loadbalancer.server.port=6650
     restart: unless-stopped
     env_file:
       - ../../.suite.general.env
@@ -13,15 +21,13 @@ services:
     environment:
       NODE_ENV: ${IWMS_APP_NODE_ENV:-production}
       PORT: ${IWMS_APP_PORT:-6650}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://otel-collector:4318}/v1/traces"
       OTEL_SERVICE_NAME: i-wms.app
-    ports:
-      - "${IWMS_APP_PORT:-6650}:${IWMS_APP_PORT:-6650}"
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - traefik_default
+      - observability
+      - backing
+      - data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${IWMS_APP_PORT:-6650}/health"]
       interval: 30s
@@ -29,16 +35,17 @@ services:
       retries: 3
       start_period: 40s
 
+
 networks:
-  geniuserp_net_edge:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  backing:
+    name: backing
     external: true
-    name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  data:
+    name: data
     external: true
-    name: geniuserp_net_observability

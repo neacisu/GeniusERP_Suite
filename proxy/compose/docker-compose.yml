@@ -1,3 +1,5 @@
+# hz2.65: NU PORNI. Edge-ul este Traefik-ul de platformă din /opt/traefik.
+# Acest compose rămâne pentru medii unde suita își aduce propriul proxy (CI/dev).
 services:
   traefik:
     image: traefik:v3.7.12

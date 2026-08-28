@@ -14,7 +14,7 @@ async function main() {
   initTracing({ serviceName });
 
   // Create Fastify instance with shared logger for JSON-structured logs
-  const app = fastify({ logger });
+  const app = fastify({ loggerInstance: logger });
 
   // Initialize metrics (registry default prom-client through observability)
   await initMetrics({ serviceName });

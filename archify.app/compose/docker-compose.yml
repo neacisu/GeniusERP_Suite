@@ -6,6 +6,14 @@ services:
       context: ../..
       dockerfile: archify.app/Dockerfile
     container_name: archify-app
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.archify-app.rule=Host(`archify.geniuserp.app`)
+      - traefik.http.routers.archify-app.entrypoints=websecure
+      - traefik.http.routers.archify-app.tls.certresolver=cloudflare
+      - traefik.http.routers.archify-app.middlewares=security-headers@file
+      - traefik.http.services.archify-app.loadbalancer.server.port=6500
     restart: unless-stopped
     env_file:
       - ../../.suite.general.env
@@ -13,15 +21,13 @@ services:
     environment:
       NODE_ENV: ${ARCHY_APP_NODE_ENV:-production}
       PORT: ${ARCHY_APP_PORT:-6500}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://otel-collector:4318}/v1/traces"
       OTEL_SERVICE_NAME: archify.app
-    ports:
-      - "${ARCHY_APP_PORT:-6500}:${ARCHY_APP_PORT:-6500}"
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - traefik_default
+      - observability
+      - backing
+      - data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${ARCHY_APP_PORT:-6500}/health"]
       interval: 30s
@@ -29,16 +35,17 @@ services:
       retries: 3
       start_period: 40s
 
+
 networks:
-  geniuserp_net_edge:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  backing:
+    name: backing
     external: true
-    name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  data:
+    name: data
     external: true
-    name: geniuserp_net_observability

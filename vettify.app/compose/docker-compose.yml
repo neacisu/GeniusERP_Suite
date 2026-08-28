@@ -12,33 +12,40 @@ services:
     environment:
       NODE_ENV: ${VETFY_APP_NODE_ENV:-production}
       PORT: ${VETFY_APP_PORT:-6850}
-      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://geniuserp-otel-collector:4318}/v1/traces"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://otel-collector:4318}/v1/traces"
       OTEL_SERVICE_NAME: vettify.app
-    ports:
-      - "${VETFY_APP_PORT:-6850}:${VETFY_APP_PORT:-6850}"
     networks:
-      - geniuserp_net_edge
-      - geniuserp_net_suite_internal
-      - geniuserp_net_backing_services
-      - geniuserp_net_observability
+      - traefik_default
+      - observability
+      - backing
+      - data
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${VETFY_APP_PORT:-6850}/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.vettify-app.rule=Host(`vettify.geniuserp.app`)
+      - traefik.http.routers.vettify-app.entrypoints=websecure
+      - traefik.http.routers.vettify-app.tls.certresolver=cloudflare
+      - traefik.http.routers.vettify-app.middlewares=security-headers@file
+      - traefik.http.services.vettify-app.loadbalancer.server.port=6850
     restart: unless-stopped
 
+
 networks:
-  geniuserp_net_edge:
+  traefik_default:
+    name: traefik_default
     external: true
-    name: geniuserp_net_edge
-  geniuserp_net_suite_internal:
+  observability:
+    name: observability
     external: true
-    name: geniuserp_net_suite_internal
-  geniuserp_net_backing_services:
+  backing:
+    name: backing
     external: true
-    name: geniuserp_net_backing_services
-  geniuserp_net_observability:
+  data:
+    name: data
     external: true
-    name: geniuserp_net_observability
