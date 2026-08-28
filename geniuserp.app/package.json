@@ -1,0 +1,23 @@
+{
+  "name": "@genius-suite/geniuserp.app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/geniuserp.app/src/index.js"
+  },
+  "dependencies": {
+    "@genius-suite/common": "workspace:*",
+    "@genius-suite/observability": "workspace:*",
+    "fastify": "^5.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
+  }
+}

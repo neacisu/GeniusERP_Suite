@@ -1,0 +1,10 @@
+{{- /* Template for Vettify database credentials from OpenBao dynamic secrets */ -}}
+{{- with secret "database/creds/vettify_runtime" -}}
+{
+  "username": "{{ .Data.username }}",
+  "password": "{{ .Data.password }}",
+  "lease_id": "{{ .LeaseID }}",
+  "lease_duration": {{ .LeaseDuration }},
+  "renewable": {{ .Renewable }}
+}
+{{- end -}}
