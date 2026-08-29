@@ -6,6 +6,8 @@ services:
       context: ../..
       dockerfile: vettify.app/Dockerfile
     container_name: vettify-app
+    extra_hosts:
+      - "postgres:10.10.0.3"
     env_file:
       - ../../.suite.general.env
       - ../.vettify.env

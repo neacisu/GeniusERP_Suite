@@ -4,6 +4,8 @@ services:
       context: ../..
       dockerfile: geniuserp.app/Dockerfile
     container_name: geniuserp-app
+    extra_hosts:
+      - "postgres:10.10.0.3"
     restart: unless-stopped
     environment:
       NODE_ENV: ${GENERP_APP_NODE_ENV:-production}

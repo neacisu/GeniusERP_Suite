@@ -6,6 +6,8 @@ services:
       context: ../..
       dockerfile: triggerra.app/Dockerfile
     container_name: triggerra-app
+    extra_hosts:
+      - "postgres:10.10.0.3"
     env_file:
       - ../../.suite.general.env
       - ../.triggerra.env

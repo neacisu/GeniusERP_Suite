@@ -1,7 +1,8 @@
 # Runbook hz2.65 — GeniusERP ca tenant pe platformă
 
-**Host:** hz2.65  
-**Model:** un edge (Traefik), un Postgres, un stack de observabilitate, infrastructură stateful în `/opt`. Suita nu pornește containere de infrastructură.
+**Host:** hz2.65 (orchestrator / edge)  
+**Postgres live:** hz2.124 (`opsgraph-postgres`, privat **`10.10.0.3:5432`**, PGDATA `/mnt/pgdata/18/main`, WAL `/var/lib/postgresql/wal`)  
+**Model:** un edge (Traefik pe hz2.65), un Postgres **dedicat** pe hz2.124, un stack de observabilitate, infrastructură stateful în `/opt`. Containerele de pe hz2.65 rezolvă hostname-ul `postgres` → `10.10.0.3` via `extra_hosts`. Traefik TCP `2.29.8.65:5432` → `10.10.0.3:5432`. **Nu** există Postgres Docker pe hz2.65.
 
 **Secrete:** valorile trăiesc în `/opt/platform.env` (mode 600) și în OpenBao KV. Niciodată în git, chat sau acest runbook.
 
@@ -27,7 +28,7 @@ Cheile și token-urile **nu** se scriu în acest runbook, în git, sau în chat.
 
 ## Restore volume (OpenBao / Kafka / Loki / Tempo)
 
-Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo,postgres,…}`. Backup zilnic incremental: restic pe StorageBox **u655966**, retenție 3 zile (`restic-volume-sb.timer`). Secret: `RESTIC_NOU_PASSWORD` în `/opt/stacks/.env` și `/opt/secrets/restic-nou.env` — copiază parola **off-host**. Valorile nu stau în acest runbook.
+Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo,…}` (**fără** `postgres/` pe hz2.65 după cutover 2026-08-29). Backup zilnic incremental: restic pe StorageBox **u655966**, retenție 3 zile (`restic-volume-sb.timer`). Secret: `RESTIC_NOU_PASSWORD` în `/opt/stacks/.env` și `/opt/secrets/restic-nou.env` — copiază parola **off-host**. Valorile nu stau în acest runbook.
 
 Restore volum hz2.65:
 
@@ -37,13 +38,26 @@ restic snapshots
 restic restore latest --target /tmp/restore
 ```
 
-Apoi oprește containerul, copiază din `/tmp/restore/mnt/HC_Volume_106669639/<serviciu>` în loc (UID: OpenBao `100:1000`, Loki/Tempo `10001:10001`, Kafka `1000:1000`, Postgres Docker `999`), pornește. OpenBao sealed → `systemctl start openbao-unseal`.
+Apoi oprește containerul, copiază din `/tmp/restore/mnt/HC_Volume_106669639/<serviciu>` în loc (UID: OpenBao `100:1000`, Loki/Tempo `10001:10001`, Kafka `1000:1000`), pornește. OpenBao sealed → `systemctl start openbao-unseal`.
 
-hz2.124 (PGDATA + WAL): `/opt/secrets/restic-nou.env` pe acel host, repo `restic/hz2.124-volume`.
+## Restore Postgres (cluster dedicat hz2.124)
 
-## Restore Postgres (baze GeniusERP)
+Live: nativ PostgreSQL 18 pe hz2.124. Backup: restic repo `restic/hz2.124-volume` (PGDATA + WAL), secret pe hostul 124 în `/opt/secrets/restic-nou.env`.
 
-Nu mai există dump-uri `pgdumps/` (jobul vechi spre u382766 e oprit). Restore din snapshot-ul de volum (directorul `postgres/` pe hz2.65) sau din restic de pe hz2.124 pentru clusterul dedicat.
+```bash
+# pe hz2.124
+set -a; . /opt/secrets/restic-nou.env; set +a
+restic snapshots
+systemctl stop postgresql
+restic restore latest --target /tmp/restore
+# copiază PGDATA în /mnt/pgdata/18/main, WAL în /var/lib/postgresql/wal,
+# symlink pg_wal → /var/lib/postgresql/wal, chown postgres:postgres
+systemctl start postgresql
+```
+
+Aplicațiile de pe hz2.65: `extra_hosts: ["postgres:10.10.0.3"]` în compose. Traefik: [`/opt/traefik/dynamic/postgres.yml`](/opt/traefik/dynamic/postgres.yml) backend `10.10.0.3:5432`.
+
+**Rollback local Docker pe hz2.65 (doar urgență):** restore directorul `postgres/` din restic hz2.65 (snapshot-uri pre-wipe), `BOOTSTRAP_ALLOW_LOCAL_POSTGRES=1` sau `docker compose --profile local-pg … up -d`, scoate `extra_hosts`, Traefik temporar `127.0.0.1:5432`. Preferă repararea pe hz2.124.
 
 ## Temporal / SuperTokens
 

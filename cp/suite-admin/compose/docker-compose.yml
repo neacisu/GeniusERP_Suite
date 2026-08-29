@@ -6,6 +6,8 @@ services:
       context: ../../..
       dockerfile: cp/suite-admin/Dockerfile
     container_name: genius-suite-admin
+    extra_hosts:
+      - "postgres:10.10.0.3"
     env_file:
       - ../.cp.suite-admin.env
     environment:

@@ -6,6 +6,8 @@ services:
       context: ../..
       dockerfile: numeriqo.app/Dockerfile
     container_name: numeriqo-app
+    extra_hosts:
+      - "postgres:10.10.0.3"
     env_file:
       - ../../.suite.general.env
       - ../.numeriqo.env

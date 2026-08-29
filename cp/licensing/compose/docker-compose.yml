@@ -6,6 +6,8 @@ services:
       context: ../../..
       dockerfile: cp/licensing/Dockerfile
     container_name: genius-suite-licensing
+    extra_hosts:
+      - "postgres:10.10.0.3"
     env_file:
       - ../.cp.licensing.env
     environment:

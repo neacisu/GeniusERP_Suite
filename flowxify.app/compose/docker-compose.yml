@@ -6,6 +6,8 @@ services:
       context: ../..
       dockerfile: flowxify.app/Dockerfile
     container_name: flowxify-app
+    extra_hosts:
+      - "postgres:10.10.0.3"
     labels:
       - traefik.enable=true
       - traefik.docker.network=traefik_default
