@@ -56,3 +56,7 @@ coverage/
 *.pem
 id_rsa*
 *.bundle
+
+# Local backup archives (never re-commit; history may still contain old blobs)
+configs-backup-*.zip
+*.zip
