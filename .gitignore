@@ -43,3 +43,14 @@ Thumbs.db
 # Test coverage
 coverage/
 *.lcov
+
+# Local env variants (*.env alone does not match .env.local)
+.env.local
+.env.production
+.env.*.local
+
+# Package stores and keys
+.pnpm-store/
+*.pem
+id_rsa*
+*.bundle
