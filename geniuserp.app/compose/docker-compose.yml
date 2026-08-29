@@ -1,0 +1,46 @@
+services:
+  geniuserp-app:
+    build:
+      context: ../..
+      dockerfile: geniuserp.app/Dockerfile
+    container_name: geniuserp-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: ${GENERP_APP_NODE_ENV:-production}
+      PORT: ${GENERP_APP_PORT:-6050}
+      GENERP_APP_METRICS_PORT: ${GENERP_APP_METRICS_PORT:-6051}
+      OTEL_EXPORTER_OTLP_ENDPOINT: "${SUITE_OBS_OTEL_COLLECTOR_HTTP_URL:-http://otel-collector:4318}/v1/traces"
+      OTEL_SERVICE_NAME: geniuserp.app
+    networks:
+      - traefik_default
+      - observability
+      - backing
+      - data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${GENERP_APP_PORT:-6050}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik_default
+      - traefik.http.routers.geniuserp-app.rule=Host(`geniuserp.app`) || Host(`www.geniuserp.app`)
+      - traefik.http.routers.geniuserp-app.entrypoints=websecure
+      - traefik.http.routers.geniuserp-app.tls.certresolver=cloudflare
+      - traefik.http.routers.geniuserp-app.middlewares=security-headers@file
+      - traefik.http.services.geniuserp-app.loadbalancer.server.port=6050
+
+networks:
+  traefik_default:
+    name: traefik_default
+    external: true
+  observability:
+    name: observability
+    external: true
+  backing:
+    name: backing
+    external: true
+  data:
+    name: data
+    external: true
