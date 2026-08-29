@@ -28,7 +28,7 @@ Cheile și token-urile **nu** se scriu în acest runbook, în git, sau în chat.
 
 ## Restore volume (OpenBao / Kafka / Loki / Tempo)
 
-Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo,…}` (**fără** `postgres/` pe hz2.65 după cutover 2026-08-29). Backup zilnic incremental: restic pe StorageBox **u655966**, retenție 3 zile (`restic-volume-sb.timer`). Secret: `RESTIC_NOU_PASSWORD` în `/opt/stacks/.env` și `/opt/secrets/restic-nou.env` — copiază parola **off-host**. Valorile nu stau în acest runbook.
+Datele sunt bind pe `/mnt/HC_Volume_106669639/{openbao,kafka,loki,tempo,…}` (**fără** `postgres/` pe hz2.65 după cutover 2026-08-29). Backup zilnic incremental: script `/usr/local/sbin/restic-volume-sb.sh` (nu `restic-hz2-backup.sh`), timer systemd `restic-volume-sb.timer`, repo StorageBox **u655966**, retenție 3 zile. Secret: `RESTIC_NOU_PASSWORD` în `/opt/stacks/.env` și `/opt/secrets/restic-nou.env` — copiază parola **off-host**. Valorile nu stau în acest runbook.
 
 Restore volum hz2.65:
 
@@ -91,3 +91,19 @@ Rollback: `image: traefik:v3.7.11` (imagine păstrată local) + același `up -d`
 ## Metrici Tabelul 5
 
 API = bază, Prometheus = bază+1, path `/metrics`. Implementare: `startMetricsServer` în `shared/observability` (listener HTTP separat). Job-ul `geniuserp-apps` din `/opt/observability/prometheus/prometheus.yml` scrape-uiește baza+1. Reload: `docker kill -s HUP prometheus`. `gateway` și `geniuserp-app` nu există în repo — rămân down.
+
+## Orchestrare pe hz2.65 (nu `start-suite.sh`)
+
+Pe metal, stack-ul pornește din compose-urile din `/opt/{traefik,openbao,observability,temporal,supertokens,kafka,…}` plus compose-urile din acest repo. `scripts/start-suite.sh` rămâne în git ca unealtă DevX (rețele locale, backing vechi, URL-uri `localhost`) — **nu** e calea de producție după platformizare. `scripts/stop-suite.sh` încă îl citează; nu-l rula pe hz2.65.
+
+## Perimetru 5432 pe hz2.65
+
+UFW e **inactiv** pe hz2.65. Poarta publică `2.29.8.65:5432` e Traefik TCP passthrough + `ipAllowList` (~20 `/32`) din `/opt/traefik/dynamic/postgres.yml`. Confirmă în consola Hetzner Cloud Firewall că există un firewall pe hz2.65 care acoperă măcar SSH (și, ideal, 5432). CLI `hcloud` n-are context/token pe host.
+
+## WAL și disc pe hz2.124
+
+`pg_wal` e symlink spre `/var/lib/postgresql/wal` pe discul **root** (`/dev/sda1`). Umplerea lui `/` oprește clusterul. `prometheus-node-exporter` pe `10.10.0.3:9100`, job Prometheus `node-hz2-124`, alerte `FilesystemFilling85` / `FilesystemFilling92` (același grup ca hz2.65, label `host=hz2.124`).
+
+## Catalog PG arhivat
+
+`/opt/secrets/pg-catalog.env` e leftover de migrare (inventare de roluri, fără parole de cluster live). Arhivat în `/opt/secrets/archive/` — nu-l reintroduce în compose.
