@@ -12,8 +12,10 @@ build/
 # Environment files
 # Exclude all .env files (secrets should never be committed)
 *.env
+.env.*
 # BUT allow .env.example files (templates for documentation)
 !*.env.example
+!.env.*.example
 
 # Logs
 *.log
